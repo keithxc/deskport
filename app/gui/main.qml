@@ -266,19 +266,19 @@ ApplicationWindow {
             }
 
             NavigableToolButton {
-                id: discordButton
+                id: projectButton
                 visible: SystemProperties.hasBrowser &&
                          qmltypeof(stackView.currentItem, "SettingsView")
 
-                iconSource: "qrc:/res/discord.svg"
+                iconSource: "qrc:/res/baseline-help_outline-24px.svg"
 
                 ToolTip.delay: 1000
                 ToolTip.timeout: 3000
                 ToolTip.visible: hovered
-                ToolTip.text: qsTr("Join our community on Discord")
+                ToolTip.text: qsTr("DeskPort issue tracker")
 
                 // TODO need to make sure browser is brought to foreground.
-                onClicked: Qt.openUrlExternally("https://moonlight-stream.org/discord");
+                onClicked: Qt.openUrlExternally("https://github.com/keithxc/deskport/issues");
 
                 Keys.onDownPressed: {
                     stackView.currentItem.forceActiveFocus(Qt.TabFocus)
@@ -438,7 +438,7 @@ ApplicationWindow {
         standardButtons: Dialog.Ok | Dialog.Cancel
         text: qsTr("This version of Moonlight isn't optimized for your PC. Please download the '%1' version of Moonlight for the best streaming performance.").arg(SystemProperties.friendlyNativeArchName)
         onAccepted: {
-            Qt.openUrlExternally("https://github.com/moonlight-stream/moonlight-qt/releases");
+            Qt.openUrlExternally("https://github.com/keithxc/deskport/releases");
         }
     }
 

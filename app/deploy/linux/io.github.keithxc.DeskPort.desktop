@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=DeskPort
+Comment=Remote desktop workspace based on Moonlight
+Exec=deskport
+Icon=deskport
+Terminal=false
+Type=Application
+Categories=Qt;Network;RemoteAccess;
+Keywords=desktop;remote;sunshine;development;
+StartupWMClass=io.github.keithxc.DeskPort
