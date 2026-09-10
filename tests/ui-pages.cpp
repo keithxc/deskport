@@ -165,12 +165,19 @@ ApplicationWindow {
         QScopedPointer<QObject> page(component.create()); QVERIFY2(page,qPrintable(component.errorString()));
         const QString english=page->property("heading").toString();
         QCOMPARE(english,QString("Make DeskPort your own."));
+        auto windowMode=page->findChild<QObject*>("windowModeChoice"); QVERIFY(windowMode);
+        auto systemKeys=page->findChild<QObject*>("systemKeysChoice"); QVERIFY(systemKeys);
+        auto sections=page->findChild<QObject*>("settingsSections"); QVERIFY(sections);
+        sections->setProperty("currentIndex",4);
         for (const auto& language : {"zh_CN","zh_TW","ja","ko","de","fr","es"}) {
             QTranslator translator;
             QVERIFY(translator.load(gui+"/../languages/qml_"+language+".qm"));
             QVERIFY(QCoreApplication::installTranslator(&translator));
             engine.retranslate();
             QVERIFY(page->property("heading").toString()!=english);
+            QCOMPARE(windowMode->property("currentIndex").toInt(),2);
+            QCOMPARE(systemKeys->property("currentIndex").toInt(),1);
+            QCOMPARE(sections->property("currentIndex").toInt(),4);
             QVERIFY(!translator.translate("SettingsHome","Follow system").isEmpty());
             QVERIFY(!translator.translate("BindingApproval","Allow & bind").isEmpty());
             QCoreApplication::removeTranslator(&translator);

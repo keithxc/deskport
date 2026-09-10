@@ -14,9 +14,24 @@ UiPage {
             anchors.fill: parent; spacing: 10
             Label { text: qsTr("Language"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             ComboBox {
+                id: languageChoice
                 objectName: "languageChoice"
                 Layout.fillWidth: true
                 textRole: "label"
+                popup: Popup {
+                    y: languageChoice.height
+                    width: languageChoice.width
+                    height: Math.min(340, contentItem.implicitHeight + topPadding + bottomPadding)
+                    margins: 8
+                    padding: 4
+                    contentItem: ListView {
+                        clip: true
+                        implicitHeight: contentHeight
+                        model: languageChoice.popup.visible ? languageChoice.delegateModel : null
+                        currentIndex: languageChoice.highlightedIndex
+                        ScrollIndicator.vertical: ScrollIndicator {}
+                    }
+                }
                 model: [
                     { label: qsTr("Follow system"), value: StreamingPreferences.LANG_AUTO },
                     { label: "English", value: StreamingPreferences.LANG_EN },
@@ -65,8 +80,14 @@ UiPage {
         objectName: "settingsSections"
         Layout.fillWidth: true
         Repeater {
-            model: [qsTr("Picture"), qsTr("Input"), qsTr("Sound"), qsTr("Connections"), qsTr("Advanced")]
-            TabButton { text: modelData }
+            model: ListModel {
+                ListElement { label: qsTr("Picture") }
+                ListElement { label: qsTr("Input") }
+                ListElement { label: qsTr("Sound") }
+                ListElement { label: qsTr("Connections") }
+                ListElement { label: qsTr("Advanced") }
+            }
+            TabButton { text: label }
         }
     }
     UiCard {
@@ -88,7 +109,13 @@ UiPage {
             }
             Label { text: qsTr("Connection window"); color: ui.muted }
             ComboBox {
-                model: [qsTr("Full screen"), qsTr("Borderless full screen"), qsTr("Window")]
+                objectName: "windowModeChoice"
+                textRole: "label"
+                model: ListModel {
+                    ListElement { label: qsTr("Full screen") }
+                    ListElement { label: qsTr("Borderless full screen") }
+                    ListElement { label: qsTr("Window") }
+                }
                 currentIndex: StreamingPreferences.windowMode
                 onActivated: function(index) { StreamingPreferences.windowMode=index; save() }
                 Layout.preferredWidth: 250
@@ -117,7 +144,18 @@ UiPage {
             Switch { text: qsTr("Use a desktop-style pointer"); checked: StreamingPreferences.absoluteMouseMode; onClicked: { StreamingPreferences.absoluteMouseMode=checked; save() } }
             Switch { text: qsTr("Reverse scrolling direction"); checked: StreamingPreferences.reverseScrollDirection; onClicked: { StreamingPreferences.reverseScrollDirection=checked; save() } }
             Label { text: qsTr("Send system shortcuts to the remote computer"); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            ComboBox { model: [qsTr("Never"), qsTr("Only in full screen"), qsTr("Always")]; currentIndex: StreamingPreferences.captureSysKeysMode; onActivated: function(index) { StreamingPreferences.captureSysKeysMode=index; save() } Layout.preferredWidth: 250 }
+            ComboBox {
+                objectName: "systemKeysChoice"
+                textRole: "label"
+                model: ListModel {
+                    ListElement { label: qsTr("Never") }
+                    ListElement { label: qsTr("Only in full screen") }
+                    ListElement { label: qsTr("Always") }
+                }
+                currentIndex: StreamingPreferences.captureSysKeysMode
+                onActivated: function(index) { StreamingPreferences.captureSysKeysMode=index; save() }
+                Layout.preferredWidth: 250
+            }
             Label { text: qsTr("Release remote input with Ctrl + Alt + Shift + Z."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
