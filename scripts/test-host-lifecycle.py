@@ -86,4 +86,20 @@ macx {{
     environment.setdefault("DEVELOPER_DIR", "/Applications/Xcode.app/Contents/Developer")
     subprocess.run([qmake, str(project)], cwd=work, env=environment, check=True)
     subprocess.run(["make", "-j4"], cwd=work, env=environment, check=True, stdout=subprocess.DEVNULL)
-    subprocess.run([str(macos / "host-lifecycle-tests")], cwd=work, env=environment, check=True)
+    test_binary = macos / "host-lifecycle-tests"
+    if sys.platform != "darwin":
+        # Unwrapped test binaries must use the QML plugins from their linked Qt,
+        # not the desktop session's potentially different Qt installation.
+        libraries = subprocess.check_output(["ldd", str(test_binary)], text=True)
+        qml_paths = []
+        for line in libraries.splitlines():
+            fields = line.split()
+            if len(fields) > 2 and fields[0].startswith("libQt6") and fields[2].startswith("/"):
+                candidate = Path(fields[2]).resolve().parent / "qt-6/qml"
+                if candidate.is_dir() and str(candidate) not in qml_paths:
+                    qml_paths.append(str(candidate))
+        if qml_paths:
+            environment["QML_IMPORT_PATH"] = os.pathsep.join(qml_paths)
+            environment["NIXPKGS_QT6_QML_IMPORT_PATH"] = os.pathsep.join(qml_paths)
+            environment.pop("QML2_IMPORT_PATH", None)
+    subprocess.run([str(test_binary)], cwd=work, env=environment, check=True)

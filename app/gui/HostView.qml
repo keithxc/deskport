@@ -42,7 +42,7 @@ UiPage {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Sharing preferences"); color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold }
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Virtual display size"); color: ui.muted }
-            ComboBox { id: size; visible: Qt.platform.os === "osx"; model: ["2560 × 1440", "2880 × 1800", "3840 × 2160"]; enabled: !hostManager.running && !hostManager.changing; Layout.preferredWidth: 250 }
+            ComboBox { id: size; currentIndex: Math.max(0, [2560,2880,3840].indexOf(hostManager.sharingWidth)); visible: Qt.platform.os === "osx"; model: ["2560 × 1440", "2880 × 1800", "3840 × 2160"]; enabled: !hostManager.running && !hostManager.changing; Layout.preferredWidth: 250 }
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Choose before starting sharing. Changing size during a session is not available yet."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Start sharing when I log in"); enabled: hostManager.available; checked: hostManager.loginStart; onClicked: hostManager.setLoginStart(checked) }
         }

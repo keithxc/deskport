@@ -54,7 +54,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         if (m_Stopping) { m_Server.terminate(); return; }
         m_Starting = false;
         if (!m_Isolated) QSettings().setValue("host/port", m_BasePort);
-        setStatus(tr("Host process running on port %1. Screen capture and remote input still need verification.").arg(m_BasePort));
+        setStatus(tr("Sharing has started. Connect from an approved device to check picture, sound and control."));
         const auto generation = m_Generation;
         QTimer::singleShot(3000, this, [this, generation] {
             if (generation != m_Generation || m_Server.state() != QProcess::Running) return;
@@ -350,6 +350,8 @@ void HostManager::pair(const QString &pin, const QString &name) {
         });
     });
 }
+int HostManager::sharingWidth() const { return QSettings().value("host/width", 2560).toInt(); }
+int HostManager::sharingHeight() const { return QSettings().value("host/height", 1440).toInt(); }
 QString HostManager::deviceName() const { return QHostInfo::localHostName(); }
 QUrl HostManager::applicationUrl() const {
 #ifdef Q_OS_MACOS
