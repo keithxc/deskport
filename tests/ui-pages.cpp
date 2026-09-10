@@ -191,6 +191,9 @@ ApplicationWindow {
             QCOMPARE(systemKeys->property("currentIndex").toInt(),1);
             QCOMPARE(sections->property("currentIndex").toInt(),4);
             QVERIFY(!translator.translate("SettingsHome","Follow system").isEmpty());
+            QVERIFY(!translator.translate("SettingsHome","Match the client window resolution").isEmpty());
+            QVERIFY(!translator.translate("HostView","Built-in virtual display").isEmpty());
+            QVERIFY(!translator.translate("HostView","Active · %1 × %2 pixels").isEmpty());
             QVERIFY(!translator.translate("BindingApproval","Allow & bind").isEmpty());
             QCoreApplication::removeTranslator(&translator);
             engine.retranslate();
