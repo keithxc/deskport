@@ -86,10 +86,16 @@ pins the Sunshine DMG version/hash, preserves its publisher signature, deploys Q
 checks linked-library paths and signs the outer app and helper. Do not ad-hoc
 re-sign an installed host as an update strategy. Public distribution needs a
 Developer ID signature, notarization and a corresponding-source release; the
-local development builds do not satisfy those public-release requirements. The
-initial local preview uses an ad-hoc signature (`DESKPORT_SIGN_IDENTITY=-`) because
-the development identity is locked to an interactive keychain session. It is not
-the stable-signature deployment intended for a permanent unattended host.
+local development builds do not satisfy those public-release requirements.
+Use the same Apple Development signing identity and bundle identifier across local
+updates. Ad-hoc signing requires explicit `DESKPORT_ALLOW_ADHOC=1` and is only for
+disposable builds; its changing code hash can leave a stale enabled privacy switch
+while TCC rejects access. After replacing an ad-hoc installation with a stable
+signature, remove and re-add DeskPort in Screen Recording once, then relaunch it.
+Do not reset or remove an independently installed Sunshine's permissions.
+The outer app declares audio input access because macOS attributes requests from
+the bundled host to DeskPort. Allow keychain access interactively if signing asks;
+do not fall back to ad-hoc signing for an installed update.
 
 `DeskPort.app/Contents/MacOS/DeskPort --host-self-test` starts the two host components
 using temporary state, verifies the HTTP server identity, then stops them. It does

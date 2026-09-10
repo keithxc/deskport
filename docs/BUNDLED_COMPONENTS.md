@@ -16,6 +16,6 @@ SDL, FFmpeg, OpenSSL, Opus and other Moonlight dependencies retain upstream noti
 and versions from the pinned Moonlight dependency tree. See README.upstream.md,
 LICENSE and the relevant submodule licenses in the source distribution.
 
-This is a local development preview with an ad-hoc outer signature. It has no
+This is a local development preview signed locally using the configured identity. It has no
 Developer ID distribution signing or notarization. Public release packaging must
 include corresponding sources, exact dependency versions and license notices.

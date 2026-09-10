@@ -4,6 +4,10 @@ set -euo pipefail
 repo=$(cd "$(dirname "$0")/.." && pwd)
 cd "$repo"
 : "${DESKPORT_SIGN_IDENTITY:?Set a stable local code-signing identity; use - only for disposable development builds}"
+if [ "$DESKPORT_SIGN_IDENTITY" = - ] && [ "${DESKPORT_ALLOW_ADHOC:-0}" != 1 ]; then
+    echo "Ad-hoc updates invalidate macOS privacy grants. Use a stable signing identity, or set DESKPORT_ALLOW_ADHOC=1 for a disposable build." >&2
+    exit 1
+fi
 export DEVELOPER_DIR=${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}
 qt_bin=${DESKPORT_QT_BIN:-/opt/homebrew/bin}
 # Keep intermediate .app bundles out of Spotlight's Applications list.
@@ -21,7 +25,8 @@ for directory in build-macos dist; do
 done
 (
     cd build-macos
-    "$qt_bin/qmake" ../moonlight-qt.pro CONFIG+=release CONFIG-=debug_and_release QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0
+    # Refresh subprojects too: app/Info.plist is generated during qmake.
+    "$qt_bin/qmake" -r ../moonlight-qt.pro CONFIG+=release CONFIG-=debug_and_release QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0
     make -j6
 )
 xcrun clang -fobjc-arc -framework Foundation -framework CoreGraphics \

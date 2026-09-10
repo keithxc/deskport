@@ -38,6 +38,8 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>DeskPort uses the local network to connect to your remote desktop host.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>DeskPort's bundled host uses audio input access to capture audio for your remote desktop session.</string>
 	<key>CFBundleVersion</key>
 	<string>VERSION</string>
 	<key>CFBundleShortVersionString</key>

@@ -85,6 +85,21 @@ native macOS packaging/signature/dependency checks, packaged CLI startup, and a
 Linux Nix build with isolated CLI smoke checks. Full live streaming coexistence
 still needs user-assisted acceptance while retaining the existing remote-access service.
 
+## macOS privacy identity repair (2026-09-10)
+
+Local TCC diagnostics attributed bundled-host capture to the outer DeskPort app,
+but rejected the saved grant because an ad-hoc update changed its code hash.
+Packaging now rejects accidental ad-hoc builds unless explicitly opted in. Local
+installed updates use a stable Apple Development identity. The outer application
+also declares the audio-input entitlement and microphone purpose string required
+for the bundled host's audio request. Switching from the old ad-hoc identity needs
+one user-assisted DeskPort reauthorization. Packaging also refreshes subproject
+metadata and checks the final usage description and audio entitlement to prevent
+stale incremental-build plists. The signed macOS package passed signature and
+dependency verification; the Linux Nix build and isolated CLI smoke check passed.
+Capture, audio and future-update grant
+retention still need live acceptance; native Sunshine permissions remain untouched.
+
 ## Next action: persistent-session prototype
 
 1. Diagnose input with the unchanged Moonlight/Sunshine path, including host
