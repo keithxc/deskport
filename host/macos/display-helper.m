@@ -30,8 +30,8 @@
 static CGVirtualDisplay *display;
 static unsigned generation;
 static int requestSequence;
-static NSInteger requestedScale = 2;
-static NSInteger lastWidth, lastHeight, lastScale = 2;
+static NSInteger requestedScale = 1;
+static NSInteger lastWidth, lastHeight, lastScale = 1;
 static BOOL rollingBack;
 static NSArray *displayModes(NSInteger width, NSInteger height, NSInteger scale) {
     return @[[[CGVirtualDisplayMode alloc] initWithWidth:(unsigned)width / scale
@@ -164,7 +164,7 @@ int main(int argc, const char *argv[]) {
             respond(@{@"available": @(NSClassFromString(@"CGVirtualDisplay") != nil)}); return 0;
         }
         if (argc != 3) return 2;
-        configure(atoi(argv[1]), atoi(argv[2]), 2, 0);
+        configure(atoi(argv[1]), atoi(argv[2]), 1, 0);
         if (!display) return 1;
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             char *line = NULL; size_t length = 0;
@@ -175,7 +175,7 @@ int main(int argc, const char *argv[]) {
                     NSInteger width = [request[@"width"] integerValue], height = [request[@"height"] integerValue];
                     NSInteger scale = [request[@"scale"] integerValue];
                     int sequence = [request[@"seq"] intValue];
-                    dispatch_async(dispatch_get_main_queue(), ^{ configure(width, height, scale ?: 2, sequence); });
+                    dispatch_async(dispatch_get_main_queue(), ^{ configure(width, height, scale ?: 1, sequence); });
                 }
             }
             free(line); exit(0);

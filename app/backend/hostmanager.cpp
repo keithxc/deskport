@@ -53,7 +53,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
                     const int sequence = m_DisplaySequence; m_DisplaySequence = 0;
                     if (!object.contains("error")) {
                         m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
-                        m_DisplayScale = object["scale"].toInt(2);
+                        m_DisplayScale = object["scale"].toInt(1);
                     }
                     emit displayResized(sequence, m_DisplayWidth, m_DisplayHeight, object["error"].toString());
                     emit changed();
@@ -63,7 +63,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
             if (object.contains("error")) { beginStop(object["error"].toString()); return; }
             if (object["displayId"].toInt() > 0 && m_Starting && !m_ServerRequested) {
                 m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
-                m_DisplayScale = object["scale"].toInt(2);
+                m_DisplayScale = object["scale"].toInt(1);
                 startServer(object["displayId"].toInt());
             }
         }
@@ -551,6 +551,6 @@ void HostManager::restoreDisplay() {
     // controller may claim the display during the grace interval.
     const auto generation = m_DisplayGeneration;
     QTimer::singleShot(10000, this, [this, generation] {
-        if (generation == m_DisplayGeneration) resizeDisplay(sharingWidth(), sharingHeight(), 2, -1);
+        if (generation == m_DisplayGeneration) resizeDisplay(sharingWidth(), sharingHeight(), 1, -1);
     });
 }

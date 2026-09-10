@@ -18,11 +18,11 @@ inline double scaleForOutput(QSize pixels, QSize logical, double fallback) {
     const double y = double(pixels.height()) / logical.height();
     return x >= 0.5 && x <= 8.0 && std::abs(x - y) < 0.01 ? x : fallback;
 }
-// Preserve the client's logical workspace. macOS has integral 1x/2x display
-// modes: fractional client scaling uses a 2x backing surface and client downscale.
+// Preserve the client's logical workspace using a 1x host framebuffer.
+// Client scaling is applied by the viewer without a supersampled video stream.
 inline Workspace forClient(QSize drawablePixels, double clientScale) {
     if (drawablePixels.isEmpty() || !std::isfinite(clientScale) || clientScale < 0.5 || clientScale > 8.0) return {};
-    const int scale = clientScale > 1.05 ? 2 : 1;
+    const int scale = 1;
     const double width = drawablePixels.width() / clientScale;
     const double height = drawablePixels.height() / clientScale;
     // WindowServer advertises compact modes which it then rejects. Keep a usable

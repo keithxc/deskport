@@ -23,11 +23,19 @@ honors “quit app after streaming”; an actual disconnect still honors that se
 A failed resize disables further adaptation for that session and uses the saved
 fixed resolution, avoiding a reconnect loop.
 
-Pixel sizes are aligned to four and bounded to 640×360–3840×2160. Host scaling is
-1× or 2×; fractional client scaling is not an exact fractional macOS UI scale.
-For compact workspaces below 1920×1080, use 1× because some smaller HiDPI modes are
-advertised by WindowServer but rejected when selected. Native display mode is
-verified after every change; applying settings alone is not an acknowledgment.
+Pixel sizes are aligned to four and bounded to 640×360–7680×4320. As of
+2026-09-10, automatic adaptation always requests 1× host scaling, including
+fractionally scaled and Retina clients. Divide client drawable pixels by client
+system scale to retain the logical workspace, with a minimum 960×540 desktop.
+For example, a 2880×1620 client at 150% requests 1920×1080 at 1× instead of a
+3840×2160 2× backing surface. The viewer scales this lower-resolution image to
+its local window; it trades supersampled text detail for fewer encoded pixels.
+Bitrate and latency improvements depend on codec, bitrate settings and the link.
+
+Sharing startup and the idle-mode restore also use 1×. Existing saved idle pixel
+sizes are preserved. The protocol still accepts explicit 2× requests from older
+clients. Native display mode is verified after every change; applying settings
+alone is not an acknowledgment.
 
 The helper separates only its own display from any asynchronously restored mirror
 membership. It never selects a physical or third-party display as its capture

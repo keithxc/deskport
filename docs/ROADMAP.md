@@ -1,6 +1,7 @@
 # DeskPort roadmap
 
-Status: desktop interaction preview, 2026-09-10. This is a development tree, not a stable release.
+Status: v0.1.0, first release, 2026-09-10. Unfinished capabilities and native
+acceptance limits are listed below. See [release notes](RELEASE_0.1.0.md).
 
 ## Product goal
 
@@ -354,3 +355,28 @@ unless a measured blocker requires it.
   frames, compositor buffer recycling and close cleanup on macOS and KDE Wayland.
   Real stream/decoder resume and perceived continuity still require interactive
   acceptance after installation, including minimize and repeated resize.
+
+### 1× host workspace by default (2026-09-10)
+
+User preference: reduce the host framebuffer and transmission cost. This
+supersedes the earlier automatic 2× backing policy. Adaptive clients now request
+1× at their logical workspace size; sharing startup and idle restore also use 1×.
+Saved idle pixel sizes and explicit legacy 2× protocol requests remain supported.
+A 2880×1620 client at 150% requests 1920×1080 instead of 3840×2160, one quarter
+as many pixels. Text sharpness and actual bandwidth remain native acceptance items.
+
+Investigation of the cropped image reproduced the crop in host capture before
+encoding: the mirrored virtual source exposed 1280×720 logical bounds while its
+physical mirrors exposed 2560×1440. A screenshot captured the full desktop, but
+both AVFoundation and a ScreenCaptureKit streaming experiment reproduced the crop.
+The experiment was removed; do not claim changing capture APIs fixes this issue.
+Validate the 1× mode in the user's existing mirror arrangement after installation.
+
+Validation: 12 binding/workspace checks, 26 host lifecycle checks and the Linux
+`nix build` passed.
+The signed macOS package was installed with sharing enabled. CoreGraphics then
+reported 2560×1440 physical and logical dimensions (1×) for the virtual source
+and both physical mirrors. A fresh host-side capture at 1× showed the full
+desktop. The isolated virtual-display test was stopped when WindowServer changed
+mirror modes, so repeated mode switching is not recorded as passed. Repeated
+client resize, input and end-to-end image acceptance remain pending.

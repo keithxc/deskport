@@ -5,18 +5,21 @@ A remote desktop workspace built on Moonlight and Sunshine.
 **Goal:** keep your remote desktop ready in the background, bring it onto your
 current workspace with one action, and tuck it away without reconnecting.
 
-The intended product is one application per computer with both viewer and optional
-host roles: pair devices once, then open their desktops from a shared device list.
-Dedicated displays that follow the viewer window size are also planned. See the
-[architecture](docs/ARCHITECTURE.md); the unified mutual-pairing flow and automatic resizing are not yet implemented.
+**Version: 0.1.0 — first release.** DeskPort combines a viewer and optional host
+in one application, with a shared device list, mutual binding and permission
+controls. The macOS package includes Sunshine and a native virtual display;
+the Linux Nix package includes a Sunshine host for the existing desktop.
 
-**Status: development preview.** The macOS package now combines the Moonlight-based
-viewer, bundled Sunshine host and a native virtual display in one application.
-The sharing page manages startup, display presets, permissions and incoming PIN
-pairing. See [macOS packaging](docs/MACOS_PACKAGE.md) for installation and limits.
-The Linux build currently provides the viewer. Windows packaging, seamless live
-resolution changes, bidirectional clipboard and one-action persistent-viewer recall
-remain unfinished. Each direction is paired separately in this preview.
+The dedicated macOS workspace follows the client window at 1× host scaling,
+using the client's logical dimensions to avoid a 2× supersampled video stream.
+Resizing briefly reconnects video while retaining the client window and showing
+a loading animation. It is not seamless encoder reconfiguration.
+
+See the [release notes](docs/RELEASE_0.1.0.md),
+[architecture](docs/ARCHITECTURE.md) and
+[macOS installation guide](docs/MACOS_PACKAGE.md).
+Persistent hide/show without reconnecting, automatic physical-display topology
+management, shared clipboard and Windows packaging remain unfinished.
 
 ## Build and run on Linux
 
@@ -30,8 +33,8 @@ nix build
 ```
 
 The pinned Nix build supplies upstream submodule dependencies automatically.
-`nix run . -- --help` prints the inherited command-line interface. A host still
-needs Sunshine and a separate pairing with DeskPort. No personal host or pairing
+`nix run . -- --help` prints the inherited command-line interface. Start Sharing on the host and bind the devices before connecting. Legacy
+Sunshine PIN pairing is also available. No personal host or pairing
 credential is included or imported from Moonlight.
 New manual addresses default to DeskPort's port `48989`. Include the port shown
 on the host's sharing page if different, or use `host:47989` to connect explicitly
@@ -61,12 +64,12 @@ The upstream project filenames remain unchanged to keep the fork reviewable.
 - Windowed streaming and absolute-pointer control by default.
 - Mute on focus loss; game optimization, gamepad mouse, multi-controller mode,
   background gamepad input and Discord presence disabled by default.
-- No upstream Moonlight update prompts for this independent development build.
+- No upstream Moonlight update prompts for this independent application.
 - A locked Nix environment and a Linux build workflow.
 
-The host list and pairing UI are still inherited from Moonlight. The close button
-still ends the stream; close-to-hide is part of the next milestone, not available
-behavior. Some inherited wording/artwork remains during the initial port.
+The desktop interface provides device, sharing and settings pages, with language
+selection and separate host permissions. The close button still ends the stream;
+close-to-hide is part of the next milestone. Some inherited wording remains.
 
 ## Platform scope
 
@@ -74,7 +77,7 @@ behavior. Some inherited wording/artwork remains during the initial port.
 | --- | --- |
 | Linux x86-64 | Initial build and CLI smoke-check target; KDE Wayland / AMD is the first live-use target |
 | Linux ARM64 | Nix package definition only; native build and runtime not yet verified |
-| macOS | Apple Silicon / macOS 26 all-in-one development package; native viewer, host and virtual display |
+| macOS | Apple Silicon / macOS 26 all-in-one package; native viewer, host and virtual display |
 | Windows | Inherited native source; DeskPort build and packaging not yet verified |
 
 The first development workflow is Linux → macOS through Sunshine. Client platform
@@ -106,7 +109,8 @@ Qt platform. It does not pair with a host, start a stream or inject input.
 DeskPort is an independent derivative of [Moonlight Qt](https://github.com/moonlight-stream/moonlight-qt),
 initially based on v6.1.0. It is not an official Moonlight or Sunshine release.
 Moonlight provides the streaming foundation; [Sunshine](https://github.com/LizardByte/Sunshine)
-is installed separately on the host.
+is bundled in the macOS package and supplied by the Linux Nix package.
+Separately installed Sunshine services are kept independent.
 
 GPL-3.0-or-later; see [LICENSE](LICENSE), retained source notices and each
 submodule's license. Original documentation is preserved in

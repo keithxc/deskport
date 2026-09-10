@@ -83,14 +83,15 @@ private slots:
     }
     void workspaceUsesClientSystemScale() {
         const auto fractional = DeskPortDisplay::forClient(QSize(2880, 1620), 1.5);
-        QCOMPARE(fractional.pixels, QSize(3840, 2160)); QCOMPARE(fractional.scale, 2);
+        QCOMPARE(fractional.pixels, QSize(1920, 1080)); QCOMPARE(fractional.scale, 1);
+        QCOMPARE(DeskPortDisplay::forClient(QSize(2304, 1296), 1.5).pixels, QSize(1536, 864));
         const auto retina = DeskPortDisplay::forClient(QSize(2880, 1800), 2.0);
-        QCOMPARE(retina.pixels, QSize(2880, 1800)); QCOMPARE(retina.scale, 2);
+        QCOMPARE(retina.pixels, QSize(1440, 900)); QCOMPARE(retina.scale, 1);
         const auto standard = DeskPortDisplay::forClient(QSize(1920, 1080), 1.0);
         QCOMPARE(standard.pixels, QSize(1920, 1080)); QCOMPARE(standard.scale, 1);
-        QCOMPARE(DeskPortDisplay::forClient(QSize(3840, 2160), 1.5).pixels, QSize(5120, 2880));
-        QCOMPARE(DeskPortDisplay::forClient(QSize(2560, 1440), 1.5).pixels, QSize(3416, 1920));
-        QCOMPARE(DeskPortDisplay::forClient(QSize(800, 450), 2.0).pixels, QSize(1920, 1080));
+        QCOMPARE(DeskPortDisplay::forClient(QSize(3840, 2160), 1.5).pixels, QSize(2560, 1440));
+        QCOMPARE(DeskPortDisplay::forClient(QSize(2560, 1440), 1.5).pixels, QSize(1708, 960));
+        QCOMPARE(DeskPortDisplay::forClient(QSize(800, 450), 2.0).pixels, QSize(960, 540));
         QVERIFY(!DeskPortDisplay::forClient(QSize(), 1.5).pixels.isValid());
         QVERIFY(!DeskPortDisplay::forClient(QSize(1920,1080), 0).pixels.isValid());
     }
