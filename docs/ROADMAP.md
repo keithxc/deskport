@@ -333,8 +333,8 @@ unless a measured blocker requires it.
   2× macOS backing for scaled clients, 1× otherwise, aligned to four pixels and
   bounded by 7680×4320. Keep a minimum 960×540 logical workspace for valid native
   HiDPI modes. Example: 2880×1620 at 150% becomes 3840×2160 backing / 1920×1080 logical.
-- Match Qt screen scaling to SDL outputs, including XWayland clients whose SDL
-  pixel/window ratio hides fractional compositor scaling. Reconnect after changing
+- Match Qt logical output geometry to SDL pixel modes on XWayland: SDL window
+  ratios may hide fractional scaling while QScreen DPR may round 150% to 200%. Reconnect after changing
   system scale; live scale/hotplug refresh remains an acceptance follow-up.
 - Build a pinned, patched macOS input backend that follows the verified virtual
   capture display. Do not change the physical main display to redirect input.

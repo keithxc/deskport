@@ -10,6 +10,14 @@ struct Workspace {
     QSize pixels;
     int scale = 1;
 };
+// Recover compositor scale when XWayland exposes pixels while Qt exposes the
+// logical output rectangle. Reject mismatched outputs/orientations.
+inline double scaleForOutput(QSize pixels, QSize logical, double fallback) {
+    if (pixels.isEmpty() || logical.isEmpty()) return fallback;
+    const double x = double(pixels.width()) / logical.width();
+    const double y = double(pixels.height()) / logical.height();
+    return x >= 0.5 && x <= 8.0 && std::abs(x - y) < 0.01 ? x : fallback;
+}
 // Preserve the client's logical workspace. macOS has integral 1x/2x display
 // modes: fractional client scaling uses a 2x backing surface and client downscale.
 inline Workspace forClient(QSize drawablePixels, double clientScale) {

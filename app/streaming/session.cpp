@@ -580,14 +580,19 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
     int logicalWidth, logicalHeight; SDL_GetWindowSize(window, &logicalWidth, &logicalHeight);
     qreal scale = logicalWidth > 0 ? qreal(pixels.width()) / logicalWidth : 1.0;
     // XWayland commonly exposes physical pixels for both SDL sizes, hiding the
-    // compositor's fractional scaling. Qt's QScreen scale is captured before the
-    // streaming thread blocks Qt processing and matched to SDL's output name.
+    // compositor's fractional scaling. Match Qt's logical output geometry to the
+    // SDL pixel mode; QScreen DPR can itself be rounded to 2 on a 1.5x compositor.
     const char* name = SDL_GetDisplayName(index);
     SDL_Rect bounds {}; SDL_GetDisplayBounds(index, &bounds);
     qreal systemScale = m_ClientDefaultScale;
     for (const auto& screen : m_ClientScreens) {
         if ((name && screen.name == QString::fromUtf8(name)) || screen.origin == QPoint(bounds.x, bounds.y)) {
             systemScale = screen.scale;
+            if (m_ClientWayland && qstrcmp(SDL_GetCurrentVideoDriver(), "x11") == 0) {
+                SDL_DisplayMode mode {};
+                if (SDL_GetCurrentDisplayMode(index, &mode) == 0)
+                    systemScale = DeskPortDisplay::scaleForOutput(QSize(mode.w, mode.h), screen.logicalSize, systemScale);
+            }
             if (name && screen.name == QString::fromUtf8(name)) break;
         }
     }
@@ -1808,8 +1813,12 @@ void Session::exec(QWindow* qtWindow)
 {
     m_QtWindow = qtWindow;
     m_ClientScreens.clear();
-    for (auto screen : QGuiApplication::screens()) m_ClientScreens.append({screen->name(), screen->geometry().topLeft(), screen->devicePixelRatio()});
-    if (qtWindow && qtWindow->screen()) m_ClientDefaultScale = qtWindow->screen()->devicePixelRatio();
+    m_ClientWayland = QGuiApplication::platformName().startsWith("wayland");
+    for (auto screen : QGuiApplication::screens()) {
+        const qreal scale = qtWindow && qtWindow->screen() == screen ? qtWindow->devicePixelRatio() : screen->devicePixelRatio();
+        m_ClientScreens.append({screen->name(), screen->geometry().topLeft(), screen->size(), scale});
+    }
+    if (qtWindow) m_ClientDefaultScale = qtWindow->devicePixelRatio();
 
     // Use a separate thread for the streaming session on X11 or Wayland
     // to ensure we don't stomp on Qt's GL context. This breaks when using

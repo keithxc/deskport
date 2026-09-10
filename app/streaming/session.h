@@ -153,9 +153,10 @@ private:
     int m_AdaptiveScale = 1, m_AdaptiveObservedScale = 1;
     Uint32 m_AdaptiveChangedAt = 0;
     bool m_AdaptiveResume = false, m_AdaptiveMaximized = false;
-    struct ClientScreen { QString name; QPoint origin; qreal scale; };
+    struct ClientScreen { QString name; QPoint origin; QSize logicalSize; qreal scale; };
     QVector<ClientScreen> m_ClientScreens;
     qreal m_ClientDefaultScale = 1.0;
+    bool m_ClientWayland = false;
     DeskPortDisplay::Workspace workspaceForWindow(SDL_Window* window, bool initialFullscreen = false) const;
     void initializeAdaptiveDisplay(SDL_Window* window);
     bool checkAdaptiveResize();

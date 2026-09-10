@@ -19,6 +19,14 @@ static QByteArray credential(const char* name) {
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void fractionalOutputScale() {
+        QCOMPARE(DeskPortDisplay::scaleForOutput({2880, 1620}, {1920, 1080}, 2.0), 1.5);
+        QCOMPARE(DeskPortDisplay::scaleForOutput({3840, 2160}, {1920, 1080}, 1.0), 2.0);
+        QCOMPARE(DeskPortDisplay::scaleForOutput({1920, 1080}, {1920, 1080}, 2.0), 1.0);
+        QCOMPARE(DeskPortDisplay::scaleForOutput({}, {1920, 1080}, 1.5), 1.5);
+        QCOMPARE(DeskPortDisplay::scaleForOutput({1080, 1920}, {1920, 1080}, 1.5), 1.5);
+    }
+
     void adaptiveDisplayRequiresPinnedApprovedExclusiveController() {
         QTemporaryDir dir;
         const auto aCert = credential("TEST_CERT_A"), bCert = credential("TEST_CERT_B"), cCert = credential("TEST_CERT_C");
