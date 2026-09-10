@@ -15,6 +15,7 @@ CenteredGridView {
     id: pcGrid
     focus: true
     activeFocusOnTab: true
+    minMargin: 28
     topMargin: 24
     bottomMargin: 5
     cellWidth: 310; cellHeight: 235;
@@ -90,9 +91,9 @@ CenteredGridView {
     Column {
         anchors.centerIn: parent; width: Math.min(parent.width - 64, 460); spacing: 16
         visible: pcGrid.count === 0
-        Label { width: parent.width; text: qsTr("Your computers, together."); color: ui.text; font.pixelSize: 28; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+        Label { width: parent.width; text: qsTr("Connect your first device."); color: ui.text; font.pixelSize: 28; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
         Label { width: parent.width; text: qsTr("Add a device by IP address or name. Confirm once on the other computer, then connect in either direction."); color: ui.muted; font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
-        Button { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Add a device"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+        UiButton { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Add a device"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         Label { width: parent.width; text: StreamingPreferences.enableMdns ? qsTr("Nearby devices appear here automatically") : qsTr("Nearby discovery is off in Settings"); color: ui.muted; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
     }
 

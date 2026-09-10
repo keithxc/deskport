@@ -15,13 +15,13 @@ UiPage {
             RowLayout {
                 Layout.fillWidth: true
                 TextField { id: address; objectName: "bindingAddress"; placeholderText: qsTr("IP address or computer name"); Layout.fillWidth: true; enabled: !peerManager.busy; onAccepted: if (!peerManager.busy && text.trim().length) peerManager.request(text) }
-                Button { text: qsTr("Send request"); highlighted: true; enabled: !peerManager.busy && address.text.trim().length > 0; onClicked: peerManager.request(address.text) }
+                UiButton { text: qsTr("Send request"); highlighted: true; enabled: !peerManager.busy && address.text.trim().length > 0; onClicked: peerManager.request(address.text) }
             }
             RowLayout {
                 Layout.fillWidth: true
                 BusyIndicator { running: peerManager.busy; visible: running; implicitWidth: 28; implicitHeight: 28 }
                 Label { text: peerManager.status; textFormat: Text.PlainText; color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true; Accessible.role: Accessible.StaticText }
-                Button { text: qsTr("Cancel"); visible: peerManager.busy; onClicked: peerManager.cancel() }
+                UiButton { text: qsTr("Cancel"); visible: peerManager.busy; onClicked: peerManager.cancel() }
             }
             Label { text: qsTr("Approval lets both computers view and control each other. System permissions are still required on each device."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
@@ -39,7 +39,7 @@ UiPage {
                     Label { text: modelData.ready ? qsTr("Bound both ways") : qsTr("Incomplete"); color: modelData.ready ? ui.accent : ui.warning }
                 }
                 Label { text: modelData.address; textFormat: Text.PlainText; color: ui.muted }
-                Button { text: qsTr("Remove access to this computer"); enabled: !peerManager.busy; onClicked: { removeDialog.fingerprint = modelData.fingerprint; removeDialog.deviceName = modelData.name; removeDialog.open() } }
+                UiButton { text: qsTr("Remove access to this computer"); enabled: !peerManager.busy; onClicked: { removeDialog.fingerprint = modelData.fingerprint; removeDialog.deviceName = modelData.name; removeDialog.open() } }
             }
         }
     }
@@ -48,7 +48,7 @@ UiPage {
             anchors.fill: parent; spacing: 10
             Label { text: qsTr("Connecting another way?"); color: ui.text; font.pixelSize: 17; font.weight: Font.DemiBold }
             Label { text: qsTr("For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            Button { text: qsTr("Add a legacy host"); onClicked: addPcDialog.open() }
+            UiButton { text: qsTr("Add a legacy host"); onClicked: addPcDialog.open() }
         }
     }
     property Dialog removalPrompt: Dialog {

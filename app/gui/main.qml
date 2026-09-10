@@ -269,7 +269,7 @@ ApplicationWindow {
             anchors.fill: parent; anchors.leftMargin: 24; anchors.rightMargin: 24; spacing: 12
             Button { visible: stackView.depth > 1; text: "←"; Accessible.name: qsTr("Back"); flat: true; onClicked: goBack() }
             Label { text: stackView.currentItem ? stackView.currentItem.objectName : "DeskPort"; color: ui.text; font.pixelSize: 16; font.weight: Font.DemiBold; Layout.fillWidth: true; elide: Text.ElideRight }
-            Button { text: qsTr("Add a device"); visible: qmltypeof(stackView.currentItem, "PcView"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+            UiButton { text: qsTr("Add a device"); visible: qmltypeof(stackView.currentItem, "PcView"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         }
     }
     Shortcut { sequences: [StandardKey.New]; onActivated: navigateTo("qrc:/gui/BindView.qml", "BindView") }

@@ -6,10 +6,21 @@ import SystemProperties 1.0
 
 UiPage {
     objectName: qsTr("Settings")
-    heading: qsTr("Settle into your workspace.")
+    heading: qsTr("Your connection preferences.")
     description: qsTr("These preferences apply when you connect from this computer. Changes are saved automatically and take effect on your next connection.")
     function save() { StreamingPreferences.save() }
+    TabBar {
+        id: sections
+        objectName: "settingsSections"
+        Layout.fillWidth: true
+        Repeater {
+            model: [qsTr("Picture"), qsTr("Input"), qsTr("Sound"), qsTr("Connections"), qsTr("Advanced")]
+            TabButton { text: modelData }
+        }
+    }
     UiCard {
+        visible: sections.currentIndex === 0
+
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Picture"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
@@ -47,6 +58,8 @@ UiPage {
         }
     }
     UiCard {
+        visible: sections.currentIndex === 1
+
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Keyboard & pointer"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
@@ -58,6 +71,8 @@ UiPage {
         }
     }
     UiCard {
+        visible: sections.currentIndex === 2
+
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Sound"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
@@ -66,24 +81,28 @@ UiPage {
         }
     }
     UiCard {
+        visible: sections.currentIndex === 3
+
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Connections"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Switch { text: qsTr("Discover nearby devices"); checked: StreamingPreferences.enableMdns; onClicked: { StreamingPreferences.enableMdns=checked; save() } }
             Switch { text: qsTr("Keep this computer awake while connected"); checked: StreamingPreferences.keepAwake; onClicked: { StreamingPreferences.keepAwake=checked; save() } }
-            Button { text: qsTr("Manage saved access"); onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+            UiButton { text: qsTr("Manage saved access"); onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         }
     }
     UiCard {
+        visible: sections.currentIndex === 4
+
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Advanced & support"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Label { text: qsTr("Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             RowLayout {
-                Button { text: qsTr("Advanced settings"); onClicked: navigateTo("qrc:/gui/SettingsView.qml", "SettingsView") }
-                Button { text: qsTr("Permission guide"); onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
+                UiButton { text: qsTr("Advanced settings"); onClicked: navigateTo("qrc:/gui/SettingsView.qml", "SettingsView") }
+                UiButton { text: qsTr("Permission guide"); onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
             }
-            Button { text: qsTr("Report a problem"); visible: SystemProperties.hasBrowser; onClicked: Qt.openUrlExternally("https://github.com/keithxc/deskport/issues") }
+            UiButton { text: qsTr("Report a problem"); visible: SystemProperties.hasBrowser; onClicked: Qt.openUrlExternally("https://github.com/keithxc/deskport/issues") }
         }
     }
 }

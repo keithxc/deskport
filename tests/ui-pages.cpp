@@ -65,6 +65,12 @@ QtObject {
                 QCOMPARE(prefs->property("width").toInt(),2560);
                 QCOMPARE(prefs->property("height").toInt(),1440);
                 QCOMPARE(prefs->property("saves").toInt(),1);
+                QObject* sections=page->findChild<QObject*>("settingsSections"); QVERIFY(sections);
+                for(int section=1; section<5; ++section) {
+                    QVERIFY(sections->setProperty("currentIndex",section)); QTest::qWait(20);
+                    QCOMPARE(prefs->property("saves").toInt(),1);
+                    QVERIFY(page->property("contentHeight").toReal() > 0);
+                }
             }
         }
         const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign"));

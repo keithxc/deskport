@@ -7,8 +7,8 @@ import subprocess
 import sys
 import tempfile
 
-if sys.platform != "darwin":
-    raise SystemExit("This native host lifecycle harness currently requires macOS and Qt.")
+if sys.platform != "darwin" and "--ui" not in sys.argv:
+    raise SystemExit("Host lifecycle tests require macOS; --ui also supports Linux.")
 root = Path(__file__).resolve().parents[1]
 qmake = os.environ.get("DESKPORT_QMAKE", "qmake")
 with tempfile.TemporaryDirectory(prefix="deskport-lifecycle-") as temporary:
@@ -43,6 +43,14 @@ if mode == "stubborn": signal.signal(signal.SIGTERM, signal.SIG_IGN)
 (state / "host-started").touch()
 while True: time.sleep(1)
 ''')
+    if sys.platform != "darwin":
+        linux_host = work / "Contents/libexec/deskport-host"
+        linux_host.parent.mkdir(parents=True)
+        linux_host.write_text(host.read_text())
+        linux_host.chmod(0o700)
+    icons = ["deskport.svg", "deskport-tray-black.svg", "deskport-tray-white.svg"]
+    (work / "test-resources.qrc").write_text('<RCC><qresource prefix="/res">' + ''.join(
+        f'<file alias="{name}">{root}/app/res/{name}</file>' for name in icons) + '</qresource></RCC>')
     for executable in (display, host):
         executable.chmod(0o700)
     binding = "--binding" in sys.argv or "--ui" in sys.argv
@@ -58,8 +66,11 @@ DESTDIR = "{macos}"
 SOURCES += "{root}/tests/{suite}.cpp" "{root}/app/backend/hostmanager.cpp" "{root}/app/backend/nvaddress.cpp" {extra_sources}
 HEADERS += "{root}/app/backend/hostmanager.h" {extra_headers}
 INCLUDEPATH += "{root}/app/backend"
-OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm"
-LIBS += -framework CoreGraphics -framework AVFoundation -framework ApplicationServices
+RESOURCES += "{work}/test-resources.qrc"
+macx {{
+    OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm"
+    LIBS += -framework CoreGraphics -framework AVFoundation -framework ApplicationServices
+}}
 ''')
     environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_CONTROLS_STYLE="Material")
     if binding:

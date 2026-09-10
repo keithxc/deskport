@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 UiPage {
     id: page
     objectName: qsTr("Getting started")
-    heading: qsTr("Make yourself at home.")
+    heading: qsTr("Set up this computer.")
     description: qsTr("Connect to another computer right away. To share this one, review its permissions below.")
     function stateText(state) {
         if (state === "allowed") return qsTr("Allowed")
@@ -20,6 +20,7 @@ UiPage {
         ColumnLayout {
             anchors.fill: parent; spacing: 10
             Label { text: hostManager.deviceName; textFormat: Text.PlainText; font.pixelSize: 21; font.weight: Font.DemiBold; color: ui.text }
+            UiButton { text: qsTr("Skip for now · only connect to other devices"); flat: true; onClicked: { hostManager.completeSetup(); showDevices() } }
             Label { text: qsTr("1. Review permissions    2. Add a device    3. Confirm and connect"); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
@@ -34,7 +35,7 @@ UiPage {
                     Label { text: page.stateText(modelData.state); color: modelData.state === "allowed" ? ui.accent : ui.warning; font.pixelSize: 12 }
                 }
                 Label { text: modelData.purpose; color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-                Button { visible: Qt.platform.os === "osx"; text: qsTr("Open system settings"); onClicked: hostManager.permission(modelData.key) }
+                UiButton { visible: Qt.platform.os === "osx"; text: qsTr("Open system settings"); onClicked: hostManager.permission(modelData.key) }
                 Label { visible: Qt.platform.os === "linux" && modelData.state === "needsSetup"; text: qsTr("Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             }
         }
@@ -61,14 +62,14 @@ UiPage {
                 }
                 MouseArea { id: dragArea; anchors.fill: parent; drag.target: dragProxy; cursorShape: Qt.OpenHandCursor }
             }
-            Button { text: qsTr("Reveal in Finder"); onClicked: hostManager.revealApplication() }
+            UiButton { text: qsTr("Reveal in Finder"); onClicked: hostManager.revealApplication() }
             Label { text: qsTr("After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
     RowLayout {
         Layout.fillWidth: true
-        Button { text: qsTr("Check again"); onClicked: hostManager.refreshPermissions() }
+        UiButton { text: qsTr("Check again"); onClicked: hostManager.refreshPermissions() }
         Item { Layout.fillWidth: true }
-        Button { text: qsTr("Continue to devices"); highlighted: true; onClicked: { hostManager.completeSetup(); showDevices() } }
+        UiButton { text: qsTr("Continue to devices"); highlighted: true; onClicked: { hostManager.completeSetup(); showDevices() } }
     }
 }

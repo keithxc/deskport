@@ -27,6 +27,6 @@ Rectangle {
         Label { text: deviceName; textFormat: Text.PlainText; font.pixelSize: 21; font.weight: Font.DemiBold; color: ui.text; elide: Text.ElideRight; Layout.fillWidth: true }
         Label { text: address.length ? address : qsTr("Looking for an address"); textFormat: Text.PlainText; color: ui.muted; elide: Text.ElideMiddle; Layout.fillWidth: true; font.pixelSize: 12 }
         Rectangle { height: 1; color: ui.line; Layout.fillWidth: true }
-        Label { text: unknown ? qsTr("Checking connection…") : !online ? qsTr("Open DeskPort on this device") : paired ? qsTr("Connect to desktop  →") : qsTr("Set up access  →"); color: online ? ui.accent : ui.muted; font.pixelSize: 13 }
+        Label { text: unknown ? qsTr("Checking connection…") : !online ? qsTr("Unavailable · check device or network") : paired ? qsTr("Connect to desktop  →") : qsTr("Set up access  →"); color: online ? ui.accent : ui.muted; font.pixelSize: 13 }
     }
 }

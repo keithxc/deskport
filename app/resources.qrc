@@ -4,6 +4,7 @@
 <file>gui/UiTheme.qml</file>
 <file>gui/UiPage.qml</file>
 <file>gui/UiCard.qml</file>
+<file>gui/UiButton.qml</file>
 <file>gui/DeviceCard.qml</file>
 <file>gui/SetupView.qml</file>
 <file>gui/SettingsHome.qml</file>

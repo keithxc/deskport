@@ -14,8 +14,8 @@ Dialog {
     width: Math.max(280, Math.min(appWindow.width - 40, 540))
     closePolicy: Popup.NoAutoClose
     footer: DialogButtonBox {
-        Button { text: qsTr("Not now"); DialogButtonBox.buttonRole: DialogButtonBox.RejectRole }
-        Button { text: qsTr("Allow & bind"); highlighted: true; DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole }
+        UiButton { text: qsTr("Not now"); DialogButtonBox.buttonRole: DialogButtonBox.RejectRole }
+        UiButton { text: qsTr("Allow & bind"); highlighted: true; DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole }
     }
     onAccepted: manager.approve(transaction)
     onRejected: manager.reject(transaction)
