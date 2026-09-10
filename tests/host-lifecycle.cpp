@@ -3,11 +3,19 @@
 #include <QElapsedTimer>
 #include "hostmanager.h"
 #include "nvaddress.h"
+#include "localhostfilter.h"
 
 class HostLifecycle : public QObject {
     Q_OBJECT
 private slots:
     void init() { qputenv("DESKPORT_TEST_MODE", "normal"); }
+    void localHostsAreFilteredWithoutMatchingNamesOrSubnets() {
+        const QList<QHostAddress> local{QHostAddress("192.0.2.10"), QHostAddress("2001:db8::10")};
+        for (const QString& value : {"127.0.0.1", "127.0.0.2", "::1", "192.0.2.10", "::ffff:192.0.2.10", "2001:db8::10"})
+            QVERIFY(DeskPortNetwork::isLocalHostAddress(value, local));
+        for (const QString& value : {"", "0.0.0.0", "::", "DeskPort", "192.0.2.11", "2001:db8::11"})
+            QVERIFY(!DeskPortNetwork::isLocalHostAddress(value, local));
+    }
     void manualAddressesKeepServicesSeparate() {
         QCOMPARE(NvAddress::fromUserInput("203.0.113.10").port(), quint16(48989));
         QCOMPARE(NvAddress::fromUserInput("203.0.113.10:47989").port(), quint16(47989));

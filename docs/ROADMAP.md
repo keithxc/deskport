@@ -114,8 +114,10 @@ retention still need live acceptance; native Sunshine permissions remain untouch
   Observed repeated missing host state before pairing and multiple saved UUIDs
   pointing to the same local endpoint. After pairing, the persisted UUID matches
   serverinfo. Verify ten restarts, including unpaired starts, without new entries.
-- [ ] Avoid automatically listing the bundled local host as a remote computer.
-  Distinguish same-name devices by address and status; offer explicit removal of
+- [x] Filter local loopback/interface addresses from discovery and the displayed
+  saved-host list, preserving saved records and pairing data. Ignore local mDNS
+  before querying or persisting new identities; do not match by name or subnet.
+- [ ] Distinguish same-name devices by address and status; offer explicit removal of
   stale entries without deleting pairing data for another device. Never merge
   identities solely by display name or host address, since services can coexist.
 

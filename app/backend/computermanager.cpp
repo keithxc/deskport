@@ -1,4 +1,5 @@
 #include "computermanager.h"
+#include "localhostfilter.h"
 #include "boxartmanager.h"
 #include "nvhttp.h"
 #include "nvpairingmanager.h"
@@ -473,6 +474,13 @@ QVector<NvComputer*> ComputerManager::getComputers()
 
     // Return a sorted host list
     auto hosts = QVector<NvComputer*>::fromList(m_KnownHosts.values());
+    const auto interfaces = QNetworkInterface::allAddresses();
+    hosts.erase(std::remove_if(hosts.begin(), hosts.end(), [&](NvComputer* host) {
+        QReadLocker hostLock(&host->lock);
+        return DeskPortNetwork::isLocalHostAddress(host->localAddress.address(), interfaces) ||
+               DeskPortNetwork::isLocalHostAddress(host->manualAddress.address(), interfaces) ||
+               DeskPortNetwork::isLocalHostAddress(host->ipv6Address.address(), interfaces);
+    }), hosts.end());
     std::stable_sort(hosts.begin(), hosts.end(), [](const NvComputer* host1, const NvComputer* host2) {
         return host1->name.toLower() < host2->name.toLower();
     });
@@ -802,6 +810,8 @@ private:
 
     void run()
     {
+        // Ignore our own mDNS advertisements before probing or saving another UUID.
+        if (m_Mdns && DeskPortNetwork::isLocalHostAddress(m_Address.address())) return;
         NvHTTP http(m_Address, 0, QSslCertificate());
 
         qInfo() << "Processing new PC at" << m_Address.toString() << "from" << (m_Mdns ? "mDNS" : "user") << "with IPv6 address" << m_MdnsIpv6Address.toString();
