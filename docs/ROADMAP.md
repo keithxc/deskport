@@ -100,6 +100,29 @@ dependency verification; the Linux Nix build and isolated CLI smoke check passed
 Capture, audio and future-update grant
 retention still need live acceptance; native Sunshine permissions remain untouched.
 
+## TODO: first-run permissions and device identity (2026-09-10)
+
+- [ ] Add a macOS onboarding guide covering Screen & System Audio Recording,
+  Accessibility (keyboard/mouse control), and Microphone/audio input when required.
+  Explain why each is needed and show actual readiness separately from pairing.
+  Open the corresponding System Settings page and provide a draggable reference
+  to the installed outer DeskPort.app, plus Reveal in Finder as a fallback. Verify
+  which settings panes accept dropping an app; do not promise unsupported OS UI.
+  Permission grants remain explicit user actions. Explain relaunch requirements
+  and stale grants after migrating from ad-hoc signing; preserve native Sunshine.
+- [ ] Keep the host identity stable before first pairing and across restarts/updates.
+  Observed repeated missing host state before pairing and multiple saved UUIDs
+  pointing to the same local endpoint. After pairing, the persisted UUID matches
+  serverinfo. Verify ten restarts, including unpaired starts, without new entries.
+- [ ] Avoid automatically listing the bundled local host as a remote computer.
+  Distinguish same-name devices by address and status; offer explicit removal of
+  stale entries without deleting pairing data for another device. Never merge
+  identities solely by display name or host address, since services can coexist.
+
+Live checkpoint: user confirmed picture output; host logs show an active HEVC
+session. Accessibility previously failed its saved code requirement; user reports
+reauthorizing it, but pointer movement and click delivery still need acceptance.
+
 ## Next action: persistent-session prototype
 
 1. Diagnose input with the unchanged Moonlight/Sunshine path, including host
