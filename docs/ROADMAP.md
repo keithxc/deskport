@@ -125,6 +125,16 @@ Live checkpoint: user confirmed picture output; host logs show an active HEVC
 session. Accessibility previously failed its saved code requirement; user reports
 reauthorizing it, but pointer movement and click delivery still need acceptance.
 
+## Mutual binding preview (2026-09-10)
+
+The next preview implements IP/domain initiation plus one recipient confirmation,
+TLS certificate exchange, both-direction local trust provisioning and automatic
+remote device entries. Linux hosting is included with KWin/portal capture of the
+existing desktop. See [the binding protocol and acceptance checks](PEER_BINDING.md).
+PIN pairing remains available for legacy clients. Interrupted grants are visible;
+local revocation is available, while coordinated remote revocation remains pending.
+Live both-direction picture/input acceptance is still required.
+
 ## Next action: one-interaction mutual pairing (2026-09-10)
 
 User priority: after one pairing interaction, both computers should list each

@@ -227,6 +227,7 @@ public:
     Q_INVOKABLE void stopPollingAsync();
 
     Q_INVOKABLE void addNewHostManually(QString address);
+    Q_INVOKABLE bool addBoundHost(QVariantMap peer);
 
     void addNewHost(NvAddress address, bool mdns, NvAddress mdnsIpv6Address = NvAddress());
 

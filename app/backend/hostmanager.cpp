@@ -1,4 +1,6 @@
 #include "hostmanager.h"
+#include "peerstore.h"
+#include <QElapsedTimer>
 #include <algorithm>
 #include <QSslError>
 #include <QSslCertificate>
@@ -108,8 +110,8 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     m_Tray.setIcon(QIcon(":/res/deskport.svg"));
     m_Tray.setToolTip("DeskPort");
     if (available() && !m_Isolated) m_Tray.show();
-    connect(qApp, &QCoreApplication::aboutToQuit, this, &HostManager::stop);
-    if (directory.isEmpty() && available() && loginStart() &&
+    connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { beginStop(tr("Sharing is off")); });
+    if (directory.isEmpty() && available() && (loginStart() || QSettings().value("host/shareOnLaunch", false).toBool()) &&
             !QCoreApplication::arguments().contains("--no-host-autostart")) {
         QTimer::singleShot(0, this, [this] {
             QSettings settings;
@@ -120,7 +122,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
 HostManager::~HostManager() {
     // The event loop may already be gone during application shutdown. Normal UI
     // stops are asynchronous; only destruction waits for our own child processes.
-    stop();
+    beginStop(tr("Sharing is off"));
     for (auto process : {&m_Credentials, &m_Server, &m_Display}) {
         process->disconnect(this);
         if (process == &m_Display) process->closeWriteChannel();
@@ -131,10 +133,18 @@ HostManager::~HostManager() {
     delete m_Tray.contextMenu();
 }
 QString HostManager::helperPath() const { return QCoreApplication::applicationDirPath() + "/../Helpers/deskport-display"; }
-QString HostManager::serverPath() const { return QCoreApplication::applicationDirPath() + "/../Helpers/Sunshine.app/Contents/MacOS/Sunshine"; }
+QString HostManager::serverPath() const {
+#ifdef Q_OS_LINUX
+    return QCoreApplication::applicationDirPath() + "/../libexec/deskport-host";
+#else
+    return QCoreApplication::applicationDirPath() + "/../Helpers/Sunshine.app/Contents/MacOS/Sunshine";
+#endif
+}
 bool HostManager::available() const {
 #ifdef Q_OS_MACOS
     return QFile::exists(helperPath()) && QFile::exists(serverPath());
+#elif defined(Q_OS_LINUX)
+    return QFile::exists(serverPath());
 #else
     return false;
 #endif
@@ -181,12 +191,18 @@ void HostManager::start(int width, int height) {
     if (!m_Isolated) {
         QSettings settings;
         settings.setValue("host/width", width); settings.setValue("host/height", height);
+        settings.setValue("host/shareOnLaunch", true);
     }
     m_Buffer.clear(); m_Starting = true; m_ServerRequested = false;
     const auto generation = ++m_Generation;
     m_Display.setStandardErrorFile(m_Directory + "/display.log", QIODevice::Append);
+#ifdef Q_OS_LINUX
+    setStatus(tr("Starting desktop sharing…"));
+    startServer(0);
+#else
     m_Display.start(helperPath(), {QString::number(width), QString::number(height)});
     setStatus(tr("Creating a private virtual display…"));
+#endif
     QTimer::singleShot(15000, this, [this, generation] {
         if (m_Starting && m_Generation == generation) { beginStop(tr("Host startup timed out; see logs")); }
     });
@@ -197,7 +213,17 @@ void HostManager::startServer(int displayId) {
     if (!config.open(QIODevice::WriteOnly)) { beginStop(tr("Cannot write host configuration")); return; }
     config.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
     config.write(QString("file_apps = %1/apps.json\nfile_state = %1/state.json\npkey = %1/credentials/key.pem\ncert = %1/credentials/cert.pem\ncredentials_file = %1/control.json\nlog_path = %1/sunshine.log\n").arg(m_Directory).toUtf8());
-    config.write(QString("sunshine_name = DeskPort\nport = %2\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\noutput_name = %1\norigin_web_ui_allowed = pc\n").arg(displayId).arg(m_BasePort).toUtf8());
+    config.write(QString("sunshine_name = DeskPort\nport = %1\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\norigin_web_ui_allowed = pc\n").arg(m_BasePort).toUtf8());
+#ifdef Q_OS_MACOS
+    config.write(QString("output_name = %1\n").arg(displayId).toUtf8());
+#else
+    Q_UNUSED(displayId);
+#endif
+#ifdef Q_OS_LINUX
+    // Capture the existing desktop; Linux virtual displays are a separate milestone.
+    config.write("output_name = \n");
+    config.write(qgetenv("XDG_CURRENT_DESKTOP").contains("KDE") ? "capture = kwin\n" : "capture = portal\n");
+#endif
     if (!config.commit()) { beginStop(tr("Cannot save host configuration")); return; }
     m_Credentials.setWorkingDirectory(m_Directory);
     m_Credentials.setStandardOutputFile(QProcess::nullDevice());
@@ -210,6 +236,7 @@ void HostManager::startServer(int displayId) {
     });
 }
 void HostManager::stop() {
+    if (!m_Isolated) QSettings().setValue("host/shareOnLaunch", false);
     beginStop(available() ? tr("Sharing is off") : tr("Hosting is available in the macOS all-in-one package"));
 }
 void HostManager::beginStop(const QString &status) {
@@ -331,7 +358,77 @@ void HostManager::setLoginStart(bool enabled) {
     }
     QSettings().setValue("host/startAtLogin", enabled);
     emit changed();
+#elif defined(Q_OS_LINUX)
+    const QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/autostart/io.github.keithxc.DeskPort.desktop";
+    if (enabled) {
+        QDir().mkpath(QFileInfo(path).absolutePath());
+        QString executable = QCoreApplication::applicationDirPath() + "/deskport";
+        executable.replace("\\", "\\\\").replace("\"", "\\\"").replace("`", "\\`").replace("$", "\\$");
+        QSaveFile file(path);
+        if (!file.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot install login startup")); return; }
+        file.write(QString("[Desktop Entry]\nType=Application\nName=DeskPort\nExec=\"%1\"\nTerminal=false\n").arg(executable).toUtf8());
+        if (!file.commit()) { setStatus(tr("Cannot save login startup")); return; }
+    } else if (QFile::exists(path) && !QFile::remove(path)) {
+        setStatus(tr("Cannot remove login startup")); return;
+    }
+    QSettings().setValue("host/startAtLogin", enabled); emit changed();
 #else
     Q_UNUSED(enabled);
 #endif
+}
+
+bool HostManager::prepareIdentity(const QByteArray& certificate, const QByteArray& key) {
+    if (running() || !QDir().mkpath(m_Directory + "/credentials")) return false;
+    QLockFile lock(m_Directory + "/instance.lock"); lock.setStaleLockTime(0);
+    if (!lock.tryLock(0)) return false;
+    QFile::setPermissions(m_Directory, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
+    if (QFile::exists(m_Directory + "/credentials/cert.pem") != QFile::exists(m_Directory + "/credentials/key.pem")) return false;
+    for (const auto& entry : {qMakePair(QString("cert.pem"), certificate), qMakePair(QString("key.pem"), key)}) {
+        const QString path = m_Directory + "/credentials/" + entry.first;
+        if (QFile::exists(path)) continue;
+        QSaveFile file(path);
+        if (!file.open(QIODevice::WriteOnly)) return false;
+        file.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
+        if (file.write(entry.second) != entry.second.size() || !file.commit()) return false;
+    }
+    bool ok;
+    auto state = PeerStore::read(m_Directory + "/state.json", &ok);
+    if (!ok) return false;
+    auto root = state["root"].toObject();
+    if (root["uniqueid"].toString().isEmpty()) {
+        root["uniqueid"] = QUuid::createUuid().toString(QUuid::WithoutBraces).toUpper();
+        root["named_devices"] = QJsonArray();
+        state["root"] = root;
+        if (!PeerStore::write(m_Directory + "/state.json", state)) return false;
+    }
+    return !identity()["hostCert"].toString().isEmpty();
+}
+QJsonObject HostManager::identity() const {
+    const auto certs = QSslCertificate::fromPath(m_Directory + "/credentials/cert.pem");
+    return {{"hostId", PeerStore::read(m_Directory + "/state.json")["root"].toObject()["uniqueid"]},
+            {"hostPort", m_BasePort}, {"hostCert", certs.isEmpty() ? QString() : QString::fromUtf8(certs.first().toPem())}};
+}
+void HostManager::updatePeerTrust(const QString& id, const QString& name, const QSslCertificate& certificate, bool remove) {
+    if (m_TrustBusy) { emit trustUpdated(false); return; }
+    m_TrustBusy = true;
+    const bool restart = running();
+    stop();
+    auto timer = new QTimer(this);
+    auto elapsed = std::make_shared<QElapsedTimer>(); elapsed->start();
+    connect(timer, &QTimer::timeout, this, [=] {
+        if (running() && elapsed->elapsed() < 7000) return;
+        timer->stop(); timer->deleteLater();
+        bool ok = false;
+        if (!running()) {
+            QLockFile lock(m_Directory + "/instance.lock"); lock.setStaleLockTime(0);
+            if (lock.tryLock(0)) ok = PeerStore::trust(m_Directory + "/state.json", id, name, certificate, remove);
+        }
+        m_TrustBusy = false;
+        if (restart) {
+            QSettings settings;
+            start(settings.value("host/width", 2560).toInt(), settings.value("host/height", 1440).toInt());
+        }
+        emit trustUpdated(ok);
+    });
+    timer->start(50);
 }

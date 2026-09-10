@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QTcpServer>
 #include "backend/hostmanager.h"
+#include "backend/peermanager.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
@@ -750,11 +751,13 @@ int main(int argc, char *argv[])
     }
 
     HostManager hostManager;
+    PeerManager peerManager(&hostManager, IdentityManager::get()->getCertificate(), IdentityManager::get()->getPrivateKey());
     if (app.arguments().contains("--share")) {
         QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });
     }
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
+    engine.rootContext()->setContextProperty("peerManager", &peerManager);
     QString initialView;
     bool hasGUI = true;
 

@@ -26,6 +26,7 @@ ApplicationWindow {
     height: 600
 
     Component.onCompleted: {
+        peerManager.restoreHosts()
         // Override the background color to Material 2 colors for Qt 6.5+
         // in order to improve contrast between GFE's placeholder box art
         // and the background of the app grid.
@@ -204,6 +205,39 @@ ApplicationWindow {
         else {
             // Create a new item
             stackView.push(url)
+        }
+    }
+
+    Connections {
+        target: peerManager
+        function onPeerBound(peer) { ComputerManager.addBoundHost(peer) }
+        function onIncomingRequest() {
+            bindingApproval.transaction = peerManager.requestId
+            bindingApproval.peerText = peerManager.pendingName
+            window.show(); window.raise(); window.requestActivate()
+            bindingApproval.open()
+        }
+        function onChanged() {
+            if (bindingApproval.visible && peerManager.requestId !== bindingApproval.transaction)
+                bindingApproval.close()
+        }
+    }
+    Dialog {
+        id: bindingApproval
+        property string transaction: ""
+        property string peerText: ""
+        title: qsTr("Allow mutual desktop access?")
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(window.width - 40, 540)
+        closePolicy: Popup.NoAutoClose
+        standardButtons: Dialog.Yes | Dialog.No
+        onAccepted: peerManager.approve(transaction)
+        onRejected: peerManager.reject(transaction)
+        contentItem: Label {
+            textFormat: Text.PlainText
+            text: bindingApproval.peerText + "\n\n" + qsTr("Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.")
+            wrapMode: Text.WordWrap
         }
     }
 
@@ -393,6 +427,11 @@ ApplicationWindow {
                 Keys.onDownPressed: {
                     stackView.currentItem.forceActiveFocus(Qt.TabFocus)
                 }
+            }
+
+            Button {
+                text: qsTr("Bind device")
+                onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView")
             }
 
             Button {

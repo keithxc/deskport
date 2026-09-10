@@ -25,16 +25,16 @@ ScrollView {
         }
         CheckBox {
             Layout.leftMargin: 20
-            text: qsTr("Start sharing when I log in to this Mac")
+            text: qsTr("Start sharing when I log in")
             enabled: hostManager.available
             checked: hostManager.loginStart
             onClicked: hostManager.setLoginStart(checked)
         }
-        Label { text: qsTr("First-time macOS permissions"); font.pixelSize: 20; Layout.leftMargin: 20 }
+        Label { visible: Qt.platform.os === "osx"; text: qsTr("First-time macOS permissions"); font.pixelSize: 20; Layout.leftMargin: 20 }
         RowLayout {
             Layout.leftMargin: 20
-            Button { text: qsTr("Screen recording"); onClicked: hostManager.permission("screen") }
-            Button { text: qsTr("Keyboard & mouse"); onClicked: hostManager.permission("input") }
+            Button { visible: Qt.platform.os === "osx"; text: qsTr("Screen recording"); onClicked: hostManager.permission("screen") }
+            Button { visible: Qt.platform.os === "osx"; text: qsTr("Keyboard & mouse"); onClicked: hostManager.permission("input") }
             Button { text: qsTr("Host logs"); onClicked: hostManager.openLogs() }
         }
         Label { text: qsTr("Pair a connecting device"); font.pixelSize: 20; Layout.leftMargin: 20 }

@@ -10,6 +10,10 @@ v2026.906.222525 by LizardByte. Its source, dependency gitlinks and build instru
 https://github.com/LizardByte/Sunshine/tree/v2026.906.222525
 Sunshine retains its own license files, notices and application identity.
 
+The Linux Nix package references Sunshine 2026.516.143833 from the locked nixpkgs
+revision as a separate runtime dependency. Upstream source:
+https://github.com/LizardByte/Sunshine/tree/v2026.516.143833
+
 Qt is deployed as dynamically linked frameworks from the build environment. Qt
 source and licensing: https://www.qt.io/licensing/open-source-lgpl-obligations
 SDL, FFmpeg, OpenSSL, Opus and other Moonlight dependencies retain upstream notices

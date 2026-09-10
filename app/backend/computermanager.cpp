@@ -987,3 +987,37 @@ QString ComputerManager::generatePinString()
 }
 
 #include "computermanager.moc"
+
+bool ComputerManager::addBoundHost(QVariantMap peer) {
+    const QString uuid = peer.value("hostId").toString();
+    const QString address = peer.value("address").toString();
+    const int port = peer.value("hostPort").toInt();
+    const QSslCertificate certificate(peer.value("hostCert").toString().toUtf8());
+    if (uuid.isEmpty() || QHostAddress(address).isNull() || port < 1024 || port > 65514 || certificate.isNull()) return false;
+    NvComputer* host;
+    {
+        QWriteLocker lock(&m_Lock);
+        host = m_KnownHosts.value(uuid);
+        if (host) {
+            QWriteLocker hostLock(&host->lock);
+            // A binding must not silently replace an unrelated pinned host identity.
+            if (!host->serverCert.isNull() && host->serverCert != certificate) return false;
+            host->manualAddress = NvAddress(address, quint16(port));
+            host->name = peer.value("name").toString(); host->hasCustomName = true;
+            host->serverCert = certificate;
+        } else {
+            host = new NvComputer();
+            host->name = peer.value("name").toString(); host->hasCustomName = true; host->uuid = uuid;
+            host->manualAddress = NvAddress(address, quint16(port));
+            host->serverCert = certificate;
+            host->state = NvComputer::CS_UNKNOWN; host->pairState = NvComputer::PS_UNKNOWN;
+            host->isSupportedServerVersion = true; host->externalPort = quint16(port);
+            host->activeHttpsPort = quint16(port - 5);
+            m_KnownHosts[uuid] = host;
+            startPollingComputer(host);
+        }
+    }
+    saveHost(host);
+    emit computerStateChanged(host);
+    return true;
+}

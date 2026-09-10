@@ -42,6 +42,10 @@
               cp -R --no-preserve=mode ${upstream}/"$dependency"/. "$sourceRoot/$dependency/"
             done
           '';
+          postInstall = (old.postInstall or "") + ''
+            mkdir -p "$out/libexec"
+            ln -s ${pkgs.sunshine}/bin/sunshine "$out/libexec/deskport-host"
+          '';
           meta = old.meta // {
             description = "Experimental remote desktop development client based on Moonlight";
             homepage = "https://github.com/keithxc/deskport";
