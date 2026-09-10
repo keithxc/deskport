@@ -22,6 +22,10 @@ On another client, add the Mac's reachable address with port `48989` (for exampl
 in DeskPort's sharing page. Pairing stays saved. This preview pairs each direction separately; unified
 mutual pairing is not implemented yet.
 
+Starting authentication and stopping sharing run asynchronously. If either host
+component exits, DeskPort cleans up its own child processes and allows retry.
+A running-host message does not establish capture or input permission readiness.
+
 Closing the window while sharing hides it. Use DeskPort's tray menu to reopen it,
 stop sharing, or quit. Enable **Start sharing when I log in to this Mac** after
 installing in `/Applications/DeskPort.app` to register the user login launcher.
@@ -83,3 +87,14 @@ not pair, capture screenshots or inject input. Port 48989 must be free. Passing
 this test does not establish remote input, unattended reboot or long-session quality.
 
 `DeskPort --share` opens the sharing page and starts the default virtual display.
+
+## Safe development validation
+
+Run `python3 scripts/test-host-lifecycle.py` with native Qt available to exercise
+startup cancellation, failure cleanup, retries and forced termination. This harness
+uses fake helper/host executables and temporary state; it does not create a virtual
+display, open a port, pair a device or affect a separately installed Sunshine.
+
+Do not replace an application currently providing remote access during testing.
+Validate development packages separately, and request local permission/stream
+checks before creating displays or starting the bundled host on an active desktop.

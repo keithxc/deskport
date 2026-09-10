@@ -13,7 +13,7 @@ config.tests/*/Makefile
 *.pem
 *.key
 
-/build-macos/
-/dist/
+/build-macos
+/dist
 /build-macos.noindex/
 /dist.noindex/

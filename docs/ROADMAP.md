@@ -43,6 +43,29 @@ reverse-platform hosting, reboot behavior and public distribution signing. A dis
 helper command acknowledgment is not proof of a changed physical display mode.
 Live mode switching did not pass the first physical-mode check and remains pending. See MACOS_PACKAGE.md.
 
+## Host lifecycle reliability (2026-09-10)
+
+The macOS development preview now initializes host authentication asynchronously
+and stops its child processes without blocking the UI. Unexpected host/display
+exits clean up the other component and allow retry. Stop cancels pending startup;
+late pairing replies cannot overwrite a newer session's status. The pairing button
+is disabled during startup and cleanup. A running process is explicitly not a
+claim that capture permissions or remote input have been verified.
+
+Native regression harness: `python3 scripts/test-host-lifecycle.py` uses temporary
+state and fake child processes, without network listeners, display changes or input.
+Existing separately installed Sunshine services are not modified or stopped.
+Eight native lifecycle scenarios passed, including display failure while hosting
+and authentication timeout. Simultaneous process error/exit notifications preserve
+the original failure instead of replacing it with the cleanup process's exit.
+
+Validation on 2026-09-10 also passed native macOS packaging/signature and linked
+library checks, packaged CLI startup, and a Linux Nix build plus isolated CLI smoke
+check. These checks do not establish real capture, input or permission readiness.
+
+Next acceptance: validate the new package's permissions and incoming stream in a
+user-approved test window. Keep the existing remote-access path available throughout.
+
 ## Next action: persistent-session prototype
 
 1. Diagnose input with the unchanged Moonlight/Sunshine path, including host

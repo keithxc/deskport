@@ -46,7 +46,7 @@ ScrollView {
             Layout.leftMargin: 20
             TextField { id: peer; placeholderText: qsTr("Device name"); maximumLength: 64 }
             TextField { id: pin; placeholderText: qsTr("Four-digit PIN"); maximumLength: 4; echoMode: TextInput.Password }
-            Button { text: qsTr("Pair"); enabled: hostManager.running; onClicked: { hostManager.pair(pin.text, peer.text); pin.clear() } }
+            Button { text: qsTr("Pair"); enabled: hostManager.canPair; onClicked: { hostManager.pair(pin.text, peer.text); pin.clear() } }
         }
         Label {
             text: qsTr("Preview: select a fixed display size before sharing. Live window-size adaptation is not implemented yet.")
