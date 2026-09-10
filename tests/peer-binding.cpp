@@ -2,6 +2,10 @@
 #include <QTemporaryDir>
 #include <QSignalSpy>
 #include <QSslSocket>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQuickWindow>
+#include <QQuickItem>
 #include "peermanager.h"
 #include "peerstore.h"
 
@@ -11,6 +15,26 @@ static QByteArray credential(const char* name) {
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void actualApprovalDialogOpensAndClosesWithRequest() {
+        QTemporaryDir dir;
+        HostManager ah(nullptr,dir.path()+"/ah"),bh(nullptr,dir.path()+"/bh");
+        PeerManager a(&ah,credential("TEST_CERT_A"),credential("TEST_KEY_A"),dir.path()+"/ab",0,QHostAddress::LocalHost);
+        PeerManager b(&bh,credential("TEST_CERT_B"),credential("TEST_KEY_B"),dir.path()+"/bb",0,QHostAddress::LocalHost);
+        QQmlEngine engine;
+        QQuickWindow window;
+        QQmlComponent component(&engine,QUrl::fromLocalFile(qEnvironmentVariable("TEST_BINDING_QML")));
+        QVERIFY2(component.isReady(),qPrintable(component.errorString()));
+        QScopedPointer<QObject> dialog(component.createWithInitialProperties({
+            {"manager",QVariant::fromValue(&b)}, {"appWindow",QVariant::fromValue(&window)},
+            {"parent",QVariant::fromValue(window.contentItem())}}));
+        QVERIFY2(dialog,qPrintable(component.errorString()));
+        a.request(QString("127.0.0.1:%1").arg(b.port()));
+        QTRY_VERIFY_WITH_TIMEOUT(dialog->property("visible").toBool(),5000);
+        QCOMPARE(dialog->property("transaction").toString(),b.requestId());
+        QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());
+        a.cancel();
+        QTRY_VERIFY(!dialog->property("visible").toBool());
+    }
     void trustPreservesExistingClientsAndRejectsBrokenState() {
         QTemporaryDir dir; const QString file = dir.path()+"/state.json";
         const QSslCertificate cert(credential("TEST_CERT_A"));

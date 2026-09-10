@@ -15,6 +15,14 @@ host roles, one explicit mutual-pairing flow and a shared device list. See
 The macOS preview bundles all three components and manages incoming PIN pairing.
 Reciprocal access through one mutual-pairing flow remains planned.
 
+## Binding delivery correction (2026-09-10)
+
+Binding requests now distinguish connecting from recipient acknowledgment. The
+approval dialog uses signal handlers compatible with the existing QtQuick import
+version, and its actual QML component is covered by an isolated request/cancel
+test. Discovery advertises the computer hostname instead of a fixed product name.
+Two-computer approval and reciprocal streaming remain a manual acceptance gate.
+
 ## Implemented in the bootstrap
 
 - Moonlight Qt v6.1.0 source and upstream Git ancestry.

@@ -210,36 +210,11 @@ ApplicationWindow {
 
     Connections {
         target: peerManager
-        function onPeerBound(peer) { ComputerManager.addBoundHost(peer) }
-        function onIncomingRequest() {
-            console.info("Binding: displaying approval dialog")
-            bindingApproval.transaction = peerManager.requestId
-            bindingApproval.peerText = peerManager.pendingName
-            bindingApproval.open()
-            window.show(); window.raise(); window.requestActivate()
-        }
-        function onChanged() {
-            if (bindingApproval.visible && peerManager.requestId !== bindingApproval.transaction)
-                bindingApproval.close()
-        }
+        onPeerBound: ComputerManager.addBoundHost(peer)
     }
-    Dialog {
-        id: bindingApproval
-        property string transaction: ""
-        property string peerText: ""
-        title: qsTr("Allow mutual desktop access?")
-        modal: true
-        anchors.centerIn: parent
-        width: Math.min(window.width - 40, 540)
-        closePolicy: Popup.NoAutoClose
-        standardButtons: Dialog.Yes | Dialog.No
-        onAccepted: peerManager.approve(transaction)
-        onRejected: peerManager.reject(transaction)
-        contentItem: Label {
-            textFormat: Text.PlainText
-            text: bindingApproval.peerText + "\n\n" + qsTr("Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.")
-            wrapMode: Text.WordWrap
-        }
+    BindingApproval {
+        manager: peerManager
+        appWindow: window
     }
 
     header: ToolBar {

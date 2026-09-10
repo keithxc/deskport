@@ -50,7 +50,7 @@ while True: time.sleep(1)
     extra_headers = f'"{root}/app/backend/peermanager.h"' if binding else ""
     suite = "peer-binding" if binding else "host-lifecycle"
     project = work / "tests.pro"
-    project.write_text(f'''QT += core gui widgets network testlib
+    project.write_text(f'''QT += core gui widgets network testlib qml quick quickcontrols2
 CONFIG += console c++17 testcase
 CONFIG -= app_bundle
 TARGET = host-lifecycle-tests
@@ -62,6 +62,7 @@ LIBS += -framework CoreGraphics
 ''')
     environment = dict(os.environ, QT_QPA_PLATFORM="offscreen")
     if binding:
+        environment["TEST_BINDING_QML"] = str(root / "app/gui/BindingApproval.qml")
         for name in ("A", "B", "C"):
             cert, key = work / f"{name}.pem", work / f"{name}.key"
             subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
