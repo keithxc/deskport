@@ -588,9 +588,9 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
     for (const auto& screen : m_ClientScreens) {
         if ((name && screen.name == QString::fromUtf8(name)) || screen.origin == QPoint(bounds.x, bounds.y)) {
             systemScale = screen.scale;
-            if (m_ClientWayland && qstrcmp(SDL_GetCurrentVideoDriver(), "x11") == 0) {
-                SDL_DisplayMode mode {};
-                if (SDL_GetCurrentDisplayMode(index, &mode) == 0)
+            if (m_ClientWayland) {
+                SDL_DisplayMode mode {}; SDL_Rect safeArea {};
+                if (StreamUtils::getNativeDesktopMode(index, &mode, &safeArea))
                     systemScale = DeskPortDisplay::scaleForOutput(QSize(mode.w, mode.h), screen.logicalSize, systemScale);
             }
             if (name && screen.name == QString::fromUtf8(name)) break;
@@ -599,7 +599,10 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
     scale = qMax(scale, systemScale);
     if (initialFullscreen) {
         SDL_DisplayMode mode; SDL_Rect safeArea;
-        if (StreamUtils::getNativeDesktopMode(index, &mode, &safeArea)) pixels = QSize(mode.w, mode.h);
+        if (StreamUtils::getNativeDesktopMode(index, &mode, &safeArea)) {
+            pixels = QSize(mode.w, mode.h);
+            scale = systemScale; // Native output pixels, not an oversampled window buffer.
+        }
     }
     const auto workspace = DeskPortDisplay::forClient(pixels, scale);
     if (initialFullscreen || window != m_Window)
