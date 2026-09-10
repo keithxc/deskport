@@ -1556,6 +1556,14 @@
         <source>Report a problem</source>
         <translation>Informar de un problema</translation>
     </message>
+    <message>
+        <source>Match the client window resolution</source>
+        <translation>Adaptar la resolución a la ventana del cliente</translation>
+    </message>
+    <message>
+        <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
+        <translation>Utiliza la pantalla virtual integrada de un Mac vinculado. Al cambiar el tamaño, la imagen se reconecta brevemente y las aplicaciones siguen abiertas. Los demás equipos usan la resolución de abajo.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1701,6 +1709,26 @@
     <message>
         <source>Open host logs</source>
         <translation>Abrir registros del anfitrión</translation>
+    </message>
+    <message>
+        <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
+        <translation>Integrada en DeskPort; no requiere BetterDisplay. Esta es la resolución en reposo. Un cliente autorizado puede ajustarla automáticamente durante la conexión.</translation>
+    </message>
+    <message>
+        <source>Built-in virtual display</source>
+        <translation>Pantalla virtual integrada</translation>
+    </message>
+    <message>
+        <source>Active · %1 × %2 pixels</source>
+        <translation>Activa · %1 × %2 píxeles</translation>
+    </message>
+    <message>
+        <source>Created automatically when sharing starts</source>
+        <translation>Se crea automáticamente al iniciar el uso compartido</translation>
+    </message>
+    <message>
+        <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
+        <translation>El espacio de trabajo remoto permanece abierto al ocultar la ventana del cliente. Tras desconectarse, la resolución vuelve al valor en reposo. Al dejar de compartir, se elimina esta pantalla virtual.</translation>
     </message>
 </context>
 <context>

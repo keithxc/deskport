@@ -1,4 +1,7 @@
 #include "session.h"
+#include "backend/peerstore.h"
+#include "backend/identitymanager.h"
+#include <QStandardPaths>
 #include "settings/streamingpreferences.h"
 #include "streaming/streamutils.h"
 #include "backend/richpresencemanager.h"
@@ -560,6 +563,95 @@ Session::Session(NvComputer* computer, NvApp& app, StreamingPreferences *prefere
 {
 }
 
+namespace {
+QSize windowPixels(SDL_Window* window) {
+    int width, height;
+#if SDL_VERSION_ATLEAST(2, 26, 0)
+    SDL_GetWindowSizeInPixels(window, &width, &height);
+#else
+    SDL_GL_GetDrawableSize(window, &width, &height);
+#endif
+    return QSize(width, height);
+}
+int windowScale(SDL_Window* window, const QSize& pixels) {
+    int width, height; SDL_GetWindowSize(window, &width, &height);
+    const QSize bounded = AdaptiveDisplay::boundedSize(pixels);
+    // WindowServer rejects some compact HiDPI modes despite advertising them.
+    // Keep the exact encoded pixel dimensions, using 1x for compact workspaces.
+    return width > 0 && pixels.width() >= width * 1.5 && bounded.width() >= 1920 && bounded.height() >= 1080 ? 2 : 1;
+}
+}
+Session* Session::adaptiveContinuation() {
+    if (!adaptiveRestartPending()) return nullptr;
+    auto next = new Session(m_Computer, m_App, m_Preferences);
+    next->m_AdaptiveDisplay = std::move(m_AdaptiveDisplay);
+    next->m_AdaptiveNextSize = m_AdaptiveNextSize;
+    next->m_AdaptiveGeometry = m_AdaptiveGeometry;
+    next->m_AdaptiveScale = m_AdaptiveScale;
+    next->m_IsFullScreen = m_IsFullScreen;
+    next->m_AdaptiveResume = true;
+    return next;
+}
+void Session::initializeAdaptiveDisplay(SDL_Window* window) {
+    if (!m_Preferences->adaptiveResolution) return;
+    if (!m_AdaptiveDisplay) {
+        const auto peers = PeerStore::read(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/binding/peers.json")["peers"].toObject();
+        for (const auto& value : peers) {
+            const auto peer = value.toObject();
+            if (peer["hostId"].toString().compare(m_Computer->uuid, Qt::CaseInsensitive) ||
+                !peer["ready"].toBool() || !peer["granted"].toBool()) continue;
+            const QSslCertificate certificate(peer["clientCert"].toString().toUtf8());
+            const int port = peer["bindingPort"].toInt();
+            if (certificate.isNull() || port < 1 || port > 65535) break;
+            auto identity = IdentityManager::get();
+            m_AdaptiveDisplay = std::make_shared<AdaptiveDisplay>(m_Computer->activeAddress.address(), quint16(port),
+                certificate, identity->getCertificate(), identity->getPrivateKey());
+            break;
+        }
+    }
+    if (!m_AdaptiveDisplay) return;
+    QSize pixels = windowPixels(window);
+    if (!m_AdaptiveResume) {
+        m_AdaptiveScale = windowScale(window, pixels);
+        if (m_IsFullScreen) {
+            SDL_DisplayMode mode; SDL_Rect safeArea;
+            if (StreamUtils::getNativeDesktopMode(SDL_GetWindowDisplayIndex(window), &mode, &safeArea)) pixels = QSize(mode.w, mode.h);
+        }
+    }
+    const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize : AdaptiveDisplay::boundedSize(pixels);
+    m_AdaptiveNextSize = {};
+    if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale)) {
+        m_StreamConfig.width = target.width(); m_StreamConfig.height = target.height();
+        qInfo() << "Adaptive display negotiated:" << target << "scale" << m_AdaptiveScale;
+    } else {
+        // Older/unavailable hosts retain normal fixed-resolution streaming.
+        // Disable adaptation for this session to avoid reconnect loops.
+        m_AdaptiveDisplay.reset();
+        qWarning() << "Using fixed-resolution streaming; adaptive display negotiation was unavailable";
+    }
+}
+bool Session::checkAdaptiveResize() {
+    if (!m_AdaptiveDisplay || m_UnexpectedTermination || (SDL_GetWindowFlags(m_Window) & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN))) return false;
+    const auto pixels = windowPixels(m_Window);
+    const auto size = AdaptiveDisplay::boundedSize(pixels);
+    const int scale = windowScale(m_Window, pixels);
+    if (!size.isValid()) return false;
+    if (size != m_AdaptiveObservedSize || scale != m_AdaptiveObservedScale) {
+        m_AdaptiveObservedSize = size; m_AdaptiveObservedScale = scale;
+        m_AdaptiveChangedAt = SDL_GetTicks(); return false;
+    }
+    if (size == QSize(m_StreamConfig.width, m_StreamConfig.height) && scale == m_AdaptiveScale) return false;
+    if (SDL_GetTicks() - m_AdaptiveChangedAt < 900 || SDL_GetMouseState(nullptr, nullptr) != 0) return false;
+    // Finish the old stream before changing the capture mode. Preserve desktop
+    // apps and the authenticated display lease across the new resume request.
+    int x, y, width, height;
+    SDL_GetWindowPosition(m_Window, &x, &y); SDL_GetWindowSize(m_Window, &width, &height);
+    m_AdaptiveGeometry = QRect(x, y, width, height);
+    m_AdaptiveNextSize = size; m_AdaptiveScale = scale;
+    qInfo() << "Adaptive display restarting stream for" << size;
+    return true;
+}
+
 bool Session::initialize()
 {
 #ifdef Q_OS_DARWIN
@@ -635,6 +727,9 @@ bool Session::initialize()
             return false;
         }
     }
+
+    if (!m_AdaptiveGeometry.isValid()) m_AdaptiveGeometry = QRect(x, y, width, height);
+    initializeAdaptiveDisplay(testWindow);
 
     qInfo() << "Server GPU:" << m_Computer->gpuModel;
     qInfo() << "Server GFE version:" << m_Computer->gfeVersion;
@@ -884,7 +979,9 @@ bool Session::initialize()
 
     // Check for validation errors/warnings and emit
     // signals for them, if appropriate
+    const QSize negotiatedSize(m_StreamConfig.width, m_StreamConfig.height);
     bool ret = validateLaunch(testWindow);
+    if (negotiatedSize != QSize(m_StreamConfig.width, m_StreamConfig.height)) m_AdaptiveDisplay.reset();
 
     if (ret) {
         // Video format is now locked in
@@ -1216,6 +1313,7 @@ private:
     {
         // Only quit the running app if our session terminated gracefully
         bool shouldQuit =
+                !m_Session->adaptiveRestartPending() &&
                 !m_Session->m_UnexpectedTermination &&
                 m_Session->m_Preferences->quitAppAfter;
 
@@ -1234,6 +1332,7 @@ private:
 
         // Finish cleanup of the connection state
         LiStopConnection();
+        if (!m_Session->adaptiveRestartPending()) m_Session->m_AdaptiveDisplay.reset();
 
         // Perform a best-effort app quit
         if (shouldQuit) {
@@ -1257,6 +1356,10 @@ private:
 void Session::getWindowDimensions(int& x, int& y,
                                   int& width, int& height)
 {
+    if (!m_IsFullScreen && m_AdaptiveGeometry.isValid()) {
+        x = m_AdaptiveGeometry.x(); y = m_AdaptiveGeometry.y();
+        width = m_AdaptiveGeometry.width(); height = m_AdaptiveGeometry.height(); return;
+    }
     int displayIndex = 0;
 
     if (m_Window != nullptr) {
@@ -1542,7 +1645,7 @@ bool Session::startConnectionAsync()
 
     try {
         NvHTTP http(m_Computer);
-        http.startApp(m_Computer->currentGameId != 0 ? "resume" : "launch",
+        http.startApp((m_AdaptiveResume || m_Computer->currentGameId != 0) ? "resume" : "launch",
                       m_Computer->isNvidiaServerSoftware,
                       m_App.id, &m_StreamConfig,
                       enableGameOptimizations,
@@ -1725,6 +1828,8 @@ void Session::execInternal()
     // NB: This initializes the SDL video subsystem, so it must be
     // called on the main thread.
     if (!initialize()) {
+        m_AdaptiveNextSize = {};
+        m_AdaptiveDisplay.reset();
         emit sessionFinished(0);
         emit readyForDeletion();
         return;
@@ -1965,6 +2070,7 @@ void Session::execInternal()
     // because we want to suspend all Qt processing until the stream is over.
     SDL_Event event;
     for (;;) {
+        if (checkAdaptiveResize()) goto DispatchDeferredCleanup;
 #if SDL_VERSION_ATLEAST(2, 0, 18) && !defined(STEAM_LINK)
         // SDL 2.0.18 has a proper wait event implementation that uses platform
         // support to block on events rather than polling on Windows, macOS, X11,
@@ -1975,7 +2081,7 @@ void Session::execInternal()
         // NB: This behavior was introduced in SDL 2.0.16, but had a few critical
         // issues that could cause indefinite timeouts, delayed joystick detection,
         // and other problems.
-        if (!SDL_WaitEventTimeout(&event, 1000)) {
+        if (!SDL_WaitEventTimeout(&event, m_AdaptiveDisplay ? 100 : 1000)) {
             presence.runCallbacks();
             continue;
         }

@@ -15,6 +15,9 @@ class TestSession : public QObject {
 public:
     using QObject::QObject;
     int executions = 0;
+    TestSession* next = nullptr;
+    Q_INVOKABLE bool adaptiveRestartPending() const { return next != nullptr; }
+    Q_INVOKABLE TestSession* adaptiveContinuation() { auto value = next; next = nullptr; return value; }
     Q_INVOKABLE void exec(QQuickWindow*) { ++executions; }
 signals:
     void stageStarting(QString stage);
@@ -54,7 +57,7 @@ TestPreferences {
  function retranslate() { retranslations++; return true }
  property int width: 2048; property int height: 1152; property int fps: 75; property int bitrateKbps: 125000
  property int windowMode: 2; property int captureSysKeysMode: 1; property int saves: 0
- property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
+ property bool adaptiveResolution: true; property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
  property bool muteOnFocusLoss: true; property bool playAudioOnHost: false; property bool enableMdns: true; property bool keepAwake: true
  function save() { saves++ }
 })",QUrl()); return c.create();
@@ -90,6 +93,15 @@ ApplicationWindow {
         emit session.stageStarting("Handshake");
         auto page=root->property("currentPage").value<QObject*>(); QVERIFY(page);
         QCOMPARE(page->property("stageText").toString(),QString("Starting Handshake..."));
+        TestSession continuation;
+        QQmlEngine::setObjectOwnership(&continuation, QQmlEngine::CppOwnership);
+        session.next = &continuation;
+        emit session.sessionFinished(0);
+        QCOMPARE(root->property("currentPage").value<QObject*>(), page);
+        emit session.readyForDeletion();
+        QTRY_COMPARE(continuation.executions,1);
+        QVERIFY(!root->property("navigationVisible").toBool());
+        QVERIFY(root->property("currentPage").value<QObject*>() != page);
         QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
         QVERIFY(root->property("navigationVisible").toBool());
         QVERIFY(QMetaObject::invokeMethod(root.data(),"startQuit"));

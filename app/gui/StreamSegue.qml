@@ -73,6 +73,7 @@ Item {
 
     function sessionFinished(portTestResult)
     {
+        if (session.adaptiveRestartPending()) return
         if (portTestResult !== 0 && portTestResult !== -1 && streamSegueErrorDialog.text) {
             streamSegueErrorDialog.text += "\n\n" + qsTr("This PC's Internet connection is blocking Moonlight. Streaming over the Internet may not work while connected to this network.")
         }
@@ -110,6 +111,15 @@ Item {
 
     function sessionReadyForDeletion()
     {
+        if (session.adaptiveRestartPending()) {
+            var next = session.adaptiveContinuation()
+            var component = Qt.createComponent("StreamSegue.qml")
+            var page = component.createObject(stackView, {"session": next, "appName": appName, "isResume": true, "quitAfter": quitAfter})
+            session = null
+            stackView.replace(stackView.currentItem, page, StackView.Immediate)
+            gc()
+            return
+        }
         // Garbage collect the Session object since it's pretty heavyweight
         // and keeps other libraries (like SDL_TTF) around until it is deleted.
         session = null

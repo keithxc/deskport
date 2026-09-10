@@ -96,6 +96,8 @@ UiPage {
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Picture"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
+            Switch { text: qsTr("Match the client window resolution"); checked: StreamingPreferences.adaptiveResolution; onClicked: { StreamingPreferences.adaptiveResolution=checked; save() } }
+            Label { text: qsTr("Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: qsTr("Resolution"); color: ui.muted }
             ComboBox {
                 id: resolution; objectName: "resolutionChoice"

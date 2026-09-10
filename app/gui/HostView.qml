@@ -38,12 +38,21 @@ UiPage {
         }
     }
     UiCard {
+        visible: Qt.platform.os === "osx"
+        ColumnLayout {
+            anchors.fill: parent; spacing: 12
+            Label { text: qsTr("Built-in virtual display"); color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold }
+            Label { text: hostManager.virtualDisplayActive ? qsTr("Active · %1 × %2 pixels").arg(hostManager.displayWidth).arg(hostManager.displayHeight) : qsTr("Created automatically when sharing starts"); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: qsTr("Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+        }
+    }
+    UiCard {
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Sharing preferences"); color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold }
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Virtual display size"); color: ui.muted }
             ComboBox { id: size; currentIndex: Math.max(0, [2560,2880,3840].indexOf(hostManager.sharingWidth)); visible: Qt.platform.os === "osx"; model: ["2560 × 1440", "2880 × 1800", "3840 × 2160"]; enabled: !hostManager.running && !hostManager.changing; Layout.preferredWidth: 250 }
-            Label { visible: Qt.platform.os === "osx"; text: qsTr("Choose before starting sharing. Changing size during a session is not available yet."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { visible: Qt.platform.os === "osx"; text: qsTr("Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Start sharing when I log in"); enabled: hostManager.available; checked: hostManager.loginStart; onClicked: hostManager.setLoginStart(checked) }
         }
     }

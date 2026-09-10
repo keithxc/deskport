@@ -586,3 +586,6 @@ macx {
     OBJECTIVE_SOURCES += backend/macpermissions.mm
     LIBS += -framework AVFoundation -framework ApplicationServices
 }
+
+SOURCES += backend/adaptivedisplay.cpp
+HEADERS += backend/adaptivedisplay.h

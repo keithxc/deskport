@@ -9,6 +9,26 @@ class HostLifecycle : public QObject {
     Q_OBJECT
 private slots:
     void init() { qputenv("DESKPORT_TEST_MODE", "normal"); }
+    void resizeFailuresDoNotStopSharing_data() {
+        QTest::addColumn<QByteArray>("mode");
+        QTest::newRow("rejected") << QByteArray("resize-reject");
+        QTest::newRow("timed-out") << QByteArray("resize-timeout");
+    }
+    void resizeFailuresDoNotStopSharing() {
+        QFETCH(QByteArray, mode);
+        qputenv("DESKPORT_TEST_MODE", mode);
+        QTemporaryDir dir; HostManager host(nullptr, dir.path());
+        host.start(2560, 1440);
+        QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable(), 5000);
+        QSignalSpy result(&host, &HostManager::displayResized);
+        QVERIFY(host.resizeDisplay(1920, 1080, 2, 7));
+        QVERIFY(!host.resizeDisplay(1600, 1000, 2, 8));
+        QTRY_COMPARE_WITH_TIMEOUT(result.size(), 1, 6500);
+        QCOMPARE(result.first().first().toInt(), 7);
+        QVERIFY(!result.first().last().toString().isEmpty());
+        QVERIFY(host.running()); QVERIFY(!host.changing());
+        host.stop(); QTRY_VERIFY_WITH_TIMEOUT(!host.changing(), 5000);
+    }
     void localHostsAreFilteredWithoutMatchingNamesOrSubnets() {
         const QList<QHostAddress> local{QHostAddress("192.0.2.10"), QHostAddress("2001:db8::10")};
         for (const QString& value : {"127.0.0.1", "127.0.0.2", "::1", "192.0.2.10", "::ffff:192.0.2.10", "2001:db8::10"})

@@ -2,6 +2,7 @@
 #include "peerstore.h"
 #include <QElapsedTimer>
 #include <algorithm>
+#include <limits>
 #include <QSslError>
 #include <QSslCertificate>
 #include <QSslConfiguration>
@@ -46,8 +47,22 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
             auto object = QJsonDocument::fromJson(m_Buffer.left(index)).object();
             m_Buffer.remove(0, index + 1);
             if (m_Stopping) continue;
+            if (object.contains("seq")) {
+                if (object["seq"].toInt() == m_DisplayWireSequence && m_DisplaySequence != 0) {
+                    const int sequence = m_DisplaySequence; m_DisplaySequence = 0;
+                    if (!object.contains("error")) {
+                        m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
+                    }
+                    emit displayResized(sequence, m_DisplayWidth, m_DisplayHeight, object["error"].toString());
+                    emit changed();
+                }
+                continue;
+            }
             if (object.contains("error")) { beginStop(object["error"].toString()); return; }
-            if (object["displayId"].toInt() > 0 && m_Starting && !m_ServerRequested) startServer(object["displayId"].toInt());
+            if (object["displayId"].toInt() > 0 && m_Starting && !m_ServerRequested) {
+                m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
+                startServer(object["displayId"].toInt());
+            }
         }
     });
     connect(&m_Server, &QProcess::started, this, [this] {
@@ -266,6 +281,7 @@ void HostManager::stop() {
     beginStop(available() ? tr("Sharing is off") : tr("Hosting is available in the macOS all-in-one package"));
 }
 void HostManager::beginStop(const QString &status) {
+    m_DisplaySequence = 0; ++m_DisplayGeneration;
     if (m_Stopping) return;
     m_Stopping = true;
     const auto generation = ++m_Generation;
@@ -499,4 +515,35 @@ void HostManager::updatePeerTrust(const QString& id, const QString& name, const 
         emit trustUpdated(ok);
     });
     timer->start(50);
+}
+
+bool HostManager::adaptiveDisplayAvailable() const {
+#ifdef Q_OS_MACOS
+    return running() && !changing() && m_Display.state() == QProcess::Running;
+#else
+    return false;
+#endif
+}
+bool HostManager::resizeDisplay(int width, int height, int scale, int sequence) {
+    if (!adaptiveDisplayAvailable() || m_DisplaySequence || sequence == 0 || width < 640 || width > 3840 ||
+        height < 360 || height > 2160 || width % 4 || height % 4 || (scale != 1 && scale != 2)) return false;
+    m_DisplaySequence = sequence;
+    m_DisplayWireSequence = m_DisplayWireSequence == std::numeric_limits<int>::max() ? 1 : m_DisplayWireSequence + 1;
+    const auto generation = ++m_DisplayGeneration;
+    m_Display.write(QJsonDocument(QJsonObject{{"seq", m_DisplayWireSequence}, {"width", width}, {"height", height}, {"scale", scale}}).toJson(QJsonDocument::Compact) + '\n');
+    QTimer::singleShot(5000, this, [this, generation] {
+        if (m_DisplaySequence && generation == m_DisplayGeneration) {
+            const auto sequence = m_DisplaySequence; m_DisplaySequence = 0;
+            emit displayResized(sequence, m_DisplayWidth, m_DisplayHeight, tr("Virtual display resize timed out"));
+        }
+    });
+    return true;
+}
+void HostManager::restoreDisplay() {
+    // Restore the chosen idle mode after the controller disconnects. A new
+    // controller may claim the display during the grace interval.
+    const auto generation = m_DisplayGeneration;
+    QTimer::singleShot(10000, this, [this, generation] {
+        if (generation == m_DisplayGeneration) resizeDisplay(sharingWidth(), sharingHeight(), 2, -1);
+    });
 }

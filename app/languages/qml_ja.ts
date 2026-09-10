@@ -1556,6 +1556,14 @@
         <source>Report a problem</source>
         <translation>問題を報告</translation>
     </message>
+    <message>
+        <source>Match the client window resolution</source>
+        <translation>クライアントのウィンドウ解像度に合わせる</translation>
+    </message>
+    <message>
+        <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
+        <translation>バインド済み Mac の内蔵仮想ディスプレイを使用します。サイズ変更時に映像が一時的に再接続されますが、アプリは開いたままです。他のホストには下の解像度が適用されます。</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1701,6 +1709,26 @@
     <message>
         <source>Open host logs</source>
         <translation>ホストログを開く</translation>
+    </message>
+    <message>
+        <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
+        <translation>DeskPort に内蔵されているため、BetterDisplay は不要です。これは待機時の解像度です。承認済みクライアントの接続中は自動調整できます。</translation>
+    </message>
+    <message>
+        <source>Built-in virtual display</source>
+        <translation>内蔵仮想ディスプレイ</translation>
+    </message>
+    <message>
+        <source>Active · %1 × %2 pixels</source>
+        <translation>稼働中 · %1 × %2 ピクセル</translation>
+    </message>
+    <message>
+        <source>Created automatically when sharing starts</source>
+        <translation>共有開始時に自動作成</translation>
+    </message>
+    <message>
+        <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
+        <translation>クライアントのウィンドウを隠してもリモートワークスペースは維持されます。切断後は待機時の解像度に戻り、共有を停止すると仮想ディスプレイが削除されます。</translation>
     </message>
 </context>
 <context>

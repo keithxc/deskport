@@ -1,4 +1,6 @@
 #include <QtTest>
+#include <future>
+#include "adaptivedisplay.h"
 #include <QTemporaryDir>
 #include <QSignalSpy>
 #include <QSslSocket>
@@ -16,6 +18,63 @@ static QByteArray credential(const char* name) {
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void adaptiveDisplayRequiresPinnedApprovedExclusiveController() {
+        QTemporaryDir dir;
+        const auto aCert = credential("TEST_CERT_A"), bCert = credential("TEST_CERT_B"), cCert = credential("TEST_CERT_C");
+        const auto fp = QString::fromLatin1(QSslCertificate(aCert).digest(QCryptographicHash::Sha256).toHex());
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json", {{"version", 1}, {"peers", QJsonObject{
+            {fp, QJsonObject{{"ready", true}, {"granted", true}}}}}}));
+        HostManager host(nullptr, dir.path()+"/host");
+        PeerManager server(&host, bCert, credential("TEST_KEY_B"), dir.path()+"/binding", 0, QHostAddress::LocalHost);
+        host.start(2560, 1440);
+        QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable(), 5000);
+        QSignalSpy resized(&host, &HostManager::displayResized), approval(&server, &PeerManager::incomingRequest);
+        auto resize = [this](AdaptiveDisplay& channel, QSize size) {
+            auto result = std::async(std::launch::async, [&] { return channel.resize(size, 2); });
+            QElapsedTimer timer; timer.start();
+            while (result.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready && timer.elapsed() < 11000) QTest::qWait(10);
+            return result.get();
+        };
+        {
+            AdaptiveDisplay wrongPin("127.0.0.1", server.port(), QSslCertificate(cCert), aCert, credential("TEST_KEY_A"));
+            QVERIFY(!resize(wrongPin, QSize(1920, 1080)));
+        }
+        QTRY_VERIFY(!server.busy());
+        {
+            AdaptiveDisplay unknown("127.0.0.1", server.port(), QSslCertificate(bCert), cCert, credential("TEST_KEY_C"));
+            QVERIFY(!resize(unknown, QSize(1920, 1080)));
+        }
+        QTRY_VERIFY(!server.busy());
+        QCOMPARE(resized.size(), 0); QCOMPARE(approval.size(), 0);
+        {
+            AdaptiveDisplay channel("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
+            QVERIFY(resize(channel, QSize(1920, 1080)));
+            QCOMPARE(resized.size(), 1); QVERIFY(host.running()); QVERIFY(!server.busy());
+            {
+                AdaptiveDisplay competing("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
+                QVERIFY(!resize(competing, QSize(2560, 1440)));
+            }
+            QTRY_VERIFY(!server.busy());
+            QVERIFY(resize(channel, QSize(1600, 1000)));
+            QCOMPARE(resized.size(), 2);
+            QVERIFY(!host.resizeDisplay(99999, 1000, 2, 99));
+            QVERIFY(!host.resizeDisplay(1600, 1000, 9, 99));
+            QCOMPARE(approval.size(), 0);
+        }
+        // A released controller cannot prevent the next connection taking over.
+        QTest::qWait(100);
+        AdaptiveDisplay next("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
+        QVERIFY(resize(next, QSize(2560, 1440)));
+        QCOMPARE(resized.size(), 3);
+        host.stop(); QTRY_VERIFY_WITH_TIMEOUT(!host.changing(), 5000);
+    }
+    void adaptiveSizeBounds() {
+        QCOMPARE(AdaptiveDisplay::boundedSize(QSize(7680, 4320)), QSize(3840, 2160));
+        QCOMPARE(AdaptiveDisplay::boundedSize(QSize(1001, 777)), QSize(1000, 776));
+        QCOMPARE(AdaptiveDisplay::boundedSize(QSize(100, 100)), QSize(640, 360));
+        QVERIFY(!AdaptiveDisplay::boundedSize(QSize(0, 0)).isValid());
+    }
     void qmlCacheChangesWithContentEvenWhenTimestampsMatch() {
         QTemporaryDir dir;
         QFile file(dir.path()+"/main.qml");

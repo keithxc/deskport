@@ -1556,6 +1556,14 @@
         <source>Report a problem</source>
         <translation>Problem melden</translation>
     </message>
+    <message>
+        <source>Match the client window resolution</source>
+        <translation>Auflösung an das Clientfenster anpassen</translation>
+    </message>
+    <message>
+        <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
+        <translation>Verwendet das integrierte virtuelle Display eines verbundenen Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1701,6 +1709,26 @@
     <message>
         <source>Open host logs</source>
         <translation>Host-Protokolle öffnen</translation>
+    </message>
+    <message>
+        <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
+        <translation>In DeskPort integriert; BetterDisplay ist nicht erforderlich. Dies ist die Auflösung im Leerlauf. Ein genehmigter Client kann sie während der Verbindung automatisch anpassen.</translation>
+    </message>
+    <message>
+        <source>Built-in virtual display</source>
+        <translation>Integriertes virtuelles Display</translation>
+    </message>
+    <message>
+        <source>Active · %1 × %2 pixels</source>
+        <translation>Aktiv · %1 × %2 Pixel</translation>
+    </message>
+    <message>
+        <source>Created automatically when sharing starts</source>
+        <translation>Wird beim Start der Freigabe automatisch erstellt</translation>
+    </message>
+    <message>
+        <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
+        <translation>Der entfernte Arbeitsbereich bleibt beim Ausblenden des Clientfensters geöffnet. Nach dem Trennen kehrt die Auflösung zum Leerlaufwert zurück. Das Beenden der Freigabe entfernt dieses virtuelle Display.</translation>
     </message>
 </context>
 <context>

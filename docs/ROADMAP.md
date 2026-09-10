@@ -199,10 +199,34 @@ Initial connection, sleeping hosts and network recovery are separate cases.
 The host is intended to stay at home as an always-on desktop-development server.
 Add a dedicated remote display whose mode follows the client's content area,
 similar to a VM's automatic guest-display resizing. The macOS development package
-already includes native virtual-display creation; automatic client-window resizing,
-physical-display mirroring and session-end restoration remain planned, not shipped.
-The earlier external BetterDisplay experiment is historical validation, not a
-required dependency of the intended packaged feature.
+includes native virtual-display creation and client-window adaptation. The Sharing
+page shows the actual virtual-display size; Picture settings enable adaptation by
+default for mutually bound, capable Mac hosts. No BetterDisplay runtime dependency
+is needed for this dedicated workspace. Physical-display mirroring, making the
+virtual workspace the main display, and restoring full physical topology remain
+planned; the current mode preserves the existing physical capture source.
+
+The first implementation coalesces changes for 900 ms after dragging, negotiates
+aligned 640×360–3840×2160 pixel sizes over the pinned binding TLS connection, and
+resumes video after stopping the old stream. This is a brief reconnection, not
+seamless encoder reconfiguration. Window position/size, remote applications and the
+display-control lease survive the transition. Only one approved controller can
+resize; it sends heartbeats, and loss of its connection releases ownership.
+After a 10-second grace period the display returns to its configured idle size.
+Minimizing preserves the stream and display. Stopping sharing removes the helper.
+
+Client drawable pixels are distinct from logical window size. HiDPI clients use
+2× host scaling for workspaces of at least 1920×1080 pixels; compact workspaces use
+1× because native testing found advertised small HiDPI modes that WindowServer
+rejects. Fractional scaling is mapped to one of these macOS modes. Unsupported or
+unbound hosts fall back to the saved fixed streaming resolution. Linux hosting
+continues to capture its existing desktop.
+
+Validation: isolated binding tests cover certificate pinning, unapproved clients,
+exclusive ownership and transfer; host tests cover rejected/timed-out resize without
+stopping sharing; QML tests exercise actual continuation-page activation. Native
+window-drag, image quality and pointer acceptance are tracked separately from build
+and protocol checks. See [adaptive display](ADAPTIVE_DISPLAY.md).
 
 The requested session mode makes the virtual display the main display and mirrors
 it onto the other attached displays. A full disconnect restores the previous

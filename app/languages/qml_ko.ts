@@ -1556,6 +1556,14 @@
         <source>Report a problem</source>
         <translation>문제 신고</translation>
     </message>
+    <message>
+        <source>Match the client window resolution</source>
+        <translation>클라이언트 창 해상도에 맞추기</translation>
+    </message>
+    <message>
+        <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
+        <translation>연결된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1701,6 +1709,26 @@
     <message>
         <source>Open host logs</source>
         <translation>호스트 로그 열기</translation>
+    </message>
+    <message>
+        <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
+        <translation>DeskPort에 내장되어 BetterDisplay가 필요하지 않습니다. 대기 해상도이며, 승인된 클라이언트가 연결 중 자동으로 조정할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Built-in virtual display</source>
+        <translation>내장 가상 디스플레이</translation>
+    </message>
+    <message>
+        <source>Active · %1 × %2 pixels</source>
+        <translation>활성 · %1 × %2 픽셀</translation>
+    </message>
+    <message>
+        <source>Created automatically when sharing starts</source>
+        <translation>공유를 시작하면 자동으로 생성됩니다</translation>
+    </message>
+    <message>
+        <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
+        <translation>클라이언트 창을 숨겨도 원격 작업 공간은 유지됩니다. 연결을 끊으면 대기 해상도로 돌아가며, 공유를 중지하면 가상 디스플레이가 제거됩니다.</translation>
     </message>
 </context>
 <context>

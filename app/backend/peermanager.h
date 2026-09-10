@@ -56,6 +56,7 @@ private:
     QString m_Path, m_Status, m_Revoking;
     QJsonObject m_Peers;
     Link* m_Link = nullptr;
+    Link* m_DisplayLink = nullptr;
     bool m_Healthy = false;
     bool m_TrustInFlight = false;
 };

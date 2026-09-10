@@ -33,6 +33,9 @@ struct PeerManager::Link : QObject {
     QJsonObject peer;
     QString transaction, fingerprint, requestedAddress;
     bool incoming = false, requested = false, accepted = false;
+    bool displayControl = false;
+    int displaySequence = 0;
+    qint64 lastDisplayRequest = 0;
     bool localReady = false, remoteReady = false, ended = false;
 };
 PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteArray& key,
@@ -47,6 +50,21 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
     m_Peers = saved["peers"].toObject();
     m_Healthy = ok && (saved.isEmpty() || (saved["version"].toInt() == 1 && saved["peers"].isObject())) && m_Host->available() && !m_Certificate.isNull() && !m_Key.isNull() && m_Host->prepareIdentity(cert, key);
     connect(host, &HostManager::trustUpdated, this, &PeerManager::granted);
+    connect(host, &HostManager::displayResized, this, [this](int seq, int width, int height, const QString& error) {
+        auto link = m_DisplayLink;
+        if (!link || link->ended || seq != link->displaySequence) return;
+        link->displaySequence = 0;
+        QJsonObject response{{"type", "display-result"}, {"seq", seq}, {"width", width}, {"height", height}};
+        if (!error.isEmpty()) response["error"] = error;
+        send(link, response);
+    });
+    auto watchdog = new QTimer(this);
+    connect(watchdog, &QTimer::timeout, this, [this] {
+        if (m_DisplayLink && (!m_Host->adaptiveDisplayAvailable() ||
+            QDateTime::currentMSecsSinceEpoch() - m_DisplayLink->lastDisplayRequest > 20000))
+            fail(m_DisplayLink, tr("Display controller disconnected"));
+    });
+    watchdog->start(2000);
     auto server = static_cast<Listener*>(m_Server);
     server->setProxy(QNetworkProxy::NoProxy);
     server->incoming = [this](qintptr fd) {
@@ -87,6 +105,7 @@ QJsonObject PeerManager::metadata() const {
     auto meta = m_Host->identity();
     meta["name"] = QHostInfo::localHostName().left(64);
     meta["version"] = 1;
+    meta["adaptiveDisplay"] = m_Host->adaptiveDisplayAvailable() ? 1 : 0;
     meta["bindingPort"] = int(m_Server->serverPort());
     return meta;
 }
@@ -136,10 +155,10 @@ void PeerManager::attach(Link* link) {
         if (!link->ended) fail(link, tr("Binding connection failed: %1").arg(link->socket->errorString()));
     });
     QTimer::singleShot(10000, link, [this, link] {
-        if (!link->ended && link->peer.isEmpty()) fail(link, tr("Binding handshake timed out"));
+        if (!link->ended && !link->displayControl && link->peer.isEmpty()) fail(link, tr("Binding handshake timed out"));
     });
     QTimer::singleShot(120000, link, [this, link] {
-        if (!link->ended) fail(link, tr("Binding request expired. No new request will be accepted automatically."));
+        if (!link->ended && !link->displayControl) fail(link, tr("Binding request expired. No new request will be accepted automatically."));
     });
 }
 void PeerManager::drain(Link* link) {
@@ -194,6 +213,28 @@ void PeerManager::send(Link* link, const QJsonObject& message) {
 void PeerManager::receive(Link* link, const QJsonObject& message) {
     const QString type = message["type"].toString();
     qInfo() << "Binding: received" << type;
+    if (type == "display-resize" || type == "display-ping") {
+        const auto peer = m_Peers[link->fingerprint].toObject();
+        if (!link->incoming || link->requested || !peer["ready"].toBool() || !peer["granted"].toBool() ||
+            !m_Host->adaptiveDisplayAvailable() || (m_DisplayLink && m_DisplayLink != link)) {
+            fail(link, tr("Virtual display control requires an available host and an approved, exclusive device")); return;
+        }
+        if (type == "display-ping") {
+            if (!link->displayControl) { fail(link, tr("Display control has not started")); return; }
+            link->lastDisplayRequest = QDateTime::currentMSecsSinceEpoch();
+            send(link, {{"type", "display-pong"}}); return;
+        }
+        const int seq = message["seq"].toInt();
+        if (seq <= 0 || link->displaySequence || !m_Host->resizeDisplay(message["width"].toInt(), message["height"].toInt(), message["scale"].toInt(), seq)) {
+            send(link, {{"type", "display-result"}, {"seq", seq}, {"error", "Display size is invalid or the display is busy"}}); return;
+        }
+        link->displayControl = true; link->displaySequence = seq;
+        link->lastDisplayRequest = QDateTime::currentMSecsSinceEpoch();
+        m_DisplayLink = link;
+        if (m_Link == link) m_Link = nullptr;
+        emit changed(); return;
+    }
+    if (link->displayControl) { fail(link, tr("Unexpected display-control message")); return; }
     if (type == "hello" && !link->incoming && link->peer.isEmpty() && !link->accepted) {
         if (!acceptMetadata(link, message["meta"].toObject())) fail(link, tr("Unsupported peer identity"));
     } else if (type == "request" && link->incoming && !link->requested) {
@@ -274,6 +315,7 @@ void PeerManager::fail(Link* link, const QString& message) {
     if (link->ended) return;
     qWarning() << "Binding:" << message;
     link->ended = true;
+    if (m_DisplayLink == link) { m_DisplayLink = nullptr; m_Host->restoreDisplay(); }
     if (m_Link == link) m_Link = nullptr;
     m_Status = message; connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);
     link->socket->disconnectFromHost();
@@ -285,6 +327,7 @@ void PeerManager::restoreHosts() {
 }
 void PeerManager::revoke(const QString& fp) {
     if (busy() || !m_Peers.contains(fp)) return;
+    if (m_DisplayLink && m_DisplayLink->fingerprint == fp) fail(m_DisplayLink, tr("Device access removed"));
     m_Revoking = fp; m_TrustInFlight = true;
     m_Host->updatePeerTrust(trustId(fp), QString(), QSslCertificate(), true);
     emit changed();

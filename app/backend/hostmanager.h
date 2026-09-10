@@ -16,6 +16,9 @@ class HostManager : public QObject {
     Q_PROPERTY(bool setupComplete READ setupComplete NOTIFY permissionsChanged)
     Q_PROPERTY(QString deviceName READ deviceName CONSTANT)
     Q_PROPERTY(QUrl applicationUrl READ applicationUrl CONSTANT)
+    Q_PROPERTY(int displayWidth READ displayWidth NOTIFY changed)
+    Q_PROPERTY(int displayHeight READ displayHeight NOTIFY changed)
+    Q_PROPERTY(bool virtualDisplayActive READ adaptiveDisplayAvailable NOTIFY changed)
     Q_PROPERTY(int sharingWidth READ sharingWidth NOTIFY changed)
     Q_PROPERTY(int sharingHeight READ sharingHeight NOTIFY changed)
     Q_PROPERTY(bool changing READ changing NOTIFY changed)
@@ -33,6 +36,8 @@ public:
     bool setupComplete() const;
     QString deviceName() const;
     QUrl applicationUrl() const;
+    int displayWidth() const { return m_DisplayWidth; }
+    int displayHeight() const { return m_DisplayHeight; }
     int sharingWidth() const;
     int sharingHeight() const;
     bool changing() const { return m_Starting || m_Stopping || m_TrustBusy; }
@@ -42,6 +47,9 @@ public:
     bool prepareIdentity(const QByteArray& certificate, const QByteArray& key);
     QJsonObject identity() const;
     void updatePeerTrust(const QString& id, const QString& name, const QSslCertificate& certificate, bool remove = false);
+    bool adaptiveDisplayAvailable() const;
+    bool resizeDisplay(int width, int height, int scale, int sequence);
+    void restoreDisplay();
     bool running() const;
     bool canPair() const;
     int basePort() const { return m_BasePort; }
@@ -57,6 +65,7 @@ signals:
     void changed();
     void permissionsChanged();
     void trustUpdated(bool success);
+    void displayResized(int sequence, int width, int height, const QString& error);
 private:
     void updateTrayIcon();
     bool eventFilter(QObject* watched, QEvent* event) override;
@@ -72,6 +81,8 @@ private:
     std::unique_ptr<QLockFile> m_HostLock;
     int m_BasePort = DeskPortNetwork::DefaultBasePort;
     QByteArray m_Buffer;
+    int m_DisplayWireSequence = 0, m_DisplaySequence = 0, m_DisplayWidth = 0, m_DisplayHeight = 0;
+    quint64 m_DisplayGeneration = 0;
     QNetworkAccessManager m_Network;
     QSystemTrayIcon m_Tray;
     bool m_TrustBusy = false;

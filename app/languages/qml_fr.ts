@@ -1556,6 +1556,14 @@
         <source>Report a problem</source>
         <translation>Signaler un problème</translation>
     </message>
+    <message>
+        <source>Match the client window resolution</source>
+        <translation>Adapter la résolution à la fenêtre du client</translation>
+    </message>
+    <message>
+        <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
+        <translation>Utilise l’écran virtuel intégré d’un Mac associé. Le redimensionnement reconnecte brièvement l’image et garde vos applications ouvertes. Les autres hôtes utilisent la résolution ci-dessous.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1701,6 +1709,26 @@
     <message>
         <source>Open host logs</source>
         <translation>Ouvrir les journaux de l’hôte</translation>
+    </message>
+    <message>
+        <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
+        <translation>Intégré à DeskPort ; BetterDisplay n’est pas nécessaire. Il s’agit de la résolution au repos. Un client autorisé peut l’ajuster automatiquement pendant la connexion.</translation>
+    </message>
+    <message>
+        <source>Built-in virtual display</source>
+        <translation>Écran virtuel intégré</translation>
+    </message>
+    <message>
+        <source>Active · %1 × %2 pixels</source>
+        <translation>Actif · %1 × %2 pixels</translation>
+    </message>
+    <message>
+        <source>Created automatically when sharing starts</source>
+        <translation>Créé automatiquement au démarrage du partage</translation>
+    </message>
+    <message>
+        <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
+        <translation>Votre espace de travail distant reste ouvert lorsque la fenêtre du client est masquée. Après la déconnexion, sa résolution revient à la valeur au repos. L’arrêt du partage supprime cet écran virtuel.</translation>
     </message>
 </context>
 <context>

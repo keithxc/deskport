@@ -29,20 +29,51 @@
 
 static CGVirtualDisplay *display;
 static unsigned generation;
+static int requestSequence;
+static NSInteger requestedScale = 2;
+static NSInteger lastWidth, lastHeight, lastScale = 2;
+static NSArray *displayModes(NSInteger width, NSInteger height, NSInteger scale) {
+    return @[[[CGVirtualDisplayMode alloc] initWithWidth:(unsigned)width / scale
+        height:(unsigned)height / scale refreshRate:60.0]];
+}
+static void applyMode(NSInteger width, NSInteger height, NSInteger scale) {
+    CGVirtualDisplaySettings *settings = [CGVirtualDisplaySettings new];
+    settings.hiDPI = scale == 2;
+    settings.modes = displayModes(width, height, scale);
+    [display applySettings:settings];
+}
 static void respond(NSDictionary *value) {
-    NSData *json = [NSJSONSerialization dataWithJSONObject:value options:0 error:nil];
+    NSMutableDictionary *response = [value mutableCopy];
+    if (requestSequence) response[@"seq"] = @(requestSequence);
+    NSData *json = [NSJSONSerialization dataWithJSONObject:response options:0 error:nil];
     fwrite(json.bytes, 1, json.length, stdout); fputc('\n', stdout); fflush(stdout);
 }
 static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsigned attempt) {
     if (token != generation) return;
-    // macOS remembers mirror membership across helper restarts. A mirror sink
-    // is intentionally inactive; capture its source without breaking the layout.
+    // Mirror membership can be restored asynchronously after applySettings.
+    // Verify independence here before reporting a capture ID to Sunshine.
     CGDirectDisplayID source = CGDisplayMirrorsDisplay(display.displayID);
-    CGDirectDisplayID capture = source ? source : display.displayID;
+    if (source) {
+        CGDisplayConfigRef config;
+        CGError result = CGBeginDisplayConfiguration(&config);
+        if (result == kCGErrorSuccess) {
+            result = CGConfigureDisplayMirrorOfDisplay(config, display.displayID, kCGNullDirectDisplay);
+            if (result == kCGErrorSuccess) result = CGCompleteDisplayConfiguration(config, kCGConfigureForSession);
+            else CGCancelDisplayConfiguration(config);
+        }
+        if (result != kCGErrorSuccess || attempt >= 30) {
+            respond(@{@"error": @"Could not separate the dedicated display"}); return;
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+            waitForMode(width, height, token, attempt + 1);
+        });
+        return;
+    }
+    CGDirectDisplayID capture = display.displayID;
     CGDisplayModeRef current = CGDisplayCopyDisplayMode(capture);
     BOOL ready = current && CGDisplayIsActive(capture) &&
         CGDisplayModeGetPixelWidth(current) == width && CGDisplayModeGetPixelHeight(current) == height &&
-        CGDisplayModeGetWidth(current) == width / 2 && CGDisplayModeGetHeight(current) == height / 2;
+        CGDisplayModeGetWidth(current) == width / requestedScale && CGDisplayModeGetHeight(current) == height / requestedScale;
     if (current) CFRelease(current);
     if (!ready && !source) {
         CFArrayRef modes = CGDisplayCopyAllDisplayModes(display.displayID,
@@ -51,7 +82,7 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
             for (CFIndex i = 0; i < CFArrayGetCount(modes); ++i) {
                 CGDisplayModeRef mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(modes, i);
                 if (CGDisplayModeGetPixelWidth(mode) == width && CGDisplayModeGetPixelHeight(mode) == height &&
-                    CGDisplayModeGetWidth(mode) == width / 2 && CGDisplayModeGetHeight(mode) == height / 2) {
+                    CGDisplayModeGetWidth(mode) == width / requestedScale && CGDisplayModeGetHeight(mode) == height / requestedScale) {
                     CGDisplaySetDisplayMode(display.displayID, mode, NULL);
                     break;
                 }
@@ -60,6 +91,7 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
         }
     }
     if (ready) {
+        lastWidth = width; lastHeight = height; lastScale = requestedScale;
         respond(@{@"displayId": @(capture), @"virtualDisplayId": @(display.displayID),
             @"mirrored": @(source != 0), @"width": @(width), @"height": @(height)});
     } else if (attempt < 30) {
@@ -67,12 +99,14 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
             waitForMode(width, height, token, attempt + 1);
         });
     } else {
+        if (lastWidth) applyMode(lastWidth, lastHeight, lastScale);
         respond(@{@"error": source ? @"Mirroring is active: choose the mirror source's HiDPI resolution" :
             @"Virtual display did not reach the requested HiDPI mode"});
     }
 }
-static void configure(NSInteger width, NSInteger height) {
-    if (width < 640 || height < 360 || width > 3840 || height > 2160 || width % 2 || height % 2) {
+static void configure(NSInteger width, NSInteger height, NSInteger scale, int sequence) {
+    requestSequence = sequence; requestedScale = scale;
+    if (width < 640 || height < 360 || width > 3840 || height > 2160 || width % 2 || height % 2 || (scale != 1 && scale != 2)) {
         respond(@{@"error": @"Use an even pixel size between 640x360 and 3840x2160"}); return;
     }
     if (!display) {
@@ -87,9 +121,22 @@ static void configure(NSInteger width, NSInteger height) {
         descriptor.vendorID = 0x4450; descriptor.productID = 1; descriptor.serialNum = 1;
         display = [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
     }
+    // This dedicated display must be its own capture source. Detach only our
+    // virtual sink if macOS remembered membership in a third-party mirror set.
+    // Never resize or reconfigure BetterDisplay's source or a physical display.
+    if (display && CGDisplayMirrorsDisplay(display.displayID)) {
+        CGDisplayConfigRef config;
+        if (CGBeginDisplayConfiguration(&config) != kCGErrorSuccess) {
+            respond(@{@"error": @"Could not configure the dedicated display"}); return;
+        }
+        CGError result = CGConfigureDisplayMirrorOfDisplay(config, display.displayID, kCGNullDirectDisplay);
+        if (result == kCGErrorSuccess) result = CGCompleteDisplayConfiguration(config, kCGConfigureForSession);
+        else CGCancelDisplayConfiguration(config);
+        if (result != kCGErrorSuccess) { respond(@{@"error": @"Could not separate the dedicated display"}); return; }
+    }
     CGVirtualDisplaySettings *settings = [CGVirtualDisplaySettings new];
-    settings.hiDPI = 1;
-    settings.modes = @[[[CGVirtualDisplayMode alloc] initWithWidth:(unsigned)width / 2 height:(unsigned)height / 2 refreshRate:60.0]];
+    settings.hiDPI = scale == 2;
+    settings.modes = displayModes(width, height, scale);
     if (!display || ![display applySettings:settings]) {
         respond(@{@"error": @"macOS rejected the virtual display mode"}); return;
     }
@@ -104,7 +151,7 @@ int main(int argc, const char *argv[]) {
             respond(@{@"available": @(NSClassFromString(@"CGVirtualDisplay") != nil)}); return 0;
         }
         if (argc != 3) return 2;
-        configure(atoi(argv[1]), atoi(argv[2]));
+        configure(atoi(argv[1]), atoi(argv[2]), 2, 0);
         if (!display) return 1;
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             char *line = NULL; size_t length = 0;
@@ -113,7 +160,9 @@ int main(int argc, const char *argv[]) {
                 id request = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                 if ([request isKindOfClass:[NSDictionary class]]) {
                     NSInteger width = [request[@"width"] integerValue], height = [request[@"height"] integerValue];
-                    dispatch_async(dispatch_get_main_queue(), ^{ configure(width, height); });
+                    NSInteger scale = [request[@"scale"] integerValue];
+                    int sequence = [request[@"seq"] intValue];
+                    dispatch_async(dispatch_get_main_queue(), ^{ configure(width, height, scale ?: 2, sequence); });
                 }
             }
             free(line); exit(0);

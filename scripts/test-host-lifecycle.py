@@ -27,7 +27,11 @@ if os.environ.get("DESKPORT_TEST_MODE") == "display-late-fail":
     select.select([sys.stdin], [], [], 1.5)
     sys.exit(4)
 for line in sys.stdin:
-    pass
+    request = json.loads(line)
+    if os.environ.get("DESKPORT_TEST_MODE") == "resize-timeout": continue
+    if os.environ.get("DESKPORT_TEST_MODE") == "resize-reject": request["error"] = "Mode rejected"
+    request["displayId"] = 123
+    print(json.dumps(request), flush=True)
 ''')
     host = helpers / "Sunshine.app/Contents/MacOS/Sunshine"
     host.write_text(f"#!{interpreter}\n" + '''import os, pathlib, signal, sys, time
@@ -54,7 +58,7 @@ while True: time.sleep(1)
     for executable in (display, host):
         executable.chmod(0o700)
     binding = "--binding" in sys.argv or "--ui" in sys.argv
-    extra_sources = f'"{root}/app/backend/peermanager.cpp"' if binding else ""
+    extra_sources = f'"{root}/app/backend/peermanager.cpp" "{root}/app/backend/adaptivedisplay.cpp"' if binding else ""
     extra_headers = f'"{root}/app/backend/peermanager.h"' if binding else ""
     suite = "ui-pages" if "--ui" in sys.argv else "peer-binding" if binding else "host-lifecycle"
     project = work / "tests.pro"
