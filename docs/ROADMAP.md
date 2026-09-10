@@ -188,18 +188,24 @@ Initial connection, sleeping hosts and network recovery are separate cases.
 
 ## Then: daily development
 
-### Dedicated display and window-size resolution (requested 2026-09-09)
+### Dedicated display, client-size resolution and physical mirroring (updated 2026-09-10)
 
 The host is intended to stay at home as an always-on desktop-development server.
 Add a dedicated remote display whose mode follows the client's content area,
-similar to a VM's automatic guest-display resizing. Automatic resizing is planned,
-not shipped. A manual macOS prototype using an existing BetterDisplay installation
-now provides a dedicated 1280×720 logical / 2560×1440 HiDPI display; a real
-2560×1440 at 60 FPS HEVC stream was received on Linux. This external setup is
-not yet bundled, and reboot recovery and pointer mapping need acceptance tests.
+similar to a VM's automatic guest-display resizing. The macOS development package
+already includes native virtual-display creation; automatic client-window resizing,
+physical-display mirroring and session-end restoration remain planned, not shipped.
+The earlier external BetterDisplay experiment is historical validation, not a
+required dependency of the intended packaged feature.
+
+The requested session mode makes the virtual display the main display and mirrors
+it onto the other attached displays. A full disconnect restores the previous
+physical main display and display layout. This supersedes the earlier assumption
+that physical displays remain independently arranged during a remote session.
 
 - First prove persistent virtual-display creation and capture on macOS, including
-  host reboot and operation without a physical monitor. Keep local displays intact.
+  host reboot and operation without a physical monitor. Bundle the implementation
+  and its permission/setup flow; do not require a separate display utility.
 - Treat window size, client device-pixel ratio, host HiDPI scale and encoded frame
   size separately. A larger window should expose more workspace without blurry text.
 - Coalesce resize events after dragging stops, choose supported/aligned modes and
@@ -208,16 +214,75 @@ not yet bundled, and reboot recovery and pointer mapping need acceptance tests.
   session. Initial session-resolution selection is not proof of seamless live resize.
 - Keep the virtual display alive while the window is hidden so applications stay
   placed. Define ownership before allowing two clients to change one display.
+- Snapshot physical main-display identity, modes, scaling, positions and mirror
+  groups before changing the topology. Make the virtual display the mirror source;
+  account for physical aspect-ratio/mode limits without silently changing the
+  requested remote workspace size. Surface unsupported mirroring explicitly.
+- Distinguish window hide/minimize and transient transport loss from full session
+  termination. Preserve the display during hide/reconnect; define a bounded orphan
+  timeout and provide an explicit local stop action that releases session ownership.
+- On full disconnect, quit, or unrecoverable session failure, restore the original
+  physical main display and layout before removing the virtual display. Persist a
+  recovery record for host-process crashes; handle unplugged monitors by selecting
+  an available physical fallback. With no physical display, retain a usable headless
+  recovery path rather than assuming restoration is possible.
+- Deliver macOS first, then assess the KDE Wayland implementation independently;
+  share settings and lifecycle semantics across platforms without claiming equal
+  display-control capabilities before native validation.
 
 Checkpoint: 30 alternating window sizes, including fractional client scaling;
 sharp text, correct pointer coordinates, no application relocation to physical
 screens, and measured interruption time. Start with explicit size presets if live
 resizing requires disruptive stream restarts.
 
-### Other daily-development work
+Additional acceptance: physical displays mirror the virtual workspace while
+connected; 20 full disconnect/reconnect cycles restore the original main display
+and layout; hide/show and brief network loss do not switch displays; host-process
+crash recovery, monitor hotplug, headless operation and competing clients preserve
+local control. Validate alongside the independent remote-access service.
 
-- Session-scoped text clipboard, followed by PNG; no initial clipboard overwrite,
-  echo loops or silent loss of oversized data.
+### Port allocation and migration (requested 2026-09-10)
+
+- Move preview defaults and fallback port families into the IANA dynamic/private
+  range (49152–65535). The current 489xx defaults are outside that range, and UDP
+  49000 is reserved. Private ports are not exclusive: retain complete-family
+  conflict detection and configurable endpoints.
+- Coordinate host, viewer, binding-service defaults, discovery announcements,
+  saved peer endpoints, packaging, documentation and mynix firewall rules in one
+  migration. Existing trusted peers must remain usable without deleting bindings;
+  define mixed-version compatibility and rollback before deploying both platforms.
+- Advertise actual service ports. Keep firewall rules consistent with selected
+  ports; a fallback must not silently produce an unreachable host. Keep the
+  management UI local and avoid opening unused ports or broad fallback ranges.
+- Preserve independent Sunshine/Moonlight services and their settings.
+
+Checkpoint: fresh pairing and existing bindings work across the migration; exercise
+occupied default ports, restart, rollback and mixed versions on macOS and Linux;
+verify discovery, reciprocal connection and streaming through the enabled firewall.
+
+References: [IANA port registry](https://www.iana.org/assignments/service-names-port-numbers/),
+[UDP 49000 reservation](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml?search=49000),
+[RFC 7605](https://www.rfc-editor.org/rfc/rfc7605.html).
+
+### Shared clipboard (requested 2026-09-10)
+
+- Add bidirectional clipboard sharing between the active client and host, starting
+  with Unicode plain text, then PNG images. File transfer remains deferred.
+- Provide a clear session setting to enable or disable sharing. Limit exchange to
+  the authenticated active session; binding alone must not synchronize clipboards.
+- Do not overwrite either clipboard on initial connection or replay stale contents
+  after reconnect. Prevent echo loops and define ordering for simultaneous copies.
+- Set payload limits and report unsupported or oversized content without silently
+  truncating it. Do not log clipboard contents or retain clipboard history.
+- Stop exchange on full disconnect. Validate platform clipboard permissions and
+  KDE Wayland behavior independently; do not infer support from the shared UI.
+
+Checkpoint: 100 bilingual/multiline text transfers in both directions, PNG transfers
+after image support lands, simultaneous copies, disabled sharing, disconnect and
+reconnect; no initial overwrite, stale replay or loops, and clear limit handling.
+
+### Remaining daily-development work
+
 - Explicit local/remote shortcut handling; native host IME first.
 - Reconnection that preserves remote applications and returns local control.
 - Fixed resolution/scale profiles, with text clarity checked on real hardware.

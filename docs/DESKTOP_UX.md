@@ -50,3 +50,9 @@ available through an explicit compatibility entry point.
 - Manual acceptance: review both desktop layouts, tab/keyboard navigation, actual
   OS app-drop support, recipient approval, and picture/input in both directions.
   Keep independent remote-access services available during acceptance.
+
+On 2026-09-10, a user confirmed that the Linux client connected to the macOS host
+after the stream-start fix in `4bbedf1a`. The UI suite now activates stream and quit
+pages and verifies their operations execute without the removed toolbar. This
+connection confirmation does not complete the remaining permission, input or
+display-lifecycle acceptance checks.
