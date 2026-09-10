@@ -1,7 +1,8 @@
 # Unified peer application
 
 Product decision, 2026-09-09. This describes the intended architecture; the macOS preview now bundles viewer, host and native virtual-display components.
-The host UI handles incoming PIN pairing; a single mutual-pairing flow remains planned.
+The host UI handles incoming PIN pairing; a single mutual-pairing flow is the next
+requested milestone (2026-09-10), together with Linux hosting for reverse access.
 
 ## One installation, two roles
 

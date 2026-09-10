@@ -125,7 +125,38 @@ Live checkpoint: user confirmed picture output; host logs show an active HEVC
 session. Accessibility previously failed its saved code requirement; user reports
 reauthorizing it, but pointer movement and click delivery still need acceptance.
 
-## Next action: persistent-session prototype
+## Next action: one-interaction mutual pairing (2026-09-10)
+
+User priority: after one pairing interaction, both computers should list each
+other and be able to initiate a desktop connection without a second PIN entry.
+This supersedes the persistent-session prototype as the next implementation task.
+
+Current prerequisite: the Linux package is viewer-only; HostManager::available()
+is disabled outside macOS. Reverse desktop access therefore requires Linux host
+integration and its capture/input acceptance before mutual access can be claimed.
+
+- [ ] Bundle and supervise a Linux host with independent DeskPort state and port
+  reservation. Validate KDE Wayland capture/input and expose host readiness.
+  Preserve any independently installed Sunshine and Moonlight configuration.
+- [ ] Offer an explicit "Allow both computers to view and control each other"
+  pairing mode. One PIN/confirmation establishes both requested directions;
+  retain a one-way mode for computers that should not expose their desktop.
+- [ ] Coordinate both directional GameStream pairings over a channel bound to the
+  verified peer certificate. Exchange only the identity/address information and
+  short-lived pairing material needed for the operation, never host admin secrets.
+  Bind requests to a transaction, expire them, reject replay and unauthenticated
+  reverse requests, and report partial completion without silently expanding access.
+- [ ] Add each verified remote peer to the other device list automatically, using
+  its stable identity and reachable host port. Preserve the local-host filter.
+  Device presence, trust and capture/input readiness are separate UI states.
+- [ ] Persist each direction and provide revocation. A disconnected peer must not
+  prevent immediate local revocation; do not claim remote removal until acknowledged.
+- [ ] Validate with two fresh profiles: one pairing interaction, both-direction
+  picture and input, restart without re-pairing or duplicate records, offline peer,
+  rejected/replayed requests, partial failure/retry and revocation. No personal-host
+  connection or input injection in automated tests; live validation is user-assisted.
+
+## Following: persistent-session prototype
 
 1. Diagnose input with the unchanged Moonlight/Sunshine path, including host
    permissions and interaction with a software KVM. Do not hide an input failure
