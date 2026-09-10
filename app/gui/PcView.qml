@@ -196,10 +196,7 @@ CenteredGridView {
                     errorDialog.open()
                 }
                 else if (model.paired) {
-                    // go to game view
-                    var component = Qt.createComponent("AppView.qml")
-                    var appView = component.createObject(stackView, {"computerIndex": index, "objectName": model.name})
-                    stackView.push(appView)
+                    stackView.push(Qt.resolvedUrl("DesktopSegue.qml"), {"computerIndex": index, "objectName": model.name})
                 }
                 else {
                     navigateTo("qrc:/gui/BindView.qml", "BindView")

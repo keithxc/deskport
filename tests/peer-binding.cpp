@@ -170,7 +170,7 @@ private slots:
             QVERIFY(a.port() > 0); QVERIFY(b.port() > 0);
             aId=ah.identity()["hostId"].toString(); bId=bh.identity()["hostId"].toString();
             QSignalSpy incoming(&b,&PeerManager::incomingRequest), aDone(&a,&PeerManager::peerBound), bDone(&b,&PeerManager::peerBound);
-            a.request(QString("127.0.0.1:%1").arg(b.port()));
+            a.request(QString("localhost:%1").arg(b.port()));
             QTRY_COMPARE_WITH_TIMEOUT(incoming.size(), 1, 5000);
             QTRY_VERIFY(a.status().contains("Request received"));
             QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());
@@ -179,10 +179,17 @@ private slots:
             b.approve(b.requestId());
             QTRY_COMPARE_WITH_TIMEOUT(aDone.size(),1,7000);
             QTRY_COMPARE_WITH_TIMEOUT(bDone.size(),1,7000);
+            QCOMPARE(a.peers().first().toMap()["address"].toString(), QString("localhost"));
             QVERIFY(a.peers().first().toMap()["ready"].toBool()); QVERIFY(b.peers().first().toMap()["ready"].toBool());
             auto clients=PeerStore::read(dir.path()+"/ah/state.json")["root"].toObject()["named_devices"].toArray();
             QCOMPARE(clients.size(),1); QCOMPARE(QSslCertificate(clients[0].toObject()["cert"].toString().toUtf8()),QSslCertificate(bCert));
             QFile metadata(dir.path()+"/ab/peers.json"); QVERIFY(metadata.open(QIODevice::ReadOnly)); QVERIFY(!metadata.readAll().contains("PRIVATE KEY"));
+            auto legacy = PeerStore::read(dir.path()+"/ab/peers.json");
+            auto peers = legacy["peers"].toObject();
+            auto it = peers.begin(); auto peer = it.value().toObject();
+            peer["address"] = "127.0.0.1"; peer.remove("resolvedAddress");
+            it.value() = peer; legacy["peers"] = peers;
+            QVERIFY(PeerStore::write(dir.path()+"/ab/peers.json", legacy));
         }
         {
             HostManager ah(nullptr,dir.path()+"/ah"),bh(nullptr,dir.path()+"/bh");
@@ -190,10 +197,11 @@ private slots:
             PeerManager b(&bh,bCert,bKey,dir.path()+"/bb",0,QHostAddress::LocalHost);
             QCOMPARE(ah.identity()["hostId"].toString(),aId); QCOMPARE(bh.identity()["hostId"].toString(),bId);
             QSignalSpy restored(&a,&PeerManager::peerBound); a.restoreHosts(); QCOMPARE(restored.size(),1);
+            QCOMPARE(restored.first().first().toMap()["address"].toString(), QString("localhost"));
             HostManager ch(nullptr,dir.path()+"/ch");
             PeerManager c(&ch,credential("TEST_CERT_C"),credential("TEST_KEY_C"),dir.path()+"/cb",quint16(a.peers().first().toMap()["bindingPort"].toInt()),QHostAddress::LocalHost);
             QSignalSpy substituted(&c,&PeerManager::incomingRequest);
-            a.request(QString("127.0.0.1:%1").arg(c.port()));
+            a.request(QString("localhost:%1").arg(c.port()));
             QTRY_VERIFY_WITH_TIMEOUT(!a.busy(),5000);
             QCOMPARE(substituted.size(),0); QVERIFY(c.peers().isEmpty());
             QVERIFY(a.status().contains("different device key"));
@@ -232,11 +240,11 @@ private slots:
         HostManager ah(nullptr,dir.path()+"/ah"),bh(nullptr,dir.path()+"/bh");
         PeerManager a(&ah,credential("TEST_CERT_A"),credential("TEST_KEY_A"),dir.path()+"/ab",0,QHostAddress::LocalHost);
         PeerManager b(&bh,credential("TEST_CERT_B"),credential("TEST_KEY_B"),dir.path()+"/bb",0,QHostAddress::LocalHost);
-        a.request(QString("127.0.0.1:%1").arg(b.port()));
+        a.request(QString("localhost:%1").arg(b.port()));
         QTRY_VERIFY_WITH_TIMEOUT(!b.requestId().isEmpty(),5000);
         b.reject(b.requestId());
         QTRY_VERIFY(!a.busy()); QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());
-        a.request(QString("127.0.0.1:%1").arg(b.port()));
+        a.request(QString("localhost:%1").arg(b.port()));
         QTRY_VERIFY_WITH_TIMEOUT(!b.requestId().isEmpty(),5000);
         const QString stale=b.requestId(); a.cancel(); QTRY_VERIFY(!b.busy());
         b.approve(stale); QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());

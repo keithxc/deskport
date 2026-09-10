@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Send this computer's audio to connected devices</source><translation>このコンピューターの音声を接続先のデバイスに送信</translation></message>
+    <message><source>Off by default: sound stays on this computer. Changes apply after restarting sharing.</source><translation>既定ではオフで、音声はこのコンピューターで再生されます。変更は共有の再起動後に適用されます。</translation></message>
+
     <message><source>Always show a local pointer in desktop mode</source><translation>デスクトップモードでローカルポインターを常に表示</translation></message>
     <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>ホストがカーソルを隠してもポインターを表示します。2つ表示される場合はオフにしてください。</translation></message>
     <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>MacではSuper / WindowsがCommand、AltがOptionに対応します。「常に」を選ぶとウィンドウ内でSuper + Spaceを転送します。変更は次回の接続から有効です。</translation></message>
@@ -1978,5 +1981,15 @@
         <source>Remote control requires access to the system input device.</source>
         <translation>リモート操作にはシステム入力デバイスへのアクセスが必要です。</translation>
     </message>
+</context>
+<context>
+<name>DesktopSegue</name>
+<message><source>This device has no Desktop entry. Open Applications from the device menu to choose an app.</source><translation>このデバイスに Desktop がありません。デバイスメニューの Applications からアプリを選択してください。</translation></message>
+<message><source>Another application is running on this device. Open Applications from the device menu to resume it or switch to Desktop.</source><translation>別のアプリが実行中です。デバイスメニューの Applications から再開するか Desktop に切り替えてください。</translation></message>
+<message><source>Unable to prepare the desktop connection. Try again.</source><translation>デスクトップ接続を準備できません。再試行してください。</translation></message>
+<message><source>The device disconnected. Return to Devices and try again.</source><translation>デバイスが切断されました。デバイス一覧に戻って再試行してください。</translation></message>
+<message><source>Loading the desktop timed out. Return to Devices and try again.</source><translation>デスクトップの読み込みがタイムアウトしました。デバイス一覧から再試行してください。</translation></message>
+<message><source>Connecting to desktop…</source><translation>デスクトップに接続中…</translation></message>
+<message><source>Back to devices</source><translation>デバイス一覧に戻る</translation></message>
 </context>
 </TS>

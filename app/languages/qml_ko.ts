@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Send this computer's audio to connected devices</source><translation>이 컴퓨터의 오디오를 연결된 기기로 전송</translation></message>
+    <message><source>Off by default: sound stays on this computer. Changes apply after restarting sharing.</source><translation>기본적으로 꺼져 있으며 소리는 이 컴퓨터에서 재생됩니다. 공유를 다시 시작하면 변경 사항이 적용됩니다.</translation></message>
+
     <message><source>Always show a local pointer in desktop mode</source><translation>데스크톱 모드에서 로컬 포인터 항상 표시</translation></message>
     <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>호스트가 커서를 숨겨도 포인터를 표시합니다. 포인터가 두 개 보이면 이 옵션을 끄세요.</translation></message>
     <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>Mac에서는 Super / Windows가 Command, Alt가 Option에 해당합니다. 창에서 Super + Space를 전달하려면 항상을 선택하세요. 변경 사항은 다음 연결부터 적용됩니다.</translation></message>
@@ -1978,5 +1981,15 @@
         <source>Remote control requires access to the system input device.</source>
         <translation>원격 제어에는 시스템 입력 장치 접근 권한이 필요합니다.</translation>
     </message>
+</context>
+<context>
+<name>DesktopSegue</name>
+<message><source>This device has no Desktop entry. Open Applications from the device menu to choose an app.</source><translation>이 기기에 Desktop 항목이 없습니다. 기기 메뉴의 Applications에서 앱을 선택하세요.</translation></message>
+<message><source>Another application is running on this device. Open Applications from the device menu to resume it or switch to Desktop.</source><translation>다른 앱이 실행 중입니다. 기기 메뉴의 Applications에서 재개하거나 Desktop으로 전환하세요.</translation></message>
+<message><source>Unable to prepare the desktop connection. Try again.</source><translation>데스크톱 연결을 준비할 수 없습니다. 다시 시도하세요.</translation></message>
+<message><source>The device disconnected. Return to Devices and try again.</source><translation>기기 연결이 끊어졌습니다. 기기 목록으로 돌아가 다시 시도하세요.</translation></message>
+<message><source>Loading the desktop timed out. Return to Devices and try again.</source><translation>데스크톱 로딩 시간이 초과되었습니다. 기기 목록에서 다시 시도하세요.</translation></message>
+<message><source>Connecting to desktop…</source><translation>데스크톱에 연결 중…</translation></message>
+<message><source>Back to devices</source><translation>기기 목록으로 돌아가기</translation></message>
 </context>
 </TS>

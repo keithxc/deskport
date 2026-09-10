@@ -248,12 +248,20 @@ void HostManager::start(int width, int height) {
         if (m_Starting && m_Generation == generation) { beginStop(tr("Host startup timed out; see logs")); }
     });
 }
+bool HostManager::streamAudio() const {
+    return QSettings().value("host.streamAudio", false).toBool();
+}
+void HostManager::setStreamAudio(bool enabled) {
+    QSettings().setValue("host.streamAudio", enabled);
+    emit changed();
+}
 void HostManager::startServer(int displayId) {
     m_ServerRequested = true;
     QSaveFile config(m_Directory + "/sunshine.conf");
     if (!config.open(QIODevice::WriteOnly)) { beginStop(tr("Cannot write host configuration")); return; }
     config.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
     config.write(QString("file_apps = %1/apps.json\nfile_state = %1/state.json\npkey = %1/credentials/key.pem\ncert = %1/credentials/cert.pem\ncredentials_file = %1/control.json\nlog_path = %1/sunshine.log\n").arg(m_Directory).toUtf8());
+    config.write(streamAudio() ? "stream_audio = enabled\n" : "stream_audio = disabled\n");
     QString deviceName = QHostInfo::localHostName().left(64);
     deviceName.replace('\n', ' '); deviceName.replace('\r', ' ');
     if (deviceName.trimmed().isEmpty()) deviceName = "DeskPort";

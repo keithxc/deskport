@@ -170,6 +170,8 @@ UiPage {
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Sound"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
+            Switch { text: qsTr("Send this computer's audio to connected devices"); checked: hostManager.streamAudio; onClicked: hostManager.streamAudio=checked }
+            Label { text: qsTr("Off by default: sound stays on this computer. Changes apply after restarting sharing."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Mute when DeskPort loses focus"); checked: StreamingPreferences.muteOnFocusLoss; onClicked: { StreamingPreferences.muteOnFocusLoss=checked; save() } }
             Switch { text: qsTr("Also play audio on the host"); checked: StreamingPreferences.playAudioOnHost; onClicked: { StreamingPreferences.playAudioOnHost=checked; save() } }
         }

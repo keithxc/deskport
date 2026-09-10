@@ -3,6 +3,7 @@
 set -euo pipefail
 repo=$(cd "$(dirname "$0")/.." && pwd)
 cd "$repo"
+version=$(cat app/version.txt)
 : "${DESKPORT_SIGN_IDENTITY:?Set a stable local code-signing identity; use - only for disposable development builds}"
 if [ "$DESKPORT_SIGN_IDENTITY" = - ] && [ "${DESKPORT_ALLOW_ADHOC:-0}" != 1 ]; then
     echo "Ad-hoc updates invalidate macOS privacy grants. Use a stable signing identity, or set DESKPORT_ALLOW_ADHOC=1 for a disposable build." >&2
@@ -93,5 +94,5 @@ python3 scripts/check-macos-bundle.py "$app"
 rm -rf dist/DeskPort.app
 ditto "$app" dist/DeskPort.app
 ln -s /Applications "$stage/Applications"
-hdiutil create -volname DeskPort -srcfolder "$stage" -ov -format UDZO dist/DeskPort-0.1.0-macos-arm64.dmg
-shasum -a 256 dist/DeskPort-0.1.0-macos-arm64.dmg
+hdiutil create -volname DeskPort -srcfolder "$stage" -ov -format UDZO dist/DeskPort-${version}-macos-arm64.dmg
+shasum -a 256 dist/DeskPort-${version}-macos-arm64.dmg

@@ -13,6 +13,10 @@ private slots:
         QCoreApplication::setOrganizationName("DeskPortTest");
         QCoreApplication::setApplicationName("DesktopState");
         auto prefs = StreamingPreferences::get();
+        QVERIFY(prefs->playAudioOnHost);
+        prefs->playAudioOnHost = false;
+        prefs->save(); prefs->reload();
+        QVERIFY(!prefs->playAudioOnHost);
         QVERIFY(prefs->absoluteMouseMode);
         QVERIFY(prefs->showLocalCursor);
         QCOMPARE(prefs->captureSysKeysMode, StreamingPreferences::CSK_ALWAYS);

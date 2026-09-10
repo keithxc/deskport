@@ -125,7 +125,7 @@ void StreamingPreferences::reload()
     adaptiveResolution = settings.value("adaptiveResolution", true).toBool();
     enableVsync = settings.value(SER_VSYNC, true).toBool();
     gameOptimizations = settings.value(SER_GAMEOPTS, false).toBool();
-    playAudioOnHost = settings.value(SER_HOSTAUDIO, false).toBool();
+    playAudioOnHost = settings.value(SER_HOSTAUDIO, true).toBool();
     multiController = settings.value(SER_MULTICONT, false).toBool();
     enableMdns = settings.value(SER_MDNS, true).toBool();
     quitAppAfter = settings.value(SER_QUITAPPAFTER, false).toBool();

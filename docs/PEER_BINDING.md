@@ -70,3 +70,13 @@ injects input. The existing lifecycle suite and Linux package build remain requi
 Live acceptance: initiate one request, approve once, verify both device lists and
 both-direction picture/input, restart without another approval, then verify local
 revocation. Pairing status alone does not establish working capture or input.
+
+## Remembered addresses (2026-09-10)
+
+Outgoing bindings retain the locally entered hostname, with the binding and
+streaming ports kept separate. Connections resolve that name again rather than
+reusing the IP returned during binding. Older bindings recover the hostname from
+`requestedAddress` when loaded. Incoming bindings without a locally entered name
+continue to use the observed peer IP; a remote display name is not a DNS name.
+Pinned certificates and host identities still govern authentication. DNS must
+still provide a working route; retaining a name does not bypass a broken proxy.

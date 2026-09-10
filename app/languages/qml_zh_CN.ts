@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Send this computer's audio to connected devices</source><translation>将本机声音传给连接设备</translation></message>
+    <message><source>Off by default: sound stays on this computer. Changes apply after restarting sharing.</source><translation>默认关闭：声音留在本机播放。更改在重新启动共享后生效。</translation></message>
+
     <message><source>Always show a local pointer in desktop mode</source><translation>桌面模式始终显示本地光标</translation></message>
     <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>主机隐藏鼠标时仍显示光标。如果出现两个光标，可关闭此选项。</translation></message>
     <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>连接 Mac 时，Super / Windows 对应 Command，Alt 对应 Option。选择“始终”可在窗口中转发 Super + 空格。更改在下次连接时生效。</translation></message>
@@ -1978,5 +1981,15 @@
         <source>Remote control requires access to the system input device.</source>
         <translation>远程控制需要访问系统输入设备。</translation>
     </message>
+</context>
+<context>
+<name>DesktopSegue</name>
+<message><source>This device has no Desktop entry. Open Applications from the device menu to choose an app.</source><translation>此设备没有桌面入口。请从设备菜单打开“应用程序”选择应用。</translation></message>
+<message><source>Another application is running on this device. Open Applications from the device menu to resume it or switch to Desktop.</source><translation>此设备正在运行其他应用。请从设备菜单打开“应用程序”恢复会话或切换到桌面。</translation></message>
+<message><source>Unable to prepare the desktop connection. Try again.</source><translation>无法准备桌面连接，请重试。</translation></message>
+<message><source>The device disconnected. Return to Devices and try again.</source><translation>设备已断开。请返回设备列表重试。</translation></message>
+<message><source>Loading the desktop timed out. Return to Devices and try again.</source><translation>加载桌面超时。请返回设备列表重试。</translation></message>
+<message><source>Connecting to desktop…</source><translation>正在连接桌面…</translation></message>
+<message><source>Back to devices</source><translation>返回设备列表</translation></message>
 </context>
 </TS>

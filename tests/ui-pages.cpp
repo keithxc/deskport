@@ -29,6 +29,21 @@ signals:
     void sessionFinished(int result);
     void readyForDeletion();
 };
+static QString desktopTestState;
+static TestSession* desktopTestSession;
+static int desktopCreateCalls;
+class TestDesktopApps : public QObject {
+    Q_OBJECT
+public:
+    using QObject::QObject;
+    Q_INVOKABLE void initialize(QObject*, int, bool) {}
+    Q_INVOKABLE QVariantMap desktopTarget() const {
+        return {{"state", desktopTestState}, {"index", 0}, {"name", "Desktop"}, {"resume", false}};
+    }
+    Q_INVOKABLE TestSession* createSessionForApp(int) { ++desktopCreateCalls; return desktopTestSession; }
+signals:
+    void computerLost();
+};
 class TestPreferences : public QObject {
     Q_OBJECT
 public:
@@ -41,6 +56,7 @@ class UiPages : public QObject {
 private slots:
     void initTestCase() {
         qmlRegisterType<TestSession>("Session",1,0,"Session");
+        qmlRegisterType<TestDesktopApps>("AppModel",1,0,"AppModel");
         qmlRegisterSingletonType<QObject>("SdlGamepadKeyNavigation",1,0,"SdlGamepadKeyNavigation",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { function enable() {} function disable() {} function getConnectedGamepads() { return 0 } }",QUrl()); return c.create();
         });
@@ -111,6 +127,58 @@ ApplicationWindow {
         QVERIFY(root->property("navigationVisible").toBool());
         QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
+    void desktopShortcut_data() {
+        QTest::addColumn<QString>("state");
+        for (const auto& value : {"ready", "waiting", "missing", "busy", "cancel"}) QTest::newRow(value) << QString(value);
+    }
+    void desktopShortcut() {
+        QFETCH(QString, state);
+        desktopTestState = state == "cancel" ? "waiting" : state; desktopCreateCalls = 0;
+        QQmlEngine engine;
+        TestSession session; desktopTestSession = &session;
+        QQmlEngine::setObjectOwnership(&session, QQmlEngine::CppOwnership);
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600
+ property alias currentPage: stackView.currentItem
+ property alias depth: stackView.depth
+ QtObject { id: streamSegueErrorDialog; property string text: ""; property bool quitAfter: false; function open() {} }
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function start() { stackView.push(Qt.resolvedUrl("DesktopSegue.qml"), {computerIndex: 0}, StackView.Immediate) }
+ function back() { stackView.pop(StackView.Immediate) }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/desktop-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"start"));
+        if (state == "cancel") {
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
+            desktopTestState = "ready";
+            QTest::qWait(300);
+            QCOMPARE(desktopCreateCalls,0);
+            QCOMPARE(root->property("depth").toInt(),1);
+            return;
+        }
+        if (state == "waiting") {
+            QTest::qWait(250);
+            QCOMPARE(desktopCreateCalls,0);
+            desktopTestState = "ready";
+        } else if (state != "ready") {
+            QCOMPARE(desktopCreateCalls,0);
+            auto page=root->property("currentPage").value<QObject*>(); QVERIFY(page);
+            QTRY_VERIFY(!page->property("errorText").toString().isEmpty());
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
+            QCOMPARE(root->property("depth").toInt(),1);
+            return;
+        }
+        QTRY_COMPARE(session.executions,1);
+        QCOMPARE(desktopCreateCalls,1);
+        QCOMPARE(root->property("depth").toInt(),2);
+        emit session.sessionFinished(0);
+        QTRY_COMPARE(root->property("depth").toInt(),1);
+        QTest::qWait(250);
+        QCOMPARE(desktopCreateCalls,1);
+    }
     void pagesLoadWithoutChangingAccessOrSettings() {
         QTemporaryDir dir;
         HostManager host(nullptr,dir.path()+"/host");
@@ -177,7 +245,10 @@ ApplicationWindow {
         QVERIFY2(bad.isEmpty(),qPrintable(bad.join('\n')));
     }
     void commonLanguagesRetranslateSettings() {
+        QTemporaryDir directory;
+        HostManager host(nullptr, directory.path());
         QQmlEngine engine;
+        engine.rootContext()->setContextProperty("hostManager", &host);
         const QString gui=qEnvironmentVariable("TEST_GUI_DIR");
         QQmlComponent themeComponent(&engine,QUrl::fromLocalFile(gui+"/UiTheme.qml"));
         QScopedPointer<QObject> theme(themeComponent.create()); QVERIFY(theme);

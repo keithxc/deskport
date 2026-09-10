@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Send this computer's audio to connected devices</source><translation>Enviar el audio de este equipo a los dispositivos conectados</translation></message>
+    <message><source>Off by default: sound stays on this computer. Changes apply after restarting sharing.</source><translation>Desactivado de forma predeterminada: el sonido se reproduce en este equipo. Los cambios se aplican al reiniciar el uso compartido.</translation></message>
+
     <message><source>Always show a local pointer in desktop mode</source><translation>Mostrar siempre un puntero local en modo escritorio</translation></message>
     <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>El puntero sigue visible si el anfitrión oculta su cursor. Desactiva esta opción si aparecen dos punteros.</translation></message>
     <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>En Mac, Super / Windows corresponde a Comando y Alt a Opción. Elige Siempre para enviar Super + Espacio en una ventana. Los cambios se aplican en la próxima conexión.</translation></message>
@@ -1978,5 +1981,15 @@
         <source>Remote control requires access to the system input device.</source>
         <translation>El control remoto requiere acceso al dispositivo de entrada del sistema.</translation>
     </message>
+</context>
+<context>
+<name>DesktopSegue</name>
+<message><source>This device has no Desktop entry. Open Applications from the device menu to choose an app.</source><translation>Este dispositivo no tiene una entrada Desktop. Elija una aplicación en Aplicaciones, en el menú del dispositivo.</translation></message>
+<message><source>Another application is running on this device. Open Applications from the device menu to resume it or switch to Desktop.</source><translation>Hay otra aplicación en ejecución. Abra Aplicaciones en el menú del dispositivo para reanudarla o cambiar al escritorio.</translation></message>
+<message><source>Unable to prepare the desktop connection. Try again.</source><translation>No se pudo preparar la conexión al escritorio. Inténtelo de nuevo.</translation></message>
+<message><source>The device disconnected. Return to Devices and try again.</source><translation>El dispositivo se desconectó. Vuelva a Dispositivos e inténtelo de nuevo.</translation></message>
+<message><source>Loading the desktop timed out. Return to Devices and try again.</source><translation>Se agotó el tiempo de carga del escritorio. Vuelva a Dispositivos e inténtelo de nuevo.</translation></message>
+<message><source>Connecting to desktop…</source><translation>Conectando al escritorio…</translation></message>
+<message><source>Back to devices</source><translation>Volver a Dispositivos</translation></message>
 </context>
 </TS>

@@ -1,5 +1,6 @@
 #include "computermanager.h"
 #include "localhostfilter.h"
+#include "hostports.h"
 #include "boxartmanager.h"
 #include "nvhttp.h"
 #include "nvpairingmanager.h"
@@ -15,6 +16,18 @@
 
 #define SER_HOSTS "hosts"
 #define SER_HOSTS_BACKUP "hostsbackup"
+
+// Caller holds the computer lock when polling can mutate its fields.
+static bool outsideDiscoveryScope(const NvComputer* host)
+{
+    // Preserve explicitly added or paired services, even on third-party ports.
+    if (!host->manualAddress.isNull() || !host->serverCert.isNull()) return false;
+    for (const auto& address : {host->localAddress, host->remoteAddress, host->ipv6Address}) {
+        if (!address.isNull() && DeskPortNetwork::isPrivateBase(address.port())) return false;
+    }
+    return true;
+}
+
 
 class PcMonitorThread : public QThread
 {
@@ -359,6 +372,7 @@ void ComputerManager::startPolling()
         m_MdnsBrowser = new QMdnsEngine::Browser(m_MdnsServer.data(), "_nvstream._tcp.local.");
         connect(m_MdnsBrowser, &QMdnsEngine::Browser::serviceAdded,
                 this, [this](const QMdnsEngine::Service& service) {
+            if (!DeskPortNetwork::isPrivateBase(service.port())) return;
             qInfo() << "Discovered mDNS host:" << service.hostname();
 
             MdnsPendingComputer* pendingComputer = new MdnsPendingComputer(m_MdnsServer, service);
@@ -384,6 +398,10 @@ void ComputerManager::startPollingComputer(NvComputer* computer)
 {
     if (m_PollingRef == 0) {
         return;
+    }
+    {
+        QReadLocker hostLock(&computer->lock);
+        if (outsideDiscoveryScope(computer)) return;
     }
 
     ComputerPollingEntry* pollingEntry;
@@ -477,7 +495,8 @@ QVector<NvComputer*> ComputerManager::getComputers()
     const auto interfaces = QNetworkInterface::allAddresses();
     hosts.erase(std::remove_if(hosts.begin(), hosts.end(), [&](NvComputer* host) {
         QReadLocker hostLock(&host->lock);
-        return DeskPortNetwork::isLocalHostAddress(host->localAddress.address(), interfaces) ||
+        return outsideDiscoveryScope(host) ||
+               DeskPortNetwork::isLocalHostAddress(host->localAddress.address(), interfaces) ||
                DeskPortNetwork::isLocalHostAddress(host->manualAddress.address(), interfaces) ||
                DeskPortNetwork::isLocalHostAddress(host->ipv6Address.address(), interfaces);
     }), hosts.end());
@@ -811,7 +830,8 @@ private:
     void run()
     {
         // Ignore our own mDNS advertisements before probing or saving another UUID.
-        if (m_Mdns && DeskPortNetwork::isLocalHostAddress(m_Address.address())) return;
+        if (m_Mdns && (!DeskPortNetwork::isPrivateBase(m_Address.port()) ||
+                       DeskPortNetwork::isLocalHostAddress(m_Address.address()))) return;
         NvHTTP http(m_Address, 0, QSslCertificate());
 
         qInfo() << "Processing new PC at" << m_Address.toString() << "from" << (m_Mdns ? "mDNS" : "user") << "with IPv6 address" << m_MdnsIpv6Address.toString();
@@ -993,7 +1013,11 @@ bool ComputerManager::addBoundHost(QVariantMap peer) {
     const QString address = peer.value("address").toString();
     const int port = peer.value("hostPort").toInt();
     const QSslCertificate certificate(peer.value("hostCert").toString().toUtf8());
-    if (uuid.isEmpty() || QHostAddress(address).isNull() || port < 1024 || port > 65514 || certificate.isNull()) return false;
+    // Match the URL-based HTTP transport: bound endpoints may be DNS names.
+    QUrl endpoint;
+    endpoint.setScheme("https");
+    endpoint.setHost(address);
+    if (uuid.isEmpty() || !endpoint.isValid() || endpoint.host().isEmpty() || port < 1024 || port > 65514 || certificate.isNull()) return false;
     NvComputer* host;
     {
         QWriteLocker lock(&m_Lock);

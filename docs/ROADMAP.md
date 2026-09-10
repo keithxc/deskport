@@ -412,3 +412,68 @@ client resize, input and end-to-end image acceptance remain pending.
 - Validation: Linux `nix build`, isolated CLI smoke, desktop-state and QML
   regression suites and translation checks passed. Live video packet capture
   and stability on the affected mobile link remain acceptance checks.
+
+### Durable binding addresses and local host audio (2026-09-10)
+
+Reason: resolved proxy addresses can become stale, and desktop audio should stay
+on the computer producing it by default.
+
+- Retain locally entered DNS names for outgoing bindings and restore names from
+  older saved requests. Keep certificate pinning and separate service ports.
+- Disable host audio streaming by default using Sunshine's `stream_audio` setting.
+  Sound settings can opt in after restarting sharing. New viewer preferences keep
+  host audio playing; explicit existing viewer choices remain intact.
+- Validation: Linux package build, hostname binding/legacy recovery/key-change
+  rejection, desktop preference persistence, generated host audio configuration,
+  and seven translated catalogs passed. The binding suite ran 11 checks successfully;
+  its macOS-only adaptive-display check failed on Linux because that feature is
+  unavailable there. macOS build/native audio acceptance remain pending.
+  Installed applications and the active session have not been restarted.
+
+### Installed update verification (2026-09-10)
+
+- Fixed the device-list importer to accept URL-valid DNS hosts as well as numeric
+  addresses; otherwise restored hostname bindings were rejected at import.
+- Built and installed both Linux and macOS clients from matching source changes.
+  macOS keeps the existing signed host/display helpers and signing identity.
+- macOS binding tests: 12 passed. Host lifecycle tests: 26 passed. Bundle signature
+  and dependency validation passed. Linux `nix build` passed.
+- Both running host configurations disable audio streaming. Native macOS settings
+  show the new switch disabled, and the saved viewer address retains its hostname.
+- Remaining network issue: TLS through proxy DNS can time out even when direct VPN
+  TLS succeeds with the same pinned identity. Saving a hostname does not fix that
+  routing problem. End-to-end sound playback is not recorded as verified.
+
+### Scope automatic discovery to DeskPort ports (2026-09-10)
+
+Reason: independent Sunshine and DeskPort services on one computer have the same
+machine name and were both added automatically.
+
+- Only probe mDNS advertisements using the DeskPort base-port family: 48989 plus
+  increments of 100 through 50889. Reject unrelated service ports before resolving
+  or querying their server information.
+- Hide and stop polling older unpaired, automatically discovered entries outside
+  this family. Preserve their stored data and explicitly added or paired services.
+- Manual addition and approved bindings continue to support explicit custom ports.
+- Validation: Linux `nix build`, 26 macOS host lifecycle checks, and macOS bundle
+  signature/dependency validation passed. Installed and restarted both clients.
+  Existing native-service records are retained on disk but excluded from discovery
+  and the visible device list unless explicitly added or paired.
+
+### Connect directly to the desktop (2026-09-10)
+
+Reason: selecting Desktop or Steam after selecting a device adds an unnecessary
+step to the normal remote-desktop workflow.
+
+- Clicking an online paired device loads and launches its Desktop entry directly,
+  or resumes that desktop session. A brief loading page handles uncached app lists.
+- Replace the loading page with the stream so disconnect returns to Devices.
+  Leaving the loading page cancels pending launch and does not reconnect later.
+- Never launch Steam or terminate another running application implicitly. Missing
+  Desktop entries and busy hosts show actionable messages. The device menu retains
+  Applications as an explicit fallback for custom hosts and other applications.
+- Validation: 10 isolated QML checks passed, covering immediate and delayed launch,
+  missing Desktop, busy hosts, cancellation and return to Devices after disconnect.
+  Seven-language coverage, Linux `nix build`, macOS compilation and signed-bundle
+  validation passed. Installed and restarted both clients. Native end-to-end
+  desktop/input acceptance remains a manual check.

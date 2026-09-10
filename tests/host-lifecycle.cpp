@@ -46,8 +46,12 @@ private slots:
     void separateFromNativePortFamily() {
         QVERIFY(!DeskPortNetwork::isPrivateBase(47989));
         QVERIFY(!DeskPortNetwork::isPrivateBase(65535));
+        QVERIFY(!DeskPortNetwork::isPrivateBase(DeskPortNetwork::DefaultBasePort + DeskPortNetwork::PortChoices * DeskPortNetwork::PortStep));
         for (int i = 0; i < DeskPortNetwork::PortChoices; ++i) {
             const int base = DeskPortNetwork::DefaultBasePort + i * DeskPortNetwork::PortStep;
+            QVERIFY(DeskPortNetwork::isPrivateBase(base));
+            QVERIFY(!DeskPortNetwork::isPrivateBase(base - 5));
+            QVERIFY(!DeskPortNetwork::isPrivateBase(base + 1));
             QVERIFY(base - 5 > 48010);
             QVERIFY(base + 21 <= 65535);
         }
@@ -134,6 +138,7 @@ private slots:
         QVERIFY(config.open(QIODevice::ReadOnly));
         const auto contents = config.readAll();
         QVERIFY(contents.contains(QString("port = %1\n").arg(host.basePort()).toUtf8()));
+        QVERIFY(contents.contains("stream_audio = disabled\n"));
         QVERIFY(contents.contains("upnp = disabled\n"));
         QVERIFY(contents.contains("system_tray = disabled\n"));
         host.stop();

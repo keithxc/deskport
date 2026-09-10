@@ -28,6 +28,7 @@ public:
     Q_INVOKABLE void initialize(ComputerManager* computerManager, int computerIndex, bool showHiddenGames);
 
     Q_INVOKABLE Session* createSessionForApp(int appIndex);
+    Q_INVOKABLE QVariantMap desktopTarget() const;
 
     Q_INVOKABLE int getDirectLaunchAppIndex();
 

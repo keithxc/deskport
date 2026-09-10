@@ -3,6 +3,7 @@
 #include "nvaddress.h"
 #include "localhostfilter.h"
 #include <QSslSocket>
+#include <QUrl>
 #include <QSslError>
 #include <QNetworkProxy>
 #include <QStandardPaths>
@@ -16,6 +17,14 @@
 namespace {
 constexpr int MaxFrame = 32768;
 QString fingerprint(const QSslCertificate& cert) { return QString::fromLatin1(cert.digest(QCryptographicHash::Sha256).toHex()); }
+QString requestedHost(const QString& endpoint) {
+    if (endpoint.isEmpty()) return {};
+    const auto url = QUrl::fromUserInput("https://" + endpoint.trimmed());
+    if (!url.isValid() || url.host().isEmpty() || !url.userInfo().isEmpty() ||
+        url.path().size() > 1 || url.hasQuery() || url.hasFragment() ||
+        url.port(48991) <= 0 || url.port(48991) > 65535) return {};
+    return url.host();
+}
 QString trustId(const QString& fp) {
     return fp.mid(0,8)+"-"+fp.mid(8,4)+"-"+fp.mid(12,4)+"-"+fp.mid(16,4)+"-"+fp.mid(20,12);
 }
@@ -48,6 +57,17 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
     bool ok;
     const auto saved = PeerStore::read(m_Path, &ok);
     m_Peers = saved["peers"].toObject();
+    // Older versions saved the resolved socket IP, including temporary DNS IPs.
+    // Recover the locally entered endpoint without changing the pinned identity.
+    for (auto it = m_Peers.begin(); it != m_Peers.end(); ++it) {
+        auto peer = it.value().toObject();
+        const auto hostName = requestedHost(peer["requestedAddress"].toString());
+        if (!hostName.isEmpty()) {
+            if (!peer.contains("resolvedAddress")) peer["resolvedAddress"] = peer["address"];
+            peer["address"] = hostName;
+            it.value() = peer;
+        }
+    }
     m_Healthy = ok && (saved.isEmpty() || (saved["version"].toInt() == 1 && saved["peers"].isObject())) && m_Host->available() && !m_Certificate.isNull() && !m_Key.isNull() && m_Host->prepareIdentity(cert, key);
     connect(host, &HostManager::trustUpdated, this, &PeerManager::granted);
     connect(host, &HostManager::displayResized, this, [this](int seq, int width, int height, const QString& error) {
@@ -135,7 +155,7 @@ void PeerManager::attach(Link* link) {
         const auto address = link->socket->peerAddress().toString();
         for (auto it = m_Peers.begin(); it != m_Peers.end(); ++it) {
             const auto peer = it.value().toObject();
-            if (!link->incoming && ((peer["address"].toString() == address && peer["bindingPort"].toInt(48991) == link->socket->peerPort()) ||
+            if (!link->incoming && (((peer["address"].toString() == address || peer["resolvedAddress"].toString() == address) && peer["bindingPort"].toInt(48991) == link->socket->peerPort()) ||
                  (!link->requestedAddress.isEmpty() && peer["requestedAddress"].toString() == link->requestedAddress)) &&
                     it.key() != link->fingerprint) {
                 fail(link, tr("This address has a different device key. Remove the old binding before replacing it.")); return;
@@ -199,7 +219,9 @@ bool PeerManager::acceptMetadata(Link* link, const QJsonObject& metadata) {
         id == m_Host->identity()["hostId"].toString() || port < 1024 || port > 65514 ||
         metadata["name"].toString().trimmed().isEmpty() || metadata["name"].toString().size() > 64) return false;
     link->peer = metadata;
-    link->peer["address"] = link->socket->peerAddress().toString();
+    link->peer["resolvedAddress"] = link->socket->peerAddress().toString();
+    const auto hostName = requestedHost(link->requestedAddress);
+    link->peer["address"] = hostName.isEmpty() ? link->socket->peerAddress().toString() : hostName;
     link->peer["requestedAddress"] = link->requestedAddress;
     link->peer["clientCert"] = QString::fromUtf8(link->socket->peerCertificate().toPem());
     return true;

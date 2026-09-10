@@ -47,6 +47,19 @@ Session* AppModel::createSessionForApp(int appIndex)
     return new Session(m_Computer, app);
 }
 
+QVariantMap AppModel::desktopTarget() const
+{
+    for (int i = 0; i < m_VisibleApps.size(); ++i) {
+        const auto& app = m_VisibleApps[i];
+        if (app.name.trimmed().compare("Desktop", Qt::CaseInsensitive) != 0) continue;
+        if (m_CurrentGameId != 0 && m_CurrentGameId != app.id)
+            return {{"state", "busy"}};
+        return {{"state", "ready"}, {"index", i}, {"name", app.name},
+                {"resume", m_CurrentGameId == app.id}};
+    }
+    return {{"state", m_AllApps.isEmpty() ? "waiting" : "missing"}};
+}
+
 int AppModel::getDirectLaunchAppIndex()
 {
     for (int i = 0; i < m_VisibleApps.count(); i++) {
