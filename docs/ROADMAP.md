@@ -13,7 +13,8 @@ Product direction (2026-09-09): a single application with both viewer and option
 host roles, one explicit mutual-pairing flow and a shared device list. See
 [the architecture](ARCHITECTURE.md) for component, permission and delivery boundaries.
 The macOS preview bundles all three components and manages incoming PIN pairing.
-Reciprocal access through one mutual-pairing flow remains planned.
+The mutual-binding preview supports one recipient approval; reciprocal streaming
+still requires manual acceptance.
 
 ## Binding delivery correction (2026-09-10)
 
@@ -21,7 +22,9 @@ Binding requests now distinguish connecting from recipient acknowledgment. The
 actual approval QML component is covered by an isolated request/cancel test.
 QML caches are keyed by resource content so reproducible builds cannot reuse
 an older interface with identical resource timestamps. Discovery advertises the computer hostname instead of a fixed product name.
-Two-computer approval and reciprocal streaming remain a manual acceptance gate.
+Validated on two computers: request delivery, recipient approval, saved bindings
+in both directions, and host availability after restart. Reciprocal streaming
+remains a manual acceptance gate.
 
 ## Implemented in the bootstrap
 
