@@ -15,10 +15,10 @@ CenteredGridView {
     id: pcGrid
     focus: true
     activeFocusOnTab: true
-    topMargin: 20
+    topMargin: 24
     bottomMargin: 5
-    cellWidth: 310; cellHeight: 330;
-    objectName: qsTr("Computers")
+    cellWidth: 310; cellHeight: 235;
+    objectName: qsTr("Devices")
 
     Component.onCompleted: {
         // Don't show any highlighted item until interacting with them.
@@ -87,80 +87,30 @@ CenteredGridView {
         return model
     }
 
-    Row {
-        anchors.centerIn: parent
-        spacing: 5
+    Column {
+        anchors.centerIn: parent; width: Math.min(parent.width - 64, 460); spacing: 16
         visible: pcGrid.count === 0
-
-        BusyIndicator {
-            id: searchSpinner
-            visible: StreamingPreferences.enableMdns
-        }
-
-        Label {
-            height: searchSpinner.height
-            elide: Label.ElideRight
-            text: StreamingPreferences.enableMdns ? qsTr("Searching for compatible hosts on your local network...")
-                                                  : qsTr("Automatic PC discovery is disabled. Add your PC manually.")
-            font.pointSize: 20
-            verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.Wrap
-        }
+        Label { width: parent.width; text: qsTr("Your computers, together."); color: ui.text; font.pixelSize: 28; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+        Label { width: parent.width; text: qsTr("Add a device by IP address or name. Confirm once on the other computer, then connect in either direction."); color: ui.muted; font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+        Button { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Add a device"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+        Label { width: parent.width; text: StreamingPreferences.enableMdns ? qsTr("Nearby devices appear here automatically") : qsTr("Nearby discovery is off in Settings"); color: ui.muted; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
     }
 
     model: computerModel
 
     delegate: NavigableItemDelegate {
-        width: 300; height: 320;
+        width: 294; height: 218;
+        padding: 0
+        background: Item {}
         grid: pcGrid
 
         property alias pcContextMenu : pcContextMenuLoader.item
 
-        Image {
-            id: pcIcon
-            anchors.horizontalCenter: parent.horizontalCenter
-            source: "qrc:/res/desktop_windows-48px.svg"
-            sourceSize {
-                width: 200
-                height: 200
-            }
-        }
-
-        Image {
-            // TODO: Tooltip
-            id: stateIcon
-            anchors.horizontalCenter: pcIcon.horizontalCenter
-            anchors.verticalCenter: pcIcon.verticalCenter
-            anchors.verticalCenterOffset: !model.online ? -18 : -16
-            visible: !model.statusUnknown && (!model.online || !model.paired)
-            source: !model.online ? "qrc:/res/warning_FILL1_wght300_GRAD200_opsz24.svg" : "qrc:/res/baseline-lock-24px.svg"
-            sourceSize {
-                width: !model.online ? 75 : 70
-                height: !model.online ? 75 : 70
-            }
-        }
-
-        BusyIndicator {
-            id: statusUnknownSpinner
-            anchors.horizontalCenter: pcIcon.horizontalCenter
-            anchors.verticalCenter: pcIcon.verticalCenter
-            anchors.verticalCenterOffset: -15
-            width: 75
-            height: 75
-            visible: model.statusUnknown
-        }
-
-        Label {
-            id: pcNameText
-            text: model.name
-
-            width: parent.width
-            anchors.top: pcIcon.bottom
-            anchors.bottom: parent.bottom
-            font.pointSize: 36
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.Wrap
-            elide: Text.ElideRight
+        contentItem: DeviceCard {
+            deviceName: model.name; address: model.address
+            online: model.online; paired: model.paired; unknown: model.statusUnknown
+            selected: parent.hovered || parent.highlighted
+            onMoreRequested: if (pcContextMenuLoader.item) pcContextMenuLoader.item.open()
         }
 
         Loader {
@@ -175,13 +125,23 @@ CenteredGridView {
                 }
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
-                    text: qsTr("View All Apps")
+                    text: qsTr("Applications")
                     onTriggered: {
                         var component = Qt.createComponent("AppView.qml")
                         var appView = component.createObject(stackView, {"computerIndex": index, "objectName": model.name, "showHiddenGames": true})
                         stackView.push(appView)
                     }
                     visible: model.online && model.paired
+                }
+                NavigableMenuItem {
+                    parentMenu: pcContextMenu
+                    text: qsTr("Pair with a legacy PIN")
+                    visible: model.online && !model.paired
+                    onTriggered: {
+                        var pin = computerModel.generatePinString()
+                        computerModel.pairComputer(index, pin)
+                        pairDialog.pin = pin; pairDialog.open()
+                    }
                 }
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
@@ -200,7 +160,7 @@ CenteredGridView {
 
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
-                    text: qsTr("Rename PC")
+                    text: qsTr("Rename device")
                     onTriggered: {
                         renamePcDialog.pcIndex = index
                         renamePcDialog.originalName = model.name
@@ -209,7 +169,7 @@ CenteredGridView {
                 }
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
-                    text: qsTr("Delete PC")
+                    text: qsTr("Remove from list")
                     onTriggered: {
                         deletePcDialog.pcIndex = index
                         deletePcDialog.pcName = model.name
@@ -230,7 +190,7 @@ CenteredGridView {
         onClicked: {
             if (model.online) {
                 if (!model.serverSupported) {
-                    errorDialog.text = qsTr("The version of GeForce Experience on %1 is not supported by this build of Moonlight. You must update Moonlight to stream from %1.").arg(model.name)
+                    errorDialog.text = qsTr("The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.").arg(model.name)
                     errorDialog.helpText = ""
                     errorDialog.open()
                 }
@@ -241,14 +201,9 @@ CenteredGridView {
                     stackView.push(appView)
                 }
                 else {
-                    var pin = computerModel.generatePinString()
+                    navigateTo("qrc:/gui/BindView.qml", "BindView")
+                    stackView.currentItem.setAddress(model.hostAddress)
 
-                    // Kick off pairing in the background
-                    computerModel.pairComputer(index, pin)
-
-                    // Display the pairing dialog
-                    pairDialog.pin = pin
-                    pairDialog.open()
                 }
             } else if (!model.online) {
                 // Using open() here because it may be activated by keyboard

@@ -581,3 +581,8 @@ macx {
 
 VERSION = "$$cat(version.txt)"
 DEFINES += VERSION_STR=\\\"$$cat(version.txt)\\\"
+
+macx {
+    OBJECTIVE_SOURCES += backend/macpermissions.mm
+    LIBS += -framework AVFoundation -framework ApplicationServices
+}

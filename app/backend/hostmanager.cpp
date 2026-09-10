@@ -26,6 +26,8 @@
 #include <QHostInfo>
 #ifdef Q_OS_MACOS
 #include <CoreGraphics/CoreGraphics.h>
+#include <ApplicationServices/ApplicationServices.h>
+#include "macpermissions.h"
 #endif
 
 HostManager::HostManager(QObject *parent, const QString &directory) : QObject(parent) {
@@ -348,14 +350,54 @@ void HostManager::pair(const QString &pin, const QString &name) {
         });
     });
 }
+QString HostManager::deviceName() const { return QHostInfo::localHostName(); }
+QUrl HostManager::applicationUrl() const {
+#ifdef Q_OS_MACOS
+    return QUrl::fromLocalFile(QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../.."));
+#else
+    return QUrl::fromLocalFile(QCoreApplication::applicationFilePath());
+#endif
+}
+bool HostManager::setupComplete() const { return QSettings().value("setup/completed", false).toBool(); }
+void HostManager::completeSetup() { QSettings().setValue("setup/completed", true); emit permissionsChanged(); }
+void HostManager::refreshPermissions() { emit permissionsChanged(); }
+QVariantList HostManager::permissions() const {
+    QVariantList result;
+    const auto add = [&result](const QString& key, const QString& title, const QString& purpose, const QString& state) {
+        result.append(QVariantMap{{"key",key}, {"title",title}, {"purpose",purpose}, {"state",state}});
+    };
+#ifdef Q_OS_MACOS
+    add("screen", tr("Screen & system audio"), tr("Let a connected device see this desktop and hear its sound."),
+        CGPreflightScreenCaptureAccess() ? "allowed" : "denied");
+    add("input", tr("Keyboard & mouse"), tr("Let a device you approve control this computer."),
+        AXIsProcessTrusted() ? "allowed" : "denied");
+    add("microphone", tr("Audio input"), tr("Needed only when your sharing audio path uses microphone access."), deskPortMicrophoneStatus());
+#else
+    add("screen", tr("Desktop capture"), tr("KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts."), "onShare");
+    add("input", tr("Keyboard & mouse"), tr("Remote control requires access to the system input device."),
+        QFileInfo("/dev/uinput").isWritable() ? "allowed" : "needsSetup");
+#endif
+    return result;
+}
+void HostManager::revealApplication() {
+#ifdef Q_OS_MACOS
+    QProcess::startDetached("/usr/bin/open", {"-R", applicationUrl().toLocalFile()});
+#endif
+}
 void HostManager::permission(const QString &kind) {
 #ifdef Q_OS_MACOS
     if (kind == "screen") CGRequestScreenCaptureAccess();
     else if (kind == "input") CGRequestPostEventAccess();
-    if (kind == "screen" || kind == "input") QDesktopServices::openUrl(QUrl(
-        "x-apple.systempreferences:com.apple.preference.security?Privacy_" +
-        QString(kind == "screen" ? "ScreenCapture" : "Accessibility")));
+    QString pane;
+    if (kind == "screen") pane = "ScreenCapture";
+    else if (kind == "input") pane = "Accessibility";
+    else if (kind == "microphone") pane = "Microphone";
+    if (!pane.isEmpty()) QDesktopServices::openUrl(QUrl(
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_" + pane));
+#else
+    Q_UNUSED(kind);
 #endif
+    refreshPermissions();
 }
 void HostManager::openLogs() { QDesktopServices::openUrl(QUrl::fromLocalFile(m_Directory)); }
 

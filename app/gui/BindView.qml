@@ -2,53 +2,65 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
-ScrollView {
-    objectName: qsTr("Bind device")
-    ColumnLayout {
-        width: parent.width
-        spacing: 16
-        Label { text: qsTr("Bind once. Connect in either direction."); font.pixelSize: 26; Layout.margins: 20 }
-        Label {
-            text: qsTr("Enter the other computer's IP address or domain. It must have DeskPort open. The other person confirms once; both computers save each other and enable desktop sharing.")
-            textFormat: Text.PlainText
-            wrapMode: Text.WordWrap; Layout.fillWidth: true; Layout.leftMargin: 20; Layout.rightMargin: 20
-        }
-        RowLayout {
-            Layout.leftMargin: 20; Layout.rightMargin: 20
-            TextField { id: address; placeholderText: qsTr("IP address or domain"); Layout.preferredWidth: 320; enabled: !peerManager.busy }
-            Button { text: qsTr("Request binding"); enabled: !peerManager.busy && address.text.trim().length > 0; onClicked: peerManager.request(address.text) }
-            Button { text: qsTr("Cancel request"); enabled: peerManager.busy; onClicked: peerManager.cancel() }
-        }
-        Label {
-            text: peerManager.status; textFormat: Text.PlainText
-            wrapMode: Text.WordWrap; Layout.fillWidth: true; Layout.leftMargin: 20; Layout.rightMargin: 20
-        }
-        Label {
-            text: qsTr("Binding port: %1 (default 48991). Use address:port for a custom binding endpoint. System permissions are still required on each computer.").arg(peerManager.port)
-            wrapMode: Text.WordWrap; Layout.fillWidth: true; Layout.leftMargin: 20; Layout.rightMargin: 20
-        }
-        Label { text: qsTr("Saved bindings"); font.pixelSize: 20; Layout.leftMargin: 20 }
-        Repeater {
-            model: peerManager.peers
+UiPage {
+    id: page
+    objectName: qsTr("Add a device")
+    heading: qsTr("One confirmation. Both directions.")
+    description: qsTr("Keep DeskPort open on both computers. Enter an address, then approve the request on the other device.")
+    function setAddress(value) { address.text = value }
+    UiCard {
+        ColumnLayout {
+            anchors.fill: parent; spacing: 14
+            Label { text: qsTr("Where do you want to connect?"); color: ui.text; font.pixelSize: 19; font.weight: Font.DemiBold }
             RowLayout {
-                Layout.leftMargin: 20; Layout.rightMargin: 20
-                Label { text: modelData.name + " — " + modelData.address + (modelData.ready ? qsTr(" · Bound") : qsTr(" · Incomplete")); textFormat: Text.PlainText }
-                Button {
-                    text: qsTr("Remove its access here"); enabled: !peerManager.busy
-                    onClicked: { removeDialog.fingerprint = modelData.fingerprint; removeDialog.open() }
-                }
+                Layout.fillWidth: true
+                TextField { id: address; objectName: "bindingAddress"; placeholderText: qsTr("IP address or computer name"); Layout.fillWidth: true; enabled: !peerManager.busy; onAccepted: if (!peerManager.busy && text.trim().length) peerManager.request(text) }
+                Button { text: qsTr("Send request"); highlighted: true; enabled: !peerManager.busy && address.text.trim().length > 0; onClicked: peerManager.request(address.text) }
             }
-        }
-        Label {
-            text: qsTr("Removing access here prevents that device from controlling this computer. Remove the binding on the other computer too to revoke both directions.")
-            wrapMode: Text.WordWrap; Layout.fillWidth: true; Layout.margins: 20
+            RowLayout {
+                Layout.fillWidth: true
+                BusyIndicator { running: peerManager.busy; visible: running; implicitWidth: 28; implicitHeight: 28 }
+                Label { text: peerManager.status; textFormat: Text.PlainText; color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true; Accessible.role: Accessible.StaticText }
+                Button { text: qsTr("Cancel"); visible: peerManager.busy; onClicked: peerManager.cancel() }
+            }
+            Label { text: qsTr("Approval lets both computers view and control each other. System permissions are still required on each device."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
-    Dialog {
+    Label { text: qsTr("Saved access"); font.pixelSize: 20; font.weight: Font.DemiBold; color: ui.text }
+    Label { visible: peerManager.peers.length === 0; text: qsTr("Your approved devices will appear here."); color: ui.muted }
+    Repeater {
+        model: peerManager.peers
+        UiCard {
+            ColumnLayout {
+                anchors.fill: parent; spacing: 10
+                RowLayout {
+                    Layout.fillWidth: true
+                    Label { text: modelData.name; textFormat: Text.PlainText; color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.fillWidth: true; elide: Text.ElideRight }
+                    Label { text: modelData.ready ? qsTr("Bound both ways") : qsTr("Incomplete"); color: modelData.ready ? ui.accent : ui.warning }
+                }
+                Label { text: modelData.address; textFormat: Text.PlainText; color: ui.muted }
+                Button { text: qsTr("Remove access to this computer"); enabled: !peerManager.busy; onClicked: { removeDialog.fingerprint = modelData.fingerprint; removeDialog.deviceName = modelData.name; removeDialog.open() } }
+            }
+        }
+    }
+    UiCard {
+        ColumnLayout {
+            anchors.fill: parent; spacing: 10
+            Label { text: qsTr("Connecting another way?"); color: ui.text; font.pixelSize: 17; font.weight: Font.DemiBold }
+            Label { text: qsTr("For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Button { text: qsTr("Add a legacy host"); onClicked: addPcDialog.open() }
+        }
+    }
+    property Dialog removalPrompt: Dialog {
         id: removeDialog
         property string fingerprint: ""
-        title: qsTr("Remove this device's access?")
+        property string deviceName: ""
+        title: qsTr("Remove device access?")
+        anchors.centerIn: parent
+        width: Math.max(280, Math.min(page.width - 32, 460))
+        implicitHeight: contentItem.implicitHeight + 150
         modal: true; standardButtons: Dialog.Yes | Dialog.No
+        contentItem: Label { text: qsTr("%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.").arg(removeDialog.deviceName); textFormat: Text.PlainText; wrapMode: Text.WordWrap }
         onAccepted: peerManager.revoke(fingerprint)
     }
 }

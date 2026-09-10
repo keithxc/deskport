@@ -758,12 +758,13 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
     engine.rootContext()->setContextProperty("peerManager", &peerManager);
+    engine.rootContext()->setContextProperty("startSharingPage", app.arguments().contains("--share"));
     QString initialView;
     bool hasGUI = true;
 
     switch (commandLineParserResult) {
     case GlobalCommandLineParser::NormalStartRequested:
-        initialView = app.arguments().contains("--share") ? "qrc:/gui/HostView.qml" : "qrc:/gui/PcView.qml";
+        initialView = "qrc:/gui/PcView.qml";
         break;
     case GlobalCommandLineParser::StreamRequested:
         {

@@ -1,5 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QVariantList>
+#include <QUrl>
 #include <QJsonObject>
 #include <QSslCertificate>
 #include <QLockFile>
@@ -10,6 +12,11 @@
 
 class HostManager : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QVariantList permissions READ permissions NOTIFY permissionsChanged)
+    Q_PROPERTY(bool setupComplete READ setupComplete NOTIFY permissionsChanged)
+    Q_PROPERTY(QString deviceName READ deviceName CONSTANT)
+    Q_PROPERTY(QUrl applicationUrl READ applicationUrl CONSTANT)
+    Q_PROPERTY(bool changing READ changing NOTIFY changed)
     Q_PROPERTY(bool available READ available CONSTANT)
     Q_PROPERTY(bool running READ running NOTIFY changed)
     Q_PROPERTY(int basePort READ basePort NOTIFY changed)
@@ -20,6 +27,14 @@ public:
     explicit HostManager(QObject *parent = nullptr, const QString &directory = QString());
     ~HostManager();
     bool available() const;
+    QVariantList permissions() const;
+    bool setupComplete() const;
+    QString deviceName() const;
+    QUrl applicationUrl() const;
+    bool changing() const { return m_Starting || m_Stopping || m_TrustBusy; }
+    Q_INVOKABLE void refreshPermissions();
+    Q_INVOKABLE void completeSetup();
+    Q_INVOKABLE void revealApplication();
     bool prepareIdentity(const QByteArray& certificate, const QByteArray& key);
     QJsonObject identity() const;
     void updatePeerTrust(const QString& id, const QString& name, const QSslCertificate& certificate, bool remove = false);
@@ -36,6 +51,7 @@ public:
     Q_INVOKABLE void openLogs();
 signals:
     void changed();
+    void permissionsChanged();
     void trustUpdated(bool success);
 private:
     void updateTrayIcon();

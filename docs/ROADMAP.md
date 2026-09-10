@@ -148,36 +148,23 @@ PIN pairing remains available for legacy clients. Interrupted grants are visible
 local revocation is available, while coordinated remote revocation remains pending.
 Live both-direction picture/input acceptance is still required.
 
-## Next action: one-interaction mutual pairing (2026-09-10)
+## Next action: unified desktop experience (2026-09-10)
 
-User priority: after one pairing interaction, both computers should list each
-other and be able to initiate a desktop connection without a second PIN entry.
-This supersedes the persistent-session prototype as the next implementation task.
+User priority after the mutual-binding milestone: unify the Mac/Linux first-run
+experience, permissions, binding, device list and settings. The new shared QML
+shell groups Devices, Sharing and Settings, with a revisitable, optional setup
+guide. Device cards show name, endpoint and connection state. Mutual binding is
+the default add-device flow; legacy PIN pairing remains an explicit secondary path.
+Common streaming settings are grouped separately from advanced compatibility
+controls. Opening settings must preserve custom values without silently applying
+presets. Permissions are checked separately from binding and host process state.
 
-Current prerequisite: the Linux package is viewer-only; HostManager::available()
-is disabled outside macOS. Reverse desktop access therefore requires Linux host
-integration and its capture/input acceptance before mutual access can be claimed.
-
-- [ ] Bundle and supervise a Linux host with independent DeskPort state and port
-  reservation. Validate KDE Wayland capture/input and expose host readiness.
-  Preserve any independently installed Sunshine and Moonlight configuration.
-- [ ] Offer an explicit "Allow both computers to view and control each other"
-  pairing mode. One PIN/confirmation establishes both requested directions;
-  retain a one-way mode for computers that should not expose their desktop.
-- [ ] Coordinate both directional GameStream pairings over a channel bound to the
-  verified peer certificate. Exchange only the identity/address information and
-  short-lived pairing material needed for the operation, never host admin secrets.
-  Bind requests to a transaction, expire them, reject replay and unauthenticated
-  reverse requests, and report partial completion without silently expanding access.
-- [ ] Add each verified remote peer to the other device list automatically, using
-  its stable identity and reachable host port. Preserve the local-host filter.
-  Device presence, trust and capture/input readiness are separate UI states.
-- [ ] Persist each direction and provide revocation. A disconnected peer must not
-  prevent immediate local revocation; do not claim remote removal until acknowledged.
-- [ ] Validate with two fresh profiles: one pairing interaction, both-direction
-  picture and input, restart without re-pairing or duplicate records, offline peer,
-  rejected/replayed requests, partial failure/retry and revocation. No personal-host
-  connection or input injection in automated tests; live validation is user-assisted.
+macOS reports screen, Accessibility and audio-input status, links to the matching
+settings pane and provides an app-file drag plus Reveal in Finder. Linux explains
+capture consent and checks input-device access without claiming that a process
+start proves screen capture. Manual checks still required: OS pane drag acceptance,
+keyboard navigation, both-platform layout, and reciprocal picture/input after the
+refresh. Keep the independent remote-access service intact throughout.
 
 ## Following: persistent-session prototype
 

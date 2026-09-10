@@ -42,6 +42,12 @@ QVariant ComputerModel::data(const QModelIndex& index, int role) const
         return computer->state == NvComputer::CS_UNKNOWN;
     case ServerSupportedRole:
         return computer->isSupportedServerVersion;
+    case AddressRole:
+    case HostAddressRole: {
+        const auto address = !computer->activeAddress.isNull() ? computer->activeAddress :
+            !computer->manualAddress.isNull() ? computer->manualAddress : computer->localAddress;
+        return role == AddressRole ? address.toString() : address.address();
+    }
     case DetailsRole: {
         QString state, pairState;
 
@@ -109,6 +115,8 @@ QHash<int, QByteArray> ComputerModel::roleNames() const
     names[WakeableRole] = "wakeable";
     names[StatusUnknownRole] = "statusUnknown";
     names[ServerSupportedRole] = "serverSupported";
+    names[AddressRole] = "address";
+    names[HostAddressRole] = "hostAddress";
     names[DetailsRole] = "details";
 
     return names;

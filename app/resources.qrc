@@ -1,6 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>gui/HostView.qml</file>
+<file>gui/UiTheme.qml</file>
+<file>gui/UiPage.qml</file>
+<file>gui/UiCard.qml</file>
+<file>gui/DeviceCard.qml</file>
+<file>gui/SetupView.qml</file>
+<file>gui/SettingsHome.qml</file>
         <file>gui/BindView.qml</file>
         <file>gui/BindingApproval.qml</file>
         <file>res/ic_videogame_asset_white_48px.svg</file>

@@ -45,10 +45,10 @@ while True: time.sleep(1)
 ''')
     for executable in (display, host):
         executable.chmod(0o700)
-    binding = "--binding" in sys.argv
+    binding = "--binding" in sys.argv or "--ui" in sys.argv
     extra_sources = f'"{root}/app/backend/peermanager.cpp"' if binding else ""
     extra_headers = f'"{root}/app/backend/peermanager.h"' if binding else ""
-    suite = "peer-binding" if binding else "host-lifecycle"
+    suite = "ui-pages" if "--ui" in sys.argv else "peer-binding" if binding else "host-lifecycle"
     project = work / "tests.pro"
     project.write_text(f'''QT += core gui widgets network testlib qml quick quickcontrols2
 CONFIG += console c++17 testcase
@@ -58,10 +58,12 @@ DESTDIR = "{macos}"
 SOURCES += "{root}/tests/{suite}.cpp" "{root}/app/backend/hostmanager.cpp" "{root}/app/backend/nvaddress.cpp" {extra_sources}
 HEADERS += "{root}/app/backend/hostmanager.h" {extra_headers}
 INCLUDEPATH += "{root}/app/backend"
-LIBS += -framework CoreGraphics
+OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm"
+LIBS += -framework CoreGraphics -framework AVFoundation -framework ApplicationServices
 ''')
-    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_CONTROLS_STYLE="Material")
     if binding:
+        environment["TEST_GUI_DIR"] = str(root / "app/gui")
         environment["TEST_BINDING_QML"] = str(root / "app/gui/BindingApproval.qml")
         for name in ("A", "B", "C"):
             cert, key = work / f"{name}.pem", work / f"{name}.key"

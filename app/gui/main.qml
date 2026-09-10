@@ -19,21 +19,30 @@ ApplicationWindow {
     property bool clearOnBack: false
 
     id: window
+    title: "DeskPort"
     onClosing: function(event) {
         if (hostManager.running) { event.accepted = false; window.hide(); }
     }
-    width: 1280
-    height: 600
+    width: 1120
+    height: 760
+    minimumWidth: 760
+    minimumHeight: 560
+    font.pixelSize: 14
+    UiTheme { id: ui }
+    Material.theme: Material.Dark
+    Material.accent: ui.accent
+    Material.primary: ui.surface
+    Material.background: ui.canvas
+    Material.foreground: ui.text
+    color: ui.canvas
 
     Component.onCompleted: {
         peerManager.restoreHosts()
-        // Override the background color to Material 2 colors for Qt 6.5+
-        // in order to improve contrast between GFE's placeholder box art
-        // and the background of the app grid.
-        if (SystemProperties.usesMaterial3Theme) {
-            Material.background = "#303030"
-        }
-
+        if (initialView === "qrc:/gui/PcView.qml") Qt.callLater(function() {
+            if (!hostManager.setupComplete && peerManager.peers.length === 0)
+                navigateTo("qrc:/gui/SetupView.qml", "SetupView")
+            else if (startSharingPage) navigateTo("qrc:/gui/HostView.qml", "HostView")
+        })
         // Show the window according to the user's preferences
         if (SystemProperties.hasDesktopEnvironment) {
             if (StreamingPreferences.uiDisplayMode == StreamingPreferences.UI_MAXIMIZED) {
@@ -68,10 +77,7 @@ ApplicationWindow {
         }
     }
   
-    // This configures the maximum width of the singleton attached QML ToolTip. If left unconstrained,
-    // it will never insert a line break and just extend on forever.
-    ToolTip.toolTip.contentWidth: ToolTip.toolTip.implicitContentWidth < 400 ? ToolTip.toolTip.implicitContentWidth : 400
-
+    function showDevices() { stackView.pop(null) }
     function goBack() {
         if (clearOnBack) {
             // Pop all items except the first one
@@ -87,6 +93,8 @@ ApplicationWindow {
         id: stackView
         initialItem: initialView
         anchors.fill: parent
+        anchors.leftMargin: navigation.width
+        anchors.topMargin: 66
         focus: true
 
         onCurrentItemChanged: {
@@ -188,6 +196,7 @@ ApplicationWindow {
     function qmltypeof(obj, className) { // QtObject, string -> bool
         // className plus "(" is the class instance without modification
         // className plus "_QML" is the class instance with user-defined properties
+        if (!obj) return false
         var str = obj.toString();
         return str.startsWith(className + "(") || str.startsWith(className + "_QML");
     }
@@ -217,228 +226,55 @@ ApplicationWindow {
         appWindow: window
     }
 
-    header: ToolBar {
-        id: toolBar
-        height: 60
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-
-        Label {
-            id: titleLabel
-            visible: toolBar.width > 700
-            anchors.fill: parent
-            text: stackView.currentItem.objectName
-            font.pointSize: 20
-            elide: Label.ElideRight
-            horizontalAlignment: Qt.AlignHCenter
-            verticalAlignment: Qt.AlignVCenter
-        }
-
-        RowLayout {
-            spacing: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            anchors.fill: parent
-
-            NavigableToolButton {
-                // Only make the button visible if the user has navigated somewhere.
-                visible: stackView.depth > 1
-
-                iconSource: "qrc:/res/arrow_left.svg"
-
-                onClicked: goBack()
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
+    Rectangle {
+        id: navigation
+        width: window.width < 900 ? 174 : 208
+        anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
+        color: ui.surface
+        Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: ui.line }
+        ColumnLayout {
+            anchors.fill: parent; anchors.margins: 18; spacing: 8
+            RowLayout {
+                Layout.topMargin: 12; Layout.bottomMargin: 30
+                Image { source: "qrc:/res/deskport.svg"; Layout.preferredWidth: 30; Layout.preferredHeight: 30 }
+                Label { text: "DeskPort"; font.pixelSize: 22; font.weight: Font.DemiBold; color: ui.text }
             }
-
-            // This label will appear when the window gets too small and
-            // we need to ensure the toolbar controls don't collide
-            Label {
-                id: titleRowLabel
-                font.pointSize: titleLabel.font.pointSize
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-
-                // We need this label to always be visible so it can occupy
-                // the remaining space in the RowLayout. To "hide" it, we
-                // just set the text to empty string.
-                text: !titleLabel.visible ? stackView.currentItem.objectName : ""
-            }
-
-            Label {
-                id: versionLabel
-                visible: qmltypeof(stackView.currentItem, "SettingsView")
-                text: qsTr("Version %1").arg(SystemProperties.versionString)
-                font.pointSize: 12
-                horizontalAlignment: Qt.AlignRight
-                verticalAlignment: Qt.AlignVCenter
-            }
-
-            NavigableToolButton {
-                id: projectButton
-                visible: SystemProperties.hasBrowser &&
-                         qmltypeof(stackView.currentItem, "SettingsView")
-
-                iconSource: "qrc:/res/baseline-help_outline-24px.svg"
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("DeskPort issue tracker")
-
-                // TODO need to make sure browser is brought to foreground.
-                onClicked: Qt.openUrlExternally("https://github.com/keithxc/deskport/issues");
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
-            }
-
-            NavigableToolButton {
-                id: addPcButton
-                visible: qmltypeof(stackView.currentItem, "PcView")
-
-                iconSource:  "qrc:/res/ic_add_to_queue_white_48px.svg"
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Add PC manually") + (newPcShortcut.nativeText ? (" ("+newPcShortcut.nativeText+")") : "")
-
-                Shortcut {
-                    id: newPcShortcut
-                    sequence: StandardKey.New
-                    onActivated: addPcButton.clicked()
-                }
-
-                onClicked: {
-                    addPcDialog.open()
-                }
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
-            }
-
-            NavigableToolButton {
-                property string browserUrl: ""
-
-                id: updateButton
-
-                iconSource: "qrc:/res/update.svg"
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered || visible
-
-                // Invisible until we get a callback notifying us that
-                // an update is available
-                visible: false
-
-                onClicked: {
-                    if (SystemProperties.hasBrowser) {
-                        Qt.openUrlExternally(browserUrl);
+            Repeater {
+                model: [qsTr("Devices"), qsTr("Sharing"), qsTr("Settings")]
+                Button {
+                    Layout.fillWidth: true; implicitHeight: 46
+                    text: modelData; flat: true
+                    highlighted: index === 0 ? qmltypeof(stackView.currentItem, "PcView") || qmltypeof(stackView.currentItem, "AppView") || qmltypeof(stackView.currentItem, "BindView") : index === 1 ? qmltypeof(stackView.currentItem, "HostView") : qmltypeof(stackView.currentItem, "SettingsHome") || qmltypeof(stackView.currentItem, "SettingsView")
+                    background: Rectangle { radius: 9; color: parent.highlighted ? ui.raised : parent.hovered ? "#252b2f" : "transparent"; border.color: parent.highlighted ? ui.line : "transparent" }
+                    onClicked: {
+                        showDevices()
+                        if (index === 1) navigateTo("qrc:/gui/HostView.qml", "HostView")
+                        if (index === 2) navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome")
                     }
                 }
-
-                function updateAvailable(version, url)
-                {
-                    ToolTip.text = qsTr("Update available for Moonlight: Version %1").arg(version)
-                    updateButton.browserUrl = url
-                    updateButton.visible = true
-                }
-
-                Component.onCompleted: {
-                    AutoUpdateChecker.onUpdateAvailable.connect(updateAvailable)
-                    AutoUpdateChecker.start()
-                }
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
             }
-
-            NavigableToolButton {
-                id: helpButton
-                visible: SystemProperties.hasBrowser
-
-                iconSource: "qrc:/res/question_mark.svg"
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Help") + (helpShortcut.nativeText ? (" ("+helpShortcut.nativeText+")") : "")
-
-                Shortcut {
-                    id: helpShortcut
-                    sequence: StandardKey.HelpContents
-                    onActivated: helpButton.clicked()
-                }
-
-                // TODO need to make sure browser is brought to foreground.
-                onClicked: Qt.openUrlExternally("https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide");
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
-            }
-
-            NavigableToolButton {
-                // TODO: Implement gamepad mapping then unhide this button
-                visible: false
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Gamepad Mapper")
-
-                iconSource: "qrc:/res/ic_videogame_asset_white_48px.svg"
-
-                onClicked: navigateTo("qrc:/gui/GamepadMapper.qml", "GamepadMapper")
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
-            }
-
-            Button {
-                text: qsTr("Bind device")
-                onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView")
-            }
-
-            Button {
-                text: qsTr("Share this computer")
-                onClicked: navigateTo("qrc:/gui/HostView.qml", "HostView")
-            }
-
-            NavigableToolButton {
-                id: settingsButton
-
-                iconSource:  "qrc:/res/settings.svg"
-
-                onClicked: navigateTo("qrc:/gui/SettingsView.qml", "SettingsView")
-
-                Keys.onDownPressed: {
-                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                }
-
-                Shortcut {
-                    id: settingsShortcut
-                    sequence: StandardKey.Preferences
-                    onActivated: settingsButton.clicked()
-                }
-
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Settings") + (settingsShortcut.nativeText ? (" ("+settingsShortcut.nativeText+")") : "")
-            }
+            Item { Layout.fillHeight: true }
+            Button { text: qsTr("Getting started"); flat: true; Layout.fillWidth: true; onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
+            Rectangle { Layout.fillWidth: true; height: 1; color: ui.line }
+            Label { text: hostManager.deviceName; textFormat: Text.PlainText; color: ui.text; Layout.fillWidth: true; elide: Text.ElideRight; Layout.topMargin: 12 }
+            Label { text: hostManager.running ? qsTr("Sharing on") : qsTr("Sharing off"); color: hostManager.running ? ui.accent : ui.muted; font.pixelSize: 12 }
+            Label { text: "DeskPort " + SystemProperties.versionString; color: ui.muted; font.pixelSize: 11; Layout.bottomMargin: 6 }
         }
     }
+    Rectangle {
+        anchors.left: navigation.right; anchors.right: parent.right; anchors.top: parent.top; height: 66
+        color: ui.canvas
+        Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: ui.line }
+        RowLayout {
+            anchors.fill: parent; anchors.leftMargin: 24; anchors.rightMargin: 24; spacing: 12
+            Button { visible: stackView.depth > 1; text: "←"; Accessible.name: qsTr("Back"); flat: true; onClicked: goBack() }
+            Label { text: stackView.currentItem ? stackView.currentItem.objectName : "DeskPort"; color: ui.text; font.pixelSize: 16; font.weight: Font.DemiBold; Layout.fillWidth: true; elide: Text.ElideRight }
+            Button { text: qsTr("Add a device"); visible: qmltypeof(stackView.currentItem, "PcView"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+        }
+    }
+    Shortcut { sequences: [StandardKey.New]; onActivated: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+    Shortcut { sequences: [StandardKey.Preferences]; onActivated: navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome") }
+    Shortcut { sequences: [StandardKey.HelpContents]; onActivated: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
 
     ErrorMessageDialog {
         id: noHwDecoderDialog

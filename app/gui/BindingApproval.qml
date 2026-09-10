@@ -8,12 +8,15 @@ Dialog {
     property var appWindow
     property string transaction: ""
     property string peerText: ""
-    title: qsTr("Allow mutual desktop access?")
+    title: qsTr("Bind with this device?")
     modal: true
     anchors.centerIn: parent
-    width: Math.min(appWindow.width - 40, 540)
+    width: Math.max(280, Math.min(appWindow.width - 40, 540))
     closePolicy: Popup.NoAutoClose
-    standardButtons: Dialog.Yes | Dialog.No
+    footer: DialogButtonBox {
+        Button { text: qsTr("Not now"); DialogButtonBox.buttonRole: DialogButtonBox.RejectRole }
+        Button { text: qsTr("Allow & bind"); highlighted: true; DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole }
+    }
     onAccepted: manager.approve(transaction)
     onRejected: manager.reject(transaction)
     contentItem: Label {
