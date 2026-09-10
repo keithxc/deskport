@@ -6,6 +6,12 @@ current pixel size. The chosen sharing resolution is the idle mode, while
 Settings → Picture → Match the client window resolution controls adaptation from
 this client. These preferences are saved independently on each computer.
 
+The client also remembers each host's last stable window geometry, maximized or
+fullscreen state and negotiated 1× dimensions. The next connection starts with
+that workspace instead of negotiating the default window size first. A different
+display layout, scale or configured window mode invalidates this cache. Fixed
+resolution connections continue to use the selected picture settings.
+
 A mutually bound client authenticates with its existing certificate on the binding
 TLS endpoint. It pins the saved server certificate, checks the advertised display
 capability and claims an exclusive connection-scoped controller. No new listener,

@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Always show a local pointer in desktop mode</source><translation>데스크톱 모드에서 로컬 포인터 항상 표시</translation></message>
+    <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>호스트가 커서를 숨겨도 포인터를 표시합니다. 포인터가 두 개 보이면 이 옵션을 끄세요.</translation></message>
+    <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>Mac에서는 Super / Windows가 Command, Alt가 Option에 해당합니다. 창에서 Super + Space를 전달하려면 항상을 선택하세요. 변경 사항은 다음 연결부터 적용됩니다.</translation></message>
     <message>
         <source>Settings</source>
         <translation>설정</translation>

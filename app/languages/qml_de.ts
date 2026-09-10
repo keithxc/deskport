@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Always show a local pointer in desktop mode</source><translation>Im Desktopmodus immer einen lokalen Mauszeiger anzeigen</translation></message>
+    <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>Der Mauszeiger bleibt sichtbar, wenn der Host seinen Cursor ausblendet. Bei zwei Mauszeigern diese Option ausschalten.</translation></message>
+    <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>Auf einem Mac entspricht Super / Windows der Command-Taste und Alt der Option-Taste. Wählen Sie Immer, um Super + Leertaste im Fenster weiterzuleiten. Änderungen gelten ab der nächsten Verbindung.</translation></message>
     <message>
         <source>Settings</source>
         <translation>Einstellungen</translation>

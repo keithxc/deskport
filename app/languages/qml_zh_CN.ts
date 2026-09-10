@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Always show a local pointer in desktop mode</source><translation>桌面模式始终显示本地光标</translation></message>
+    <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>主机隐藏鼠标时仍显示光标。如果出现两个光标，可关闭此选项。</translation></message>
+    <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>连接 Mac 时，Super / Windows 对应 Command，Alt 对应 Option。选择“始终”可在窗口中转发 Super + 空格。更改在下次连接时生效。</translation></message>
     <message>
         <source>Settings</source>
         <translation>设置</translation>

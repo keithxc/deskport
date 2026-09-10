@@ -1,5 +1,7 @@
 #include "session.h"
 #include "backend/peerstore.h"
+#include "backend/sessionwindowstate.h"
+#include <QDataStream>
 #include "backend/identitymanager.h"
 #include <QStandardPaths>
 #include "settings/streamingpreferences.h"
@@ -619,6 +621,7 @@ Session* Session::adaptiveContinuation() {
     next->m_AdaptiveDisplay = std::move(m_AdaptiveDisplay);
     next->m_AdaptiveNextSize = m_AdaptiveNextSize;
     next->m_AdaptiveGeometry = m_AdaptiveGeometry;
+    next->m_WindowOutputs = m_WindowOutputs;
     next->m_AdaptiveScale = m_AdaptiveScale;
     next->m_AdaptiveMaximized = m_AdaptiveMaximized;
     next->m_IsFullScreen = m_IsFullScreen;
@@ -645,7 +648,8 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
     if (!m_AdaptiveDisplay) return;
     const auto workspace = workspaceForWindow(window, m_IsFullScreen && !m_AdaptiveResume);
     if (!m_AdaptiveResume) m_AdaptiveScale = workspace.scale;
-    const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize : workspace.pixels;
+    const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize :
+        (m_RestoredWindow ? m_InitialAdaptiveSize : workspace.pixels);
     m_AdaptiveNextSize = {};
     if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale, [this] {
             if (m_TransitionWindow) m_TransitionWindow->pump();
@@ -669,7 +673,10 @@ bool Session::checkAdaptiveResize() {
         m_AdaptiveObservedSize = size; m_AdaptiveObservedScale = scale;
         m_AdaptiveChangedAt = SDL_GetTicks(); return false;
     }
-    if (size == QSize(m_StreamConfig.width, m_StreamConfig.height) && scale == m_AdaptiveScale) return false;
+    if (size == QSize(m_StreamConfig.width, m_StreamConfig.height) && scale == m_AdaptiveScale) {
+        if (SDL_GetTicks() - m_AdaptiveChangedAt >= 900) rememberAdaptiveWindow();
+        return false;
+    }
     if (SDL_GetTicks() - m_AdaptiveChangedAt < 900 || SDL_GetMouseState(nullptr, nullptr) != 0 ||
         SDL_HasEvent(SDL_QUIT) || SDL_HasEvents(SDL_KEYDOWN, SDL_KEYUP)) return false;
     // Finish the old stream before changing the capture mode. Preserve desktop
@@ -683,6 +690,56 @@ bool Session::checkAdaptiveResize() {
     m_AdaptiveNextSize = size; m_AdaptiveScale = scale;
     qInfo() << "Adaptive display restarting stream for" << size;
     return true;
+}
+
+void Session::restoreAdaptiveWindow()
+{
+    if (!m_Preferences->adaptiveResolution || m_AdaptiveResume) return;
+    QByteArray outputs;
+    QDataStream stream(&outputs, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_5_9);
+    stream << QString::fromUtf8(SDL_GetCurrentVideoDriver());
+    for (const auto& screen : m_ClientScreens)
+        stream << screen.name << screen.origin << screen.logicalSize << double(screen.scale);
+    for (int i = 0; i < SDL_GetNumVideoDisplays(); ++i) {
+        SDL_Rect bounds {}; SDL_DisplayMode mode {}; SDL_Rect safeArea {};
+        SDL_GetDisplayUsableBounds(i, &bounds);
+        StreamUtils::getNativeDesktopMode(i, &mode, &safeArea);
+        stream << QString::fromUtf8(SDL_GetDisplayName(i)) << QRect(bounds.x, bounds.y, bounds.w, bounds.h)
+               << QSize(mode.w, mode.h);
+    }
+    m_WindowOutputs = QCryptographicHash::hash(outputs, QCryptographicHash::Sha256);
+    QSettings settings;
+    const auto state = DeskPortDisplay::readSessionWindow(settings, m_Computer->uuid, m_WindowOutputs,
+                                                        int(m_Preferences->windowMode));
+    if (!state.valid()) return;
+    m_AdaptiveGeometry = state.geometry;
+    m_AdaptiveMaximized = state.maximized;
+    m_IsFullScreen = state.fullscreen;
+    m_InitialAdaptiveSize = state.streamSize;
+    m_RestoredWindow = true;
+    qInfo() << "Restoring last client workspace:" << state.streamSize << "window:" << state.geometry.size();
+}
+
+void Session::rememberAdaptiveWindow()
+{
+    if (!m_AdaptiveDisplay || m_UnexpectedTermination || !m_Window || m_WindowOutputs.isEmpty()) return;
+    const auto flags = SDL_GetWindowFlags(m_Window);
+    if (flags & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)) return;
+    int x, y, w, h;
+    SDL_GetWindowPosition(m_Window, &x, &y);
+    SDL_GetWindowSize(m_Window, &w, &h);
+    const DeskPortDisplay::SessionWindowState state {QRect(x, y, w, h),
+        QSize(m_StreamConfig.width, m_StreamConfig.height), m_AdaptiveScale,
+        bool(flags & SDL_WINDOW_MAXIMIZED), bool(flags & SDL_WINDOW_FULLSCREEN)};
+    const auto record = QString("%1,%2,%3,%4,%5,%6,%7,%8")
+        .arg(x).arg(y).arg(w).arg(h).arg(state.streamSize.width()).arg(state.streamSize.height())
+        .arg(state.maximized).arg(state.fullscreen);
+    if (record == m_LastWindowRecord || !state.valid()) return;
+    QSettings settings;
+    DeskPortDisplay::writeSessionWindow(settings, m_Computer->uuid, m_WindowOutputs,
+                                       int(m_Preferences->windowMode), state);
+    m_LastWindowRecord = record;
 }
 
 bool Session::initialize()
@@ -739,19 +796,20 @@ bool Session::initialize()
     LiInitializeStreamConfiguration(&m_StreamConfig);
     m_StreamConfig.width = m_Preferences->width;
     m_StreamConfig.height = m_Preferences->height;
+    restoreAdaptiveWindow();
 
     int x, y, width, height;
     getWindowDimensions(x, y, width, height);
 
     // Create a hidden window to use for decoder initialization tests
     SDL_Window* testWindow = SDL_CreateWindow("", x, y, width, height,
-                                              SDL_WINDOW_HIDDEN | StreamUtils::getPlatformWindowFlags());
+                                              SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI | StreamUtils::getPlatformWindowFlags());
     if (!testWindow) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                     "Failed to create test window with platform flags: %s",
                     SDL_GetError());
 
-        testWindow = SDL_CreateWindow("", x, y, width, height, SDL_WINDOW_HIDDEN);
+        testWindow = SDL_CreateWindow("", x, y, width, height, SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
         if (!testWindow) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "Failed to create window for hardware decode test: %s",
@@ -1728,8 +1786,10 @@ bool Session::startConnectionAsync()
                     m_Preferences->packetSize);
     }
     else {
-        // Use 1392 byte video packets by default
-        m_StreamConfig.packetSize = 1392;
+        // Keep video packets small enough for constrained VPN/mobile paths.
+        // 896 is 16-byte aligned, as required by moonlight-common-c, and leaves
+        // room for RTP, encryption, UDP/IP and tunnel encapsulation overhead.
+        m_StreamConfig.packetSize = 896;
 
         // getActiveAddressReachability() does network I/O, so we only attempt to check
         // reachability if we've already contacted the PC successfully.
@@ -1740,14 +1800,15 @@ bool Session::startConnectionAsync()
             m_StreamConfig.streamingRemotely = STREAM_CFG_LOCAL;
             break;
         case NvComputer::RI_VPN:
-            // It looks like our route to this PC is over a VPN, so cap at 1024 bytes.
+            // Keep the small-packet default on VPN routes too.
             // Treat it as remote even if the target address is in RFC 1918 address space.
             m_StreamConfig.streamingRemotely = STREAM_CFG_REMOTE;
-            m_StreamConfig.packetSize = 1024;
             break;
         default:
-            // If we don't have reachability info, let moonlight-common-c decide.
-            m_StreamConfig.streamingRemotely = STREAM_CFG_AUTO;
+            // Keep conservative remote behavior when reachability is unknown.
+            // AUTO in moonlight-common-c replaces the requested packet size
+            // with 1024/1184 on public routes, undoing our smaller default.
+            m_StreamConfig.streamingRemotely = STREAM_CFG_REMOTE;
             break;
         }
     }
@@ -1951,11 +2012,11 @@ void Session::execInternal()
 
     // We always want a resizable window with High DPI enabled
     Uint32 defaultWindowFlags = SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
-    if (m_AdaptiveResume && !m_IsFullScreen && m_AdaptiveMaximized) defaultWindowFlags |= SDL_WINDOW_MAXIMIZED;
+    if ((m_AdaptiveResume || m_RestoredWindow) && !m_IsFullScreen && m_AdaptiveMaximized) defaultWindowFlags |= SDL_WINDOW_MAXIMIZED;
 
     // If we're starting in windowed mode and the Moonlight GUI is maximized or
     // minimized, match that with the streaming window.
-    if (!m_AdaptiveResume && !m_IsFullScreen && m_QtWindow != nullptr) {
+    if (!m_AdaptiveResume && !m_RestoredWindow && !m_IsFullScreen && m_QtWindow != nullptr) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         // Qt 5.10+ can propagate multiple states together
         if (m_QtWindow->windowStates() & Qt::WindowMaximized) {
@@ -2229,6 +2290,7 @@ void Session::execInternal()
                 m_InputHandler->notifyFocusLost();
                 break;
             case SDL_WINDOWEVENT_FOCUS_GAINED:
+                m_InputHandler->notifyFocusGained();
                 if (m_Preferences->muteOnFocusLoss) {
                     m_AudioMuted = false;
                 }
@@ -2480,6 +2542,7 @@ void Session::execInternal()
     }
 
 DispatchDeferredCleanup:
+    if (!adaptiveRestartPending()) rememberAdaptiveWindow();
     // Uncapture the mouse and hide the window immediately,
     // so we can return to the Qt GUI ASAP.
     m_InputHandler->setCaptureActive(false);
@@ -2551,4 +2614,3 @@ DispatchDeferredCleanup:
     // reference.
     QThreadPool::globalInstance()->start(new DeferredSessionCleanupTask(this));
 }
-

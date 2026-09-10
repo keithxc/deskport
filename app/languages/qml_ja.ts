@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Always show a local pointer in desktop mode</source><translation>デスクトップモードでローカルポインターを常に表示</translation></message>
+    <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>ホストがカーソルを隠してもポインターを表示します。2つ表示される場合はオフにしてください。</translation></message>
+    <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>MacではSuper / WindowsがCommand、AltがOptionに対応します。「常に」を選ぶとウィンドウ内でSuper + Spaceを転送します。変更は次回の接続から有効です。</translation></message>
     <message>
         <source>Settings</source>
         <translation>設定</translation>

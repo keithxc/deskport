@@ -380,3 +380,35 @@ and both physical mirrors. A fresh host-side capture at 1× showed the full
 desktop. The isolated virtual-display test was stopped when WindowServer changed
 mirror modes, so repeated mode switching is not recorded as passed. Repeated
 client resize, input and end-to-end image acceptance remain pending.
+
+### Remembered client workspace and desktop input (2026-09-10)
+
+- Save each host's last stable client window, maximized/fullscreen state and 1×
+  stream dimensions. Reconnect requests that size immediately. Display layout,
+  scale or configured window-mode changes invalidate the saved state.
+- New installations capture system shortcuts in windowed mode as well as
+  fullscreen. Explicit saved choices remain unchanged; existing users with
+  capture set to Never must choose Always to send Super/Windows + Space as
+  Command + Space to a Mac host.
+- Show a local pointer by default in desktop mode, with a setting to disable it
+  when the host also draws a pointer. Focus loss releases keyboard capture and
+  shows the pointer; focus return reapplies capture.
+- Validation: Linux `nix build`, isolated desktop preference/state persistence
+  tests, QML settings/stream-page tests, seven translated catalogs and isolated
+  CLI smoke passed. Restart the installed client before native acceptance of
+  shortcuts, pointer visibility and reconnect without an initial resize.
+
+### Small video packets by default (2026-09-10)
+
+- Default video packet size is 896 bytes (16-byte aligned), leaving headroom for
+  transport and tunnel headers on constrained mobile/VPN paths. This is a video
+  protocol size, not the final on-wire datagram length. Explicit custom packet
+  sizes remain supported.
+- Unknown routes use remote mode rather than AUTO, because upstream AUTO replaces
+  the requested size with 1024/1184 on public routes. LAN and VPN detection retain
+  the smaller size. Resolution, bitrate and image quality settings are unchanged.
+- TCP MSS belongs to the operating-system network configuration; this video
+  change alone does not repair a TLS handshake affected by a path-MTU black hole.
+- Validation: Linux `nix build`, isolated CLI smoke, desktop-state and QML
+  regression suites and translation checks passed. Live video packet capture
+  and stability on the affected mobile link remain acceptance checks.

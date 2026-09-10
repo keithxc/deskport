@@ -21,7 +21,7 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
       m_PointerRegionLockToggledByUser(false),
       m_FakeCaptureActive(false),
       m_CaptureSystemKeysMode(prefs.captureSysKeysMode),
-      m_MouseCursorCapturedVisibilityState(SDL_DISABLE),
+      m_MouseCursorCapturedVisibilityState(prefs.showLocalCursor ? SDL_ENABLE : SDL_DISABLE),
       m_LongPressTimer(0),
       m_StreamWidth(streamWidth),
       m_StreamHeight(streamHeight),
@@ -293,9 +293,22 @@ void SdlInputHandler::notifyFocusLost()
         setCaptureActive(false);
     }
 
+    // Focus loss must restore a usable local pointer and release compositor shortcuts.
+    SDL_ShowCursor(SDL_ENABLE);
+#if SDL_VERSION_ATLEAST(2, 0, 15)
+    SDL_SetWindowKeyboardGrab(m_Window, SDL_FALSE);
+#endif
+
     // Raise all keys that are currently pressed. If we don't do this, certain keys
     // used in shortcuts that cause focus loss (such as Alt+Tab) may get stuck down.
     raiseAllKeys();
+}
+
+void SdlInputHandler::notifyFocusGained()
+{
+    updateKeyboardGrabState();
+    if (m_AbsoluteMouseMode && isCaptureActive())
+        SDL_ShowCursor(m_MouseCursorCapturedVisibilityState);
 }
 
 bool SdlInputHandler::isCaptureActive()
@@ -314,8 +327,9 @@ void SdlInputHandler::updateKeyboardGrabState()
         return;
     }
 
-    bool shouldGrab = isCaptureActive();
     Uint32 windowFlags = SDL_GetWindowFlags(m_Window);
+    bool shouldGrab = isCaptureActive() && (windowFlags & SDL_WINDOW_INPUT_FOCUS) &&
+        !(windowFlags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED));
     if (m_CaptureSystemKeysMode == StreamingPreferences::CSK_FULLSCREEN &&
             !(windowFlags & SDL_WINDOW_FULLSCREEN)) {
         // Ungrab if it's fullscreen only and we left fullscreen

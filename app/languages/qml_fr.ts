@@ -1401,6 +1401,9 @@
 </context>
 <context>
     <name>SettingsHome</name>
+    <message><source>Always show a local pointer in desktop mode</source><translation>Toujours afficher un pointeur local en mode bureau</translation></message>
+    <message><source>Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers.</source><translation>Le pointeur reste visible si l’hôte masque son curseur. Désactivez cette option si deux pointeurs apparaissent.</translation></message>
+    <message><source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source><translation>Sur Mac, Super / Windows correspond à Commande et Alt à Option. Choisissez Toujours pour transmettre Super + Espace en mode fenêtré. Les changements prennent effet à la prochaine connexion.</translation></message>
     <message>
         <source>Settings</source>
         <translation>Paramètres</translation>

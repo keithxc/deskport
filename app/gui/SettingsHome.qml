@@ -144,6 +144,8 @@ UiPage {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Keyboard & pointer"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Switch { text: qsTr("Use a desktop-style pointer"); checked: StreamingPreferences.absoluteMouseMode; onClicked: { StreamingPreferences.absoluteMouseMode=checked; save() } }
+            Switch { objectName: "localCursorSwitch"; text: qsTr("Always show a local pointer in desktop mode"); checked: StreamingPreferences.showLocalCursor; enabled: StreamingPreferences.absoluteMouseMode; onClicked: { StreamingPreferences.showLocalCursor=checked; save() } }
+            Label { text: qsTr("Keeps the pointer visible if the host hides its cursor. Turn this off if you see two pointers."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Reverse scrolling direction"); checked: StreamingPreferences.reverseScrollDirection; onClicked: { StreamingPreferences.reverseScrollDirection=checked; save() } }
             Label { text: qsTr("Send system shortcuts to the remote computer"); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             ComboBox {
@@ -158,6 +160,7 @@ UiPage {
                 onActivated: function(index) { StreamingPreferences.captureSysKeysMode=index; save() }
                 Layout.preferredWidth: 250
             }
+            Label { text: qsTr("On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: qsTr("Release remote input with Ctrl + Alt + Shift + Z."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
