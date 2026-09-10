@@ -26,6 +26,10 @@
 
 HostManager::HostManager(QObject *parent, const QString &directory) : QObject(parent) {
     m_Isolated = !directory.isEmpty();
+    if (!m_Isolated) {
+        const int savedPort = QSettings().value("host/port", DeskPortNetwork::DefaultBasePort).toInt();
+        if (DeskPortNetwork::isPrivateBase(savedPort)) m_BasePort = savedPort;
+    }
     m_Network.setProxy(QNetworkProxy::NoProxy);
     m_Directory = directory.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/host" : directory;
     m_Status = available() ? tr("Sharing is off") : tr("Hosting is available in the macOS all-in-one package");
@@ -43,7 +47,8 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     connect(&m_Server, &QProcess::started, this, [this] {
         if (m_Stopping) { m_Server.terminate(); return; }
         m_Starting = false;
-        setStatus(tr("Host process running on port 48989. Screen capture and remote input still need verification."));
+        if (!m_Isolated) QSettings().setValue("host/port", m_BasePort);
+        setStatus(tr("Host process running on port %1. Screen capture and remote input still need verification.").arg(m_BasePort));
         const auto generation = m_Generation;
         QTimer::singleShot(3000, this, [this, generation] {
             if (generation != m_Generation || m_Server.state() != QProcess::Running) return;
@@ -85,6 +90,9 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         m_LogOffset = QFileInfo(m_Directory + "/host.log").size();
         m_Server.setStandardOutputFile(m_Directory + "/host.log", QIODevice::Append);
         m_Server.setStandardErrorFile(m_Directory + "/host.log", QIODevice::Append);
+        // The child cannot inherit these listeners. Release immediately before
+        // starting it; bind failures still clean up only our own processes.
+        m_Ports.release();
         m_Server.start(serverPath(), {m_Directory + "/sunshine.conf"});
     });
     auto menu = new QMenu;
@@ -141,7 +149,22 @@ void HostManager::start(int width, int height) {
     if (width < 640 || width > 3840 || height < 360 || height > 2160 || width % 2 || height % 2) {
         setStatus(tr("Unsupported display size")); return;
     }
-    QDir().mkpath(m_Directory + "/credentials");
+    if (!QDir().mkpath(m_Directory + "/credentials")) {
+        setStatus(tr("Cannot create host state directory")); return;
+    }
+    m_HostLock.reset(new QLockFile(m_Directory + "/instance.lock"));
+    // Hosting is long-lived. Age alone must never let another instance take over.
+    m_HostLock->setStaleLockTime(0);
+    if (!m_HostLock->tryLock(0)) {
+        m_HostLock.reset();
+        setStatus(tr("Another DeskPort instance is already using this host state. Open that instance to manage sharing.")); return;
+    }
+    const int selectedPort = m_Ports.reserve(m_BasePort,
+        m_Isolated ? QHostAddress::LocalHost : QHostAddress::AnyIPv4);
+    if (!selectedPort) {
+        beginStop(tr("No free DeskPort port group is available. Existing services were left unchanged.")); return;
+    }
+    m_BasePort = selectedPort;
     QFile::setPermissions(m_Directory, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
     QFile credentials(m_Directory + "/control-secret");
     if (credentials.open(QIODevice::ReadOnly)) m_Password = QString::fromUtf8(credentials.readAll()).trimmed();
@@ -149,10 +172,10 @@ void HostManager::start(int width, int height) {
     if (m_Password.isEmpty()) {
         m_Password = QUuid::createUuid().toString(QUuid::WithoutBraces) + QUuid::createUuid().toString(QUuid::WithoutBraces);
         QSaveFile save(credentials.fileName());
-        if (!save.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot save host credentials")); return; }
+        if (!save.open(QIODevice::WriteOnly)) { beginStop(tr("Cannot save host credentials")); return; }
         save.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
         save.write(m_Password.toUtf8());
-        if (!save.commit()) { setStatus(tr("Cannot save host credentials")); return; }
+        if (!save.commit()) { beginStop(tr("Cannot save host credentials")); return; }
     }
     if (!m_Isolated) {
         QSettings settings;
@@ -173,7 +196,7 @@ void HostManager::startServer(int displayId) {
     if (!config.open(QIODevice::WriteOnly)) { beginStop(tr("Cannot write host configuration")); return; }
     config.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
     config.write(QString("file_apps = %1/apps.json\nfile_state = %1/state.json\npkey = %1/credentials/key.pem\ncert = %1/credentials/cert.pem\ncredentials_file = %1/control.json\nlog_path = %1/sunshine.log\n").arg(m_Directory).toUtf8());
-    config.write(QString("sunshine_name = DeskPort\nport = 48989\nupnp = disabled\nmin_log_level = 2\noutput_name = %1\norigin_web_ui_allowed = pc\n").arg(displayId).toUtf8());
+    config.write(QString("sunshine_name = DeskPort\nport = %2\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\noutput_name = %1\norigin_web_ui_allowed = pc\n").arg(displayId).arg(m_BasePort).toUtf8());
     if (!config.commit()) { beginStop(tr("Cannot save host configuration")); return; }
     m_Credentials.setWorkingDirectory(m_Directory);
     m_Credentials.setStandardOutputFile(QProcess::nullDevice());
@@ -224,6 +247,8 @@ void HostManager::finishStop() {
         if (!m_Stopping || generation != m_Generation) return;
         if (m_Credentials.state() != QProcess::NotRunning ||
             m_Server.state() != QProcess::NotRunning || m_Display.state() != QProcess::NotRunning) return;
+        m_Ports.release();
+        m_HostLock.reset();
         m_Stopping = false;
         setStatus(m_StopStatus);
     });
@@ -243,7 +268,7 @@ void HostManager::pair(const QString &pin, const QString &name) {
             if (reply->sslConfiguration().peerCertificate() == expectedCertificate) reply->ignoreSslErrors();
         });
     };
-    QNetworkRequest request(QUrl("https://127.0.0.1:48990/api/pin"));
+    QNetworkRequest request(QUrl(QString("https://127.0.0.1:%1/api/pin").arg(m_BasePort + 1)));
     request.setTransferTimeout(10000);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Basic " + ("deskport:" + m_Password).toUtf8().toBase64());

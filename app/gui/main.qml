@@ -493,7 +493,7 @@ ApplicationWindow {
 
     NavigableDialog {
         id: addPcDialog
-        property string label: qsTr("Enter the IP address of your host PC:")
+        property string label: qsTr("Enter the host IP address or hostname:")
 
         standardButtons: Dialog.Ok | Dialog.Cancel
 
@@ -516,6 +516,13 @@ ApplicationWindow {
             Label {
                 text: addPcDialog.label
                 font.bold: true
+            }
+
+            Label {
+                text: qsTr("DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.")
+                Layout.preferredWidth: 420
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
             }
 
             TextField {

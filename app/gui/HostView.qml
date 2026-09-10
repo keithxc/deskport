@@ -39,7 +39,7 @@ ScrollView {
         }
         Label { text: qsTr("Pair a connecting device"); font.pixelSize: 20; Layout.leftMargin: 20 }
         Label {
-            text: qsTr("On the other computer, add this computer's address with :48989. Enter its displayed PIN here. This authorizes access to this host; reverse access is paired separately in this preview.")
+            text: qsTr("On the other computer, add this computer's address with :%1. Enter its displayed PIN here. This authorizes access to this host; reverse access is paired separately in this preview.").arg(hostManager.basePort)
             wrapMode: Text.WordWrap; Layout.fillWidth: true; Layout.leftMargin: 20; Layout.rightMargin: 20
         }
         RowLayout {

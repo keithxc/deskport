@@ -11,6 +11,7 @@ public:
     NvAddress();
     explicit NvAddress(QString addr, uint16_t port);
     explicit NvAddress(QHostAddress addr, uint16_t port);
+    static NvAddress fromUserInput(const QString &address);
 
     uint16_t port() const;
     void setPort(uint16_t port);

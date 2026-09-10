@@ -51,8 +51,10 @@ bool ComputerSeeker::matchComputer(NvComputer *computer) const
         return true;
     }
 
+    const NvAddress requested = NvAddress::fromUserInput(m_ComputerName);
     for (const NvAddress& addr : computer->uniqueAddresses()) {
-        if (addr.address().toLower() == value || addr.toString().toLower() == value) {
+        if (addr.address().compare(requested.address(), Qt::CaseInsensitive) == 0 &&
+                addr.port() == requested.port()) {
             return true;
         }
     }

@@ -17,8 +17,8 @@ Open the DMG and drag DeskPort into Applications. Open DeskPort, then select
 permission buttons to grant the host's screen-recording and accessibility access
 in macOS. System authorization remains a one-time user step for a new code identity.
 
-On another client, add the Mac's reachable address with port `48989` (for example,
-`your-computer:48989`). Keep one incoming pairing dialog open, then enter that client's four-digit PIN
+On another client, add the Mac's reachable address with the port shown on the
+sharing page (initially `48989`, for example `your-computer:48989`). Keep one incoming pairing dialog open, then enter that client's four-digit PIN
 in DeskPort's sharing page. Pairing stays saved. This preview pairs each direction separately; unified
 mutual pairing is not implemented yet.
 
@@ -45,7 +45,17 @@ this helper-owned display, so macOS may relocate its windows to another display.
 Host data lives under Qt's DeskPort application-data directory in a private `host`
 subdirectory. The UI's **Host logs** button opens it. Host configuration, pairing
 state, API credentials and certificates are independent of external Sunshine.
-The preview uses ports based at 48989, avoiding the default Sunshine base 47989.
+DeskPort initially uses base port 48989. Before creating a display it reserves the
+whole TCP/UDP group; if any member is busy, it tries another DeskPort group at
+100-port intervals (49089 through 50889). It remembers the last started group's
+base port and tries it first next time. The UI, generated host configuration and
+local pairing API all follow the selected group. If it changes, update manually
+entered client addresses; Bonjour discovery uses the advertised port.
+
+The native Sunshine default group is never a candidate. A DeskPort instance lock
+also prevents another DeskPort using the same state directory from starting a
+second host or replacing its credentials. The bundled host's own tray icon is
+disabled, leaving sharing controls in DeskPort and the native Sunshine tray alone.
 UPnP is disabled. Reachability must be provided by the LAN or a network such as
 Tailscale; installing the package does not create a network tunnel.
 
@@ -83,7 +93,8 @@ the stable-signature deployment intended for a permanent unattended host.
 
 `DeskPort.app/Contents/MacOS/DeskPort --host-self-test` starts the two host components
 using temporary state, verifies the HTTP server identity, then stops them. It does
-not pair, capture screenshots or inject input. Port 48989 must be free. Passing
+not pair, capture screenshots or inject input. It selects an available DeskPort
+port group and queries that group. Passing
 this test does not establish remote input, unattended reboot or long-session quality.
 
 `DeskPort --share` opens the sharing page and starts the default virtual display.
@@ -92,9 +103,41 @@ this test does not establish remote input, unattended reboot or long-session qua
 
 Run `python3 scripts/test-host-lifecycle.py` with native Qt available to exercise
 startup cancellation, failure cleanup, retries and forced termination. This harness
-uses fake helper/host executables and temporary state; it does not create a virtual
-display, open a port, pair a device or affect a separately installed Sunshine.
+uses fake helper/host executables, temporary state and loopback-only TCP/UDP
+reservations; it does not create a virtual display, pair a device or start Sunshine.
 
 Do not replace an application currently providing remote access during testing.
 Validate development packages separately, and request local permission/stream
 checks before creating displays or starting the bundled host on an active desktop.
+
+## Port coexistence
+
+| Purpose | Protocol | Offset from selected base | Initial port |
+| --- | --- | --- | --- |
+| GameStream HTTPS | TCP | -5 | 48984 |
+| GameStream HTTP / discovery endpoint | TCP | 0 | 48989 |
+| Local administration / PIN API | TCP | +1 | 48990 |
+| RTSP | TCP | +21 | 49010 |
+| Video | UDP | +9 | 48998 |
+| Control | UDP | +10 | 48999 |
+| Audio | UDP | +11 | 49000 |
+| Reserved microphone slot | UDP | +13 | 49002 |
+
+The current generated host configuration explicitly uses IPv4. Reservations cover
+IPv4 wildcard listeners in normal use, including conflicts with loopback listeners.
+They are released immediately before launching Sunshine because it cannot inherit
+them. Another process can still race that handoff; startup failure cleans up only
+DeskPort's children. No existing process is killed, no foreign configuration is
+changed, and no router/firewall rule is installed to resolve a conflict. If all
+20 groups are occupied, startup stops before creating the virtual display.
+
+New manually entered addresses default to DeskPort's 48989. Explicit ports and
+saved endpoints are retained; enter `host:47989` to deliberately select a default
+native Sunshine host. Address-based CLI lookup also distinguishes ports on the
+same machine. Bonjour keeps the shared GameStream service type and resolves each
+advertised port; it does not replace or restart the system mDNS service.
+
+Offsets and discovery behavior were checked against the bundled upstream version:
+[stream ports](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/stream.h),
+[RTSP port](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/rtsp.h),
+[macOS Bonjour registration](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/platform/macos/publish.cpp).

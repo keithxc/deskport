@@ -33,6 +33,10 @@ The pinned Nix build supplies upstream submodule dependencies automatically.
 `nix run . -- --help` prints the inherited command-line interface. A host still
 needs Sunshine and a separate pairing with DeskPort. No personal host or pairing
 credential is included or imported from Moonlight.
+New manual addresses default to DeskPort's port `48989`. Include the port shown
+on the host's sharing page if different, or use `host:47989` to connect explicitly
+to a default standalone Sunshine installation. Saved/discovered endpoints retain
+their own ports.
 
 For an editable native build:
 

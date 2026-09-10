@@ -53,7 +53,8 @@ is disabled during startup and cleanup. A running process is explicitly not a
 claim that capture permissions or remote input have been verified.
 
 Native regression harness: `python3 scripts/test-host-lifecycle.py` uses temporary
-state and fake child processes, without network listeners, display changes or input.
+state and fake child processes, without display changes or input. Port coexistence
+checks additionally use loopback-only socket reservations.
 Existing separately installed Sunshine services are not modified or stopped.
 Eight native lifecycle scenarios passed, including display failure while hosting
 and authentication timeout. Simultaneous process error/exit notifications preserve
@@ -65,6 +66,24 @@ check. These checks do not establish real capture, input or permission readiness
 
 Next acceptance: validate the new package's permissions and incoming stream in a
 user-approved test window. Keep the existing remote-access path available throughout.
+
+## Coexistence with native services (2026-09-10)
+
+User requirement: DeskPort and independently installed Sunshine or similar services
+must not reconfigure or stop each other. Host startup now reserves the complete
+TCP/UDP port family, selects an available DeskPort group, and remembers its base.
+All pairing/UI/self-test endpoints use that base. A per-state-directory instance
+lock prevents competing DeskPort launches from overwriting host state. Exhaustion
+fails before creating a display; the native Sunshine port family is never selected.
+Manual viewer entries default to DeskPort; explicit and saved ports are preserved.
+
+Regression coverage includes each TCP/UDP family member being occupied, port
+exhaustion/retry, a competing instance, chosen-port configuration, and explicit
+native-Sunshine/manual IPv6 addresses. The instance-lock test also ages the lock file while its owner is still running.
+All 21 scenarios passed (23 QtTest checks including setup/cleanup), followed by
+native macOS packaging/signature/dependency checks, packaged CLI startup, and a
+Linux Nix build with isolated CLI smoke checks. Full live streaming coexistence
+still needs user-assisted acceptance while retaining the existing remote-access service.
 
 ## Next action: persistent-session prototype
 

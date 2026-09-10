@@ -1,5 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QLockFile>
+#include "hostports.h"
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include <QSystemTrayIcon>
@@ -8,6 +10,7 @@ class HostManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool available READ available CONSTANT)
     Q_PROPERTY(bool running READ running NOTIFY changed)
+    Q_PROPERTY(int basePort READ basePort NOTIFY changed)
     Q_PROPERTY(bool canPair READ canPair NOTIFY changed)
     Q_PROPERTY(bool loginStart READ loginStart NOTIFY changed)
     Q_PROPERTY(QString status READ status NOTIFY changed)
@@ -17,6 +20,7 @@ public:
     bool available() const;
     bool running() const;
     bool canPair() const;
+    int basePort() const { return m_BasePort; }
     bool loginStart() const;
     Q_INVOKABLE void setLoginStart(bool enabled);
     QString status() const { return m_Status; }
@@ -36,6 +40,9 @@ private:
     QString serverPath() const;
     QString m_Directory, m_Password, m_Status, m_StopStatus;
     QProcess m_Display, m_Server, m_Credentials;
+    HostPortReservation m_Ports;
+    std::unique_ptr<QLockFile> m_HostLock;
+    int m_BasePort = DeskPortNetwork::DefaultBasePort;
     QByteArray m_Buffer;
     QNetworkAccessManager m_Network;
     QSystemTrayIcon m_Tray;

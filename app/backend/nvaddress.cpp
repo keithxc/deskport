@@ -1,6 +1,17 @@
 #include "nvaddress.h"
+#include "hostports.h"
 
 #include <QHostAddress>
+#include <QUrl>
+
+NvAddress NvAddress::fromUserInput(const QString &address)
+{
+    const QUrl url = QUrl::fromUserInput("moonlight://" + address.trimmed());
+    const int port = url.port(DeskPortNetwork::DefaultBasePort);
+    if (!url.isValid() || url.host().isEmpty() || url.scheme() != "moonlight" || port <= 0 || port > 65535)
+        return NvAddress();
+    return NvAddress(url.host(), uint16_t(port));
+}
 
 NvAddress::NvAddress()
 {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test host supervision with fake children: no ports, capture, displays or input."""
+"""Test host supervision with fake children and loopback-only port reservations."""
 import os
 from pathlib import Path
 import shutil
@@ -51,7 +51,7 @@ CONFIG += console c++17 testcase
 CONFIG -= app_bundle
 TARGET = host-lifecycle-tests
 DESTDIR = "{macos}"
-SOURCES += "{root}/tests/host-lifecycle.cpp" "{root}/app/backend/hostmanager.cpp"
+SOURCES += "{root}/tests/host-lifecycle.cpp" "{root}/app/backend/hostmanager.cpp" "{root}/app/backend/nvaddress.cpp"
 HEADERS += "{root}/app/backend/hostmanager.h"
 INCLUDEPATH += "{root}/app/backend"
 LIBS += -framework CoreGraphics

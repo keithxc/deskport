@@ -570,9 +570,6 @@ int main(int argc, char *argv[])
     if (app.arguments().contains("--host-self-test")) {
         QTemporaryDir directory;
         if (!directory.isValid()) return 1;
-        QTcpServer portCheck;
-        if (!portCheck.listen(QHostAddress::LocalHost, 48989)) return 2;
-        portCheck.close();
         HostManager host(nullptr, directory.path());
         if (!host.available()) return 3;
         QNetworkAccessManager network;
@@ -582,7 +579,8 @@ int main(int argc, char *argv[])
         });
         QTimer::singleShot(0, &app, [&host] { host.start(2560, 1440); });
         QTimer::singleShot(8000, &app, [&] {
-            auto reply = network.get(QNetworkRequest(QUrl("http://127.0.0.1:48989/serverinfo")));
+            if (!host.canPair()) { host.stop(); app.exit(1); return; }
+            auto reply = network.get(QNetworkRequest(QUrl(QString("http://127.0.0.1:%1/serverinfo").arg(host.basePort()))));
             QObject::connect(reply, &QNetworkReply::finished, &app, [&, reply] {
                 const bool ready = reply->error() == QNetworkReply::NoError && reply->readAll().contains("<hostname>DeskPort</hostname>");
                 fprintf(stderr, "%s: bundled host and native virtual display startup\n", ready ? "PASS" : "FAIL");

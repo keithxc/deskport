@@ -1,6 +1,6 @@
 QT += core quick network quickcontrols2 svg widgets
 SOURCES += backend/hostmanager.cpp
-HEADERS += backend/hostmanager.h
+HEADERS += backend/hostmanager.h backend/hostports.h
 CONFIG += c++11
 
 unix:!macx {
