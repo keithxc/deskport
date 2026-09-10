@@ -109,7 +109,8 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     m_Tray.setToolTip("DeskPort");
     if (available() && !m_Isolated) m_Tray.show();
     connect(qApp, &QCoreApplication::aboutToQuit, this, &HostManager::stop);
-    if (directory.isEmpty() && available() && loginStart()) {
+    if (directory.isEmpty() && available() && loginStart() &&
+            !QCoreApplication::arguments().contains("--no-host-autostart")) {
         QTimer::singleShot(0, this, [this] {
             QSettings settings;
             start(settings.value("host/width", 2560).toInt(), settings.value("host/height", 1440).toInt());

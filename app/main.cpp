@@ -601,7 +601,7 @@ int main(int argc, char *argv[])
 #endif
 
     GlobalCommandLineParser parser;
-    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--share"); return args; }());
+    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--share"); args.removeAll("--no-host-autostart"); return args; }());
     switch (commandLineParserResult) {
     case GlobalCommandLineParser::ListRequested:
         // Don't log to the console since it will jumble the command output

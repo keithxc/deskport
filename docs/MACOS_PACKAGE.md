@@ -99,6 +99,10 @@ this test does not establish remote input, unattended reboot or long-session qua
 
 `DeskPort --share` opens the sharing page and starts the default virtual display.
 
+`DeskPort --no-host-autostart` opens the viewer UI without starting sharing for
+that launch. It preserves the saved login-start preference and is useful when
+checking an updated application while another remote-access service is in use.
+
 ## Safe development validation
 
 Run `python3 scripts/test-host-lifecycle.py` with native Qt available to exercise
