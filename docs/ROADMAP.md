@@ -18,9 +18,9 @@ Reciprocal access through one mutual-pairing flow remains planned.
 ## Binding delivery correction (2026-09-10)
 
 Binding requests now distinguish connecting from recipient acknowledgment. The
-approval dialog uses signal handlers compatible with the existing QtQuick import
-version, and its actual QML component is covered by an isolated request/cancel
-test. Discovery advertises the computer hostname instead of a fixed product name.
+actual approval QML component is covered by an isolated request/cancel test.
+QML caches are keyed by resource content so reproducible builds cannot reuse
+an older interface with identical resource timestamps. Discovery advertises the computer hostname instead of a fixed product name.
 Two-computer approval and reciprocal streaming remain a manual acceptance gate.
 
 ## Implemented in the bootstrap

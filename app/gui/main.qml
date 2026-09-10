@@ -210,7 +210,7 @@ ApplicationWindow {
 
     Connections {
         target: peerManager
-        onPeerBound: ComputerManager.addBoundHost(peer)
+        function onPeerBound(peer) { ComputerManager.addBoundHost(peer) }
     }
     BindingApproval {
         manager: peerManager

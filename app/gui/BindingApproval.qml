@@ -23,7 +23,7 @@ Dialog {
     }
     Connections {
         target: bindingApproval.manager
-        onIncomingRequest: {
+        function onIncomingRequest() {
             bindingApproval.transaction = bindingApproval.manager.requestId
             bindingApproval.peerText = bindingApproval.manager.pendingName
             bindingApproval.open()
@@ -32,7 +32,7 @@ Dialog {
             bindingApproval.appWindow.raise()
             bindingApproval.appWindow.requestActivate()
         }
-        onChanged: {
+        function onChanged() {
             if (bindingApproval.visible && bindingApproval.manager.requestId !== bindingApproval.transaction)
                 bindingApproval.close()
         }

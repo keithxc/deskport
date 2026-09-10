@@ -8,6 +8,7 @@
 #include <QQuickItem>
 #include "peermanager.h"
 #include "peerstore.h"
+#include "qmlcachekey.h"
 
 static QByteArray credential(const char* name) {
     QFile f(qEnvironmentVariable(name)); if (!f.open(QIODevice::ReadOnly)) return {}; return f.readAll();
@@ -15,6 +16,22 @@ static QByteArray credential(const char* name) {
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void qmlCacheChangesWithContentEvenWhenTimestampsMatch() {
+        QTemporaryDir dir;
+        QFile file(dir.path()+"/main.qml");
+        QVERIFY(file.open(QIODevice::WriteOnly)); file.write("old UI"); file.close();
+        const auto timestamp = QFileInfo(file).lastModified();
+        const auto before = qmlCacheKey(dir.path());
+        QCOMPARE(before,qmlCacheKey(dir.path()));
+        QVERIFY(file.open(QIODevice::WriteOnly)); file.write("new UI");
+        QVERIFY(file.setFileTime(timestamp,QFileDevice::FileModificationTime)); file.close();
+        QVERIFY(before != qmlCacheKey(dir.path()));
+        const auto after = qmlCacheKey(dir.path());
+        QFile child(dir.path()+"/Approval.qml");
+        QVERIFY(child.open(QIODevice::WriteOnly)); child.write("Dialog {}"); child.close();
+        QVERIFY(after != qmlCacheKey(dir.path()));
+        QVERIFY(child.remove()); QCOMPARE(after,qmlCacheKey(dir.path()));
+    }
     void actualApprovalDialogOpensAndClosesWithRequest() {
         QTemporaryDir dir;
         HostManager ah(nullptr,dir.path()+"/ah"),bh(nullptr,dir.path()+"/bh");

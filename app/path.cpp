@@ -1,4 +1,5 @@
 #include "path.h"
+#include "backend/qmlcachekey.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -122,4 +123,7 @@ void Path::initialize(bool portable)
         s_BoxArtCacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/boxart";
         s_QmlCacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/qmlcache";
     }
+    const QString contentKey = qmlCacheKey(":/gui");
+    if (!contentKey.isEmpty()) s_QmlCacheDir += "/" + contentKey;
+
 }
