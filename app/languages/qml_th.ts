@@ -1314,4 +1314,36 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>การตั้งค่า</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>สามารถติดต่อได้</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>ไม่สามารถติดต่อได้</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Cancel</source>
+        <translation>ยกเลิก</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Settings</source>
+        <translation>การตั้งค่า</translation>
+    </message>
+</context>
 </TS>

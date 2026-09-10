@@ -1318,4 +1318,40 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>Instellingen</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>Taal</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>Online</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Offline</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Settings</source>
+        <translation>Instellingen</translation>
+    </message>
+</context>
 </TS>

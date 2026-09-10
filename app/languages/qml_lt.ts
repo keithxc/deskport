@@ -1310,4 +1310,22 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>Online</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Offline</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
+    </message>
+</context>
 </TS>

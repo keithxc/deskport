@@ -1314,4 +1314,22 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>У мережі</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Поза мережею</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Скасувати</translation>
+    </message>
+</context>
 </TS>

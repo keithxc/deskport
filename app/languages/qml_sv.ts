@@ -1318,4 +1318,40 @@
         <translation>Är du säker på att du vill sluta?</translation>
     </message>
 </context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>Inställningar</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>Språk</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>Online</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Offline</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Cancel</source>
+        <translation>Avbryt</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Settings</source>
+        <translation>Inställningar</translation>
+    </message>
+</context>
 </TS>

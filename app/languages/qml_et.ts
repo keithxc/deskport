@@ -1310,4 +1310,15 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Online</source>
+        <translation>Ühendatud</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Ühendamata</translation>
+    </message>
+</context>
 </TS>

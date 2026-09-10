@@ -345,6 +345,50 @@
         <source>Enter the new name for this PC:</source>
         <translation>このPCの新しい名前を入力してください:</translation>
     </message>
+    <message>
+        <source>Devices</source>
+        <translation>デバイス</translation>
+    </message>
+    <message>
+        <source>Connect your first device.</source>
+        <translation>最初のデバイスに接続しましょう。</translation>
+    </message>
+    <message>
+        <source>Add a device by IP address or name. Confirm once on the other computer, then connect in either direction.</source>
+        <translation>IP アドレスか名前で追加し、相手側で一度承認すると双方向に接続できます。</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>デバイスを追加</translation>
+    </message>
+    <message>
+        <source>Nearby devices appear here automatically</source>
+        <translation>近くのデバイスは自動的に表示されます</translation>
+    </message>
+    <message>
+        <source>Nearby discovery is off in Settings</source>
+        <translation>設定で自動検出が無効になっています</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>アプリ</translation>
+    </message>
+    <message>
+        <source>Pair with a legacy PIN</source>
+        <translation>従来の PIN でペアリング</translation>
+    </message>
+    <message>
+        <source>Rename device</source>
+        <translation>デバイス名を変更</translation>
+    </message>
+    <message>
+        <source>Remove from list</source>
+        <translation>リストから削除</translation>
+    </message>
+    <message>
+        <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
+        <translation>%1 のホストのプロトコルに対応していません。ホストと DeskPort を更新してください。</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1316,6 +1360,587 @@
         <location filename="../gui/main.qml" line="488"/>
         <source>Enter the IP address of your host PC:</source>
         <translation>ホストPCのIPアドレスを入力してください:</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation>デバイス</translation>
+    </message>
+    <message>
+        <source>Sharing</source>
+        <translation>共有</translation>
+    </message>
+    <message>
+        <source>Getting started</source>
+        <translation>初期設定</translation>
+    </message>
+    <message>
+        <source>Sharing on</source>
+        <translation>共有オン</translation>
+    </message>
+    <message>
+        <source>Sharing off</source>
+        <translation>共有オフ</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>戻る</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>デバイスを追加</translation>
+    </message>
+    <message>
+        <source>Enter the host IP address or hostname:</source>
+        <translation>ホストの IP アドレスまたはホスト名：</translation>
+    </message>
+    <message>
+        <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
+        <translation>DeskPort の既定値は :48989 です。共有ページのポートが異なる場合は アドレス:ポート を入力してください。標準の Sunshine は :47989 です。</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <source>Make DeskPort your own.</source>
+        <translation>DeskPort を自分好みに。</translation>
+    </message>
+    <message>
+        <source>Language changes apply immediately. Connection preferences apply to your next connection from this computer.</source>
+        <translation>言語はすぐに切り替わります。接続設定は、このコンピューターからの次回の接続に適用されます。</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>言語</translation>
+    </message>
+    <message>
+        <source>Follow system</source>
+        <translation>システムに合わせる</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort to apply this language.</source>
+        <translation>この言語を適用するには DeskPort を再起動してください。</translation>
+    </message>
+    <message>
+        <source>Saved on this computer. Missing translations appear in English.</source>
+        <translation>このコンピューターに保存されます。未翻訳の項目は英語で表示されます。</translation>
+    </message>
+    <message>
+        <source>Picture</source>
+        <translation>映像</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>入力</translation>
+    </message>
+    <message>
+        <source>Sound</source>
+        <translation>サウンド</translation>
+    </message>
+    <message>
+        <source>Connections</source>
+        <translation>接続</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>詳細</translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation>解像度</translation>
+    </message>
+    <message>
+        <source>Connection window</source>
+        <translation>接続ウィンドウ</translation>
+    </message>
+    <message>
+        <source>Full screen</source>
+        <translation>全画面</translation>
+    </message>
+    <message>
+        <source>Borderless full screen</source>
+        <translation>ボーダーレス全画面</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>ウィンドウ</translation>
+    </message>
+    <message>
+        <source>Frame rate</source>
+        <translation>フレームレート</translation>
+    </message>
+    <message>
+        <source>Bandwidth · %1 Mbps</source>
+        <translation>帯域幅 · %1 Mbps</translation>
+    </message>
+    <message>
+        <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
+        <translation>値を上げると画質と帯域使用量が増えます。スライダーを動かさない限り、既存の詳細設定値を維持します。</translation>
+    </message>
+    <message>
+        <source>Synchronize frames to this display</source>
+        <translation>このディスプレイにフレームを同期</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; pointer</source>
+        <translation>キーボードとポインター</translation>
+    </message>
+    <message>
+        <source>Use a desktop-style pointer</source>
+        <translation>デスクトップ用ポインターを使う</translation>
+    </message>
+    <message>
+        <source>Reverse scrolling direction</source>
+        <translation>スクロール方向を反転</translation>
+    </message>
+    <message>
+        <source>Send system shortcuts to the remote computer</source>
+        <translation>システムのショートカットをリモートに送信</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>しない</translation>
+    </message>
+    <message>
+        <source>Only in full screen</source>
+        <translation>全画面のみ</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>常に</translation>
+    </message>
+    <message>
+        <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
+        <translation>Ctrl + Alt + Shift + Z でリモート入力を解除します。</translation>
+    </message>
+    <message>
+        <source>Mute when DeskPort loses focus</source>
+        <translation>DeskPort が非アクティブのとき消音</translation>
+    </message>
+    <message>
+        <source>Also play audio on the host</source>
+        <translation>ホストでも音声を再生</translation>
+    </message>
+    <message>
+        <source>Discover nearby devices</source>
+        <translation>近くのデバイスを検出</translation>
+    </message>
+    <message>
+        <source>Keep this computer awake while connected</source>
+        <translation>接続中はスリープを防止</translation>
+    </message>
+    <message>
+        <source>Manage saved access</source>
+        <translation>保存済みアクセスを管理</translation>
+    </message>
+    <message>
+        <source>Advanced &amp; support</source>
+        <translation>詳細設定とサポート</translation>
+    </message>
+    <message>
+        <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
+        <translation>カスタム解像度、コーデック、HDR、サラウンド、コントローラーは詳細設定で変更できます。</translation>
+    </message>
+    <message>
+        <source>Advanced settings</source>
+        <translation>詳細設定</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>権限ガイド</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>問題を報告</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Checking</source>
+        <translation>確認中</translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation>オンライン</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>オフライン</translation>
+    </message>
+    <message>
+        <source>Device actions</source>
+        <translation>デバイス操作</translation>
+    </message>
+    <message>
+        <source>Looking for an address</source>
+        <translation>アドレスを検索中</translation>
+    </message>
+    <message>
+        <source>Checking connection…</source>
+        <translation>接続を確認中…</translation>
+    </message>
+    <message>
+        <source>Unavailable · check device or network</source>
+        <translation>利用不可 · デバイスやネットワークを確認</translation>
+    </message>
+    <message>
+        <source>Connect to desktop  →</source>
+        <translation>デスクトップに接続  →</translation>
+    </message>
+    <message>
+        <source>Set up access  →</source>
+        <translation>アクセスを設定  →</translation>
+    </message>
+</context>
+<context>
+    <name>HostView</name>
+    <message>
+        <source>Sharing</source>
+        <translation>共有</translation>
+    </message>
+    <message>
+        <source>Share this computer.</source>
+        <translation>このコンピューターを共有。</translation>
+    </message>
+    <message>
+        <source>Share a dedicated virtual display. DeskPort stays available when its window is hidden.</source>
+        <translation>専用仮想ディスプレイを共有します。ウィンドウを隠しても利用できます。</translation>
+    </message>
+    <message>
+        <source>Share your current desktop. DeskPort stays available when its window is hidden.</source>
+        <translation>現在のデスクトップを共有します。ウィンドウを隠しても利用できます。</translation>
+    </message>
+    <message>
+        <source>Updating sharing…</source>
+        <translation>共有を更新中…</translation>
+    </message>
+    <message>
+        <source>Sharing is on</source>
+        <translation>共有は有効です</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>共有は無効です</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>共有を停止</translation>
+    </message>
+    <message>
+        <source>Start sharing</source>
+        <translation>共有を開始</translation>
+    </message>
+    <message>
+        <source>Access &amp; permissions</source>
+        <translation>アクセスと権限</translation>
+    </message>
+    <message>
+        <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
+        <translation>承認したデバイスのみ接続できます。保存済みの連携はシステムの録画・入力権限を付与しません。</translation>
+    </message>
+    <message>
+        <source>Review permissions</source>
+        <translation>権限を確認</translation>
+    </message>
+    <message>
+        <source>Manage devices</source>
+        <translation>デバイスを管理</translation>
+    </message>
+    <message>
+        <source>Sharing preferences</source>
+        <translation>共有設定</translation>
+    </message>
+    <message>
+        <source>Virtual display size</source>
+        <translation>仮想ディスプレイのサイズ</translation>
+    </message>
+    <message>
+        <source>Choose before starting sharing. Changing size during a session is not available yet.</source>
+        <translation>共有開始前に選択してください。接続中のサイズ変更にはまだ対応していません。</translation>
+    </message>
+    <message>
+        <source>Start sharing when I log in</source>
+        <translation>ログイン時に共有を開始</translation>
+    </message>
+    <message>
+        <source>Hide compatibility &amp; diagnostics</source>
+        <translation>互換性と診断を隠す</translation>
+    </message>
+    <message>
+        <source>Compatibility &amp; diagnostics</source>
+        <translation>互換性と診断</translation>
+    </message>
+    <message>
+        <source>Legacy PIN pairing</source>
+        <translation>従来の PIN ペアリング</translation>
+    </message>
+    <message>
+        <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
+        <translation>相互連携に非対応の Moonlight などで使用します。クライアントの PIN を入力すると片方向のアクセスを許可します。</translation>
+    </message>
+    <message>
+        <source>Device name</source>
+        <translation>デバイス名</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>許可</translation>
+    </message>
+    <message>
+        <source>Host port: %1  ·  Binding port: %2</source>
+        <translation>ホストポート：%1  ·  連携ポート：%2</translation>
+    </message>
+    <message>
+        <source>Open host logs</source>
+        <translation>ホストログを開く</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Add a device</source>
+        <translation>デバイスを追加</translation>
+    </message>
+    <message>
+        <source>One confirmation. Both directions.</source>
+        <translation>一度の承認で双方向に接続。</translation>
+    </message>
+    <message>
+        <source>Keep DeskPort open on both computers. Enter an address, then approve the request on the other device.</source>
+        <translation>両方で DeskPort を開き、アドレスを入力して相手側で承認してください。</translation>
+    </message>
+    <message>
+        <source>Where do you want to connect?</source>
+        <translation>接続先を指定</translation>
+    </message>
+    <message>
+        <source>IP address or computer name</source>
+        <translation>IP アドレスまたはコンピューター名</translation>
+    </message>
+    <message>
+        <source>Send request</source>
+        <translation>リクエストを送信</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <source>Approval lets both computers view and control each other. System permissions are still required on each device.</source>
+        <translation>承認すると互いの画面表示と操作が可能になります。システム権限は各デバイスで必要です。</translation>
+    </message>
+    <message>
+        <source>Saved access</source>
+        <translation>保存済みアクセス</translation>
+    </message>
+    <message>
+        <source>Your approved devices will appear here.</source>
+        <translation>承認済みデバイスがここに表示されます。</translation>
+    </message>
+    <message>
+        <source>Bound both ways</source>
+        <translation>相互連携済み</translation>
+    </message>
+    <message>
+        <source>Incomplete</source>
+        <translation>未完了</translation>
+    </message>
+    <message>
+        <source>Remove access to this computer</source>
+        <translation>このコンピューターへのアクセスを削除</translation>
+    </message>
+    <message>
+        <source>Connecting another way?</source>
+        <translation>別の方法で接続しますか？</translation>
+    </message>
+    <message>
+        <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
+        <translation>カスタム連携ポートは アドレス:ポート で指定します。Moonlight と独立した Sunshine は従来のペアリングを使います。</translation>
+    </message>
+    <message>
+        <source>Add a legacy host</source>
+        <translation>従来のホストを追加</translation>
+    </message>
+    <message>
+        <source>Remove device access?</source>
+        <translation>デバイスのアクセスを削除しますか？</translation>
+    </message>
+    <message>
+        <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
+        <translation>%1 はこのコンピューターを操作できなくなります。双方向で解除するには相手側の連携も削除してください。</translation>
+    </message>
+</context>
+<context>
+    <name>SetupView</name>
+    <message>
+        <source>Getting started</source>
+        <translation>初期設定</translation>
+    </message>
+    <message>
+        <source>Set up this computer.</source>
+        <translation>このコンピューターを設定。</translation>
+    </message>
+    <message>
+        <source>Connect to another computer right away. To share this one, review its permissions below.</source>
+        <translation>他のコンピューターにはすぐ接続できます。このコンピューターを共有する場合は以下の権限を確認してください。</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>許可済み</translation>
+    </message>
+    <message>
+        <source>Checked when sharing</source>
+        <translation>共有時に確認</translation>
+    </message>
+    <message>
+        <source>Not requested</source>
+        <translation>未要求</translation>
+    </message>
+    <message>
+        <source>Restricted by system</source>
+        <translation>システムによる制限</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>確認が必要</translation>
+    </message>
+    <message>
+        <source>Skip for now · only connect to other devices</source>
+        <translation>今はスキップ · 他のデバイスへの接続のみ</translation>
+    </message>
+    <message>
+        <source>1. Review permissions    2. Add a device    3. Confirm and connect</source>
+        <translation>1. 権限を確認    2. デバイスを追加    3. 承認して接続</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>システム設定を開く</translation>
+    </message>
+    <message>
+        <source>Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission.</source>
+        <translation>Linux ではユーザーに /dev/uinput へのアクセスが必要です。他のコンピューターへの接続には不要です。</translation>
+    </message>
+    <message>
+        <source>Authorize the installed DeskPort app</source>
+        <translation>インストール済み DeskPort に権限を付与</translation>
+    </message>
+    <message>
+        <source>If a settings pane accepts adding an app, drag the tile below into its list, then turn the switch on. Otherwise use Reveal in Finder. Some panes list DeskPort only after sharing has requested access.</source>
+        <translation>アプリを追加できる設定では、下のタイルをリストにドラッグして有効にします。それ以外は「Finder に表示」を使います。共有が権限を要求した後にのみ DeskPort が表示される場合もあります。</translation>
+    </message>
+    <message>
+        <source>DeskPort.app  ·  Drag to Settings</source>
+        <translation>DeskPort.app  ·  設定にドラッグ</translation>
+    </message>
+    <message>
+        <source>Reveal in Finder</source>
+        <translation>Finder に表示</translation>
+    </message>
+    <message>
+        <source>After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test.</source>
+        <translation>権限変更後に共有を再開してください。macOS が DeskPort の再起動を求めたら従ってください。実際の映像と入力も確認する必要があります。</translation>
+    </message>
+    <message>
+        <source>Check again</source>
+        <translation>再確認</translation>
+    </message>
+    <message>
+        <source>Continue to devices</source>
+        <translation>デバイス一覧へ</translation>
+    </message>
+</context>
+<context>
+    <name>BindingApproval</name>
+    <message>
+        <source>Bind with this device?</source>
+        <translation>このデバイスと連携しますか？</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>後で</translation>
+    </message>
+    <message>
+        <source>Allow &amp; bind</source>
+        <translation>許可して連携</translation>
+    </message>
+    <message>
+        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
+        <translation>このデバイスと相互に画面表示・操作を許可しますか？両方で共有を開始し、既存の DeskPort 接続が一時切断される場合があります。心当たりのあるリクエストのみ承認してください。</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Sharing</source>
+        <translation>共有</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>ウィンドウ</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>アプリ</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>共有は無効です</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>共有を停止</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Screen &amp; system audio</source>
+        <translation>画面とシステム音声</translation>
+    </message>
+    <message>
+        <source>Let a connected device see this desktop and hear its sound.</source>
+        <translation>接続したデバイスに画面と音声を共有します。</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; mouse</source>
+        <translation>キーボードとマウス</translation>
+    </message>
+    <message>
+        <source>Let a device you approve control this computer.</source>
+        <translation>承認済みデバイスによる操作を許可します。</translation>
+    </message>
+    <message>
+        <source>Audio input</source>
+        <translation>音声入力</translation>
+    </message>
+    <message>
+        <source>Needed only when your sharing audio path uses microphone access.</source>
+        <translation>音声共有でマイクへのアクセスを使う場合のみ必要です。</translation>
+    </message>
+    <message>
+        <source>Desktop capture</source>
+        <translation>デスクトップのキャプチャ</translation>
+    </message>
+    <message>
+        <source>KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts.</source>
+        <translation>KDE は現在のデスクトップを使用します。他の環境では共有開始時に画面選択を求める場合があります。</translation>
+    </message>
+    <message>
+        <source>Remote control requires access to the system input device.</source>
+        <translation>リモート操作にはシステム入力デバイスへのアクセスが必要です。</translation>
     </message>
 </context>
 </TS>

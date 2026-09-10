@@ -171,6 +171,12 @@ refresh. Keep the independent remote-access service intact throughout.
 
 ## Following: persistent-session prototype
 
+Language settings added on 2026-09-10: visible language selection with system
+default, local persistence and live retranslation; primary desktop-page coverage
+for English, Simplified/Traditional Chinese, Japanese, Korean, German, French and
+Spanish. Existing additional catalogs remain selectable with English fallback.
+See `docs/DESKTOP_UX.md` for translation maintenance and validation.
+
 1. Diagnose input with the unchanged Moonlight/Sunshine path, including host
    permissions and interaction with a software KVM. Do not hide an input failure
    behind a new application shell.

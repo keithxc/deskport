@@ -345,6 +345,50 @@
         <source>Enter the new name for this PC:</source>
         <translation>輸入此電腦的新名稱：</translation>
     </message>
+    <message>
+        <source>Devices</source>
+        <translation>裝置</translation>
+    </message>
+    <message>
+        <source>Connect your first device.</source>
+        <translation>連線至你的第一台裝置。</translation>
+    </message>
+    <message>
+        <source>Add a device by IP address or name. Confirm once on the other computer, then connect in either direction.</source>
+        <translation>透過 IP 位址或名稱新增裝置。在另一台電腦確認一次，即可雙向連線。</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>新增裝置</translation>
+    </message>
+    <message>
+        <source>Nearby devices appear here automatically</source>
+        <translation>附近裝置會自動顯示在這裡</translation>
+    </message>
+    <message>
+        <source>Nearby discovery is off in Settings</source>
+        <translation>設定中已關閉附近裝置探索</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>應用程式</translation>
+    </message>
+    <message>
+        <source>Pair with a legacy PIN</source>
+        <translation>使用傳統 PIN 配對</translation>
+    </message>
+    <message>
+        <source>Rename device</source>
+        <translation>重新命名裝置</translation>
+    </message>
+    <message>
+        <source>Remove from list</source>
+        <translation>從清單移除</translation>
+    </message>
+    <message>
+        <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
+        <translation>%1 上的主機使用不支援的協定版本。請更新主機與 DeskPort 後再連線。</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1316,6 +1360,587 @@
         <location filename="../gui/main.qml" line="488"/>
         <source>Enter the IP address of your host PC:</source>
         <translation>輸入您的主機電腦 IP 位址：</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation>裝置</translation>
+    </message>
+    <message>
+        <source>Sharing</source>
+        <translation>共享</translation>
+    </message>
+    <message>
+        <source>Getting started</source>
+        <translation>開始使用</translation>
+    </message>
+    <message>
+        <source>Sharing on</source>
+        <translation>共享已開啟</translation>
+    </message>
+    <message>
+        <source>Sharing off</source>
+        <translation>共享已關閉</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>返回</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>新增裝置</translation>
+    </message>
+    <message>
+        <source>Enter the host IP address or hostname:</source>
+        <translation>輸入主機 IP 位址或主機名稱：</translation>
+    </message>
+    <message>
+        <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
+        <translation>DeskPort 預設使用 :48989。若共享頁顯示其他連接埠，請輸入 位址:連接埠。原生 Sunshine 預設使用 :47989。</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <source>Make DeskPort your own.</source>
+        <translation>依照你的習慣設定 DeskPort。</translation>
+    </message>
+    <message>
+        <source>Language changes apply immediately. Connection preferences apply to your next connection from this computer.</source>
+        <translation>語言切換立即生效。連線設定會在這台電腦下次發起連線時生效。</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>語言</translation>
+    </message>
+    <message>
+        <source>Follow system</source>
+        <translation>跟隨系統</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort to apply this language.</source>
+        <translation>重新啟動 DeskPort 以套用此語言。</translation>
+    </message>
+    <message>
+        <source>Saved on this computer. Missing translations appear in English.</source>
+        <translation>僅儲存在這台電腦上。尚未翻譯的內容會顯示英文。</translation>
+    </message>
+    <message>
+        <source>Picture</source>
+        <translation>畫面</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>輸入</translation>
+    </message>
+    <message>
+        <source>Sound</source>
+        <translation>聲音</translation>
+    </message>
+    <message>
+        <source>Connections</source>
+        <translation>連線</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>進階</translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation>解析度</translation>
+    </message>
+    <message>
+        <source>Connection window</source>
+        <translation>連線視窗</translation>
+    </message>
+    <message>
+        <source>Full screen</source>
+        <translation>全螢幕</translation>
+    </message>
+    <message>
+        <source>Borderless full screen</source>
+        <translation>無邊框全螢幕</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>視窗</translation>
+    </message>
+    <message>
+        <source>Frame rate</source>
+        <translation>影格率</translation>
+    </message>
+    <message>
+        <source>Bandwidth · %1 Mbps</source>
+        <translation>頻寬 · %1 Mbps</translation>
+    </message>
+    <message>
+        <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
+        <translation>數值越高，畫面越細緻，頻寬消耗也越大。不移動此滑桿會保留既有進階設定值。</translation>
+    </message>
+    <message>
+        <source>Synchronize frames to this display</source>
+        <translation>與此顯示器同步畫面</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; pointer</source>
+        <translation>鍵盤與指標</translation>
+    </message>
+    <message>
+        <source>Use a desktop-style pointer</source>
+        <translation>使用桌面式指標</translation>
+    </message>
+    <message>
+        <source>Reverse scrolling direction</source>
+        <translation>反轉捲動方向</translation>
+    </message>
+    <message>
+        <source>Send system shortcuts to the remote computer</source>
+        <translation>將系統快捷鍵傳送至遠端電腦</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>永不</translation>
+    </message>
+    <message>
+        <source>Only in full screen</source>
+        <translation>僅在全螢幕時</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>一律</translation>
+    </message>
+    <message>
+        <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
+        <translation>按 Ctrl + Alt + Shift + Z 釋放遠端輸入。</translation>
+    </message>
+    <message>
+        <source>Mute when DeskPort loses focus</source>
+        <translation>DeskPort 失去焦點時靜音</translation>
+    </message>
+    <message>
+        <source>Also play audio on the host</source>
+        <translation>同時在主機播放聲音</translation>
+    </message>
+    <message>
+        <source>Discover nearby devices</source>
+        <translation>探索附近裝置</translation>
+    </message>
+    <message>
+        <source>Keep this computer awake while connected</source>
+        <translation>連線時保持這台電腦喚醒</translation>
+    </message>
+    <message>
+        <source>Manage saved access</source>
+        <translation>管理已儲存的存取權限</translation>
+    </message>
+    <message>
+        <source>Advanced &amp; support</source>
+        <translation>進階與支援</translation>
+    </message>
+    <message>
+        <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
+        <translation>自訂解析度、編解碼器、HDR、環繞音效與控制器選項仍可在進階設定中調整。</translation>
+    </message>
+    <message>
+        <source>Advanced settings</source>
+        <translation>進階設定</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>權限引導</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>回報問題</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Checking</source>
+        <translation>正在檢查</translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation>上線</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>離線</translation>
+    </message>
+    <message>
+        <source>Device actions</source>
+        <translation>裝置操作</translation>
+    </message>
+    <message>
+        <source>Looking for an address</source>
+        <translation>正在尋找位址</translation>
+    </message>
+    <message>
+        <source>Checking connection…</source>
+        <translation>正在檢查連線…</translation>
+    </message>
+    <message>
+        <source>Unavailable · check device or network</source>
+        <translation>無法使用 · 請檢查裝置或網路</translation>
+    </message>
+    <message>
+        <source>Connect to desktop  →</source>
+        <translation>連線至桌面  →</translation>
+    </message>
+    <message>
+        <source>Set up access  →</source>
+        <translation>設定存取權限  →</translation>
+    </message>
+</context>
+<context>
+    <name>HostView</name>
+    <message>
+        <source>Sharing</source>
+        <translation>共享</translation>
+    </message>
+    <message>
+        <source>Share this computer.</source>
+        <translation>共享這台電腦。</translation>
+    </message>
+    <message>
+        <source>Share a dedicated virtual display. DeskPort stays available when its window is hidden.</source>
+        <translation>共享專用虛擬螢幕。隱藏視窗後 DeskPort 仍保持可用。</translation>
+    </message>
+    <message>
+        <source>Share your current desktop. DeskPort stays available when its window is hidden.</source>
+        <translation>共享目前桌面。隱藏視窗後 DeskPort 仍保持可用。</translation>
+    </message>
+    <message>
+        <source>Updating sharing…</source>
+        <translation>正在更新共享狀態…</translation>
+    </message>
+    <message>
+        <source>Sharing is on</source>
+        <translation>共享已開啟</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>共享已關閉</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>停止共享</translation>
+    </message>
+    <message>
+        <source>Start sharing</source>
+        <translation>開始共享</translation>
+    </message>
+    <message>
+        <source>Access &amp; permissions</source>
+        <translation>存取與權限</translation>
+    </message>
+    <message>
+        <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
+        <translation>只有你核准的裝置才能連線。儲存綁定不會授予系統錄製或輸入權限。</translation>
+    </message>
+    <message>
+        <source>Review permissions</source>
+        <translation>檢查權限</translation>
+    </message>
+    <message>
+        <source>Manage devices</source>
+        <translation>管理裝置</translation>
+    </message>
+    <message>
+        <source>Sharing preferences</source>
+        <translation>共享設定</translation>
+    </message>
+    <message>
+        <source>Virtual display size</source>
+        <translation>虛擬螢幕尺寸</translation>
+    </message>
+    <message>
+        <source>Choose before starting sharing. Changing size during a session is not available yet.</source>
+        <translation>請在開始共享前選擇。目前尚不支援工作階段中調整尺寸。</translation>
+    </message>
+    <message>
+        <source>Start sharing when I log in</source>
+        <translation>登入時開始共享</translation>
+    </message>
+    <message>
+        <source>Hide compatibility &amp; diagnostics</source>
+        <translation>隱藏相容性與診斷</translation>
+    </message>
+    <message>
+        <source>Compatibility &amp; diagnostics</source>
+        <translation>相容性與診斷</translation>
+    </message>
+    <message>
+        <source>Legacy PIN pairing</source>
+        <translation>傳統 PIN 配對</translation>
+    </message>
+    <message>
+        <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
+        <translation>適用於 Moonlight 等不支援雙向綁定的用戶端。輸入該用戶端顯示的 PIN，僅授予單向存取權限。</translation>
+    </message>
+    <message>
+        <source>Device name</source>
+        <translation>裝置名稱</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN 碼</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>允許</translation>
+    </message>
+    <message>
+        <source>Host port: %1  ·  Binding port: %2</source>
+        <translation>主機連接埠：%1  ·  綁定連接埠：%2</translation>
+    </message>
+    <message>
+        <source>Open host logs</source>
+        <translation>開啟主機記錄</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Add a device</source>
+        <translation>新增裝置</translation>
+    </message>
+    <message>
+        <source>One confirmation. Both directions.</source>
+        <translation>確認一次，雙向連線。</translation>
+    </message>
+    <message>
+        <source>Keep DeskPort open on both computers. Enter an address, then approve the request on the other device.</source>
+        <translation>在兩台電腦上保持 DeskPort 開啟。輸入位址後，在另一台裝置核准請求。</translation>
+    </message>
+    <message>
+        <source>Where do you want to connect?</source>
+        <translation>要連線到哪裡？</translation>
+    </message>
+    <message>
+        <source>IP address or computer name</source>
+        <translation>IP 位址或電腦名稱</translation>
+    </message>
+    <message>
+        <source>Send request</source>
+        <translation>傳送請求</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Approval lets both computers view and control each other. System permissions are still required on each device.</source>
+        <translation>核准後，兩台電腦可互相檢視與控制。每台裝置仍需個別授予系統權限。</translation>
+    </message>
+    <message>
+        <source>Saved access</source>
+        <translation>已儲存的存取權限</translation>
+    </message>
+    <message>
+        <source>Your approved devices will appear here.</source>
+        <translation>已核准的裝置會顯示在這裡。</translation>
+    </message>
+    <message>
+        <source>Bound both ways</source>
+        <translation>已雙向綁定</translation>
+    </message>
+    <message>
+        <source>Incomplete</source>
+        <translation>未完成</translation>
+    </message>
+    <message>
+        <source>Remove access to this computer</source>
+        <translation>撤銷對此電腦的存取</translation>
+    </message>
+    <message>
+        <source>Connecting another way?</source>
+        <translation>其他連線方式？</translation>
+    </message>
+    <message>
+        <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
+        <translation>自訂綁定連接埠請使用 位址:連接埠。Moonlight 與獨立 Sunshine 主機使用傳統配對。</translation>
+    </message>
+    <message>
+        <source>Add a legacy host</source>
+        <translation>新增傳統主機</translation>
+    </message>
+    <message>
+        <source>Remove device access?</source>
+        <translation>撤銷裝置存取權限？</translation>
+    </message>
+    <message>
+        <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
+        <translation>%1 將無法再控制此電腦。若要雙向撤銷，也請在另一台裝置移除綁定。</translation>
+    </message>
+</context>
+<context>
+    <name>SetupView</name>
+    <message>
+        <source>Getting started</source>
+        <translation>開始使用</translation>
+    </message>
+    <message>
+        <source>Set up this computer.</source>
+        <translation>設定這台電腦。</translation>
+    </message>
+    <message>
+        <source>Connect to another computer right away. To share this one, review its permissions below.</source>
+        <translation>你可以直接連線至其他電腦。如需共享這台電腦，請檢查下方權限。</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>已允許</translation>
+    </message>
+    <message>
+        <source>Checked when sharing</source>
+        <translation>共享時檢查</translation>
+    </message>
+    <message>
+        <source>Not requested</source>
+        <translation>尚未請求</translation>
+    </message>
+    <message>
+        <source>Restricted by system</source>
+        <translation>受系統限制</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>需要處理</translation>
+    </message>
+    <message>
+        <source>Skip for now · only connect to other devices</source>
+        <translation>暫時略過 · 僅連線至其他裝置</translation>
+    </message>
+    <message>
+        <source>1. Review permissions    2. Add a device    3. Confirm and connect</source>
+        <translation>1. 檢查權限    2. 新增裝置    3. 確認並連線</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>開啟系統設定</translation>
+    </message>
+    <message>
+        <source>Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission.</source>
+        <translation>Linux 設定必須允許目前使用者存取 /dev/uinput。僅連線至其他電腦不需要此權限。</translation>
+    </message>
+    <message>
+        <source>Authorize the installed DeskPort app</source>
+        <translation>授權已安裝的 DeskPort 應用程式</translation>
+    </message>
+    <message>
+        <source>If a settings pane accepts adding an app, drag the tile below into its list, then turn the switch on. Otherwise use Reveal in Finder. Some panes list DeskPort only after sharing has requested access.</source>
+        <translation>若設定頁面支援新增應用程式，將下方圖塊拖入清單並開啟開關；否則使用「在 Finder 中顯示」。部分頁面僅在共享要求權限後才列出 DeskPort。</translation>
+    </message>
+    <message>
+        <source>DeskPort.app  ·  Drag to Settings</source>
+        <translation>DeskPort.app  ·  拖入設定</translation>
+    </message>
+    <message>
+        <source>Reveal in Finder</source>
+        <translation>在 Finder 中顯示</translation>
+    </message>
+    <message>
+        <source>After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test.</source>
+        <translation>變更權限後請重新啟動共享。若 macOS 要求重新開啟 DeskPort，請依提示操作。權限檢查不能取代實際畫面與輸入測試。</translation>
+    </message>
+    <message>
+        <source>Check again</source>
+        <translation>重新檢查</translation>
+    </message>
+    <message>
+        <source>Continue to devices</source>
+        <translation>繼續至裝置清單</translation>
+    </message>
+</context>
+<context>
+    <name>BindingApproval</name>
+    <message>
+        <source>Bind with this device?</source>
+        <translation>與此裝置綁定？</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>暫不</translation>
+    </message>
+    <message>
+        <source>Allow &amp; bind</source>
+        <translation>允許並綁定</translation>
+    </message>
+    <message>
+        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
+        <translation>允許此裝置與這台電腦互相檢視與控制嗎？兩台電腦都會開啟 DeskPort 共享，既有 DeskPort 工作階段可能短暫中斷。只接受你預期中的請求。</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Sharing</source>
+        <translation>共享</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>視窗</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>應用程式</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>共享已關閉</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>停止共享</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN 碼</translation>
+    </message>
+    <message>
+        <source>Screen &amp; system audio</source>
+        <translation>螢幕與系統音訊</translation>
+    </message>
+    <message>
+        <source>Let a connected device see this desktop and hear its sound.</source>
+        <translation>允許已連線的裝置檢視桌面並聆聽聲音。</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; mouse</source>
+        <translation>鍵盤與滑鼠</translation>
+    </message>
+    <message>
+        <source>Let a device you approve control this computer.</source>
+        <translation>允許已核准的裝置控制這台電腦。</translation>
+    </message>
+    <message>
+        <source>Audio input</source>
+        <translation>音訊輸入</translation>
+    </message>
+    <message>
+        <source>Needed only when your sharing audio path uses microphone access.</source>
+        <translation>僅在共享音訊需要麥克風存取權限時使用。</translation>
+    </message>
+    <message>
+        <source>Desktop capture</source>
+        <translation>桌面擷取</translation>
+    </message>
+    <message>
+        <source>KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts.</source>
+        <translation>KDE 使用目前桌面。其他桌面環境可能在共享開始時要求選擇螢幕。</translation>
+    </message>
+    <message>
+        <source>Remote control requires access to the system input device.</source>
+        <translation>遠端控制需要存取系統輸入裝置。</translation>
     </message>
 </context>
 </TS>

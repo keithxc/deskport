@@ -41,6 +41,29 @@ Saved access is visible and locally revocable; removing access on both computers
 still requires removal on both sides. Legacy Sunshine/Moonlight PIN pairing stays
 available through an explicit compatibility entry point.
 
+## Language
+
+Settings starts with a language selector. Follow system is the default; an explicit
+choice is saved locally and takes effect immediately on supported Qt versions.
+Language names use their native scripts so the selector remains recognizable after
+switching languages. A language change must not reset connection preferences,
+restart sharing or remove trusted devices.
+
+English, Simplified Chinese, Traditional Chinese, Japanese, Korean, German, French
+and Spanish cover the new desktop settings, device cards, sharing, binding and
+setup pages. The selector also preserves the existing Italian, Portuguese, Russian,
+Dutch, Polish, Czech, Swedish, Norwegian Bokmål, Turkish, Hungarian, Greek,
+Vietnamese and Thai catalogs. Coverage outside the new pages varies; untranslated
+text falls back to English. Regional Chinese system locales select the appropriate
+Simplified or Traditional catalog, including Traditional Chinese for Hong Kong.
+
+Translation sources are `app/languages/qml_*.ts`; keep their compiled `.qm` files in
+sync with `lrelease app/languages/*.ts`. Run `python3 scripts/test-translations.py`
+and `python3 scripts/test-host-lifecycle.py --ui` (inside `nix develop` on Linux).
+The UI test changes language selection without changing stream preferences and
+loads each primary catalog for live QML retranslation and English restoration.
+Community review of terminology and native-language layout remains welcome.
+
 ## Validation
 
 - macOS: `python3 scripts/test-host-lifecycle.py --ui`, `--binding`, and the default

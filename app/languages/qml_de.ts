@@ -345,6 +345,50 @@
         <source>Enter the new name for this PC:</source>
         <translation>Geben Sie den neuen Namen für diesen PC ein:</translation>
     </message>
+    <message>
+        <source>Devices</source>
+        <translation>Geräte</translation>
+    </message>
+    <message>
+        <source>Connect your first device.</source>
+        <translation>Verbinden Sie Ihr erstes Gerät.</translation>
+    </message>
+    <message>
+        <source>Add a device by IP address or name. Confirm once on the other computer, then connect in either direction.</source>
+        <translation>Gerät per IP-Adresse oder Namen hinzufügen. Einmal am anderen Computer bestätigen, dann in beide Richtungen verbinden.</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>Gerät hinzufügen</translation>
+    </message>
+    <message>
+        <source>Nearby devices appear here automatically</source>
+        <translation>Geräte in der Nähe erscheinen automatisch</translation>
+    </message>
+    <message>
+        <source>Nearby discovery is off in Settings</source>
+        <translation>Geräteerkennung ist in den Einstellungen aus</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>Anwendungen</translation>
+    </message>
+    <message>
+        <source>Pair with a legacy PIN</source>
+        <translation>Mit klassischer PIN koppeln</translation>
+    </message>
+    <message>
+        <source>Rename device</source>
+        <translation>Gerät umbenennen</translation>
+    </message>
+    <message>
+        <source>Remove from list</source>
+        <translation>Aus Liste entfernen</translation>
+    </message>
+    <message>
+        <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
+        <translation>Der Host auf %1 nutzt eine nicht unterstützte Protokollversion. Host und DeskPort vor der Verbindung aktualisieren.</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1316,6 +1360,587 @@
         <location filename="../gui/main.qml" line="488"/>
         <source>Enter the IP address of your host PC:</source>
         <translation>Geben Sie die IP-Adresse Ihres Host-PCs ein:</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation>Geräte</translation>
+    </message>
+    <message>
+        <source>Sharing</source>
+        <translation>Freigabe</translation>
+    </message>
+    <message>
+        <source>Getting started</source>
+        <translation>Erste Schritte</translation>
+    </message>
+    <message>
+        <source>Sharing on</source>
+        <translation>Freigabe aktiv</translation>
+    </message>
+    <message>
+        <source>Sharing off</source>
+        <translation>Freigabe aus</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Zurück</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>Gerät hinzufügen</translation>
+    </message>
+    <message>
+        <source>Enter the host IP address or hostname:</source>
+        <translation>IP-Adresse oder Hostname eingeben:</translation>
+    </message>
+    <message>
+        <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
+        <translation>DeskPort nutzt standardmäßig :48989. Bei einem anderen Port auf der Freigabeseite Adresse:Port eingeben. Standard-Sunshine nutzt :47989.</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <source>Make DeskPort your own.</source>
+        <translation>DeskPort nach Ihren Wünschen.</translation>
+    </message>
+    <message>
+        <source>Language changes apply immediately. Connection preferences apply to your next connection from this computer.</source>
+        <translation>Die Sprache ändert sich sofort. Verbindungseinstellungen gelten ab der nächsten Verbindung von diesem Computer.</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>Sprache</translation>
+    </message>
+    <message>
+        <source>Follow system</source>
+        <translation>Systemsprache</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort to apply this language.</source>
+        <translation>DeskPort neu starten, um diese Sprache anzuwenden.</translation>
+    </message>
+    <message>
+        <source>Saved on this computer. Missing translations appear in English.</source>
+        <translation>Auf diesem Computer gespeichert. Fehlende Übersetzungen erscheinen auf Englisch.</translation>
+    </message>
+    <message>
+        <source>Picture</source>
+        <translation>Bild</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Eingabe</translation>
+    </message>
+    <message>
+        <source>Sound</source>
+        <translation>Ton</translation>
+    </message>
+    <message>
+        <source>Connections</source>
+        <translation>Verbindungen</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>Erweitert</translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation>Auflösung</translation>
+    </message>
+    <message>
+        <source>Connection window</source>
+        <translation>Verbindungsfenster</translation>
+    </message>
+    <message>
+        <source>Full screen</source>
+        <translation>Vollbild</translation>
+    </message>
+    <message>
+        <source>Borderless full screen</source>
+        <translation>Randloses Vollbild</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <source>Frame rate</source>
+        <translation>Bildrate</translation>
+    </message>
+    <message>
+        <source>Bandwidth · %1 Mbps</source>
+        <translation>Bandbreite · %1 Mbps</translation>
+    </message>
+    <message>
+        <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
+        <translation>Höhere Werte verbessern Details und benötigen mehr Bandbreite. Bestehende erweiterte Werte bleiben erhalten, solange Sie den Regler nicht bewegen.</translation>
+    </message>
+    <message>
+        <source>Synchronize frames to this display</source>
+        <translation>Bilder mit diesem Display synchronisieren</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; pointer</source>
+        <translation>Tastatur und Zeiger</translation>
+    </message>
+    <message>
+        <source>Use a desktop-style pointer</source>
+        <translation>Desktop-Zeigermodus verwenden</translation>
+    </message>
+    <message>
+        <source>Reverse scrolling direction</source>
+        <translation>Scrollrichtung umkehren</translation>
+    </message>
+    <message>
+        <source>Send system shortcuts to the remote computer</source>
+        <translation>Systemtastenkürzel an den entfernten Computer senden</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>Nie</translation>
+    </message>
+    <message>
+        <source>Only in full screen</source>
+        <translation>Nur im Vollbild</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>Immer</translation>
+    </message>
+    <message>
+        <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
+        <translation>Mit Ctrl + Alt + Shift + Z die Remote-Eingabe freigeben.</translation>
+    </message>
+    <message>
+        <source>Mute when DeskPort loses focus</source>
+        <translation>Bei Fokusverlust stummschalten</translation>
+    </message>
+    <message>
+        <source>Also play audio on the host</source>
+        <translation>Ton auch auf dem Host abspielen</translation>
+    </message>
+    <message>
+        <source>Discover nearby devices</source>
+        <translation>Geräte in der Nähe erkennen</translation>
+    </message>
+    <message>
+        <source>Keep this computer awake while connected</source>
+        <translation>Während der Verbindung wach halten</translation>
+    </message>
+    <message>
+        <source>Manage saved access</source>
+        <translation>Gespeicherte Zugriffe verwalten</translation>
+    </message>
+    <message>
+        <source>Advanced &amp; support</source>
+        <translation>Erweitert und Hilfe</translation>
+    </message>
+    <message>
+        <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
+        <translation>Eigene Auflösungen, Codecs, HDR, Surround-Sound und Controller-Optionen finden Sie in den erweiterten Einstellungen.</translation>
+    </message>
+    <message>
+        <source>Advanced settings</source>
+        <translation>Erweiterte Einstellungen</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>Berechtigungshilfe</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Problem melden</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Checking</source>
+        <translation>Wird geprüft</translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation>Online</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Offline</translation>
+    </message>
+    <message>
+        <source>Device actions</source>
+        <translation>Geräteaktionen</translation>
+    </message>
+    <message>
+        <source>Looking for an address</source>
+        <translation>Adresse wird gesucht</translation>
+    </message>
+    <message>
+        <source>Checking connection…</source>
+        <translation>Verbindung wird geprüft…</translation>
+    </message>
+    <message>
+        <source>Unavailable · check device or network</source>
+        <translation>Nicht verfügbar · Gerät oder Netzwerk prüfen</translation>
+    </message>
+    <message>
+        <source>Connect to desktop  →</source>
+        <translation>Mit Desktop verbinden  →</translation>
+    </message>
+    <message>
+        <source>Set up access  →</source>
+        <translation>Zugriff einrichten  →</translation>
+    </message>
+</context>
+<context>
+    <name>HostView</name>
+    <message>
+        <source>Sharing</source>
+        <translation>Freigabe</translation>
+    </message>
+    <message>
+        <source>Share this computer.</source>
+        <translation>Diesen Computer freigeben.</translation>
+    </message>
+    <message>
+        <source>Share a dedicated virtual display. DeskPort stays available when its window is hidden.</source>
+        <translation>Ein eigenes virtuelles Display freigeben. DeskPort bleibt bei verborgenem Fenster verfügbar.</translation>
+    </message>
+    <message>
+        <source>Share your current desktop. DeskPort stays available when its window is hidden.</source>
+        <translation>Aktuellen Desktop freigeben. DeskPort bleibt bei verborgenem Fenster verfügbar.</translation>
+    </message>
+    <message>
+        <source>Updating sharing…</source>
+        <translation>Freigabe wird aktualisiert…</translation>
+    </message>
+    <message>
+        <source>Sharing is on</source>
+        <translation>Freigabe ist aktiv</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>Freigabe ist aus</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>Freigabe beenden</translation>
+    </message>
+    <message>
+        <source>Start sharing</source>
+        <translation>Freigabe starten</translation>
+    </message>
+    <message>
+        <source>Access &amp; permissions</source>
+        <translation>Zugriff und Berechtigungen</translation>
+    </message>
+    <message>
+        <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
+        <translation>Nur genehmigte Geräte können sich verbinden. Eine gespeicherte Kopplung erteilt keine Systemrechte für Aufnahme oder Eingabe.</translation>
+    </message>
+    <message>
+        <source>Review permissions</source>
+        <translation>Berechtigungen prüfen</translation>
+    </message>
+    <message>
+        <source>Manage devices</source>
+        <translation>Geräte verwalten</translation>
+    </message>
+    <message>
+        <source>Sharing preferences</source>
+        <translation>Freigabeeinstellungen</translation>
+    </message>
+    <message>
+        <source>Virtual display size</source>
+        <translation>Virtuelle Displaygröße</translation>
+    </message>
+    <message>
+        <source>Choose before starting sharing. Changing size during a session is not available yet.</source>
+        <translation>Vor dem Freigabestart auswählen. Größenänderungen während einer Sitzung sind noch nicht verfügbar.</translation>
+    </message>
+    <message>
+        <source>Start sharing when I log in</source>
+        <translation>Freigabe bei Anmeldung starten</translation>
+    </message>
+    <message>
+        <source>Hide compatibility &amp; diagnostics</source>
+        <translation>Kompatibilität und Diagnose ausblenden</translation>
+    </message>
+    <message>
+        <source>Compatibility &amp; diagnostics</source>
+        <translation>Kompatibilität und Diagnose</translation>
+    </message>
+    <message>
+        <source>Legacy PIN pairing</source>
+        <translation>Klassische PIN-Kopplung</translation>
+    </message>
+    <message>
+        <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
+        <translation>Für Moonlight und Clients ohne gegenseitige Kopplung. Die dort angezeigte PIN gewährt Zugriff in eine Richtung.</translation>
+    </message>
+    <message>
+        <source>Device name</source>
+        <translation>Gerätename</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>Erlauben</translation>
+    </message>
+    <message>
+        <source>Host port: %1  ·  Binding port: %2</source>
+        <translation>Host-Port: %1  ·  Kopplungsport: %2</translation>
+    </message>
+    <message>
+        <source>Open host logs</source>
+        <translation>Host-Protokolle öffnen</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Add a device</source>
+        <translation>Gerät hinzufügen</translation>
+    </message>
+    <message>
+        <source>One confirmation. Both directions.</source>
+        <translation>Einmal bestätigen. Beidseitig verbinden.</translation>
+    </message>
+    <message>
+        <source>Keep DeskPort open on both computers. Enter an address, then approve the request on the other device.</source>
+        <translation>DeskPort auf beiden Computern geöffnet lassen. Adresse eingeben und die Anfrage am anderen Gerät bestätigen.</translation>
+    </message>
+    <message>
+        <source>Where do you want to connect?</source>
+        <translation>Wohin möchten Sie verbinden?</translation>
+    </message>
+    <message>
+        <source>IP address or computer name</source>
+        <translation>IP-Adresse oder Computername</translation>
+    </message>
+    <message>
+        <source>Send request</source>
+        <translation>Anfrage senden</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <source>Approval lets both computers view and control each other. System permissions are still required on each device.</source>
+        <translation>Die Bestätigung erlaubt beidseitiges Anzeigen und Steuern. Systemberechtigungen sind weiterhin auf beiden Geräten erforderlich.</translation>
+    </message>
+    <message>
+        <source>Saved access</source>
+        <translation>Gespeicherte Zugriffe</translation>
+    </message>
+    <message>
+        <source>Your approved devices will appear here.</source>
+        <translation>Genehmigte Geräte erscheinen hier.</translation>
+    </message>
+    <message>
+        <source>Bound both ways</source>
+        <translation>Beidseitig gekoppelt</translation>
+    </message>
+    <message>
+        <source>Incomplete</source>
+        <translation>Unvollständig</translation>
+    </message>
+    <message>
+        <source>Remove access to this computer</source>
+        <translation>Zugriff auf diesen Computer entfernen</translation>
+    </message>
+    <message>
+        <source>Connecting another way?</source>
+        <translation>Andere Verbindungsart?</translation>
+    </message>
+    <message>
+        <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
+        <translation>Eigene Kopplungsports als Adresse:Port eingeben. Moonlight und unabhängige Sunshine-Hosts nutzen klassische Kopplung.</translation>
+    </message>
+    <message>
+        <source>Add a legacy host</source>
+        <translation>Klassischen Host hinzufügen</translation>
+    </message>
+    <message>
+        <source>Remove device access?</source>
+        <translation>Gerätezugriff entfernen?</translation>
+    </message>
+    <message>
+        <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
+        <translation>%1 kann diesen Computer nicht mehr steuern. Für beidseitigen Entzug auch die Kopplung am anderen Gerät entfernen.</translation>
+    </message>
+</context>
+<context>
+    <name>SetupView</name>
+    <message>
+        <source>Getting started</source>
+        <translation>Erste Schritte</translation>
+    </message>
+    <message>
+        <source>Set up this computer.</source>
+        <translation>Diesen Computer einrichten.</translation>
+    </message>
+    <message>
+        <source>Connect to another computer right away. To share this one, review its permissions below.</source>
+        <translation>Sie können sofort zu anderen Computern verbinden. Zum Freigeben dieses Computers die folgenden Berechtigungen prüfen.</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>Erlaubt</translation>
+    </message>
+    <message>
+        <source>Checked when sharing</source>
+        <translation>Prüfung beim Freigeben</translation>
+    </message>
+    <message>
+        <source>Not requested</source>
+        <translation>Noch nicht angefragt</translation>
+    </message>
+    <message>
+        <source>Restricted by system</source>
+        <translation>Vom System eingeschränkt</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>Handlung erforderlich</translation>
+    </message>
+    <message>
+        <source>Skip for now · only connect to other devices</source>
+        <translation>Vorerst überspringen · nur zu anderen Geräten verbinden</translation>
+    </message>
+    <message>
+        <source>1. Review permissions    2. Add a device    3. Confirm and connect</source>
+        <translation>1. Berechtigungen prüfen    2. Gerät hinzufügen    3. Bestätigen und verbinden</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>Systemeinstellungen öffnen</translation>
+    </message>
+    <message>
+        <source>Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission.</source>
+        <translation>Linux muss dem Benutzer Zugriff auf /dev/uinput erlauben. Für Verbindungen zu anderen Computern ist dies nicht nötig.</translation>
+    </message>
+    <message>
+        <source>Authorize the installed DeskPort app</source>
+        <translation>Installiertem DeskPort Berechtigungen erteilen</translation>
+    </message>
+    <message>
+        <source>If a settings pane accepts adding an app, drag the tile below into its list, then turn the switch on. Otherwise use Reveal in Finder. Some panes list DeskPort only after sharing has requested access.</source>
+        <translation>Wenn Apps hinzugefügt werden können, die Kachel in die Liste ziehen und einschalten. Sonst „Im Finder anzeigen“ nutzen. Manche Bereiche zeigen DeskPort erst nach einer Zugriffsanfrage beim Freigeben.</translation>
+    </message>
+    <message>
+        <source>DeskPort.app  ·  Drag to Settings</source>
+        <translation>DeskPort.app  ·  In Einstellungen ziehen</translation>
+    </message>
+    <message>
+        <source>Reveal in Finder</source>
+        <translation>Im Finder anzeigen</translation>
+    </message>
+    <message>
+        <source>After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test.</source>
+        <translation>Nach Berechtigungsänderungen die Freigabe neu starten. Falls macOS zum erneuten Öffnen von DeskPort auffordert, dem Hinweis folgen. Bild und Eingabe müssen zusätzlich praktisch geprüft werden.</translation>
+    </message>
+    <message>
+        <source>Check again</source>
+        <translation>Erneut prüfen</translation>
+    </message>
+    <message>
+        <source>Continue to devices</source>
+        <translation>Weiter zu Geräten</translation>
+    </message>
+</context>
+<context>
+    <name>BindingApproval</name>
+    <message>
+        <source>Bind with this device?</source>
+        <translation>Mit diesem Gerät koppeln?</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>Nicht jetzt</translation>
+    </message>
+    <message>
+        <source>Allow &amp; bind</source>
+        <translation>Erlauben und koppeln</translation>
+    </message>
+    <message>
+        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
+        <translation>Beidseitiges Anzeigen und Steuern erlauben? DeskPort startet die Freigabe auf beiden Computern; bestehende Sitzungen können kurz getrennt werden. Nur erwartete Anfragen annehmen.</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Sharing</source>
+        <translation>Freigabe</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>Anwendungen</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>Freigabe ist aus</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>Freigabe beenden</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Screen &amp; system audio</source>
+        <translation>Bildschirm und Systemaudio</translation>
+    </message>
+    <message>
+        <source>Let a connected device see this desktop and hear its sound.</source>
+        <translation>Verbundene Geräte dürfen diesen Desktop sehen und hören.</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; mouse</source>
+        <translation>Tastatur und Maus</translation>
+    </message>
+    <message>
+        <source>Let a device you approve control this computer.</source>
+        <translation>Genehmigte Geräte dürfen diesen Computer steuern.</translation>
+    </message>
+    <message>
+        <source>Audio input</source>
+        <translation>Audioeingang</translation>
+    </message>
+    <message>
+        <source>Needed only when your sharing audio path uses microphone access.</source>
+        <translation>Nur nötig, wenn die Audiofreigabe Mikrofonzugriff verwendet.</translation>
+    </message>
+    <message>
+        <source>Desktop capture</source>
+        <translation>Desktop-Aufnahme</translation>
+    </message>
+    <message>
+        <source>KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts.</source>
+        <translation>KDE nutzt den aktuellen Desktop. Andere Umgebungen fragen beim Freigabestart eventuell nach einem Bildschirm.</translation>
+    </message>
+    <message>
+        <source>Remote control requires access to the system input device.</source>
+        <translation>Fernsteuerung erfordert Zugriff auf das Systemeingabegerät.</translation>
     </message>
 </context>
 </TS>

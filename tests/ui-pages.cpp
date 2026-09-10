@@ -4,6 +4,7 @@
 #include <QQmlComponent>
 #include <QQuickWindow>
 #include <QQuickItem>
+#include <QTranslator>
 #include "peermanager.h"
 
 static QByteArray credential(const char* name) {
@@ -25,6 +26,13 @@ signals:
     void sessionFinished(int result);
     void readyForDeletion();
 };
+class TestPreferences : public QObject {
+    Q_OBJECT
+public:
+    using QObject::QObject;
+    enum Language { LANG_AUTO, LANG_EN, LANG_FR, LANG_ZH_CN, LANG_DE, LANG_NB_NO, LANG_RU, LANG_ES, LANG_JA, LANG_VI, LANG_TH, LANG_KO, LANG_HU, LANG_NL, LANG_SV, LANG_TR, LANG_UK, LANG_ZH_TW, LANG_PT, LANG_PT_BR, LANG_EL, LANG_IT, LANG_HI, LANG_PL, LANG_CS, LANG_HE, LANG_CKB, LANG_LT, LANG_ET };
+    Q_ENUM(Language)
+};
 class UiPages : public QObject {
     Q_OBJECT
 private slots:
@@ -36,10 +44,14 @@ private slots:
         qmlRegisterSingletonType<QObject>("ComputerManager",1,0,"ComputerManager",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { signal quitAppCompleted(var error) }",QUrl()); return c.create();
         });
-        qmlRegisterSingletonType<QObject>("StreamingPreferences",1,0,"StreamingPreferences",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
+        qmlRegisterType<TestPreferences>("TestPreferences",1,0,"TestPreferences");
+        qmlRegisterSingletonType<TestPreferences>("StreamingPreferences",1,0,"StreamingPreferences",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine);
             c.setData(R"(import QtQuick 2.9
-QtObject {
+import TestPreferences 1.0
+TestPreferences {
+ property int language: 1; property int retranslations: 0
+ function retranslate() { retranslations++; return true }
  property int width: 2048; property int height: 1152; property int fps: 75; property int bitrateKbps: 125000
  property int windowMode: 2; property int captureSysKeysMode: 1; property int saves: 0
  property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
@@ -130,10 +142,41 @@ ApplicationWindow {
                     QCOMPARE(prefs->property("saves").toInt(),1);
                     QVERIFY(page->property("contentHeight").toReal() > 0);
                 }
+                QObject* languages=page->findChild<QObject*>("languageChoice"); QVERIFY(languages);
+                QCOMPARE(languages->property("currentIndex").toInt(),1);
+                QVERIFY(QMetaObject::invokeMethod(languages,"activated",Q_ARG(int,1)));
+                QCOMPARE(prefs->property("saves").toInt(),1);
+                QVERIFY(QMetaObject::invokeMethod(languages,"activated",Q_ARG(int,2)));
+                QCOMPARE(prefs->property("language").toInt(),3);
+                QCOMPARE(prefs->property("saves").toInt(),2);
+                QCOMPARE(prefs->property("retranslations").toInt(),1);
             }
         }
         const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign"));
         QVERIFY2(bad.isEmpty(),qPrintable(bad.join('\n')));
+    }
+    void commonLanguagesRetranslateSettings() {
+        QQmlEngine engine;
+        const QString gui=qEnvironmentVariable("TEST_GUI_DIR");
+        QQmlComponent themeComponent(&engine,QUrl::fromLocalFile(gui+"/UiTheme.qml"));
+        QScopedPointer<QObject> theme(themeComponent.create()); QVERIFY(theme);
+        engine.rootContext()->setContextProperty("ui",theme.data());
+        QQmlComponent component(&engine,QUrl::fromLocalFile(gui+"/SettingsHome.qml"));
+        QScopedPointer<QObject> page(component.create()); QVERIFY2(page,qPrintable(component.errorString()));
+        const QString english=page->property("heading").toString();
+        QCOMPARE(english,QString("Make DeskPort your own."));
+        for (const auto& language : {"zh_CN","zh_TW","ja","ko","de","fr","es"}) {
+            QTranslator translator;
+            QVERIFY(translator.load(gui+"/../languages/qml_"+language+".qm"));
+            QVERIFY(QCoreApplication::installTranslator(&translator));
+            engine.retranslate();
+            QVERIFY(page->property("heading").toString()!=english);
+            QVERIFY(!translator.translate("SettingsHome","Follow system").isEmpty());
+            QVERIFY(!translator.translate("BindingApproval","Allow & bind").isEmpty());
+            QCoreApplication::removeTranslator(&translator);
+            engine.retranslate();
+            QCOMPARE(page->property("heading").toString(),english);
+        }
     }
 };
 QTEST_MAIN(UiPages)

@@ -345,6 +345,50 @@
         <source>Enter the new name for this PC:</source>
         <translation>이 PC의 새로운 이름 입력:</translation>
     </message>
+    <message>
+        <source>Devices</source>
+        <translation>기기</translation>
+    </message>
+    <message>
+        <source>Connect your first device.</source>
+        <translation>첫 기기를 연결하세요.</translation>
+    </message>
+    <message>
+        <source>Add a device by IP address or name. Confirm once on the other computer, then connect in either direction.</source>
+        <translation>IP 주소나 이름으로 추가하고 상대 컴퓨터에서 한 번 승인하면 양방향 연결이 가능합니다.</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>기기 추가</translation>
+    </message>
+    <message>
+        <source>Nearby devices appear here automatically</source>
+        <translation>주변 기기가 여기에 자동으로 표시됩니다</translation>
+    </message>
+    <message>
+        <source>Nearby discovery is off in Settings</source>
+        <translation>설정에서 주변 기기 검색이 꺼져 있습니다</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>앱</translation>
+    </message>
+    <message>
+        <source>Pair with a legacy PIN</source>
+        <translation>기존 PIN 방식으로 페어링</translation>
+    </message>
+    <message>
+        <source>Rename device</source>
+        <translation>기기 이름 변경</translation>
+    </message>
+    <message>
+        <source>Remove from list</source>
+        <translation>목록에서 제거</translation>
+    </message>
+    <message>
+        <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
+        <translation>%1 호스트의 프로토콜 버전을 지원하지 않습니다. 호스트와 DeskPort를 업데이트하세요.</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1316,6 +1360,587 @@
         <location filename="../gui/main.qml" line="488"/>
         <source>Enter the IP address of your host PC:</source>
         <translation>호스트 PC의 IP 주소를 입력하십시오:</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation>기기</translation>
+    </message>
+    <message>
+        <source>Sharing</source>
+        <translation>공유</translation>
+    </message>
+    <message>
+        <source>Getting started</source>
+        <translation>시작하기</translation>
+    </message>
+    <message>
+        <source>Sharing on</source>
+        <translation>공유 켜짐</translation>
+    </message>
+    <message>
+        <source>Sharing off</source>
+        <translation>공유 꺼짐</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>뒤로</translation>
+    </message>
+    <message>
+        <source>Add a device</source>
+        <translation>기기 추가</translation>
+    </message>
+    <message>
+        <source>Enter the host IP address or hostname:</source>
+        <translation>호스트 IP 주소 또는 호스트 이름:</translation>
+    </message>
+    <message>
+        <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
+        <translation>DeskPort 기본 포트는 :48989입니다. 공유 페이지의 포트가 다르면 주소:포트를 입력하세요. 기본 Sunshine 호스트는 :47989를 사용합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsHome</name>
+    <message>
+        <source>Settings</source>
+        <translation>설정</translation>
+    </message>
+    <message>
+        <source>Make DeskPort your own.</source>
+        <translation>DeskPort를 원하는 대로 설정하세요.</translation>
+    </message>
+    <message>
+        <source>Language changes apply immediately. Connection preferences apply to your next connection from this computer.</source>
+        <translation>언어는 즉시 바뀝니다. 연결 설정은 이 컴퓨터에서 다음에 연결할 때 적용됩니다.</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>언어</translation>
+    </message>
+    <message>
+        <source>Follow system</source>
+        <translation>시스템 설정 따르기</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort to apply this language.</source>
+        <translation>언어를 적용하려면 DeskPort를 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Saved on this computer. Missing translations appear in English.</source>
+        <translation>이 컴퓨터에 저장됩니다. 번역이 없는 항목은 영어로 표시됩니다.</translation>
+    </message>
+    <message>
+        <source>Picture</source>
+        <translation>화면</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>입력</translation>
+    </message>
+    <message>
+        <source>Sound</source>
+        <translation>소리</translation>
+    </message>
+    <message>
+        <source>Connections</source>
+        <translation>연결</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>고급</translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation>해상도</translation>
+    </message>
+    <message>
+        <source>Connection window</source>
+        <translation>연결 창</translation>
+    </message>
+    <message>
+        <source>Full screen</source>
+        <translation>전체 화면</translation>
+    </message>
+    <message>
+        <source>Borderless full screen</source>
+        <translation>테두리 없는 전체 화면</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>창</translation>
+    </message>
+    <message>
+        <source>Frame rate</source>
+        <translation>프레임 속도</translation>
+    </message>
+    <message>
+        <source>Bandwidth · %1 Mbps</source>
+        <translation>대역폭 · %1 Mbps</translation>
+    </message>
+    <message>
+        <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
+        <translation>값이 높을수록 화질과 대역폭 사용량이 늘어납니다. 슬라이더를 움직이지 않으면 기존 고급 설정값을 유지합니다.</translation>
+    </message>
+    <message>
+        <source>Synchronize frames to this display</source>
+        <translation>이 디스플레이에 프레임 동기화</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; pointer</source>
+        <translation>키보드 및 포인터</translation>
+    </message>
+    <message>
+        <source>Use a desktop-style pointer</source>
+        <translation>데스크톱 방식 포인터 사용</translation>
+    </message>
+    <message>
+        <source>Reverse scrolling direction</source>
+        <translation>스크롤 방향 반전</translation>
+    </message>
+    <message>
+        <source>Send system shortcuts to the remote computer</source>
+        <translation>시스템 단축키를 원격 컴퓨터로 전송</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>안 함</translation>
+    </message>
+    <message>
+        <source>Only in full screen</source>
+        <translation>전체 화면에서만</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>항상</translation>
+    </message>
+    <message>
+        <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
+        <translation>Ctrl + Alt + Shift + Z로 원격 입력을 해제합니다.</translation>
+    </message>
+    <message>
+        <source>Mute when DeskPort loses focus</source>
+        <translation>DeskPort가 포커스를 잃으면 음소거</translation>
+    </message>
+    <message>
+        <source>Also play audio on the host</source>
+        <translation>호스트에서도 소리 재생</translation>
+    </message>
+    <message>
+        <source>Discover nearby devices</source>
+        <translation>주변 기기 검색</translation>
+    </message>
+    <message>
+        <source>Keep this computer awake while connected</source>
+        <translation>연결 중 이 컴퓨터 절전 방지</translation>
+    </message>
+    <message>
+        <source>Manage saved access</source>
+        <translation>저장된 접근 권한 관리</translation>
+    </message>
+    <message>
+        <source>Advanced &amp; support</source>
+        <translation>고급 및 지원</translation>
+    </message>
+    <message>
+        <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
+        <translation>사용자 지정 해상도, 코덱, HDR, 서라운드 및 컨트롤러 옵션은 고급 설정에서 조정할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Advanced settings</source>
+        <translation>고급 설정</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>권한 안내</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>문제 신고</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceCard</name>
+    <message>
+        <source>Checking</source>
+        <translation>확인 중</translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation>온라인</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>오프라인</translation>
+    </message>
+    <message>
+        <source>Device actions</source>
+        <translation>기기 작업</translation>
+    </message>
+    <message>
+        <source>Looking for an address</source>
+        <translation>주소 찾는 중</translation>
+    </message>
+    <message>
+        <source>Checking connection…</source>
+        <translation>연결 확인 중…</translation>
+    </message>
+    <message>
+        <source>Unavailable · check device or network</source>
+        <translation>사용 불가 · 기기 또는 네트워크 확인</translation>
+    </message>
+    <message>
+        <source>Connect to desktop  →</source>
+        <translation>데스크톱 연결  →</translation>
+    </message>
+    <message>
+        <source>Set up access  →</source>
+        <translation>접근 권한 설정  →</translation>
+    </message>
+</context>
+<context>
+    <name>HostView</name>
+    <message>
+        <source>Sharing</source>
+        <translation>공유</translation>
+    </message>
+    <message>
+        <source>Share this computer.</source>
+        <translation>이 컴퓨터를 공유하세요.</translation>
+    </message>
+    <message>
+        <source>Share a dedicated virtual display. DeskPort stays available when its window is hidden.</source>
+        <translation>전용 가상 디스플레이를 공유합니다. 창을 숨겨도 DeskPort는 계속 작동합니다.</translation>
+    </message>
+    <message>
+        <source>Share your current desktop. DeskPort stays available when its window is hidden.</source>
+        <translation>현재 데스크톱을 공유합니다. 창을 숨겨도 DeskPort는 계속 작동합니다.</translation>
+    </message>
+    <message>
+        <source>Updating sharing…</source>
+        <translation>공유 업데이트 중…</translation>
+    </message>
+    <message>
+        <source>Sharing is on</source>
+        <translation>공유가 켜져 있습니다</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>공유가 꺼져 있습니다</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>공유 중지</translation>
+    </message>
+    <message>
+        <source>Start sharing</source>
+        <translation>공유 시작</translation>
+    </message>
+    <message>
+        <source>Access &amp; permissions</source>
+        <translation>접근 및 권한</translation>
+    </message>
+    <message>
+        <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
+        <translation>승인한 기기만 연결할 수 있습니다. 저장된 연결 승인은 시스템 녹화 및 입력 권한을 부여하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Review permissions</source>
+        <translation>권한 확인</translation>
+    </message>
+    <message>
+        <source>Manage devices</source>
+        <translation>기기 관리</translation>
+    </message>
+    <message>
+        <source>Sharing preferences</source>
+        <translation>공유 설정</translation>
+    </message>
+    <message>
+        <source>Virtual display size</source>
+        <translation>가상 디스플레이 크기</translation>
+    </message>
+    <message>
+        <source>Choose before starting sharing. Changing size during a session is not available yet.</source>
+        <translation>공유 시작 전에 선택하세요. 세션 중 크기 변경은 아직 지원하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Start sharing when I log in</source>
+        <translation>로그인 시 공유 시작</translation>
+    </message>
+    <message>
+        <source>Hide compatibility &amp; diagnostics</source>
+        <translation>호환성 및 진단 숨기기</translation>
+    </message>
+    <message>
+        <source>Compatibility &amp; diagnostics</source>
+        <translation>호환성 및 진단</translation>
+    </message>
+    <message>
+        <source>Legacy PIN pairing</source>
+        <translation>기존 PIN 페어링</translation>
+    </message>
+    <message>
+        <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
+        <translation>양방향 연결 승인을 지원하지 않는 Moonlight 등에 사용합니다. 클라이언트의 PIN을 입력하면 단방향 접근이 허용됩니다.</translation>
+    </message>
+    <message>
+        <source>Device name</source>
+        <translation>기기 이름</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>허용</translation>
+    </message>
+    <message>
+        <source>Host port: %1  ·  Binding port: %2</source>
+        <translation>호스트 포트: %1  ·  연결 승인 포트: %2</translation>
+    </message>
+    <message>
+        <source>Open host logs</source>
+        <translation>호스트 로그 열기</translation>
+    </message>
+</context>
+<context>
+    <name>BindView</name>
+    <message>
+        <source>Add a device</source>
+        <translation>기기 추가</translation>
+    </message>
+    <message>
+        <source>One confirmation. Both directions.</source>
+        <translation>한 번 승인으로 양방향 연결.</translation>
+    </message>
+    <message>
+        <source>Keep DeskPort open on both computers. Enter an address, then approve the request on the other device.</source>
+        <translation>두 컴퓨터에서 DeskPort를 열어 두세요. 주소를 입력한 후 상대 기기에서 요청을 승인하세요.</translation>
+    </message>
+    <message>
+        <source>Where do you want to connect?</source>
+        <translation>어디에 연결할까요?</translation>
+    </message>
+    <message>
+        <source>IP address or computer name</source>
+        <translation>IP 주소 또는 컴퓨터 이름</translation>
+    </message>
+    <message>
+        <source>Send request</source>
+        <translation>요청 보내기</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>취소</translation>
+    </message>
+    <message>
+        <source>Approval lets both computers view and control each other. System permissions are still required on each device.</source>
+        <translation>승인하면 두 컴퓨터가 서로 화면을 보고 제어할 수 있습니다. 각 기기의 시스템 권한도 필요합니다.</translation>
+    </message>
+    <message>
+        <source>Saved access</source>
+        <translation>저장된 접근 권한</translation>
+    </message>
+    <message>
+        <source>Your approved devices will appear here.</source>
+        <translation>승인한 기기가 여기에 표시됩니다.</translation>
+    </message>
+    <message>
+        <source>Bound both ways</source>
+        <translation>양방향 연결 승인됨</translation>
+    </message>
+    <message>
+        <source>Incomplete</source>
+        <translation>미완료</translation>
+    </message>
+    <message>
+        <source>Remove access to this computer</source>
+        <translation>이 컴퓨터 접근 권한 제거</translation>
+    </message>
+    <message>
+        <source>Connecting another way?</source>
+        <translation>다른 방법으로 연결하나요?</translation>
+    </message>
+    <message>
+        <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
+        <translation>사용자 지정 연결 승인 포트는 주소:포트로 입력하세요. Moonlight와 독립 Sunshine 호스트는 기존 페어링을 사용합니다.</translation>
+    </message>
+    <message>
+        <source>Add a legacy host</source>
+        <translation>기존 방식 호스트 추가</translation>
+    </message>
+    <message>
+        <source>Remove device access?</source>
+        <translation>기기 접근 권한을 제거할까요?</translation>
+    </message>
+    <message>
+        <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
+        <translation>%1에서 이 컴퓨터를 더 이상 제어할 수 없습니다. 양방향으로 해제하려면 상대 기기에서도 연결 승인을 제거하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>SetupView</name>
+    <message>
+        <source>Getting started</source>
+        <translation>시작하기</translation>
+    </message>
+    <message>
+        <source>Set up this computer.</source>
+        <translation>이 컴퓨터를 설정하세요.</translation>
+    </message>
+    <message>
+        <source>Connect to another computer right away. To share this one, review its permissions below.</source>
+        <translation>다른 컴퓨터에는 바로 연결할 수 있습니다. 이 컴퓨터를 공유하려면 아래 권한을 확인하세요.</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>허용됨</translation>
+    </message>
+    <message>
+        <source>Checked when sharing</source>
+        <translation>공유 시 확인</translation>
+    </message>
+    <message>
+        <source>Not requested</source>
+        <translation>요청 안 함</translation>
+    </message>
+    <message>
+        <source>Restricted by system</source>
+        <translation>시스템에서 제한됨</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>확인 필요</translation>
+    </message>
+    <message>
+        <source>Skip for now · only connect to other devices</source>
+        <translation>지금은 건너뛰기 · 다른 기기에만 연결</translation>
+    </message>
+    <message>
+        <source>1. Review permissions    2. Add a device    3. Confirm and connect</source>
+        <translation>1. 권한 확인    2. 기기 추가    3. 승인 후 연결</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>시스템 설정 열기</translation>
+    </message>
+    <message>
+        <source>Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission.</source>
+        <translation>Linux에서 사용자에게 /dev/uinput 접근 권한이 필요합니다. 다른 컴퓨터에 연결만 할 때는 필요하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Authorize the installed DeskPort app</source>
+        <translation>설치된 DeskPort 앱에 권한 부여</translation>
+    </message>
+    <message>
+        <source>If a settings pane accepts adding an app, drag the tile below into its list, then turn the switch on. Otherwise use Reveal in Finder. Some panes list DeskPort only after sharing has requested access.</source>
+        <translation>앱 추가를 지원하는 설정에서는 아래 타일을 목록에 끌어 놓고 스위치를 켜세요. 그렇지 않으면 Finder에서 보기를 사용하세요. 일부 설정에는 공유가 권한을 요청한 후에만 DeskPort가 표시됩니다.</translation>
+    </message>
+    <message>
+        <source>DeskPort.app  ·  Drag to Settings</source>
+        <translation>DeskPort.app  ·  설정으로 드래그</translation>
+    </message>
+    <message>
+        <source>Reveal in Finder</source>
+        <translation>Finder에서 보기</translation>
+    </message>
+    <message>
+        <source>After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test.</source>
+        <translation>권한 변경 후 공유를 다시 시작하세요. macOS가 DeskPort를 다시 열라고 하면 안내를 따르세요. 권한 확인 외에 실제 화면과 입력도 테스트해야 합니다.</translation>
+    </message>
+    <message>
+        <source>Check again</source>
+        <translation>다시 확인</translation>
+    </message>
+    <message>
+        <source>Continue to devices</source>
+        <translation>기기 목록으로</translation>
+    </message>
+</context>
+<context>
+    <name>BindingApproval</name>
+    <message>
+        <source>Bind with this device?</source>
+        <translation>이 기기와 연결을 승인할까요?</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>나중에</translation>
+    </message>
+    <message>
+        <source>Allow &amp; bind</source>
+        <translation>허용 및 연결 승인</translation>
+    </message>
+    <message>
+        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
+        <translation>이 기기와 서로 화면을 보고 제어하도록 허용할까요? 두 컴퓨터에서 DeskPort 공유가 시작되며 기존 세션이 잠시 끊길 수 있습니다. 예상한 요청만 승인하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>HostManager</name>
+    <message>
+        <source>Sharing</source>
+        <translation>공유</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>설정</translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation>창</translation>
+    </message>
+    <message>
+        <source>Applications</source>
+        <translation>앱</translation>
+    </message>
+    <message>
+        <source>Sharing is off</source>
+        <translation>공유가 꺼져 있습니다</translation>
+    </message>
+    <message>
+        <source>Stop sharing</source>
+        <translation>공유 중지</translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation>PIN</translation>
+    </message>
+    <message>
+        <source>Screen &amp; system audio</source>
+        <translation>화면 및 시스템 오디오</translation>
+    </message>
+    <message>
+        <source>Let a connected device see this desktop and hear its sound.</source>
+        <translation>연결된 기기가 이 데스크톱을 보고 소리를 듣도록 허용합니다.</translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; mouse</source>
+        <translation>키보드 및 마우스</translation>
+    </message>
+    <message>
+        <source>Let a device you approve control this computer.</source>
+        <translation>승인한 기기가 이 컴퓨터를 제어하도록 허용합니다.</translation>
+    </message>
+    <message>
+        <source>Audio input</source>
+        <translation>오디오 입력</translation>
+    </message>
+    <message>
+        <source>Needed only when your sharing audio path uses microphone access.</source>
+        <translation>공유 오디오 경로에 마이크 접근이 필요한 경우에만 사용합니다.</translation>
+    </message>
+    <message>
+        <source>Desktop capture</source>
+        <translation>데스크톱 캡처</translation>
+    </message>
+    <message>
+        <source>KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts.</source>
+        <translation>KDE는 현재 데스크톱을 사용합니다. 다른 환경에서는 공유 시작 시 화면 선택을 요청할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Remote control requires access to the system input device.</source>
+        <translation>원격 제어에는 시스템 입력 장치 접근 권한이 필요합니다.</translation>
     </message>
 </context>
 </TS>

@@ -6,9 +6,60 @@ import SystemProperties 1.0
 
 UiPage {
     objectName: qsTr("Settings")
-    heading: qsTr("Your connection preferences.")
-    description: qsTr("These preferences apply when you connect from this computer. Changes are saved automatically and take effect on your next connection.")
+    heading: qsTr("Make DeskPort your own.")
+    description: qsTr("Language changes apply immediately. Connection preferences apply to your next connection from this computer.")
     function save() { StreamingPreferences.save() }
+    UiCard {
+        ColumnLayout {
+            anchors.fill: parent; spacing: 10
+            Label { text: qsTr("Language"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
+            ComboBox {
+                objectName: "languageChoice"
+                Layout.fillWidth: true
+                textRole: "label"
+                model: [
+                    { label: qsTr("Follow system"), value: StreamingPreferences.LANG_AUTO },
+                    { label: "English", value: StreamingPreferences.LANG_EN },
+                    { label: "简体中文", value: StreamingPreferences.LANG_ZH_CN },
+                    { label: "繁體中文", value: StreamingPreferences.LANG_ZH_TW },
+                    { label: "日本語", value: StreamingPreferences.LANG_JA },
+                    { label: "한국어", value: StreamingPreferences.LANG_KO },
+                    { label: "Deutsch", value: StreamingPreferences.LANG_DE },
+                    { label: "Français", value: StreamingPreferences.LANG_FR },
+                    { label: "Español", value: StreamingPreferences.LANG_ES },
+                    { label: "Italiano", value: StreamingPreferences.LANG_IT },
+                    { label: "Português", value: StreamingPreferences.LANG_PT },
+                    { label: "Русский", value: StreamingPreferences.LANG_RU },
+                    { label: "Nederlands", value: StreamingPreferences.LANG_NL },
+                    { label: "Polski", value: StreamingPreferences.LANG_PL },
+                    { label: "Čeština", value: StreamingPreferences.LANG_CS },
+                    { label: "Svenska", value: StreamingPreferences.LANG_SV },
+                    { label: "Norsk bokmål", value: StreamingPreferences.LANG_NB_NO },
+                    { label: "Türkçe", value: StreamingPreferences.LANG_TR },
+                    { label: "Magyar", value: StreamingPreferences.LANG_HU },
+                    { label: "Ελληνικά", value: StreamingPreferences.LANG_EL },
+                    { label: "Tiếng Việt", value: StreamingPreferences.LANG_VI },
+                    { label: "ภาษาไทย", value: StreamingPreferences.LANG_TH }
+                ]
+                currentIndex: {
+                    for (var i = 0; i < model.length; ++i)
+                        if (model[i].value === StreamingPreferences.language) return i
+                    return -1
+                }
+                onActivated: function(index) {
+                    var value = model[index].value
+                    if (StreamingPreferences.language === value) return
+                    StreamingPreferences.language = value
+                    save()
+                    if (!StreamingPreferences.retranslate())
+                        ToolTip.show(qsTr("Restart DeskPort to apply this language."), 5000)
+                    else if (typeof window !== "undefined")
+                        window.clearOnBack = true
+                }
+            }
+            Label { text: qsTr("Saved on this computer. Missing translations appear in English."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+        }
+    }
     TabBar {
         id: sections
         objectName: "settingsSections"

@@ -299,7 +299,13 @@ QString StreamingPreferences::getSuffixFromLanguage(StreamingPreferences::Langua
         return "et";
     case LANG_AUTO:
     default:
-        return QLocale::system().name();
+        // Regional Chinese locales must select a script, not fall back to English.
+        // For example, zh_HK should use the Traditional Chinese catalog.
+        const QLocale locale = QLocale::system();
+        if (locale.language() == QLocale::Chinese) {
+            return locale.script() == QLocale::TraditionalHanScript ? "zh_TW" : "zh_CN";
+        }
+        return locale.name();
     }
 }
 
