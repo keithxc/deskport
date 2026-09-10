@@ -1,6 +1,6 @@
 # DeskPort roadmap
 
-Status: bootstrap, 2026-09-09. This is a development tree, not a stable release.
+Status: desktop interaction preview, 2026-09-10. This is a development tree, not a stable release.
 
 ## Product goal
 
@@ -149,6 +149,9 @@ local revocation is available, while coordinated remote revocation remains pendi
 Live both-direction picture/input acceptance is still required.
 
 ## Next action: unified desktop experience (2026-09-10)
+
+See [the desktop interaction guide](DESKTOP_UX.md) for the implemented flow and
+acceptance checks.
 
 User priority after the mutual-binding milestone: unify the Mac/Linux first-run
 experience, permissions, binding, device list and settings. The new shared QML
