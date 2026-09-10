@@ -7,7 +7,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>Remote desktop workspace based on Moonlight</string>
 	<key>CFBundleIconFile</key>
-	<string>moonlight</string>
+	<string>deskport</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.github.keithxc.DeskPort</string>
 	<key>NSHighResolutionCapable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>11.0.0</string>
+	<string>26.0</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>

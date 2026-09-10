@@ -1,4 +1,6 @@
-QT += core quick network quickcontrols2 svg
+QT += core quick network quickcontrols2 svg widgets
+SOURCES += backend/hostmanager.cpp
+HEADERS += backend/hostmanager.h
 CONFIG += c++11
 
 unix:!macx {
@@ -559,7 +561,7 @@ macx {
 
     QMAKE_INFO_PLIST = $$OUT_PWD/Info.plist
 
-    APP_BUNDLE_RESOURCES.files = moonlight.icns
+    APP_BUNDLE_RESOURCES.files = deskport.icns
     APP_BUNDLE_RESOURCES.path = Contents/Resources
 
     APP_BUNDLE_PLIST.files = $$OUT_PWD/Info.plist

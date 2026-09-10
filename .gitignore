@@ -12,3 +12,8 @@ config.tests/*/Makefile
 .env
 *.pem
 *.key
+
+/build-macos/
+/dist/
+/build-macos.noindex/
+/dist.noindex/

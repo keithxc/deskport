@@ -5,10 +5,18 @@ A remote desktop workspace built on Moonlight and Sunshine.
 **Goal:** keep your remote desktop ready in the background, bring it onto your
 current workspace with one action, and tuck it away without reconnecting.
 
-**Status: early development.** The initial tree builds a separately identified
-Moonlight-based client with desktop-oriented defaults. Persistent background
-sessions, one-action recall and bidirectional clipboard sync are **not implemented
-in this bootstrap**. Do not replace a working remote-access setup yet.
+The intended product is one application per computer with both viewer and optional
+host roles: pair devices once, then open their desktops from a shared device list.
+Dedicated displays that follow the viewer window size are also planned. See the
+[architecture](docs/ARCHITECTURE.md); the unified mutual-pairing flow and automatic resizing are not yet implemented.
+
+**Status: development preview.** The macOS package now combines the Moonlight-based
+viewer, bundled Sunshine host and a native virtual display in one application.
+The sharing page manages startup, display presets, permissions and incoming PIN
+pairing. See [macOS packaging](docs/MACOS_PACKAGE.md) for installation and limits.
+The Linux build currently provides the viewer. Windows packaging, seamless live
+resolution changes, bidirectional clipboard and one-action persistent-viewer recall
+remain unfinished. Each direction is paired separately in this preview.
 
 ## Build and run on Linux
 
@@ -62,7 +70,7 @@ behavior. Some inherited wording/artwork remains during the initial port.
 | --- | --- |
 | Linux x86-64 | Initial build and CLI smoke-check target; KDE Wayland / AMD is the first live-use target |
 | Linux ARM64 | Nix package definition only; native build and runtime not yet verified |
-| macOS | Inherited native source; DeskPort build, permissions and packaging not yet verified |
+| macOS | Apple Silicon / macOS 26 all-in-one development package; native viewer, host and virtual display |
 | Windows | Inherited native source; DeskPort build and packaging not yet verified |
 
 The first development workflow is Linux → macOS through Sunshine. Client platform

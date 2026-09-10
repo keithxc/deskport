@@ -1,4 +1,9 @@
-#include <QGuiApplication>
+#include <QApplication>
+#include <QTemporaryDir>
+#include <QTimer>
+#include <QNetworkReply>
+#include <QTcpServer>
+#include "backend/hostmanager.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
@@ -561,7 +566,33 @@ int main(int argc, char *argv[])
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
 #endif
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
+    if (app.arguments().contains("--host-self-test")) {
+        QTemporaryDir directory;
+        if (!directory.isValid()) return 1;
+        QTcpServer portCheck;
+        if (!portCheck.listen(QHostAddress::LocalHost, 48989)) return 2;
+        portCheck.close();
+        HostManager host(nullptr, directory.path());
+        if (!host.available()) return 3;
+        QNetworkAccessManager network;
+        network.setProxy(QNetworkProxy::NoProxy);
+        QObject::connect(&host, &HostManager::changed, &app, [&host] {
+            fprintf(stderr, "%s\n", qPrintable(host.status()));
+        });
+        QTimer::singleShot(0, &app, [&host] { host.start(2560, 1440); });
+        QTimer::singleShot(8000, &app, [&] {
+            auto reply = network.get(QNetworkRequest(QUrl("http://127.0.0.1:48989/serverinfo")));
+            QObject::connect(reply, &QNetworkReply::finished, &app, [&, reply] {
+                const bool ready = reply->error() == QNetworkReply::NoError && reply->readAll().contains("<hostname>DeskPort</hostname>");
+                fprintf(stderr, "%s: bundled host and native virtual display startup\n", ready ? "PASS" : "FAIL");
+                host.stop(); app.exit(ready ? 0 : 1); reply->deleteLater();
+            });
+        });
+        QTimer::singleShot(15000, &app, [&] { host.stop(); app.exit(1); });
+        return app.exec();
+    }
+
 
 #ifndef STEAM_LINK
     // Force use of the KMSDRM backend for SDL when using Qt platform plugins
@@ -572,7 +603,7 @@ int main(int argc, char *argv[])
 #endif
 
     GlobalCommandLineParser parser;
-    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse(app.arguments());
+    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--share"); return args; }());
     switch (commandLineParserResult) {
     case GlobalCommandLineParser::ListRequested:
         // Don't log to the console since it will jumble the command output
@@ -720,13 +751,18 @@ int main(int argc, char *argv[])
         qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
     }
 
+    HostManager hostManager;
+    if (app.arguments().contains("--share")) {
+        QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });
+    }
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("hostManager", &hostManager);
     QString initialView;
     bool hasGUI = true;
 
     switch (commandLineParserResult) {
     case GlobalCommandLineParser::NormalStartRequested:
-        initialView = "qrc:/gui/PcView.qml";
+        initialView = app.arguments().contains("--share") ? "qrc:/gui/HostView.qml" : "qrc:/gui/PcView.qml";
         break;
     case GlobalCommandLineParser::StreamRequested:
         {

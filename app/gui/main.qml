@@ -19,6 +19,9 @@ ApplicationWindow {
     property bool clearOnBack: false
 
     id: window
+    onClosing: function(event) {
+        if (hostManager.running) { event.accepted = false; window.hide(); }
+    }
     width: 1280
     height: 600
 
@@ -390,6 +393,11 @@ ApplicationWindow {
                 Keys.onDownPressed: {
                     stackView.currentItem.forceActiveFocus(Qt.TabFocus)
                 }
+            }
+
+            Button {
+                text: qsTr("Share this computer")
+                onClicked: navigateTo("qrc:/gui/HostView.qml", "HostView")
             }
 
             NavigableToolButton {
