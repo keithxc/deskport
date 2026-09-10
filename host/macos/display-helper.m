@@ -32,6 +32,7 @@ static unsigned generation;
 static int requestSequence;
 static NSInteger requestedScale = 2;
 static NSInteger lastWidth, lastHeight, lastScale = 2;
+static BOOL rollingBack;
 static NSArray *displayModes(NSInteger width, NSInteger height, NSInteger scale) {
     return @[[[CGVirtualDisplayMode alloc] initWithWidth:(unsigned)width / scale
         height:(unsigned)height / scale refreshRate:60.0]];
@@ -92,6 +93,10 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
     }
     if (ready) {
         lastWidth = width; lastHeight = height; lastScale = requestedScale;
+        if (rollingBack) {
+            rollingBack = NO;
+            respond(@{@"error": @"Requested mode was rejected; the previous display mode was restored"}); return;
+        }
         respond(@{@"displayId": @(capture), @"virtualDisplayId": @(display.displayID),
             @"mirrored": @(source != 0), @"width": @(width), @"height": @(height)});
     } else if (attempt < 30) {
@@ -99,13 +104,21 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
             waitForMode(width, height, token, attempt + 1);
         });
     } else {
-        if (lastWidth) applyMode(lastWidth, lastHeight, lastScale);
+        if (lastWidth && !rollingBack) {
+            rollingBack = YES; requestedScale = lastScale;
+            const unsigned restoreToken = ++generation;
+            applyMode(lastWidth, lastHeight, lastScale);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+                waitForMode(lastWidth, lastHeight, restoreToken, 0);
+            });
+            return;
+        }
         respond(@{@"error": source ? @"Mirroring is active: choose the mirror source's HiDPI resolution" :
             @"Virtual display did not reach the requested HiDPI mode"});
     }
 }
 static void configure(NSInteger width, NSInteger height, NSInteger scale, int sequence) {
-    requestSequence = sequence; requestedScale = scale;
+    requestSequence = sequence; requestedScale = scale; rollingBack = NO;
     if (width < 640 || height < 360 || width > 3840 || height > 2160 || width % 2 || height % 2 || (scale != 1 && scale != 2)) {
         respond(@{@"error": @"Use an even pixel size between 640x360 and 3840x2160"}); return;
     }

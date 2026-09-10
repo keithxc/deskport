@@ -642,7 +642,8 @@ bool Session::checkAdaptiveResize() {
         m_AdaptiveChangedAt = SDL_GetTicks(); return false;
     }
     if (size == QSize(m_StreamConfig.width, m_StreamConfig.height) && scale == m_AdaptiveScale) return false;
-    if (SDL_GetTicks() - m_AdaptiveChangedAt < 900 || SDL_GetMouseState(nullptr, nullptr) != 0) return false;
+    if (SDL_GetTicks() - m_AdaptiveChangedAt < 900 || SDL_GetMouseState(nullptr, nullptr) != 0 ||
+        SDL_HasEvent(SDL_QUIT) || SDL_HasEvents(SDL_KEYDOWN, SDL_KEYUP)) return false;
     // Finish the old stream before changing the capture mode. Preserve desktop
     // apps and the authenticated display lease across the new resume request.
     int x, y, width, height;
