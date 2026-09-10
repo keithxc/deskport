@@ -12,6 +12,7 @@ import SdlGamepadKeyNavigation 1.0
 
 ApplicationWindow {
     property bool pollingActive: false
+    readonly property bool navigationVisible: !stackView.currentItem || stackView.currentItem.hidesNavigation !== true
 
     // Set by SettingsView to force the back operation to pop all
     // pages except the initial view. This is required when doing
@@ -93,8 +94,8 @@ ApplicationWindow {
         id: stackView
         initialItem: initialView
         anchors.fill: parent
-        anchors.leftMargin: navigation.width
-        anchors.topMargin: 66
+        anchors.leftMargin: navigationVisible ? navigation.width : 0
+        anchors.topMargin: navigationVisible ? 66 : 0
         focus: true
 
         onCurrentItemChanged: {
@@ -228,6 +229,7 @@ ApplicationWindow {
 
     Rectangle {
         id: navigation
+        visible: navigationVisible
         width: window.width < 900 ? 174 : 208
         anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
         color: ui.surface
@@ -262,6 +264,7 @@ ApplicationWindow {
         }
     }
     Rectangle {
+        visible: navigationVisible
         anchors.left: navigation.right; anchors.right: parent.right; anchors.top: parent.top; height: 66
         color: ui.canvas
         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: ui.line }
@@ -272,9 +275,9 @@ ApplicationWindow {
             UiButton { text: qsTr("Add a device"); visible: qmltypeof(stackView.currentItem, "PcView"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         }
     }
-    Shortcut { sequences: [StandardKey.New]; onActivated: navigateTo("qrc:/gui/BindView.qml", "BindView") }
-    Shortcut { sequences: [StandardKey.Preferences]; onActivated: navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome") }
-    Shortcut { sequences: [StandardKey.HelpContents]; onActivated: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
+    Shortcut { enabled: navigationVisible; sequences: [StandardKey.New]; onActivated: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+    Shortcut { enabled: navigationVisible; sequences: [StandardKey.Preferences]; onActivated: navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome") }
+    Shortcut { enabled: navigationVisible; sequences: [StandardKey.HelpContents]; onActivated: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
 
     ErrorMessageDialog {
         id: noHwDecoderDialog

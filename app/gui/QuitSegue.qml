@@ -5,6 +5,7 @@ import ComputerManager 1.0
 import Session 1.0
 
 Item {
+    readonly property bool hidesNavigation: true
     property string appName
     property var quitRunningAppFn
     property Session nextSession : null
@@ -34,9 +35,6 @@ Item {
     }
 
     StackView.onActivated: {
-        // Hide the toolbar before we start loading
-        toolBar.visible = false
-
         // Connect the quit completion signal
         ComputerManager.quitAppCompleted.connect(quitAppCompleted)
 
@@ -47,9 +45,6 @@ Item {
     }
 
     StackView.onDeactivating: {
-        // Show the toolbar again
-        toolBar.visible = true
-
         // Disconnect the signal
         ComputerManager.quitAppCompleted.disconnect(quitAppCompleted)
     }

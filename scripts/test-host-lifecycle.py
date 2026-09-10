@@ -48,7 +48,7 @@ while True: time.sleep(1)
         linux_host.parent.mkdir(parents=True)
         linux_host.write_text(host.read_text())
         linux_host.chmod(0o700)
-    icons = ["deskport.svg", "deskport-tray-black.svg", "deskport-tray-white.svg"]
+    icons = ["baseline-error_outline-24px.svg", "deskport.svg", "deskport-tray-black.svg", "deskport-tray-white.svg"]
     (work / "test-resources.qrc").write_text('<RCC><qresource prefix="/res">' + ''.join(
         f'<file alias="{name}">{root}/app/res/{name}</file>' for name in icons) + '</qresource></RCC>')
     for executable in (display, host):

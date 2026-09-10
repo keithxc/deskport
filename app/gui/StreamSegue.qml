@@ -6,6 +6,7 @@ import SdlGamepadKeyNavigation 1.0
 import Session 1.0
 
 Item {
+    readonly property bool hidesNavigation: true
     property Session session
     property string appName
     property string stageText : isResume ? qsTr("Resuming %1...").arg(appName) :
@@ -116,17 +117,11 @@ Item {
     }
 
     StackView.onDeactivating: {
-        // Show the toolbar again when popped off the stack
-        toolBar.visible = true
-
         // Enable GUI gamepad usage now
         SdlGamepadKeyNavigation.enable()
     }
 
     StackView.onActivated: {
-        // Hide the toolbar before we start loading
-        toolBar.visible = false
-
         // Hook up our signals
         session.stageStarting.connect(stageStarting)
         session.stageFailed.connect(stageFailed)

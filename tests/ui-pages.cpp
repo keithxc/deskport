@@ -9,10 +9,33 @@
 static QByteArray credential(const char* name) {
     QFile f(qEnvironmentVariable(name)); if (!f.open(QIODevice::ReadOnly)) return {}; return f.readAll();
 }
+class TestSession : public QObject {
+    Q_OBJECT
+public:
+    using QObject::QObject;
+    int executions = 0;
+    Q_INVOKABLE void exec(QQuickWindow*) { ++executions; }
+signals:
+    void stageStarting(QString stage);
+    void stageFailed(QString stage, int error, QString ports);
+    void connectionStarted();
+    void displayLaunchError(QString text);
+    void displayLaunchWarning(QString text);
+    void quitStarting();
+    void sessionFinished(int result);
+    void readyForDeletion();
+};
 class UiPages : public QObject {
     Q_OBJECT
 private slots:
     void initTestCase() {
+        qmlRegisterType<TestSession>("Session",1,0,"Session");
+        qmlRegisterSingletonType<QObject>("SdlGamepadKeyNavigation",1,0,"SdlGamepadKeyNavigation",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
+            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { function enable() {} function disable() {} function getConnectedGamepads() { return 0 } }",QUrl()); return c.create();
+        });
+        qmlRegisterSingletonType<QObject>("ComputerManager",1,0,"ComputerManager",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
+            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { signal quitAppCompleted(var error) }",QUrl()); return c.create();
+        });
         qmlRegisterSingletonType<QObject>("StreamingPreferences",1,0,"StreamingPreferences",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine);
             c.setData(R"(import QtQuick 2.9
@@ -27,6 +50,42 @@ QtObject {
         qmlRegisterSingletonType<QObject>("SystemProperties",1,0,"SystemProperties",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool hasBrowser: false }",QUrl()); return c.create();
         });
+    }
+    void streamAndQuitActivateWithoutLegacyToolbar() {
+        QQmlEngine engine;
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        TestSession session;
+        engine.rootContext()->setContextProperty("testSession", &session);
+        // No toolBar in this context: exercise activation, not just page creation.
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600
+ property int quits: 0
+ property bool navigationVisible: !stackView.currentItem || stackView.currentItem.hidesNavigation !== true
+ property alias currentPage: stackView.currentItem
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function startStream() { stackView.push(Qt.resolvedUrl("StreamSegue.qml"), { session: testSession, appName: "Test" }, StackView.Immediate) }
+ function startQuit() { stackView.push(Qt.resolvedUrl("QuitSegue.qml"), { appName: "Test", quitRunningAppFn: function() { window.quits++ } }, StackView.Immediate) }
+ function back() { stackView.pop(StackView.Immediate) }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/test-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"startStream"));
+        QTRY_COMPARE(session.executions,1);
+        QVERIFY(!root->property("navigationVisible").toBool());
+        emit session.stageStarting("Handshake");
+        auto page=root->property("currentPage").value<QObject*>(); QVERIFY(page);
+        QCOMPARE(page->property("stageText").toString(),QString("Starting Handshake..."));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
+        QVERIFY(root->property("navigationVisible").toBool());
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"startQuit"));
+        QTRY_COMPARE(root->property("quits").toInt(),1);
+        QVERIFY(!root->property("navigationVisible").toBool());
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
+        QVERIFY(root->property("navigationVisible").toBool());
+        QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
     void pagesLoadWithoutChangingAccessOrSettings() {
         QTemporaryDir dir;

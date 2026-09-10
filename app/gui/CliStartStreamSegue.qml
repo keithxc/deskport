@@ -5,6 +5,7 @@ import ComputerManager 1.0
 import SdlGamepadKeyNavigation 1.0
 
 Item {
+    readonly property bool hidesNavigation: true
     function onSearchingComputer() {
         stageLabel.text = qsTr("Establishing connection to PC...")
     }
@@ -36,7 +37,6 @@ Item {
 
     StackView.onActivated: {
         if (!launcher.isExecuted()) {
-            toolBar.visible = false
 
             // Normally this is enabled by PcView, but we will won't
             // load PcView when streaming from the command-line.

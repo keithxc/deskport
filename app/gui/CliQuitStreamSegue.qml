@@ -5,6 +5,7 @@ import ComputerManager 1.0
 import Session 1.0
 
 Item {
+    readonly property bool hidesNavigation: true
     function onSearchingComputer() {
         stageLabel.text = qsTr("Establishing connection to PC...")
     }
@@ -20,7 +21,6 @@ Item {
 
     StackView.onActivated: {
         if (!launcher.isExecuted()) {
-            toolBar.visible = false
             launcher.searchingComputer.connect(onSearchingComputer)
             launcher.quittingApp.connect(onQuittingApp)
             launcher.failed.connect(onFailure)
