@@ -39,6 +39,7 @@ signals:
 private:
     struct Link;
     void attach(Link* link);
+    void drain(Link* link);
     void receive(Link* link, const QJsonObject& message);
     void send(Link* link, const QJsonObject& message);
     void fail(Link* link, const QString& message);

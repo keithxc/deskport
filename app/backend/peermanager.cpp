@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QDateTime>
 #include <functional>
+#include <QDebug>
 
 namespace {
 constexpr int MaxFrame = 32768;
@@ -55,6 +56,7 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
         auto link = new Link(this); link->socket = socket; socket->setParent(link);
         link->incoming = true; m_Link = link;
         attach(link);
+        qInfo() << "Binding: incoming TCP connection";
         socket->startServerEncryption();
         emit changed();
     };
@@ -107,6 +109,7 @@ void PeerManager::attach(Link* link) {
             socket->ignoreSslErrors(errors);
         });
     connect(socket, &QSslSocket::encrypted, link, [this, link] {
+        qInfo() << "Binding: TLS established, incoming:" << link->incoming;
         const auto cert = link->socket->peerCertificate();
         if (cert.isNull() || cert == m_Certificate) { fail(link, tr("Invalid or local device identity")); return; }
         link->fingerprint = fingerprint(cert);
@@ -121,19 +124,10 @@ void PeerManager::attach(Link* link) {
         }
         if (link->incoming) send(link, {{"type", "hello"}, {"meta", metadata()}});
         else send(link, {{"type", "request"}, {"tx", link->transaction}, {"meta", metadata()}});
+        drain(link);
     });
     connect(socket, &QSslSocket::readyRead, link, [this, link] {
-        if (link->ended || !link->socket->isEncrypted()) return;
-        link->buffer += link->socket->readAll();
-        if (link->buffer.size() > MaxFrame) { fail(link, tr("Binding message too large")); return; }
-        while (!link->ended && link->buffer.contains('\n')) {
-            const int end = link->buffer.indexOf('\n');
-            QJsonParseError error;
-            const auto doc = QJsonDocument::fromJson(link->buffer.left(end), &error);
-            link->buffer.remove(0, end + 1);
-            if (error.error != QJsonParseError::NoError || !doc.isObject()) { fail(link, tr("Invalid binding message")); return; }
-            receive(link, doc.object());
-        }
+        drain(link);
     });
     connect(socket, &QSslSocket::disconnected, link, [this, link] {
         if (!link->ended) fail(link, tr("Binding connection closed. Check both devices; locally approved access may need removal."));
@@ -148,6 +142,19 @@ void PeerManager::attach(Link* link) {
         if (!link->ended) fail(link, tr("Binding request expired. No new request will be accepted automatically."));
     });
 }
+void PeerManager::drain(Link* link) {
+        if (link->ended || !link->socket->isEncrypted()) return;
+        link->buffer += link->socket->readAll();
+        if (link->buffer.size() > MaxFrame) { fail(link, tr("Binding message too large")); return; }
+        while (!link->ended && link->buffer.contains('\n')) {
+            const int end = link->buffer.indexOf('\n');
+            QJsonParseError error;
+            const auto doc = QJsonDocument::fromJson(link->buffer.left(end), &error);
+            link->buffer.remove(0, end + 1);
+            if (error.error != QJsonParseError::NoError || !doc.isObject()) { fail(link, tr("Invalid binding message")); return; }
+            receive(link, doc.object());
+        }
+}
 void PeerManager::request(const QString& value) {
     if (!m_Healthy || busy()) return;
     // This dialog uses the binding endpoint, not the video port.
@@ -159,7 +166,7 @@ void PeerManager::request(const QString& value) {
     auto link = new Link(this); link->socket = new QSslSocket(link); m_Link = link;
     link->transaction = QUuid::createUuid().toString(QUuid::WithoutBraces);
     link->requestedAddress = value.trimmed();
-    m_Status = tr("Waiting for the other computer to approve mutual desktop access…");
+    m_Status = tr("Connecting to the other computer…");
     attach(link);
     link->socket->connectToHostEncrypted(url.host(), quint16(url.port(48991)));
     emit changed();
@@ -179,10 +186,14 @@ bool PeerManager::acceptMetadata(Link* link, const QJsonObject& metadata) {
     return true;
 }
 void PeerManager::send(Link* link, const QJsonObject& message) {
-    if (!link->ended) link->socket->write(QJsonDocument(message).toJson(QJsonDocument::Compact) + '\n');
+    if (!link->ended) {
+        qInfo() << "Binding: sending" << message["type"].toString();
+        link->socket->write(QJsonDocument(message).toJson(QJsonDocument::Compact) + '\n');
+    }
 }
 void PeerManager::receive(Link* link, const QJsonObject& message) {
     const QString type = message["type"].toString();
+    qInfo() << "Binding: received" << type;
     if (type == "hello" && !link->incoming && link->peer.isEmpty() && !link->accepted) {
         if (!acceptMetadata(link, message["meta"].toObject())) fail(link, tr("Unsupported peer identity"));
     } else if (type == "request" && link->incoming && !link->requested) {
@@ -190,7 +201,11 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
             fail(link, tr("Unsupported binding request")); return;
         }
         link->transaction = message["tx"].toString(); link->requested = true;
+        send(link, {{"type", "pending"}, {"tx", link->transaction}});
         m_Status = tr("A computer is requesting mutual desktop access"); emit changed(); emit incomingRequest();
+    } else if (type == "pending" && !link->incoming && !link->requested && !link->accepted && !link->peer.isEmpty() && message["tx"].toString() == link->transaction) {
+        link->requested = true;
+        m_Status = tr("Request received. Waiting for the other computer to approve mutual desktop access…"); emit changed();
     } else if (type == "accept" && !link->incoming && !link->accepted && !link->peer.isEmpty() && message["tx"].toString() == link->transaction) {
         link->accepted = true; grant(link);
     } else if (type == "ready" && link->accepted && !link->remoteReady && message["tx"].toString() == link->transaction) {
@@ -257,6 +272,7 @@ void PeerManager::finish(Link* link) {
 }
 void PeerManager::fail(Link* link, const QString& message) {
     if (link->ended) return;
+    qWarning() << "Binding:" << message;
     link->ended = true;
     if (m_Link == link) m_Link = nullptr;
     m_Status = message; connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);

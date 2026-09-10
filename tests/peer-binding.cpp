@@ -46,6 +46,7 @@ private slots:
             QSignalSpy incoming(&b,&PeerManager::incomingRequest), aDone(&a,&PeerManager::peerBound), bDone(&b,&PeerManager::peerBound);
             a.request(QString("127.0.0.1:%1").arg(b.port()));
             QTRY_COMPARE_WITH_TIMEOUT(incoming.size(), 1, 5000);
+            QTRY_VERIFY(a.status().contains("Request received"));
             QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());
             QCOMPARE(PeerStore::read(dir.path()+"/ah/state.json")["root"].toObject()["named_devices"].toArray().size(),0);
             b.approve("wrong-transaction"); QVERIFY(a.peers().isEmpty()); QVERIFY(b.peers().isEmpty());

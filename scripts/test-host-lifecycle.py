@@ -65,7 +65,7 @@ LIBS += -framework CoreGraphics
         for name in ("A", "B", "C"):
             cert, key = work / f"{name}.pem", work / f"{name}.key"
             subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
-                "-subj", f"/CN=DeskPort-Test-{name}", "-keyout", str(key), "-out", str(cert)],
+                "-subj", "/CN=NVIDIA GameStream Client", "-set_serial", "0", "-keyout", str(key), "-out", str(cert)],
                 check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             environment[f"TEST_CERT_{name}"] = str(cert)
             environment[f"TEST_KEY_{name}"] = str(key)

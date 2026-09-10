@@ -212,10 +212,11 @@ ApplicationWindow {
         target: peerManager
         function onPeerBound(peer) { ComputerManager.addBoundHost(peer) }
         function onIncomingRequest() {
+            console.info("Binding: displaying approval dialog")
             bindingApproval.transaction = peerManager.requestId
             bindingApproval.peerText = peerManager.pendingName
-            window.show(); window.raise(); window.requestActivate()
             bindingApproval.open()
+            window.show(); window.raise(); window.requestActivate()
         }
         function onChanged() {
             if (bindingApproval.visible && peerManager.requestId !== bindingApproval.transaction)

@@ -22,6 +22,7 @@
 #include <QUuid>
 #include <QTimer>
 #include <QSettings>
+#include <QHostInfo>
 #ifdef Q_OS_MACOS
 #include <CoreGraphics/CoreGraphics.h>
 #endif
@@ -213,7 +214,10 @@ void HostManager::startServer(int displayId) {
     if (!config.open(QIODevice::WriteOnly)) { beginStop(tr("Cannot write host configuration")); return; }
     config.setPermissions(QFile::ReadOwner | QFile::WriteOwner);
     config.write(QString("file_apps = %1/apps.json\nfile_state = %1/state.json\npkey = %1/credentials/key.pem\ncert = %1/credentials/cert.pem\ncredentials_file = %1/control.json\nlog_path = %1/sunshine.log\n").arg(m_Directory).toUtf8());
-    config.write(QString("sunshine_name = DeskPort\nport = %1\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\norigin_web_ui_allowed = pc\n").arg(m_BasePort).toUtf8());
+    QString deviceName = QHostInfo::localHostName().left(64);
+    deviceName.replace('\n', ' '); deviceName.replace('\r', ' ');
+    if (deviceName.trimmed().isEmpty()) deviceName = "DeskPort";
+    config.write(QString("sunshine_name = %2\nport = %1\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\norigin_web_ui_allowed = pc\n").arg(m_BasePort).arg(deviceName).toUtf8());
 #ifdef Q_OS_MACOS
     config.write(QString("output_name = %1\n").arg(displayId).toUtf8());
 #else
