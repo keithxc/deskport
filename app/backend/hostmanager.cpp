@@ -109,20 +109,10 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
     connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, [] { qApp->quit(); });
     m_Tray.setContextMenu(menu);
-    const auto updateTrayIcon = [this] {
-#ifdef Q_OS_MACOS
-        // AppKit renders a template image with the menu bar's current contrast,
-        // including wallpaper-dependent appearance and selected menu items.
-        QIcon icon(":/res/deskport-tray-black.svg");
-        icon.setIsMask(true);
-#else
-        const bool lightForeground = qApp->palette().color(QPalette::WindowText).lightness() > 127;
-        QIcon icon(lightForeground ? ":/res/deskport-tray-white.svg" : ":/res/deskport-tray-black.svg");
-#endif
-        m_Tray.setIcon(icon);
-    };
     updateTrayIcon();
-    connect(qApp, &QGuiApplication::paletteChanged, this, updateTrayIcon);
+#ifndef Q_OS_MACOS
+    qApp->installEventFilter(this);
+#endif
     m_Tray.setToolTip("DeskPort");
     if (available() && !m_Isolated) m_Tray.show();
     connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { beginStop(tr("Sharing is off")); });
@@ -133,6 +123,22 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
             start(settings.value("host/width", 2560).toInt(), settings.value("host/height", 1440).toInt());
         });
     }
+}
+void HostManager::updateTrayIcon() {
+#ifdef Q_OS_MACOS
+    // AppKit renders a template image with the menu bar's current contrast,
+    // including wallpaper-dependent appearance and selected menu items.
+    QIcon icon(":/res/deskport-tray-black.svg");
+    icon.setIsMask(true);
+#else
+    const bool lightForeground = qApp->palette().color(QPalette::WindowText).lightness() > 127;
+    QIcon icon(lightForeground ? ":/res/deskport-tray-white.svg" : ":/res/deskport-tray-black.svg");
+#endif
+    m_Tray.setIcon(icon);
+}
+bool HostManager::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == qApp && event->type() == QEvent::ApplicationPaletteChange) updateTrayIcon();
+    return QObject::eventFilter(watched, event);
 }
 HostManager::~HostManager() {
     // The event loop may already be gone during application shutdown. Normal UI

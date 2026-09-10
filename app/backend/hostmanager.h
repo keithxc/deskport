@@ -38,6 +38,8 @@ signals:
     void changed();
     void trustUpdated(bool success);
 private:
+    void updateTrayIcon();
+    bool eventFilter(QObject* watched, QEvent* event) override;
     void setStatus(const QString &value);
     void startServer(int displayId);
     void beginStop(const QString &status);
