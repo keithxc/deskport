@@ -1730,6 +1730,10 @@
         <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
         <translation>隱藏用戶端視窗後，遠端工作區保持開啟。中斷連線後恢復閒置解析度，停止共享會移除此虛擬螢幕。</translation>
     </message>
+    <message>
+        <source>Workspace · %1 × %2 · %3× scaling</source>
+        <translation>工作區 · %1 × %2 · %3× 縮放</translation>
+    </message>
 </context>
 <context>
     <name>BindView</name>

@@ -37,6 +37,8 @@ for line in sys.stdin:
     host.write_text(f"#!{interpreter}\n" + '''import os, pathlib, signal, sys, time
 state = pathlib.Path(sys.argv[1]).parent
 mode = os.environ.get("DESKPORT_TEST_MODE")
+if sys.platform == "darwin" and os.environ.get("DESKPORT_CAPTURE_DISPLAY") != "123":
+    sys.exit(18)  # Both credentials and server must target the helper display.
 if "--creds" in sys.argv:
     (state / "auth-started").touch()
     if mode == "auth-fail": sys.exit(3)

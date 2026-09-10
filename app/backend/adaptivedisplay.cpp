@@ -1,4 +1,5 @@
 #include "adaptivedisplay.h"
+#include "workspaceresolution.h"
 #include <QSslSocket>
 #include <QSslError>
 #include <QNetworkProxy>
@@ -14,10 +15,10 @@ AdaptiveDisplay::AdaptiveDisplay(QString address, quint16 port, QSslCertificate 
 AdaptiveDisplay::~AdaptiveDisplay() { requestInterruption(); wait(); }
 QSize AdaptiveDisplay::boundedSize(QSize pixels) {
     if (pixels.width() <= 0 || pixels.height() <= 0) return {};
-    const double factor = qMin(1.0, qMin(3840.0 / pixels.width(), 2160.0 / pixels.height()));
+    const double factor = qMin(1.0, qMin(double(DeskPortDisplay::MaxWidth) / pixels.width(), double(DeskPortDisplay::MaxHeight) / pixels.height()));
     // Four-pixel alignment also gives integral HiDPI logical modes.
-    return QSize(qBound(640, int(pixels.width() * factor) & ~3, 3840),
-                 qBound(360, int(pixels.height() * factor) & ~3, 2160));
+    return QSize(qBound(640, int(pixels.width() * factor) & ~3, DeskPortDisplay::MaxWidth),
+                 qBound(360, int(pixels.height() * factor) & ~3, DeskPortDisplay::MaxHeight));
 }
 bool AdaptiveDisplay::resize(const QSize& pixels, int scale) {
     QMutexLocker lock(&m_Mutex);

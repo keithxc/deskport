@@ -43,6 +43,7 @@ UiPage {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Built-in virtual display"); color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold }
             Label { text: hostManager.virtualDisplayActive ? qsTr("Active · %1 × %2 pixels").arg(hostManager.displayWidth).arg(hostManager.displayHeight) : qsTr("Created automatically when sharing starts"); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { visible: hostManager.virtualDisplayActive; text: qsTr("Workspace · %1 × %2 · %3× scaling").arg(Math.round(hostManager.displayWidth / hostManager.displayScale)).arg(Math.round(hostManager.displayHeight / hostManager.displayScale)).arg(hostManager.displayScale); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: qsTr("Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }

@@ -326,3 +326,17 @@ USB redirection, local IME preedit forwarding, cloud accounts, mobile clients,
 automatic updates and broad distribution packaging. Stable macOS signing is required
 for the planned host deployment, rather than a cosmetic release task. Do not refactor the decoder or protocol
 unless a measured blocker requires it.
+
+### Fractional scaling and virtual-display input (2026-09-10)
+
+- Compute the client logical workspace from drawable pixels / system scale. Use
+  2× macOS backing for scaled clients, 1× otherwise, aligned to four pixels and
+  bounded by 7680×4320. Keep a minimum 960×540 logical workspace for valid native
+  HiDPI modes. Example: 2880×1620 at 150% becomes 3840×2160 backing / 1920×1080 logical.
+- Match Qt screen scaling to SDL outputs, including XWayland clients whose SDL
+  pixel/window ratio hides fractional compositor scaling. Reconnect after changing
+  system scale; live scale/hotplug refresh remains an acceptance follow-up.
+- Build a pinned, patched macOS input backend that follows the verified virtual
+  capture display. Do not change the physical main display to redirect input.
+- Acceptance: verify mouse motion/clicks, fractional-scale text size, resize/resume,
+  and coexistence with independent Sunshine on the installed endpoints.

@@ -1,4 +1,5 @@
 #include "hostmanager.h"
+#include "workspaceresolution.h"
 #include "peerstore.h"
 #include <QElapsedTimer>
 #include <algorithm>
@@ -52,6 +53,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
                     const int sequence = m_DisplaySequence; m_DisplaySequence = 0;
                     if (!object.contains("error")) {
                         m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
+                        m_DisplayScale = object["scale"].toInt(2);
                     }
                     emit displayResized(sequence, m_DisplayWidth, m_DisplayHeight, object["error"].toString());
                     emit changed();
@@ -61,6 +63,7 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
             if (object.contains("error")) { beginStop(object["error"].toString()); return; }
             if (object["displayId"].toInt() > 0 && m_Starting && !m_ServerRequested) {
                 m_DisplayWidth = object["width"].toInt(); m_DisplayHeight = object["height"].toInt();
+                m_DisplayScale = object["scale"].toInt(2);
                 startServer(object["displayId"].toInt());
             }
         }
@@ -257,6 +260,10 @@ void HostManager::startServer(int displayId) {
     config.write(QString("sunshine_name = %2\nport = %1\naddress_family = ipv4\nupnp = disabled\nsystem_tray = disabled\nmin_log_level = 2\norigin_web_ui_allowed = pc\n").arg(m_BasePort).arg(deviceName).toUtf8());
 #ifdef Q_OS_MACOS
     config.write(QString("output_name = %1\n").arg(displayId).toUtf8());
+    auto hostEnvironment = QProcessEnvironment::systemEnvironment();
+    hostEnvironment.insert("DESKPORT_CAPTURE_DISPLAY", QString::number(displayId));
+    m_Server.setProcessEnvironment(hostEnvironment);
+    m_Credentials.setProcessEnvironment(hostEnvironment);
 #else
     Q_UNUSED(displayId);
 #endif
@@ -525,8 +532,8 @@ bool HostManager::adaptiveDisplayAvailable() const {
 #endif
 }
 bool HostManager::resizeDisplay(int width, int height, int scale, int sequence) {
-    if (!adaptiveDisplayAvailable() || m_DisplaySequence || sequence == 0 || width < 640 || width > 3840 ||
-        height < 360 || height > 2160 || width % 4 || height % 4 || (scale != 1 && scale != 2)) return false;
+    if (!adaptiveDisplayAvailable() || m_DisplaySequence || sequence == 0 || width < 640 || width > DeskPortDisplay::MaxWidth ||
+        height < 360 || height > DeskPortDisplay::MaxHeight || width % 4 || height % 4 || (scale != 1 && scale != 2)) return false;
     m_DisplaySequence = sequence;
     m_DisplayWireSequence = m_DisplayWireSequence == std::numeric_limits<int>::max() ? 1 : m_DisplayWireSequence + 1;
     const auto generation = ++m_DisplayGeneration;

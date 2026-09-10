@@ -98,7 +98,7 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
             respond(@{@"error": @"Requested mode was rejected; the previous display mode was restored"}); return;
         }
         respond(@{@"displayId": @(capture), @"virtualDisplayId": @(display.displayID),
-            @"mirrored": @(source != 0), @"width": @(width), @"height": @(height)});
+            @"mirrored": @(source != 0), @"scale": @(requestedScale), @"width": @(width), @"height": @(height)});
     } else if (attempt < 30) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
             waitForMode(width, height, token, attempt + 1);
@@ -119,8 +119,8 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
 }
 static void configure(NSInteger width, NSInteger height, NSInteger scale, int sequence) {
     requestSequence = sequence; requestedScale = scale; rollingBack = NO;
-    if (width < 640 || height < 360 || width > 3840 || height > 2160 || width % 2 || height % 2 || (scale != 1 && scale != 2)) {
-        respond(@{@"error": @"Use an even pixel size between 640x360 and 3840x2160"}); return;
+    if (width < 640 || height < 360 || width > 7680 || height > 4320 || width % 2 || height % 2 || (scale != 1 && scale != 2)) {
+        respond(@{@"error": @"Use an even pixel size between 640x360 and 7680x4320"}); return;
     }
     if (!display) {
         if (!NSClassFromString(@"CGVirtualDisplay")) {
@@ -129,7 +129,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
         CGVirtualDisplayDescriptor *descriptor = [CGVirtualDisplayDescriptor new];
         descriptor.queue = dispatch_get_main_queue();
         descriptor.name = @"DeskPort Workspace";
-        descriptor.maxPixelsWide = 3840; descriptor.maxPixelsHigh = 2160;
+        descriptor.maxPixelsWide = 7680; descriptor.maxPixelsHigh = 4320;
         descriptor.sizeInMillimeters = CGSizeMake(600, 340);
         descriptor.vendorID = 0x4450; descriptor.productID = 1; descriptor.serialNum = 1;
         display = [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];

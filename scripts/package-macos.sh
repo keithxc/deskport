@@ -29,6 +29,7 @@ done
     "$qt_bin/qmake" -r ../moonlight-qt.pro CONFIG+=release CONFIG-=debug_and_release QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0
     make -j6
 )
+bash scripts/build-macos-host.sh
 xcrun clang -fobjc-arc -framework Foundation -framework CoreGraphics \
     host/macos/display-helper.m -o build-macos/deskport-display
 stage=$(mktemp -d "$repo/dist/.package.XXXXXX")
@@ -62,14 +63,25 @@ echo "b630d35a184d8eaff39c5104f3c6a0c40e91ddc447ccf7a0c5b24706465fab6a  $dmg" | 
 mount="$stage/host-image"
 mkdir "$mount"
 hdiutil attach -readonly -nobrowse -mountpoint "$mount" "$dmg"
-if ! ditto "$mount/Sunshine.app" "$app/Contents/Helpers/Sunshine.app"; then
+# Verify the pinned asset donor before copying its notices and web resources.
+if ! codesign --verify --deep --strict \
+    -R '=identifier "dev.lizardbyte.app.Sunshine" and anchor apple generic and certificate leaf[subject.OU] = "F8XQ7XCN2R"' \
+    "$mount/Sunshine.app"; then
+    hdiutil detach "$mount"; exit 1
+fi
+host_app="$app/Contents/Helpers/Sunshine.app"
+ditto build-macos.noindex/sunshine-build/Sunshine.app "$host_app"
+if ! ditto "$mount/Sunshine.app/Contents/Resources" "$host_app/Contents/Resources"; then
     hdiutil detach "$mount"; exit 1
 fi
 hdiutil detach "$mount"
 rmdir "$mount"
-codesign --verify --deep --strict \
-    -R '=identifier "dev.lizardbyte.app.Sunshine" and anchor apple generic and certificate leaf[subject.OU] = "F8XQ7XCN2R"' \
-    "$app/Contents/Helpers/Sunshine.app"
+python3 scripts/fix-macos-dependencies.py "$host_app"
+find "$host_app/Contents/Frameworks" -type f -name '*.dylib' -exec codesign --force --sign - {} \;
+cp host/macos/patches/libvirtualhid-target-display.patch "$host_app/Contents/Resources/"
+cp scripts/build-macos-host.sh "$host_app/Contents/Resources/"
+codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none --options runtime \
+    --entitlements host/macos/entitlements.plist "$host_app"
 cp LICENSE "$app/Contents/Resources/DeskPort-LICENSE"
 cp docs/BUNDLED_COMPONENTS.md "$app/Contents/Resources/"
 codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none "$app/Contents/Helpers/deskport-display"

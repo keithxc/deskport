@@ -16,6 +16,7 @@ class HostManager : public QObject {
     Q_PROPERTY(bool setupComplete READ setupComplete NOTIFY permissionsChanged)
     Q_PROPERTY(QString deviceName READ deviceName CONSTANT)
     Q_PROPERTY(QUrl applicationUrl READ applicationUrl CONSTANT)
+    Q_PROPERTY(int displayScale READ displayScale NOTIFY changed)
     Q_PROPERTY(int displayWidth READ displayWidth NOTIFY changed)
     Q_PROPERTY(int displayHeight READ displayHeight NOTIFY changed)
     Q_PROPERTY(bool virtualDisplayActive READ adaptiveDisplayAvailable NOTIFY changed)
@@ -36,6 +37,7 @@ public:
     bool setupComplete() const;
     QString deviceName() const;
     QUrl applicationUrl() const;
+    int displayScale() const { return m_DisplayScale; }
     int displayWidth() const { return m_DisplayWidth; }
     int displayHeight() const { return m_DisplayHeight; }
     int sharingWidth() const;
@@ -83,6 +85,7 @@ private:
     QByteArray m_Buffer;
     int m_DisplayWireSequence = 0, m_DisplaySequence = 0, m_DisplayWidth = 0, m_DisplayHeight = 0;
     quint64 m_DisplayGeneration = 0;
+    int m_DisplayScale = 2;
     QNetworkAccessManager m_Network;
     QSystemTrayIcon m_Tray;
     bool m_TrustBusy = false;

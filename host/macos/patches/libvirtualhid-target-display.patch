@@ -1,0 +1,40 @@
+diff --git a/src/platform/macos/macos_backend.cpp b/src/platform/macos/macos_backend.cpp
+index c67ca89..136d621 100644
+--- a/src/platform/macos/macos_backend.cpp
++++ b/src/platform/macos/macos_backend.cpp
+@@ -16,6 +16,9 @@
+ 
+ // platform includes
+ #include <ApplicationServices/ApplicationServices.h>
++#include <cstdlib>
++#include <cstdio>
++#include <stdexcept>
+ #include <Carbon/Carbon.h>
+ #include <CoreFoundation/CoreFoundation.h>
+ #include <IOKit/hidsystem/IOLLEvent.h>
+@@ -381,10 +384,24 @@ namespace lvh::detail {
+     /**
+      * @brief Shared macOS backend state.
+      */
++    // DeskPort supplies the verified virtual display independently of the
++    // physical main display. Resolve once at runtime creation; query its bounds
++    // for every event so HiDPI mode changes do not leave stale coordinates.
++    CGDirectDisplayID deskport_input_display() {
++      const auto value = std::getenv("DESKPORT_CAPTURE_DISPLAY");
++      if (!value || !*value) return CGMainDisplayID();
++      char *end = nullptr;
++      const auto id = std::strtoul(value, &end, 10);
++      if (*end || id == 0 || id > UINT32_MAX || !CGDisplayIsActive(static_cast<CGDirectDisplayID>(id)))
++        throw std::runtime_error("DeskPort capture display is unavailable; refusing input on another screen");
++      std::fprintf(stderr, "DeskPort input target display: %lu\n", id);
++      return static_cast<CGDirectDisplayID>(id);
++    }
++
+     class MacosInputState {
+     public:
+       MacosInputState():
+-          display {CGMainDisplayID()},
++          display {deskport_input_display()},
+           display_scaling {display_scaling_for(display)},
+           source {CGEventSourceCreate(kCGEventSourceStateHIDSystemState)},
+           keyboard_source {CGEventSourceCreate(kCGEventSourceStatePrivate)},

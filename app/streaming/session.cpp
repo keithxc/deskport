@@ -573,13 +573,33 @@ QSize windowPixels(SDL_Window* window) {
 #endif
     return QSize(width, height);
 }
-int windowScale(SDL_Window* window, const QSize& pixels) {
-    int width, height; SDL_GetWindowSize(window, &width, &height);
-    const QSize bounded = AdaptiveDisplay::boundedSize(pixels);
-    // WindowServer rejects some compact HiDPI modes despite advertising them.
-    // Keep the exact encoded pixel dimensions, using 1x for compact workspaces.
-    return width > 0 && pixels.width() >= width * 1.5 && bounded.width() >= 1920 && bounded.height() >= 1080 ? 2 : 1;
 }
+DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool initialFullscreen) const {
+    QSize pixels = windowPixels(window);
+    const int index = SDL_GetWindowDisplayIndex(window);
+    int logicalWidth, logicalHeight; SDL_GetWindowSize(window, &logicalWidth, &logicalHeight);
+    qreal scale = logicalWidth > 0 ? qreal(pixels.width()) / logicalWidth : 1.0;
+    // XWayland commonly exposes physical pixels for both SDL sizes, hiding the
+    // compositor's fractional scaling. Qt's QScreen scale is captured before the
+    // streaming thread blocks Qt processing and matched to SDL's output name.
+    const char* name = SDL_GetDisplayName(index);
+    SDL_Rect bounds {}; SDL_GetDisplayBounds(index, &bounds);
+    qreal systemScale = m_ClientDefaultScale;
+    for (const auto& screen : m_ClientScreens) {
+        if ((name && screen.name == QString::fromUtf8(name)) || screen.origin == QPoint(bounds.x, bounds.y)) {
+            systemScale = screen.scale;
+            if (name && screen.name == QString::fromUtf8(name)) break;
+        }
+    }
+    scale = qMax(scale, systemScale);
+    if (initialFullscreen) {
+        SDL_DisplayMode mode; SDL_Rect safeArea;
+        if (StreamUtils::getNativeDesktopMode(index, &mode, &safeArea)) pixels = QSize(mode.w, mode.h);
+    }
+    const auto workspace = DeskPortDisplay::forClient(pixels, scale);
+    if (initialFullscreen || window != m_Window)
+        qInfo() << "Client display pixels:" << pixels << "system scale:" << scale << "workspace backing:" << workspace.pixels << "host scale:" << workspace.scale;
+    return workspace;
 }
 Session* Session::adaptiveContinuation() {
     if (!adaptiveRestartPending()) return nullptr;
@@ -611,15 +631,9 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
         }
     }
     if (!m_AdaptiveDisplay) return;
-    QSize pixels = windowPixels(window);
-    if (!m_AdaptiveResume) {
-        m_AdaptiveScale = windowScale(window, pixels);
-        if (m_IsFullScreen) {
-            SDL_DisplayMode mode; SDL_Rect safeArea;
-            if (StreamUtils::getNativeDesktopMode(SDL_GetWindowDisplayIndex(window), &mode, &safeArea)) pixels = QSize(mode.w, mode.h);
-        }
-    }
-    const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize : AdaptiveDisplay::boundedSize(pixels);
+    const auto workspace = workspaceForWindow(window, m_IsFullScreen && !m_AdaptiveResume);
+    if (!m_AdaptiveResume) m_AdaptiveScale = workspace.scale;
+    const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize : workspace.pixels;
     m_AdaptiveNextSize = {};
     if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale)) {
         m_StreamConfig.width = target.width(); m_StreamConfig.height = target.height();
@@ -633,9 +647,9 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
 }
 bool Session::checkAdaptiveResize() {
     if (!m_AdaptiveDisplay || m_UnexpectedTermination || (SDL_GetWindowFlags(m_Window) & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN))) return false;
-    const auto pixels = windowPixels(m_Window);
-    const auto size = AdaptiveDisplay::boundedSize(pixels);
-    const int scale = windowScale(m_Window, pixels);
+    const auto workspace = workspaceForWindow(m_Window);
+    const auto size = workspace.pixels;
+    const int scale = workspace.scale;
     if (!size.isValid()) return false;
     if (size != m_AdaptiveObservedSize || scale != m_AdaptiveObservedScale) {
         m_AdaptiveObservedSize = size; m_AdaptiveObservedScale = scale;
@@ -1793,6 +1807,9 @@ public:
 void Session::exec(QWindow* qtWindow)
 {
     m_QtWindow = qtWindow;
+    m_ClientScreens.clear();
+    for (auto screen : QGuiApplication::screens()) m_ClientScreens.append({screen->name(), screen->geometry().topLeft(), screen->devicePixelRatio()});
+    if (qtWindow && qtWindow->screen()) m_ClientDefaultScale = qtWindow->screen()->devicePixelRatio();
 
     // Use a separate thread for the streaming session on X11 or Wayland
     // to ensure we don't stomp on Qt's GL context. This breaks when using

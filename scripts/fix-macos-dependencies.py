@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Complete and relocate a Homebrew Qt deployment before signing it.
 
-Sunshine must be embedded afterwards so its publisher signature is untouched.
+Run separately on each application before nesting and signing its bundle.
 """
 import os
 from pathlib import Path

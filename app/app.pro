@@ -589,3 +589,5 @@ macx {
 
 SOURCES += backend/adaptivedisplay.cpp
 HEADERS += backend/adaptivedisplay.h
+
+HEADERS += backend/workspaceresolution.h
