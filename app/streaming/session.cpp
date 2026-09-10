@@ -612,6 +612,10 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
 Session* Session::adaptiveContinuation() {
     if (!adaptiveRestartPending()) return nullptr;
     auto next = new Session(m_Computer, m_App, m_Preferences);
+    if (m_TransitionTimer) m_TransitionTimer->stop();
+    // The old transport has stopped; discard its queued decoder/rumble callbacks.
+    SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
+    next->m_TransitionWindow = std::move(m_TransitionWindow);
     next->m_AdaptiveDisplay = std::move(m_AdaptiveDisplay);
     next->m_AdaptiveNextSize = m_AdaptiveNextSize;
     next->m_AdaptiveGeometry = m_AdaptiveGeometry;
@@ -643,7 +647,9 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
     if (!m_AdaptiveResume) m_AdaptiveScale = workspace.scale;
     const QSize target = m_AdaptiveResume ? m_AdaptiveNextSize : workspace.pixels;
     m_AdaptiveNextSize = {};
-    if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale)) {
+    if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale, [this] {
+            if (m_TransitionWindow) m_TransitionWindow->pump();
+        })) {
         m_StreamConfig.width = target.width(); m_StreamConfig.height = target.height();
         qInfo() << "Adaptive display negotiated:" << target << "scale" << m_AdaptiveScale;
     } else {
@@ -1851,6 +1857,13 @@ void Session::exec(QWindow* qtWindow)
         // Run the streaming session on the main thread for Windows and macOS
         execInternal();
     }
+    // The SDL thread has exited. Animate the retained window on the GUI thread
+    // while asynchronous transport cleanup finishes. Stop before the next owner.
+    if (m_TransitionWindow && adaptiveRestartPending()) {
+        m_TransitionTimer = new QTimer(this);
+        connect(m_TransitionTimer, &QTimer::timeout, this, [this] { if (m_TransitionWindow) m_TransitionWindow->pump(); });
+        m_TransitionTimer->start(20);
+    }
 }
 
 void Session::execInternal()
@@ -1861,7 +1874,10 @@ void Session::execInternal()
     //
     // NB: This initializes the SDL video subsystem, so it must be
     // called on the main thread.
-    if (!initialize()) {
+    const bool initialized = (!m_TransitionWindow || !m_TransitionWindow->cancelled()) && initialize();
+    if (!initialized || (m_TransitionWindow && m_TransitionWindow->cancelled())) {
+        if (initialized) SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        m_TransitionWindow.reset();
         m_AdaptiveNextSize = {};
         m_AdaptiveDisplay.reset();
         emit sessionFinished(0);
@@ -1880,18 +1896,26 @@ void Session::execInternal()
     m_InputHandler = new SdlInputHandler(*m_Preferences, m_StreamConfig.width, m_StreamConfig.height);
 
     AsyncConnectionStartThread asyncConnThread(this);
-    if (!m_ThreadedExec) {
+    if (!m_ThreadedExec || m_TransitionWindow) {
         // Kick off the async connection thread while we sit here and pump the event loop
         asyncConnThread.start();
         while (!asyncConnThread.wait(10)) {
-            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-            QCoreApplication::sendPostedEvents();
+            if (m_TransitionWindow) {
+                m_TransitionWindow->pump();
+                if (m_TransitionWindow->cancelled()) LiInterruptConnection();
+            }
+            if (!m_ThreadedExec) {
+                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+                QCoreApplication::sendPostedEvents();
+            }
         }
 
         // Pump the event loop one last time to ensure we pick up any events from
         // the thread that happened while it was in the final successful QThread::wait().
-        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        QCoreApplication::sendPostedEvents();
+        if (!m_ThreadedExec) {
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+            QCoreApplication::sendPostedEvents();
+        }
     }
     else {
         // We're already in a separate thread so run the connection operations
@@ -1901,7 +1925,8 @@ void Session::execInternal()
     }
 
     // If the connection failed, clean up and abort the connection.
-    if (!m_AsyncConnectionSuccess) {
+    if (!m_AsyncConnectionSuccess || (m_TransitionWindow && m_TransitionWindow->cancelled())) {
+        m_TransitionWindow.reset();
         delete m_InputHandler;
         m_InputHandler = nullptr;
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -1958,7 +1983,13 @@ void Session::execInternal()
     std::string windowName = QString(m_Computer->name + " - DeskPort").toStdString();
 #endif
 
-    m_Window = SDL_CreateWindow(windowName.c_str(),
+    const bool retainedWindow = bool(m_TransitionWindow);
+    if (m_TransitionWindow) {
+        m_Window = m_TransitionWindow->takeWindow();
+        m_TransitionWindow.reset();
+        qInfo() << "Adaptive display retained client window:" << SDL_GetWindowID(m_Window);
+    }
+    else m_Window = SDL_CreateWindow(windowName.c_str(),
                                 x,
                                 y,
                                 width,
@@ -2059,7 +2090,7 @@ void Session::execInternal()
     // event where it seems to work consistently on GNOME. For other platforms,
     // especially where SDL may call SDL_RecreateWindow(), we must only capture
     // after the decoder is created.
-    if (strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0) {
+    if (strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0 && !retainedWindow) {
         // Native Wayland: Capture on SDL_WINDOWEVENT_ENTER
         needsFirstEnterCapture = true;
     }
@@ -2088,6 +2119,15 @@ void Session::execInternal()
     // sleep precision and more accurate callback timing.
     SDL_SetHint(SDL_HINT_TIMER_RESOLUTION, "1");
 
+    if (retainedWindow) {
+        // Reusing a visible window produces no SHOWN event. Trigger decoder setup
+        // explicitly after disposing the temporary loading renderer.
+        SDL_Event resizeEvent {}; resizeEvent.type = SDL_WINDOWEVENT;
+        resizeEvent.window.windowID = SDL_GetWindowID(m_Window);
+        resizeEvent.window.event = SDL_WINDOWEVENT_SIZE_CHANGED;
+        SDL_GetWindowSize(m_Window, &resizeEvent.window.data1, &resizeEvent.window.data2);
+        SDL_PushEvent(&resizeEvent);
+    }
     int currentDisplayIndex = SDL_GetWindowDisplayIndex(m_Window);
 
     // Now that we're about to stream, any SDL_QUIT event is expected
@@ -2365,7 +2405,9 @@ void Session::execInternal()
                 // or mouse hiding state to the new window. By capturing after the decoder
                 // is set up, this ensures the window re-creation is already done.
                 if (needsPostDecoderCreationCapture) {
-                    m_InputHandler->setCaptureActive(true);
+                    const auto flags = SDL_GetWindowFlags(m_Window);
+                    if (!retainedWindow || ((flags & SDL_WINDOW_INPUT_FOCUS) && !(flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))))
+                        m_InputHandler->setCaptureActive(true);
                     needsPostDecoderCreationCapture = false;
                 }
             }
@@ -2491,7 +2533,12 @@ DispatchDeferredCleanup:
 
     // This must be called after the decoder is deleted, because
     // the renderer may want to interact with the window
-    SDL_DestroyWindow(m_Window);
+    if (adaptiveRestartPending()) {
+        m_TransitionWindow = std::make_shared<TransitionWindow>(m_Window, tr("Adjusting resolution…"));
+        qInfo() << "Adaptive display keeping client window:" << SDL_GetWindowID(m_Window);
+    }
+    else SDL_DestroyWindow(m_Window);
+    m_Window = nullptr;
 
     if (iconSurface != nullptr) {
         SDL_FreeSurface(iconSurface);

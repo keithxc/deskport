@@ -3,6 +3,8 @@
 #include <QSemaphore>
 #include <QWindow>
 #include "backend/adaptivedisplay.h"
+#include "transitionwindow.h"
+#include <QTimer>
 #include "backend/workspaceresolution.h"
 
 #include <Limelight.h>
@@ -148,6 +150,8 @@ signals:
 
 private:
     std::shared_ptr<AdaptiveDisplay> m_AdaptiveDisplay;
+    std::shared_ptr<TransitionWindow> m_TransitionWindow;
+    QTimer* m_TransitionTimer = nullptr;
     QSize m_AdaptiveNextSize, m_AdaptiveObservedSize;
     QRect m_AdaptiveGeometry;
     int m_AdaptiveScale = 1, m_AdaptiveObservedScale = 1;

@@ -20,13 +20,15 @@ QSize AdaptiveDisplay::boundedSize(QSize pixels) {
     return QSize(qBound(640, int(pixels.width() * factor) & ~3, DeskPortDisplay::MaxWidth),
                  qBound(360, int(pixels.height() * factor) & ~3, DeskPortDisplay::MaxHeight));
 }
-bool AdaptiveDisplay::resize(const QSize& pixels, int scale) {
+bool AdaptiveDisplay::resize(const QSize& pixels, int scale, const std::function<void()>& progress) {
     QMutexLocker lock(&m_Mutex);
     if (m_Failed || m_Pending || pixels != boundedSize(pixels) || (scale != 1 && scale != 2)) return false;
     m_Size = pixels; m_Scale = scale; m_Pending = true; m_Complete = false;
     QElapsedTimer timer; timer.start();
-    while (!m_Complete && !m_Failed && timer.elapsed() < 10000)
-        m_Wake.wait(&m_Mutex, 100);
+    while (!m_Complete && !m_Failed && timer.elapsed() < 10000) {
+        m_Wake.wait(&m_Mutex, progress ? 20 : 100);
+        if (progress) { lock.unlock(); progress(); lock.relock(); }
+    }
     if (!m_Complete || !m_Result) { m_Failed = true; requestInterruption(); return false; }
     return true;
 }

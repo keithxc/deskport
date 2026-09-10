@@ -340,3 +340,17 @@ unless a measured blocker requires it.
   capture display. Do not change the physical main display to redirect input.
 - Acceptance: verify mouse motion/clicks, fractional-scale text size, resize/resume,
   and coexistence with independent Sunshine on the installed endpoints.
+
+### Continuous window during adaptive resize (2026-09-10)
+
+- Retain the native client window, its placement and maximized/fullscreen state
+  while the stream renegotiates. Show a translated animated loading view instead
+  of destroying the window and exposing the desktop.
+- Release input during the transition; discard waiting input rather than replaying
+  it. Close/Escape cancels the continuation, and failed startup disposes the window.
+- Wayland/Vulkan uses shared-memory loading buffers on the existing surface;
+  SDL's software-renderer fallback can recreate Vulkan windows and is avoided.
+- Native isolated tests exercise 30 handoffs, native-window identity, animated
+  frames, compositor buffer recycling and close cleanup on macOS and KDE Wayland.
+  Real stream/decoder resume and perceived continuity still require interactive
+  acceptance after installation, including minimize and repeated resize.

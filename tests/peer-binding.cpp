@@ -40,10 +40,13 @@ private slots:
         QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable(), 5000);
         QSignalSpy resized(&host, &HostManager::displayResized), approval(&server, &PeerManager::incomingRequest);
         auto resize = [this](AdaptiveDisplay& channel, QSize size) {
-            auto result = std::async(std::launch::async, [&] { return channel.resize(size, 2); });
+            std::atomic<int> frames {0};
+            auto result = std::async(std::launch::async, [&] { return channel.resize(size, 2, [&] { ++frames; }); });
             QElapsedTimer timer; timer.start();
             while (result.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready && timer.elapsed() < 11000) QTest::qWait(10);
-            return result.get();
+            const bool connected = result.get();
+            if (connected && frames == 0) return false; // Waiting must keep the loading UI alive.
+            return connected;
         };
         {
             AdaptiveDisplay wrongPin("127.0.0.1", server.port(), QSslCertificate(cCert), aCert, credential("TEST_KEY_A"));

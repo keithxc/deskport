@@ -501,6 +501,7 @@
 </context>
 <context>
     <name>Session</name>
+    <message><source>Adjusting resolution…</source><translation>正在调整分辨率…</translation></message>
     <message>
         <location filename="../streaming/session.cpp" line="112"/>
         <source>No video received from host.</source>

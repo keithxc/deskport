@@ -7,6 +7,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <memory>
+#include <functional>
 
 // A pinned, mutually authenticated control connection. Its lifetime spans video
 // renegotiations, so a window resize does not release ownership of the display.
@@ -15,7 +16,7 @@ public:
     AdaptiveDisplay(QString address, quint16 port, QSslCertificate peer,
                     QByteArray certificate, QByteArray key);
     ~AdaptiveDisplay();
-    bool resize(const QSize& pixels, int scale);
+    bool resize(const QSize& pixels, int scale, const std::function<void()>& progress = {});
     static QSize boundedSize(QSize pixels);
 private:
     void run() override;

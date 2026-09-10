@@ -591,3 +591,9 @@ SOURCES += backend/adaptivedisplay.cpp
 HEADERS += backend/adaptivedisplay.h
 
 HEADERS += backend/workspaceresolution.h
+
+SOURCES += streaming/transitionwindow.cpp
+HEADERS += streaming/transitionwindow.h
+
+SOURCES += streaming/waylandloading.cpp
+HEADERS += streaming/waylandloading.h
