@@ -151,7 +151,7 @@ private:
     QRect m_AdaptiveGeometry;
     int m_AdaptiveScale = 1, m_AdaptiveObservedScale = 1;
     Uint32 m_AdaptiveChangedAt = 0;
-    bool m_AdaptiveResume = false;
+    bool m_AdaptiveResume = false, m_AdaptiveMaximized = false;
     void initializeAdaptiveDisplay(SDL_Window* window);
     bool checkAdaptiveResize();
     void execInternal();

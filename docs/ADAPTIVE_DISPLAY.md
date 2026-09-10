@@ -56,3 +56,10 @@ native Sunshine service and its configuration are not managed by this feature.
 Native acceptance also requires repeated client window resizing, maximize/full
 screen, minimize/restore, fractional scaling, text and pointer checks, and a full
 disconnect/reconnect. Protocol tests do not establish these visual properties.
+
+Native helper validation on macOS: 30 alternating 1280×720, 1600×1000, 1920×1080,
+2560×1440 and 2880×1800 modes passed, including changes between 1× and 2×. Each
+acknowledgment was independently checked through CoreGraphics for physical pixels,
+logical dimensions and an independent capture ID. The active physical main display
+retained its mode and the virtual display disappeared on helper exit. This does
+not substitute for end-to-end client window and input acceptance.

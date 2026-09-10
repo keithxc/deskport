@@ -588,6 +588,7 @@ Session* Session::adaptiveContinuation() {
     next->m_AdaptiveNextSize = m_AdaptiveNextSize;
     next->m_AdaptiveGeometry = m_AdaptiveGeometry;
     next->m_AdaptiveScale = m_AdaptiveScale;
+    next->m_AdaptiveMaximized = m_AdaptiveMaximized;
     next->m_IsFullScreen = m_IsFullScreen;
     next->m_AdaptiveResume = true;
     return next;
@@ -646,7 +647,10 @@ bool Session::checkAdaptiveResize() {
     // apps and the authenticated display lease across the new resume request.
     int x, y, width, height;
     SDL_GetWindowPosition(m_Window, &x, &y); SDL_GetWindowSize(m_Window, &width, &height);
-    m_AdaptiveGeometry = QRect(x, y, width, height);
+    const auto flags = SDL_GetWindowFlags(m_Window);
+    m_IsFullScreen = (flags & SDL_WINDOW_FULLSCREEN) != 0;
+    m_AdaptiveMaximized = (flags & SDL_WINDOW_MAXIMIZED) != 0;
+    if (!m_IsFullScreen && !m_AdaptiveMaximized) m_AdaptiveGeometry = QRect(x, y, width, height);
     m_AdaptiveNextSize = size; m_AdaptiveScale = scale;
     qInfo() << "Adaptive display restarting stream for" << size;
     return true;
@@ -1892,10 +1896,11 @@ void Session::execInternal()
 
     // We always want a resizable window with High DPI enabled
     Uint32 defaultWindowFlags = SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
+    if (m_AdaptiveResume && !m_IsFullScreen && m_AdaptiveMaximized) defaultWindowFlags |= SDL_WINDOW_MAXIMIZED;
 
     // If we're starting in windowed mode and the Moonlight GUI is maximized or
     // minimized, match that with the streaming window.
-    if (!m_IsFullScreen && m_QtWindow != nullptr) {
+    if (!m_AdaptiveResume && !m_IsFullScreen && m_QtWindow != nullptr) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         // Qt 5.10+ can propagate multiple states together
         if (m_QtWindow->windowStates() & Qt::WindowMaximized) {
