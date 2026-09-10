@@ -7,6 +7,7 @@
 #include <QSslConfiguration>
 #include <QNetworkProxy>
 #include <QApplication>
+#include <QPalette>
 #include <QWindow>
 #include <QMenu>
 #include <QDir>
@@ -108,7 +109,20 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
     connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, [] { qApp->quit(); });
     m_Tray.setContextMenu(menu);
-    m_Tray.setIcon(QIcon(":/res/deskport.svg"));
+    const auto updateTrayIcon = [this] {
+#ifdef Q_OS_MACOS
+        // AppKit renders a template image with the menu bar's current contrast,
+        // including wallpaper-dependent appearance and selected menu items.
+        QIcon icon(":/res/deskport-tray-black.svg");
+        icon.setIsMask(true);
+#else
+        const bool lightForeground = qApp->palette().color(QPalette::WindowText).lightness() > 127;
+        QIcon icon(lightForeground ? ":/res/deskport-tray-white.svg" : ":/res/deskport-tray-black.svg");
+#endif
+        m_Tray.setIcon(icon);
+    };
+    updateTrayIcon();
+    connect(qApp, &QGuiApplication::paletteChanged, this, updateTrayIcon);
     m_Tray.setToolTip("DeskPort");
     if (available() && !m_Isolated) m_Tray.show();
     connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { beginStop(tr("Sharing is off")); });

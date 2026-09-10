@@ -43,6 +43,8 @@ remains a manual acceptance gate.
 - Sharing page: start/stop, fixed HiDPI presets, permission shortcuts, incoming PIN.
 - Private host state/certificates, separate ports, certificate-pinned local API.
 - Tray recall while hosting and an optional user-login launcher.
+- Monochrome tray artwork: native macOS template rendering and light/dark
+  palette variants on other desktops (2026-09-10).
 - Packaging script, signature checks, build-path dependency checks and host self-test.
 
 Validated: native macOS GUI startup, bundled-component startup/cleanup, isolated

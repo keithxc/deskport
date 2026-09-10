@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
+  <!-- Simplified monitor and kite silhouette for small system status areas. -->
+  <g fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="10" width="12" height="8" rx="1.5"/>
+    <path d="M8 18v2M5 20h6M13 12c4-1 0-4 3-5"/>
+  </g>
+  <path d="M16 1.5 21 5 17 10 13 5Z" fill="#000000"/>
+</svg>
