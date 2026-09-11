@@ -70,6 +70,11 @@ private slots:
                 QVERIFY(duplicate.delivered);
                 QTRY_COMPARE(activations, i + 1);
             }
+            SingleInstance background;
+            QVERIFY(!background.start(directory.path(), false));
+            QVERIFY(background.delivered);
+            QTest::qWait(50);
+            QCOMPARE(activations, 3);
         }
         SingleInstance restarted;
         QVERIFY(restarted.start(directory.path()));
@@ -93,7 +98,7 @@ TestPreferences {
  function retranslate() { retranslations++; return true }
  property int width: 2048; property int height: 1152; property int fps: 75; property int bitrateKbps: 125000
  property int windowMode: 2; property int captureSysKeysMode: 1; property int saves: 0
- property bool showLocalCursor: true; property bool adaptiveResolution: true; property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
+ property bool sharedClipboard: false; property bool showLocalCursor: true; property bool adaptiveResolution: true; property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
  property bool muteOnFocusLoss: true; property bool playAudioOnHost: false; property bool enableMdns: true; property bool keepAwake: true
  function save() { saves++ }
 })",QUrl()); return c.create();
@@ -282,10 +287,14 @@ ApplicationWindow {
                 QVERIFY(QMetaObject::invokeMethod(cursor,"clicked"));
                 QVERIFY(!prefs->property("showLocalCursor").toBool());
                 QCOMPARE(prefs->property("saves").toInt(),3);
+                QObject* shared=page->findChild<QObject*>("sharedClipboardSwitch"); QVERIFY(shared);
+                shared->setProperty("checked",true);
+                QVERIFY(QMetaObject::invokeMethod(shared,"clicked"));
+                QVERIFY(prefs->property("sharedClipboard").toBool());
                 QObject* keys=page->findChild<QObject*>("systemKeysChoice"); QVERIFY(keys);
                 QVERIFY(QMetaObject::invokeMethod(keys,"activated",Q_ARG(int,2)));
                 QCOMPARE(prefs->property("captureSysKeysMode").toInt(),2);
-                QCOMPARE(prefs->property("saves").toInt(),4);
+                QCOMPARE(prefs->property("saves").toInt(),5);
             }
         }
         const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign"));

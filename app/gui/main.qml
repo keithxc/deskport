@@ -22,7 +22,7 @@ ApplicationWindow {
     id: window
     title: "DeskPort"
     onClosing: function(event) {
-        if (hostManager.running) { event.accepted = false; window.hide(); }
+        event.accepted = false; window.hide();
     }
     width: 1120
     height: 760
@@ -44,6 +44,7 @@ ApplicationWindow {
                 navigateTo("qrc:/gui/SetupView.qml", "SetupView")
             else if (startSharingPage) navigateTo("qrc:/gui/HostView.qml", "HostView")
         })
+        if (startInBackground) return
         // Show the window according to the user's preferences
         if (SystemProperties.hasDesktopEnvironment) {
             if (StreamingPreferences.uiDisplayMode == StreamingPreferences.UI_MAXIMIZED) {
@@ -110,7 +111,7 @@ ApplicationWindow {
                 goBack()
             }
             else {
-                quitConfirmationDialog.open()
+                window.hide()
             }
         }
 
@@ -119,7 +120,7 @@ ApplicationWindow {
                 goBack()
             }
             else {
-                quitConfirmationDialog.open()
+                window.hide()
             }
         }
 
@@ -319,7 +320,7 @@ ApplicationWindow {
         standardButtons: Dialog.Yes | Dialog.No
         text: qsTr("Are you sure you want to quit?")
         // For keyboard/gamepad navigation
-        onAccepted: Qt.quit()
+        onAccepted: window.hide()
     }
 
     // HACK: This belongs in StreamSegue but keeping a dialog around after the parent

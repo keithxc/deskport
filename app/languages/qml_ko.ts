@@ -1571,6 +1571,18 @@
         <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
         <translation>연결된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
     </message>
+    <message>
+        <source>Share plain text clipboard during a session</source>
+        <translation>세션 중 일반 텍스트 클립보드 공유</translation>
+    </message>
+    <message>
+        <source>Enable on both paired devices, then reconnect. New copies only; up to 1 MiB. Images and files are not shared.</source>
+        <translation>페어링된 두 기기에서 켠 후 다시 연결하세요. 새로 복사한 텍스트만 최대 1 MiB까지 공유합니다. 이미지와 파일은 공유하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
+        <translation>포커스된 영상 안에서 포인터를 따라 키보드를 전달합니다. 벗어나면 키와 버튼을 놓습니다. 클릭하여 포커스하세요. 시스템 예약 단축키는 로컬에서 처리될 수 있습니다.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1988,6 +2000,22 @@
     <message>
         <source>Remote control requires access to the system input device.</source>
         <translation>원격 제어에는 시스템 입력 장치 접근 권한이 필요합니다.</translation>
+    </message>
+    <message>
+        <source>Open DeskPort</source>
+        <translation>DeskPort 열기</translation>
+    </message>
+    <message>
+        <source>Quit DeskPort</source>
+        <translation>DeskPort 완전히 종료</translation>
+    </message>
+    <message>
+        <source>Disconnect viewer</source>
+        <translation>뷰어 연결 끊기</translation>
+    </message>
+    <message>
+        <source> Retrying automatically in %1 seconds.</source>
+        <translation> %1초 후 자동으로 다시 시도합니다.</translation>
     </message>
 </context>
 <context>

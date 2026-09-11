@@ -43,9 +43,11 @@ void TransitionWindow::pump() {
     SDL_Event event;
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_USEREVENT, SDL_USEREVENT) > 0)
         if (event.user.code == DeskPortRecallWindow) recallDesktopWindow(m_Window);
+        else if (event.user.code == DeskPortEndSession) m_Cancelled = true;
+        else if (event.user.code == DeskPortHideWindow) SDL_HideWindow(m_Window);
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_WINDOWEVENT, SDL_WINDOWEVENT) > 0)
-        if (event.window.windowID == SDL_GetWindowID(m_Window) && event.window.event == SDL_WINDOWEVENT_CLOSE) m_Cancelled = true;
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_QUIT, SDL_QUIT) > 0) m_Cancelled = true;
+        if (event.window.windowID == SDL_GetWindowID(m_Window) && event.window.event == SDL_WINDOWEVENT_CLOSE) SDL_HideWindow(m_Window);
+    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_QUIT, SDL_QUIT) > 0) SDL_HideWindow(m_Window);
     // Never replay keystrokes or clicks made while the stream was unavailable.
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_KEYDOWN, SDL_MOUSEWHEEL) > 0)
         if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) m_Cancelled = true;

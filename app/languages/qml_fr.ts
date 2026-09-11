@@ -1571,6 +1571,18 @@
         <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
         <translation>Utilise l’écran virtuel intégré d’un Mac associé. Le redimensionnement reconnecte brièvement l’image et garde vos applications ouvertes. Les autres hôtes utilisent la résolution ci-dessous.</translation>
     </message>
+    <message>
+        <source>Share plain text clipboard during a session</source>
+        <translation>Partager le presse-papiers texte pendant une session</translation>
+    </message>
+    <message>
+        <source>Enable on both paired devices, then reconnect. New copies only; up to 1 MiB. Images and files are not shared.</source>
+        <translation>Activez sur les deux appareils associés, puis reconnectez-vous. Nouvelles copies uniquement, jusqu’à 1 Mio. Images et fichiers exclus.</translation>
+    </message>
+    <message>
+        <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
+        <translation>Le clavier suit le pointeur dans la vidéo active. En sortant, les touches et boutons sont relâchés. Cliquez pour activer ; les raccourcis réservés au système peuvent rester locaux.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1988,6 +2000,22 @@
     <message>
         <source>Remote control requires access to the system input device.</source>
         <translation>Le contrôle distant nécessite l’accès au périphérique de saisie système.</translation>
+    </message>
+    <message>
+        <source>Open DeskPort</source>
+        <translation>Ouvrir DeskPort</translation>
+    </message>
+    <message>
+        <source>Quit DeskPort</source>
+        <translation>Quitter DeskPort</translation>
+    </message>
+    <message>
+        <source>Disconnect viewer</source>
+        <translation>Déconnecter la visionneuse</translation>
+    </message>
+    <message>
+        <source> Retrying automatically in %1 seconds.</source>
+        <translation> Nouvelle tentative automatique dans %1 secondes.</translation>
     </message>
 </context>
 <context>

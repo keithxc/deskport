@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 class HostManager : public QObject {
     Q_OBJECT
@@ -66,14 +67,22 @@ public:
     Q_INVOKABLE void pair(const QString &pin, const QString &name);
     Q_INVOKABLE void permission(const QString &kind);
     Q_INVOKABLE void openLogs();
+    void setResident(bool enabled) { m_Resident = enabled; }
+    Q_INVOKABLE void requestExit();
+    void allowExit() { m_ExitRequested = true; }
+
 signals:
     void openRequested();
+    void hideRequested();
+    void exitRequested();
+    void disconnectRequested();
     void changed();
     void permissionsChanged();
     void trustUpdated(bool success);
     void displayResized(int sequence, int width, int height, const QString& error);
 private:
     void updateTrayIcon();
+    void scheduleRecovery();
     bool eventFilter(QObject* watched, QEvent* event) override;
     void setStatus(const QString &value);
     void startServer(int displayId);
@@ -99,4 +108,9 @@ private:
     bool m_ServerRequested = false;
     quint64 m_Generation = 0;
     qint64 m_LogOffset = 0;
+    QTimer m_RecoveryTimer;
+    bool m_DesiredSharing = false, m_ShuttingDown = false;
+    bool m_Resident = false, m_ExitRequested = false;
+    int m_RecoveryAttempt = 0, m_RequestedWidth = 2560, m_RequestedHeight = 1440;
+
 };

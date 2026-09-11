@@ -333,6 +333,13 @@ References: [IANA port registry](https://www.iana.org/assignments/service-names-
 
 ### Shared clipboard (requested 2026-09-10)
 
+Design clarification (2026-09-11): the user requests Deskflow-style sharing.
+The current `KeyComboPasteText` sends UTF-8 input events and does not synchronize
+the remote clipboard. Study Deskflow's format abstraction and sequenced clipboard
+messages, adapting the design to an authenticated DeskPort channel on both ends.
+Do not assume its protocol can be plugged into Sunshine unchanged.
+Reference: [Deskflow clipboard messages](https://deskflow.github.io/deskflow/group__protocol__clipboard.html).
+
 - Add bidirectional clipboard sharing between the active client and host, starting
   with Unicode plain text, then PNG images. File transfer remains deferred.
 - Provide a clear session setting to enable or disable sharing. Limit exchange to
@@ -347,6 +354,31 @@ References: [IANA port registry](https://www.iana.org/assignments/service-names-
 Checkpoint: 100 bilingual/multiline text transfers in both directions, PNG transfers
 after image support lands, simultaneous copies, disabled sharing, disconnect and
 reconnect; no initial overwrite, stale replay or loops, and clear limit handling.
+
+### Pointer-scoped keyboard capture (requested 2026-09-11)
+
+Reason: the user wants VM-like input routing while the pointer is inside the
+remote desktop, including system shortcuts rather than triggering local actions.
+
+- [x] Extend existing SDL keyboard capture with remote-video-region entry/exit
+  handling. Capture only for a visible, focused streaming window; restore local
+  input on exit, focus loss, hide, disconnect and explicit release.
+- [x] Preserve a documented emergency release shortcut and release held remote
+  keys/buttons across transitions, including drags and modifier chords.
+- [ ] Validate KDE Wayland focus behavior: pointer entry alone does not establish
+  keyboard focus. If activation is unavailable, require a click and make capture
+  state visible. Do not silently change the user's desktop focus policy.
+- [ ] Verify Alt+Tab, Super, Super+Space and remote modifier mapping on the actual
+  target. OS-reserved shortcuts are exceptions; do not promise every key can be
+  intercepted. Existing SDL grab flags alone do not prove compositor acceptance.
+
+Implementation update (2026-09-11): pointer routing and bidirectional Unicode
+text exchange are implemented. PNG images remain the next clipboard phase.
+Next action: native two-device acceptance. Checkpoint: 100 entry/exit cycles,
+held modifiers, dragging across the edge, hide/recall and disconnect, with no stuck
+remote keys or local shortcut activation while capture is effective.
+Automated protocol checks do not establish compositor shortcut interception.
+Reference: [SDL keyboard capture](https://wiki.libsdl.org/SDL2/SDL_SetWindowKeyboardGrab).
 
 ### Remaining daily-development work
 
@@ -513,3 +545,45 @@ step to the normal remote-desktop workflow.
   Seven-language coverage, Linux `nix build`, macOS compilation and signed-bundle
   validation passed. Installed and restarted both clients. Native end-to-end
   desktop/input acceptance remains a manual check.
+
+
+### Clipboard, pointer routing and resident service (2026-09-11)
+
+Reason: daily cross-device development needs shared text and reliable local input
+release; closing a window must not remove an unattended machine's remote access.
+
+- Text clipboard sharing is opt-in on both bound devices in Keyboard & pointer.
+  A separate pinned mutual-TLS session starts only after streaming starts, works
+  without adaptive resolution, and expires on disconnect or a missed lease.
+  Initial contents are not transferred. Host revisions order concurrent copies;
+  a newer local copy during a request stays pending. UTF-8 text is limited to
+  1 MiB; invalid text, files and images are rejected without truncation or logging
+  contents. PNG sharing remains pending. Hidden connected sessions keep sharing.
+- Desktop-mode keyboard routing requires capture enabled, focus, a visible window
+  and a pointer inside the video region (including letterbox boundaries). Exit,
+  focus loss, hide and disconnect release held physical keys and mouse buttons.
+  Ctrl+Alt+Shift+Z releases input; click inside to resume. The title shows routing
+  state. Capture preferences remain respected; compositor-reserved keys still
+  need native validation.
+- Closing the main, viewer or resolution-transition window hides it. The tray
+  recalls the window, disconnects only the viewer, stops local sharing explicitly,
+  or fully exits DeskPort. Ctrl+Alt+Shift+Q disconnects the viewer. Qt background
+  events remain responsive during the non-threaded macOS streaming loop; Linux
+  retains its existing main-thread event pump.
+- Host/helper failures retry after cleanup at 5/10/20/40/60-second intervals;
+  a stable minute resets the delay. Explicit stop cancels recovery and survives
+  application restart. Credentials and independent services remain untouched.
+- Login startup now supervises the actual process: macOS LaunchAgent with
+  unsuccessful-exit recovery; Linux XDG login entry starts a systemd user service
+  with on-failure recovery and process-group cleanup. Successful tray exit does
+  not respawn. New setup enables login startup; saved opt-outs stay respected.
+  Existing enabled startup files refresh on launch. Service registration applies
+  at the next GUI login; this is not pre-login/FileVault-unlock access.
+- Validation: Mac/Linux builds, 100 per-direction text exchanges, SDL clipboard
+  integration, service recovery, existing binding/lifecycle and UI regressions
+  passed. See `docs/INPUT_SERVICE_ACCEPTANCE.md`. Do not mark native keyboard,
+  real clipboard permissions or unattended reboot acceptance as complete from
+  protocol tests or builds. Both installed applications were subsequently updated
+  and restarted; macOS 0.1.1 reports sharing enabled and the bound Linux peer online, and Linux
+  remains active under its user service. See the installation follow-up in
+  `docs/INPUT_SERVICE_ACCEPTANCE.md`.

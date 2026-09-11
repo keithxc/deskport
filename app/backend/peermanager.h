@@ -59,6 +59,7 @@ private:
     QJsonObject m_Peers;
     Link* m_Link = nullptr;
     Link* m_DisplayLink = nullptr;
+    Link* m_ClipboardLink = nullptr;
     bool m_Healthy = false;
     bool m_TrustInFlight = false;
 };

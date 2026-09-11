@@ -1,3 +1,7 @@
+SOURCES += streaming/clipboardsync.cpp
+HEADERS += streaming/clipboardsync.h
+SOURCES += backend/clipboardchannel.cpp
+HEADERS += backend/serviceconfig.h backend/clipboardchannel.h backend/clipboardprotocol.h
 QT += core quick network quickcontrols2 svg widgets
 SOURCES += backend/hostmanager.cpp backend/peermanager.cpp
 HEADERS += backend/hostmanager.h backend/hostports.h backend/peermanager.h backend/peerstore.h

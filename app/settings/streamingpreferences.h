@@ -118,6 +118,7 @@ public:
     Q_PROPERTY(bool enableMdns MEMBER enableMdns NOTIFY enableMdnsChanged)
     Q_PROPERTY(bool quitAppAfter MEMBER quitAppAfter NOTIFY quitAppAfterChanged)
     Q_PROPERTY(bool absoluteMouseMode MEMBER absoluteMouseMode NOTIFY absoluteMouseModeChanged)
+    Q_PROPERTY(bool sharedClipboard MEMBER sharedClipboard NOTIFY sharedClipboardChanged)
     Q_PROPERTY(bool showLocalCursor MEMBER showLocalCursor NOTIFY showLocalCursorChanged)
     Q_PROPERTY(bool absoluteTouchMode MEMBER absoluteTouchMode NOTIFY absoluteTouchModeChanged)
     Q_PROPERTY(bool framePacing MEMBER framePacing NOTIFY framePacingChanged)
@@ -159,6 +160,7 @@ public:
     bool enableMdns;
     bool quitAppAfter;
     bool absoluteMouseMode;
+    bool sharedClipboard;
     bool showLocalCursor;
     bool absoluteTouchMode;
     bool framePacing;
@@ -198,6 +200,7 @@ signals:
     void enableMdnsChanged();
     void quitAppAfterChanged();
     void absoluteMouseModeChanged();
+    void sharedClipboardChanged();
     void showLocalCursorChanged();
     void absoluteTouchModeChanged();
     void audioConfigChanged();

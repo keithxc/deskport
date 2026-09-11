@@ -19,7 +19,8 @@ See the [release notes](docs/RELEASE_0.1.1.md),
 [architecture](docs/ARCHITECTURE.md) and
 [macOS installation guide](docs/MACOS_PACKAGE.md).
 Persistent hide/show without reconnecting, automatic physical-display topology
-management, shared clipboard and Windows packaging remain unfinished.
+management, image clipboard sharing and Windows packaging remain unfinished.
+Bidirectional text sharing is available between opted-in bound DeskPort devices.
 
 ## Build and run on Linux
 
@@ -115,3 +116,21 @@ Separately installed Sunshine services are kept independent.
 GPL-3.0-or-later; see [LICENSE](LICENSE), retained source notices and each
 submodule's license. Original documentation is preserved in
 [README.upstream.md](README.upstream.md).
+
+
+### Daily desktop controls
+
+Closing a window keeps DeskPort running in the tray/menu bar. Use **Open DeskPort**
+to recall it, **Disconnect viewer** to end only the current connection, or
+**Quit DeskPort** to exit the service. Local sharing continues when a viewer closes.
+
+In **Settings → Keyboard & pointer**, enable plain-text clipboard sharing on both
+bound devices and reconnect. Only new copies are shared, up to 1 MiB; images and
+files are not transferred. In desktop pointer mode, keyboard routing follows the
+pointer inside the focused video. **Ctrl+Alt+Shift+Z** releases input;
+**Ctrl+Alt+Shift+Q** disconnects the viewer. Click inside to regain input after
+explicit release. OS-reserved shortcuts depend on the desktop compositor.
+
+Login startup and recovery require an active graphical login session. See
+[acceptance checks and limitations](docs/INPUT_SERVICE_ACCEPTANCE.md) before relying
+on a computer for unattended access.

@@ -7,8 +7,8 @@ import subprocess
 import sys
 import tempfile
 
-if sys.platform != "darwin" and "--ui" not in sys.argv:
-    raise SystemExit("Host lifecycle tests require macOS; --ui also supports Linux.")
+if sys.platform != "darwin" and "--ui" not in sys.argv and "--clipboard" not in sys.argv and "--service" not in sys.argv:
+    raise SystemExit("Full helper lifecycle tests require macOS; --ui, --clipboard and --service also support Linux.")
 root = Path(__file__).resolve().parents[1]
 qmake = os.environ.get("DESKPORT_QMAKE", "qmake")
 with tempfile.TemporaryDirectory(prefix="deskport-lifecycle-") as temporary:
@@ -45,6 +45,9 @@ if "--creds" in sys.argv:
     time.sleep(10 if mode == "auth-slow" else 0.4)
     sys.exit(0)
 if mode == "host-fail": sys.exit(7)
+if mode == "host-crash-once" and not (state / "crashed-once").exists():
+    (state / "crashed-once").touch()
+    sys.exit(7)
 if mode == "stubborn": signal.signal(signal.SIGTERM, signal.SIG_IGN)
 (state / "host-started").touch()
 while True: time.sleep(1)
@@ -59,10 +62,12 @@ while True: time.sleep(1)
         f'<file alias="{name}">{root}/app/res/{name}</file>' for name in icons) + '</qresource></RCC>')
     for executable in (display, host):
         executable.chmod(0o700)
-    binding = "--binding" in sys.argv or "--ui" in sys.argv
+    binding = "--binding" in sys.argv or "--ui" in sys.argv or "--clipboard" in sys.argv
     extra_sources = f'"{root}/app/backend/peermanager.cpp" "{root}/app/backend/adaptivedisplay.cpp"' if binding else ""
     extra_headers = f'"{root}/app/backend/peermanager.h"' if binding else ""
-    suite = "ui-pages" if "--ui" in sys.argv else "peer-binding" if binding else "host-lifecycle"
+    if "--clipboard" in sys.argv:
+        extra_sources += f' "{root}/app/backend/clipboardchannel.cpp" "{root}/app/streaming/clipboardsync.cpp"'
+    suite = "service" if "--service" in sys.argv else "clipboard" if "--clipboard" in sys.argv else "ui-pages" if "--ui" in sys.argv else "peer-binding" if binding else "host-lifecycle"
     project = work / "tests.pro"
     project.write_text(f'''QT += core gui widgets network testlib qml quick quickcontrols2
 CONFIG += console c++17 testcase
@@ -71,13 +76,20 @@ TARGET = host-lifecycle-tests
 DESTDIR = "{macos}"
 SOURCES += "{root}/tests/{suite}.cpp" "{root}/app/backend/hostmanager.cpp" "{root}/app/backend/nvaddress.cpp" {extra_sources}
 HEADERS += "{root}/app/backend/hostmanager.h" {extra_headers}
-INCLUDEPATH += "{root}/app/backend"
+INCLUDEPATH += "{root}/app/backend" "{root}/app"
 RESOURCES += "{work}/test-resources.qrc"
 macx {{
     OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm"
     LIBS += -framework CoreGraphics -framework AVFoundation -framework ApplicationServices
 }}
 ''')
+    if "--clipboard" in sys.argv:
+        with project.open("a") as f:
+            if sys.platform == "darwin":
+                sdl = root / "libs/mac/Frameworks"
+                f.write(f'\nQMAKE_CXXFLAGS += -F"{sdl}"\nINCLUDEPATH += "{sdl}/SDL2.framework/Versions/A/Headers"\nLIBS += -F"{sdl}" -framework SDL2\nQMAKE_RPATHDIR += "{sdl}"\n')
+            else:
+                f.write('\nCONFIG += link_pkgconfig\nPKGCONFIG += sdl2\n')
     environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_CONTROLS_STYLE="Material")
     if binding:
         environment["TEST_GUI_DIR"] = str(root / "app/gui")

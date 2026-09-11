@@ -1,6 +1,7 @@
 #include "hostmanager.h"
 #include "workspaceresolution.h"
 #include "peerstore.h"
+#include "serviceconfig.h"
 #include <QElapsedTimer>
 #include <algorithm>
 #include <limits>
@@ -34,6 +35,12 @@
 
 HostManager::HostManager(QObject *parent, const QString &directory) : QObject(parent) {
     m_Isolated = !directory.isEmpty();
+    m_RecoveryTimer.setSingleShot(true);
+    connect(&m_RecoveryTimer, &QTimer::timeout, this, [this] {
+        if (!m_DesiredSharing || m_ShuttingDown || running()) return;
+        start(m_RequestedWidth, m_RequestedHeight);
+        if (!running()) scheduleRecovery();
+    });
     if (!m_Isolated) {
         const int savedPort = QSettings().value("host/port", DeskPortNetwork::DefaultBasePort).toInt();
         if (DeskPortNetwork::isPrivateBase(savedPort)) m_BasePort = savedPort;
@@ -74,6 +81,9 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         if (!m_Isolated) QSettings().setValue("host/port", m_BasePort);
         setStatus(tr("Sharing has started. Connect from an approved device to check picture, sound and control."));
         const auto generation = m_Generation;
+        QTimer::singleShot(60000, this, [this, generation] {
+            if (generation == m_Generation && m_Server.state() == QProcess::Running) m_RecoveryAttempt = 0;
+        });
         QTimer::singleShot(3000, this, [this, generation] {
             if (generation != m_Generation || m_Server.state() != QProcess::Running) return;
             QFile log(m_Directory + "/host.log");
@@ -125,17 +135,18 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     connect(&m_Tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
         if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) emit openRequested();
     });
+    connect(menu->addAction(tr("Disconnect viewer")), &QAction::triggered, this, &HostManager::disconnectRequested);
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
-    connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, [] { qApp->quit(); });
+    connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, &HostManager::requestExit);
     m_Tray.setContextMenu(menu);
     updateTrayIcon();
-#ifndef Q_OS_MACOS
     qApp->installEventFilter(this);
-#endif
     m_Tray.setToolTip("DeskPort");
-    if (available() && !m_Isolated) m_Tray.show();
-    connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { beginStop(tr("Sharing is off")); });
-    if (directory.isEmpty() && available() && (loginStart() || QSettings().value("host/shareOnLaunch", false).toBool()) &&
+    if (!m_Isolated) m_Tray.show();
+    connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { m_ShuttingDown = true; m_RecoveryTimer.stop(); beginStop(tr("Sharing is off")); });
+    if (directory.isEmpty() && setupComplete() && !QSettings().contains("host/startAtLogin")) setLoginStart(true);
+    if (directory.isEmpty() && loginStart()) setLoginStart(true); // Refresh installed paths and older startup entries.
+    if (directory.isEmpty() && available() && ((loginStart() && !QSettings().value("host/sharingDisabled", false).toBool()) || QSettings().value("host/shareOnLaunch", false).toBool()) &&
             !QCoreApplication::arguments().contains("--no-host-autostart")) {
         QTimer::singleShot(0, this, [this] {
             QSettings settings;
@@ -155,11 +166,26 @@ void HostManager::updateTrayIcon() {
 #endif
     m_Tray.setIcon(icon);
 }
+void HostManager::requestExit() {
+    if (m_ExitRequested) return;
+    m_ExitRequested = true;
+    emit exitRequested();
+}
+void HostManager::scheduleRecovery() {
+    if (!m_DesiredSharing || m_ShuttingDown || m_RecoveryTimer.isActive()) return;
+    const int delay = qMin(60, 5 * (1 << qMin(m_RecoveryAttempt++, 4)));
+    m_RecoveryTimer.start(delay * 1000);
+    setStatus(m_StopStatus + tr(" Retrying automatically in %1 seconds.").arg(delay));
+}
 bool HostManager::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == qApp && event->type() == QEvent::Quit && m_Resident && !m_ExitRequested && !qApp->isSavingSession()) {
+        emit hideRequested(); return true;
+    }
     if (watched == qApp && event->type() == QEvent::ApplicationPaletteChange) updateTrayIcon();
     return QObject::eventFilter(watched, event);
 }
 HostManager::~HostManager() {
+    m_ShuttingDown = true; m_RecoveryTimer.stop();
     // The event loop may already be gone during application shutdown. Normal UI
     // stops are asynchronous; only destruction waits for our own child processes.
     beginStop(tr("Sharing is off"));
@@ -200,6 +226,9 @@ void HostManager::start(int width, int height) {
     if (width < 640 || width > 3840 || height < 360 || height > 2160 || width % 2 || height % 2) {
         setStatus(tr("Unsupported display size")); return;
     }
+    m_DesiredSharing = true;
+    m_RequestedWidth = width; m_RequestedHeight = height;
+    m_RecoveryTimer.stop();
     if (!QDir().mkpath(m_Directory + "/credentials")) {
         setStatus(tr("Cannot create host state directory")); return;
     }
@@ -232,6 +261,7 @@ void HostManager::start(int width, int height) {
         QSettings settings;
         settings.setValue("host/width", width); settings.setValue("host/height", height);
         settings.setValue("host/shareOnLaunch", true);
+        settings.setValue("host/sharingDisabled", false);
     }
     m_Buffer.clear(); m_Starting = true; m_ServerRequested = false;
     const auto generation = ++m_Generation;
@@ -291,7 +321,11 @@ void HostManager::startServer(int displayId) {
     });
 }
 void HostManager::stop() {
-    if (!m_Isolated) QSettings().setValue("host/shareOnLaunch", false);
+    m_DesiredSharing = false; m_RecoveryTimer.stop(); m_RecoveryAttempt = 0;
+    if (!m_Isolated) {
+        QSettings().setValue("host/shareOnLaunch", false);
+        QSettings().setValue("host/sharingDisabled", true);
+    }
     beginStop(available() ? tr("Sharing is off") : tr("Hosting is available in the macOS all-in-one package"));
 }
 void HostManager::beginStop(const QString &status) {
@@ -335,6 +369,7 @@ void HostManager::finishStop() {
         m_HostLock.reset();
         m_Stopping = false;
         setStatus(m_StopStatus);
+        scheduleRecovery();
     });
 }
 void HostManager::pair(const QString &pin, const QString &name) {
@@ -391,7 +426,11 @@ QUrl HostManager::applicationUrl() const {
 #endif
 }
 bool HostManager::setupComplete() const { return QSettings().value("setup/completed", false).toBool(); }
-void HostManager::completeSetup() { QSettings().setValue("setup/completed", true); emit permissionsChanged(); }
+void HostManager::completeSetup() {
+    QSettings().setValue("setup/completed", true);
+    if (!m_Isolated && !QSettings().contains("host/startAtLogin")) setLoginStart(true);
+    emit permissionsChanged();
+}
 void HostManager::refreshPermissions() { emit permissionsChanged(); }
 QVariantList HostManager::permissions() const {
     QVariantList result;
@@ -445,11 +484,7 @@ void HostManager::setLoginStart(bool enabled) {
         QDir().mkpath(QFileInfo(path).absolutePath());
         QSaveFile file(path);
         if (!file.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot install login startup")); return; }
-        file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><plist version=\"1.0\"><dict>"
-                   "<key>Label</key><string>io.github.keithxc.DeskPort</string>"
-                   "<key>ProgramArguments</key><array><string>/usr/bin/open</string><string>-gj</string>"
-                   "<string>/Applications/DeskPort.app</string></array><key>RunAtLoad</key><true/>"
-                   "<key>LimitLoadToSessionType</key><string>Aqua</string></dict></plist>");
+        file.write(DeskPortService::launchAgent().toUtf8());
         if (!file.commit()) { setStatus(tr("Cannot save login startup")); return; }
     } else if (QFile::exists(path) && !QFile::remove(path)) {
         setStatus(tr("Cannot remove login startup")); return;
@@ -460,15 +495,21 @@ void HostManager::setLoginStart(bool enabled) {
     const QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/autostart/io.github.keithxc.DeskPort.desktop";
     if (enabled) {
         QDir().mkpath(QFileInfo(path).absolutePath());
-        QString executable = QCoreApplication::applicationDirPath() + "/deskport";
-        executable.replace("\\", "\\\\").replace("\"", "\\\"").replace("`", "\\`").replace("$", "\\$");
+        const QString executable = QCoreApplication::applicationDirPath() + "/deskport";
+        const QString unitPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/systemd/user/io.github.keithxc.DeskPort.service";
+        QDir().mkpath(QFileInfo(unitPath).absolutePath());
+        QSaveFile unit(unitPath);
+        if (!unit.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot install login startup")); return; }
+        unit.write(DeskPortService::systemdUnit(executable).toUtf8());
+        if (!unit.commit()) { setStatus(tr("Cannot save login startup")); return; }
         QSaveFile file(path);
         if (!file.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot install login startup")); return; }
-        file.write(QString("[Desktop Entry]\nType=Application\nName=DeskPort\nExec=\"%1\"\nTerminal=false\n").arg(executable).toUtf8());
+        file.write(DeskPortService::desktopEntry().toUtf8());
         if (!file.commit()) { setStatus(tr("Cannot save login startup")); return; }
     } else if (QFile::exists(path) && !QFile::remove(path)) {
         setStatus(tr("Cannot remove login startup")); return;
     }
+    QProcess::startDetached("systemctl", {"--user", "daemon-reload"});
     QSettings().setValue("host/startAtLogin", enabled); emit changed();
 #else
     Q_UNUSED(enabled);

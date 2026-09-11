@@ -17,7 +17,7 @@ class SingleInstance {
 public:
     std::function<void()> activate;
     bool delivered = false;
-    bool start(const QString& directory = QString()) {
+    bool start(const QString& directory = QString(), bool requestActivation = true) {
         const auto path = directory.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) : directory;
         if (!QDir().mkpath(path)) return false;
         const auto name = "deskport-" + QString::fromLatin1(QCryptographicHash::hash(QDir(path).absolutePath().toUtf8(), QCryptographicHash::Sha256).toHex().left(32));
@@ -28,7 +28,7 @@ public:
                 QLocalSocket socket;
                 socket.connectToServer(name);
                 if (socket.waitForConnected(50)) {
-                    socket.write("activate\n");
+                    socket.write(requestActivation ? "activate\n" : "ping\n");
                     delivered = socket.waitForBytesWritten(500);
                     return false;
                 }

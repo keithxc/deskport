@@ -1571,6 +1571,18 @@
         <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
         <translation>Verwendet das integrierte virtuelle Display eines verbundenen Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
     </message>
+    <message>
+        <source>Share plain text clipboard during a session</source>
+        <translation>Textzwischenablage während einer Sitzung teilen</translation>
+    </message>
+    <message>
+        <source>Enable on both paired devices, then reconnect. New copies only; up to 1 MiB. Images and files are not shared.</source>
+        <translation>Auf beiden gekoppelten Geräten aktivieren und neu verbinden. Nur neue Kopien, bis 1 MiB. Bilder und Dateien werden nicht geteilt.</translation>
+    </message>
+    <message>
+        <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
+        <translation>Die Tastatur folgt dem Zeiger im fokussierten Bild. Beim Verlassen werden Tasten losgelassen. Zum Fokussieren klicken; reservierte Systemkürzel können lokal bleiben.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1988,6 +2000,22 @@
     <message>
         <source>Remote control requires access to the system input device.</source>
         <translation>Fernsteuerung erfordert Zugriff auf das Systemeingabegerät.</translation>
+    </message>
+    <message>
+        <source>Open DeskPort</source>
+        <translation>DeskPort öffnen</translation>
+    </message>
+    <message>
+        <source>Quit DeskPort</source>
+        <translation>DeskPort beenden</translation>
+    </message>
+    <message>
+        <source>Disconnect viewer</source>
+        <translation>Viewer trennen</translation>
+    </message>
+    <message>
+        <source> Retrying automatically in %1 seconds.</source>
+        <translation> Automatischer Wiederholungsversuch in %1 Sekunden.</translation>
     </message>
 </context>
 <context>

@@ -13,6 +13,10 @@ private slots:
         QCoreApplication::setOrganizationName("DeskPortTest");
         QCoreApplication::setApplicationName("DesktopState");
         auto prefs = StreamingPreferences::get();
+        QVERIFY(!prefs->sharedClipboard);
+        prefs->sharedClipboard = true;
+        prefs->save(); prefs->reload();
+        QVERIFY(prefs->sharedClipboard);
         QVERIFY(prefs->playAudioOnHost);
         prefs->playAudioOnHost = false;
         prefs->save(); prefs->reload();

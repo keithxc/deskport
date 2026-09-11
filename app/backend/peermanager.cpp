@@ -1,5 +1,10 @@
 #include "peermanager.h"
 #include "peerstore.h"
+#include "clipboardprotocol.h"
+#include <QGuiApplication>
+#include <QClipboard>
+#include <QMimeData>
+#include <QSettings>
 #include "nvaddress.h"
 #include "localhostfilter.h"
 #include <QSslSocket>
@@ -49,6 +54,11 @@ struct PeerManager::Link : QObject {
     QJsonObject peer;
     QString transaction, fingerprint, requestedAddress;
     bool incoming = false, requested = false, accepted = false;
+    bool clipboardControl = false;
+    QString clipboardText;
+    bool clipboardSupported = false;
+    int clipboardRevision = 0, clipboardSequence = 0;
+    qint64 lastClipboardRequest = 0;
     bool displayControl = false;
     int displaySequence = 0;
     qint64 lastDisplayRequest = 0;
@@ -93,6 +103,11 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
             QDateTime::currentMSecsSinceEpoch() - m_DisplayLink->lastDisplayRequest > 20000))
             fail(m_DisplayLink, tr("Display controller disconnected"));
     });
+    connect(watchdog, &QTimer::timeout, this, [this] {
+        if (m_ClipboardLink && (!m_Host->running() || !QSettings().value("sharedClipboard", false).toBool() ||
+            QDateTime::currentMSecsSinceEpoch() - m_ClipboardLink->lastClipboardRequest > 10000))
+            fail(m_ClipboardLink, tr("Clipboard session ended"));
+    });
     watchdog->start(2000);
     auto server = static_cast<Listener*>(m_Server);
     server->setProxy(QNetworkProxy::NoProxy);
@@ -135,6 +150,7 @@ QJsonObject PeerManager::metadata() const {
     meta["name"] = QHostInfo::localHostName().left(64);
     meta["dnsName"] = dnsName(QHostInfo::localHostName());
     meta["version"] = 1;
+    meta["clipboard"] = 1;
     meta["adaptiveDisplay"] = m_Host->adaptiveDisplayAvailable() ? 1 : 0;
     meta["bindingPort"] = int(m_Server->serverPort());
     return meta;
@@ -186,16 +202,16 @@ void PeerManager::attach(Link* link) {
         if (!link->ended) fail(link, tr("Binding connection failed: %1").arg(link->socket->errorString()));
     });
     QTimer::singleShot(10000, link, [this, link] {
-        if (!link->ended && !link->displayControl && link->peer.isEmpty()) fail(link, tr("Binding handshake timed out"));
+        if (!link->ended && !link->displayControl && !link->clipboardControl && link->peer.isEmpty()) fail(link, tr("Binding handshake timed out"));
     });
     QTimer::singleShot(120000, link, [this, link] {
-        if (!link->ended && !link->displayControl) fail(link, tr("Binding request expired. No new request will be accepted automatically."));
+        if (!link->ended && !link->displayControl && !link->clipboardControl) fail(link, tr("Binding request expired. No new request will be accepted automatically."));
     });
 }
 void PeerManager::drain(Link* link) {
         if (link->ended || !link->socket->isEncrypted()) return;
         link->buffer += link->socket->readAll();
-        if (link->buffer.size() > MaxFrame) { fail(link, tr("Binding message too large")); return; }
+        if (link->buffer.size() > (link->clipboardControl ? DeskPortClipboard::MaxFrame : MaxFrame)) { fail(link, tr("Binding message too large")); return; }
         while (!link->ended && link->buffer.contains('\n')) {
             const int end = link->buffer.indexOf('\n');
             QJsonParseError error;
@@ -253,13 +269,65 @@ bool PeerManager::acceptMetadata(Link* link, const QJsonObject& metadata) {
 }
 void PeerManager::send(Link* link, const QJsonObject& message) {
     if (!link->ended) {
-        qInfo() << "Binding: sending" << message["type"].toString();
+        if (link->socket->bytesToWrite() > DeskPortClipboard::MaxFrame) {
+            fail(link, tr("Control connection is not consuming messages")); return;
+        }
+        if (!message["type"].toString().startsWith("clipboard-"))
+            qInfo() << "Binding: sending" << message["type"].toString();
         link->socket->write(QJsonDocument(message).toJson(QJsonDocument::Compact) + '\n');
     }
 }
 void PeerManager::receive(Link* link, const QJsonObject& message) {
     const QString type = message["type"].toString();
-    qInfo() << "Binding: received" << type;
+    if (!type.startsWith("clipboard-")) qInfo() << "Binding: received" << type;
+    if (type == "clipboard-start" || type == "clipboard-poll") {
+        const auto peer = m_Peers[link->fingerprint].toObject();
+        if (!link->incoming || link->requested || link->displayControl || !peer["ready"].toBool() ||
+            !peer["granted"].toBool() || !m_Host->running() || !QSettings().value("sharedClipboard", false).toBool() ||
+            (m_ClipboardLink && m_ClipboardLink != link)) {
+            fail(link, tr("Clipboard sharing requires an enabled host and an approved exclusive session")); return;
+        }
+        auto clipboard = QGuiApplication::clipboard();
+        auto mime = clipboard->mimeData(QClipboard::Clipboard);
+        QString encoded;
+        const bool supported = mime && mime->hasText() && !mime->hasUrls() &&
+            DeskPortClipboard::encode(mime->text(), encoded);
+        const QString current = supported ? mime->text() : QString();
+        if (type == "clipboard-start") {
+            if (link->clipboardControl) { fail(link, tr("Clipboard session already started")); return; }
+            link->clipboardControl = true; m_ClipboardLink = link;
+            if (m_Link == link) m_Link = nullptr;
+            link->socket->setReadBufferSize(DeskPortClipboard::MaxFrame + 1);
+            link->clipboardText = current; link->clipboardSupported = supported;
+            link->lastClipboardRequest = QDateTime::currentMSecsSinceEpoch();
+            send(link, {{"type", "clipboard-ready"}}); emit changed(); return;
+        }
+        if (!link->clipboardControl || message["seq"].toInt() != link->clipboardSequence + 1 ||
+            message["rev"].toInt(-1) < 0 || message["rev"].toInt() > link->clipboardRevision) {
+            fail(link, tr("Invalid clipboard sequence")); return;
+        }
+        link->lastClipboardRequest = QDateTime::currentMSecsSinceEpoch();
+        ++link->clipboardSequence;
+        if (current != link->clipboardText || supported != link->clipboardSupported) {
+            link->clipboardText = current; link->clipboardSupported = supported; ++link->clipboardRevision;
+        }
+        QJsonObject reply{{"type", "clipboard-result"}, {"seq", link->clipboardSequence}};
+        // Host revision is authoritative: an intervening host copy wins a concurrent copy.
+        if (message["rev"].toInt() != link->clipboardRevision) {
+            if (supported) reply["text"] = encoded;
+            else reply["error"] = "Clipboard content is unsupported or exceeds the 1 MiB text limit.";
+        } else if (message.contains("text")) {
+            QString text;
+            if (!DeskPortClipboard::decode(message["text"], text)) {
+                fail(link, tr("Invalid or oversized clipboard text")); return;
+            }
+            clipboard->setText(text, QClipboard::Clipboard);
+            link->clipboardText = text; link->clipboardSupported = true; ++link->clipboardRevision;
+        }
+        reply["rev"] = link->clipboardRevision;
+        send(link, reply); return;
+    }
+    if (link->clipboardControl) { fail(link, tr("Unexpected clipboard message")); return; }
     if (type == "display-resize" || type == "display-ping") {
         const auto peer = m_Peers[link->fingerprint].toObject();
         if (!link->incoming || link->requested || !peer["ready"].toBool() || !peer["granted"].toBool() ||
@@ -362,6 +430,7 @@ void PeerManager::fail(Link* link, const QString& message) {
     if (link->ended) return;
     qWarning() << "Binding:" << message;
     link->ended = true;
+    if (m_ClipboardLink == link) m_ClipboardLink = nullptr;
     if (m_DisplayLink == link) { m_DisplayLink = nullptr; m_Host->restoreDisplay(); }
     if (m_Link == link) m_Link = nullptr;
     m_Status = message; connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);
@@ -377,7 +446,7 @@ bool PeerManager::editPeer(const QString& fp, const QString& nameValue,
     auto reject = [this](const QString& message) {
         m_Status = message; emit changed(); return false;
     };
-    if (busy() || m_DisplayLink) return reject(tr("Finish the current connection before editing this device."));
+    if (busy() || m_DisplayLink || m_ClipboardLink) return reject(tr("Finish the current connection before editing this device."));
     if (!m_Peers.contains(fp)) return reject(tr("This saved device no longer exists."));
     const auto name = nameValue.trimmed();
     QString address = addressValue.trimmed();
@@ -403,6 +472,7 @@ bool PeerManager::editPeer(const QString& fp, const QString& nameValue,
 }
 void PeerManager::revoke(const QString& fp) {
     if (busy() || !m_Peers.contains(fp)) return;
+    if (m_ClipboardLink && m_ClipboardLink->fingerprint == fp) fail(m_ClipboardLink, tr("Device access removed"));
     if (m_DisplayLink && m_DisplayLink->fingerprint == fp) fail(m_DisplayLink, tr("Device access removed"));
     m_Revoking = fp; m_TrustInFlight = true;
     m_Host->updatePeerTrust(trustId(fp), QString(), QSslCertificate(), true);

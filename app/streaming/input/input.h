@@ -102,6 +102,9 @@ public:
     void raiseAllKeys();
 
     void notifyMouseLeave();
+    void notifyPointerPosition();
+    bool keyboardRoutingActive();
+    void releaseRemoteInput();
 
     void notifyFocusLost();
 
@@ -183,6 +186,8 @@ private:
     int m_GamepadMask;
     GamepadState m_GamepadState[MAX_GAMEPADS];
     QSet<short> m_KeysDown;
+    QSet<int> m_ButtonsDown;
+    bool m_PointerInside = false;
     bool m_FakeCaptureActive;
     QString m_OldIgnoreDevices;
     QString m_OldIgnoreDevicesExcept;

@@ -1,4 +1,5 @@
 #pragma once
+#include "clipboardsync.h"
 
 #include <QSemaphore>
 #include <QWindow>
@@ -149,6 +150,8 @@ signals:
     void readyForDeletion();
 
 private:
+    std::unique_ptr<ClipboardSync> m_Clipboard;
+    void initializeClipboard();
     std::shared_ptr<AdaptiveDisplay> m_AdaptiveDisplay;
     std::shared_ptr<TransitionWindow> m_TransitionWindow;
     QTimer* m_TransitionTimer = nullptr;

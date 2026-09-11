@@ -22,8 +22,9 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
 
         // Push a quit event to the main loop
         SDL_Event event;
-        event.type = SDL_QUIT;
-        event.quit.timestamp = SDL_GetTicks();
+        event.type = SDL_USEREVENT;
+        event.user.code = DeskPortEndSession;
+        event.user.timestamp = SDL_GetTicks();
         SDL_PushEvent(&event);
         break;
 
@@ -185,6 +186,8 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
             }
         }
     }
+
+    if (!keyboardRoutingActive()) return;
 
     // Set modifier flags
     modifiers = 0;
@@ -426,8 +429,8 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     if (event->state == SDL_PRESSED) {
         m_KeysDown.insert(keyCode);
     }
-    else {
-        m_KeysDown.remove(keyCode);
+    else if (!m_KeysDown.remove(keyCode)) {
+        return; // Already released on exit/focus loss, or pressed locally.
     }
 
     LiSendKeyboardEvent(0x8000 | keyCode,

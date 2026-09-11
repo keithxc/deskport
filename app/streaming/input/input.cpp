@@ -257,30 +257,45 @@ void SdlInputHandler::raiseAllKeys()
                 (int)m_KeysDown.count());
 
     for (auto keyDown : m_KeysDown) {
-        LiSendKeyboardEvent(keyDown, KEY_ACTION_UP, 0);
+        LiSendKeyboardEvent(0x8000 | keyDown, KEY_ACTION_UP, 0);
     }
 
     m_KeysDown.clear();
 }
 
+void SdlInputHandler::releaseRemoteInput()
+{
+    raiseAllKeys();
+    for (int button : m_ButtonsDown) LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, button);
+    m_ButtonsDown.clear();
+    SDL_CaptureMouse(SDL_FALSE);
+    m_PendingMouseButtonsAllUpOnVideoRegionLeave = false;
+}
+
+bool SdlInputHandler::keyboardRoutingActive()
+{
+    const auto flags = SDL_GetWindowFlags(m_Window);
+    return isCaptureActive() && (flags & SDL_WINDOW_INPUT_FOCUS) &&
+        !(flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)) &&
+        (!m_AbsoluteMouseMode || m_PointerInside);
+}
+
+void SdlInputHandler::notifyPointerPosition()
+{
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    const bool inside = (SDL_GetWindowFlags(m_Window) & SDL_WINDOW_MOUSE_FOCUS) && isMouseInVideoRegion(x, y);
+    if (m_PointerInside && !inside && m_AbsoluteMouseMode) releaseRemoteInput();
+    m_PointerInside = inside;
+    updateKeyboardGrabState();
+}
+
 void SdlInputHandler::notifyMouseLeave()
 {
-    // SDL on Windows doesn't send the mouse button up until the mouse re-enters the window
-    // after leaving it. This breaks some of the Aero snap gestures, so we'll capture it to
-    // allow us to receive the mouse button up events later.
-    //
-    // On macOS and X11, capturing the mouse allows us to receive mouse motion outside the
-    // window (button up already worked without capture).
-    if (m_AbsoluteMouseMode && isCaptureActive()) {
-        // NB: Not using SDL_GetGlobalMouseState() because we want our state not the system's
-        Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-        for (Uint32 button = SDL_BUTTON_LEFT; button <= SDL_BUTTON_X2; button++) {
-            if (mouseState & SDL_BUTTON(button)) {
-                SDL_CaptureMouse(SDL_TRUE);
-                break;
-            }
-        }
-    }
+    m_PointerInside = false;
+    if (m_AbsoluteMouseMode) releaseRemoteInput();
+    updateKeyboardGrabState();
+    SDL_ShowCursor(SDL_ENABLE);
 }
 
 void SdlInputHandler::notifyFocusLost()
@@ -301,12 +316,12 @@ void SdlInputHandler::notifyFocusLost()
 
     // Raise all keys that are currently pressed. If we don't do this, certain keys
     // used in shortcuts that cause focus loss (such as Alt+Tab) may get stuck down.
-    raiseAllKeys();
+    releaseRemoteInput();
 }
 
 void SdlInputHandler::notifyFocusGained()
 {
-    updateKeyboardGrabState();
+    notifyPointerPosition();
     if (m_AbsoluteMouseMode && isCaptureActive())
         SDL_ShowCursor(m_MouseCursorCapturedVisibilityState);
 }
@@ -323,17 +338,20 @@ bool SdlInputHandler::isCaptureActive()
 
 void SdlInputHandler::updateKeyboardGrabState()
 {
-    if (m_CaptureSystemKeysMode == StreamingPreferences::CSK_OFF) {
-        return;
-    }
-
     Uint32 windowFlags = SDL_GetWindowFlags(m_Window);
-    bool shouldGrab = isCaptureActive() && (windowFlags & SDL_WINDOW_INPUT_FOCUS) &&
-        !(windowFlags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED));
+    bool shouldGrab = keyboardRoutingActive() && m_CaptureSystemKeysMode != StreamingPreferences::CSK_OFF;
     if (m_CaptureSystemKeysMode == StreamingPreferences::CSK_FULLSCREEN &&
             !(windowFlags & SDL_WINDOW_FULLSCREEN)) {
         // Ungrab if it's fullscreen only and we left fullscreen
         shouldGrab = false;
+    }
+
+    if (m_AbsoluteMouseMode) {
+        const QString title = keyboardRoutingActive()
+            ? (shouldGrab ? QStringLiteral("DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases") : QStringLiteral("DeskPort — Remote typing · system shortcuts local"))
+            : QStringLiteral("DeskPort — Local keyboard · click inside to focus");
+        if (QString::fromUtf8(SDL_GetWindowTitle(m_Window)) != title)
+            SDL_SetWindowTitle(m_Window, title.toUtf8().constData());
     }
 
     // Don't close the window on Alt+F4 when keyboard grab is enabled
@@ -413,6 +431,7 @@ void SdlInputHandler::setCaptureActive(bool active)
         }
     }
     else {
+        releaseRemoteInput();
         if (m_FakeCaptureActive) {
             // Display the cursor again
             SDL_ShowCursor(SDL_ENABLE);
@@ -426,8 +445,8 @@ void SdlInputHandler::setCaptureActive(bool active)
     // Update mouse pointer region constraints
     updatePointerRegionLock();
 
-    // Now update the keyboard grab
-    updateKeyboardGrabState();
+    // Refresh pointer scope after explicit capture or window recreation.
+    notifyPointerPosition();
 }
 
 void SdlInputHandler::handleTouchFingerEvent(SDL_TouchFingerEvent* event)

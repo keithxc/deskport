@@ -1,3 +1,4 @@
+#include <QElapsedTimer>
 #include "session.h"
 #include "backend/peerstore.h"
 #include "backend/sessionwindowstate.h"
@@ -152,8 +153,9 @@ void Session::clConnectionTerminated(int errorCode)
 
     // Push a quit event to the main loop
     SDL_Event event;
-    event.type = SDL_QUIT;
-    event.quit.timestamp = SDL_GetTicks();
+    event.type = SDL_USEREVENT;
+    event.user.code = DeskPortEndSession;
+    event.user.timestamp = SDL_GetTicks();
     SDL_PushEvent(&event);
 }
 
@@ -628,6 +630,25 @@ Session* Session::adaptiveContinuation() {
     next->m_AdaptiveResume = true;
     return next;
 }
+void Session::initializeClipboard() {
+    if (!m_Preferences->sharedClipboard) return;
+    const auto peers = PeerStore::read(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/binding/peers.json")["peers"].toObject();
+    for (const auto& value : peers) {
+        const auto peer = value.toObject();
+        if (peer["hostId"].toString().compare(m_Computer->uuid, Qt::CaseInsensitive) ||
+            !peer["ready"].toBool() || !peer["granted"].toBool()) continue;
+        const QSslCertificate cert(peer["clientCert"].toString().toUtf8());
+        const int port = peer["bindingPort"].toInt();
+        if (cert.isNull() || port < 1 || port > 65535) break;
+        auto identity = IdentityManager::get();
+        m_Clipboard.reset(new ClipboardSync(std::unique_ptr<ClipboardChannel>(new ClipboardChannel(
+            m_Computer->activeAddress.address(), quint16(port), cert, identity->getCertificate(), identity->getPrivateKey()))));
+        return;
+    }
+    m_OverlayManager.updateOverlayText(Overlay::OverlayStatusUpdate, "Clipboard sharing requires a DeskPort device binding.");
+    m_OverlayManager.setOverlayState(Overlay::OverlayStatusUpdate, true);
+}
+
 void Session::initializeAdaptiveDisplay(SDL_Window* window) {
     if (!m_Preferences->adaptiveResolution) return;
     if (!m_AdaptiveDisplay) {
@@ -2204,10 +2225,26 @@ void Session::execInternal()
     // Toggle the stats overlay if requested by the user
     m_OverlayManager.setOverlayState(Overlay::OverlayDebug, m_Preferences->showPerformanceOverlay);
 
-    // Hijack this thread to be the SDL main thread. We have to do this
-    // because we want to suspend all Qt processing until the stream is over.
+    initializeClipboard();
+
+    // SDL owns streaming input, but Qt must continue servicing tray actions,
+    // peer TLS connections, host supervision and single-instance activation.
+    QElapsedTimer serviceEvents; serviceEvents.start();
+    QString clipboardStatus;
     SDL_Event event;
     for (;;) {
+        if (!m_ThreadedExec && serviceEvents.elapsed() >= 20) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
+            serviceEvents.restart();
+        }
+        if (m_Clipboard) {
+            m_Clipboard->tick();
+            if (m_Clipboard->status() != clipboardStatus) {
+                clipboardStatus = m_Clipboard->status();
+                m_OverlayManager.updateOverlayText(Overlay::OverlayStatusUpdate, clipboardStatus.toUtf8().constData());
+                m_OverlayManager.setOverlayState(Overlay::OverlayStatusUpdate, !clipboardStatus.isEmpty());
+            }
+        }
         if (checkAdaptiveResize()) goto DispatchDeferredCleanup;
 #if SDL_VERSION_ATLEAST(2, 0, 18) && !defined(STEAM_LINK)
         // SDL 2.0.18 has a proper wait event implementation that uses platform
@@ -2219,7 +2256,7 @@ void Session::execInternal()
         // NB: This behavior was introduced in SDL 2.0.16, but had a few critical
         // issues that could cause indefinite timeouts, delayed joystick detection,
         // and other problems.
-        if (!SDL_WaitEventTimeout(&event, m_AdaptiveDisplay ? 100 : 1000)) {
+        if (!SDL_WaitEventTimeout(&event, 20)) {
             presence.runCallbacks();
             continue;
         }
@@ -2242,12 +2279,18 @@ void Session::execInternal()
 #endif
         switch (event.type) {
         case SDL_QUIT:
-            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-                        "Quit event received");
-            goto DispatchDeferredCleanup;
+            m_InputHandler->setCaptureActive(false);
+            SDL_HideWindow(m_Window);
+            break;
 
         case SDL_USEREVENT:
             switch (event.user.code) {
+            case DeskPortEndSession:
+                goto DispatchDeferredCleanup;
+            case DeskPortHideWindow:
+                m_InputHandler->setCaptureActive(false);
+                SDL_HideWindow(m_Window);
+                break;
             case DeskPortRecallWindow:
                 recallDesktopWindow(m_Window);
                 break;
@@ -2288,6 +2331,12 @@ void Session::execInternal()
         case SDL_WINDOWEVENT:
             // Early handling of some events
             switch (event.window.event) {
+            case SDL_WINDOWEVENT_CLOSE:
+                m_InputHandler->setCaptureActive(false);
+                SDL_HideWindow(m_Window);
+                break;
+            case SDL_WINDOWEVENT_HIDDEN:
+            case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_FOCUS_LOST:
                 if (m_Preferences->muteOnFocusLoss) {
                     m_AudioMuted = true;
@@ -2299,6 +2348,9 @@ void Session::execInternal()
                 if (m_Preferences->muteOnFocusLoss) {
                     m_AudioMuted = false;
                 }
+                break;
+            case SDL_WINDOWEVENT_ENTER:
+                m_InputHandler->notifyPointerPosition();
                 break;
             case SDL_WINDOWEVENT_LEAVE:
                 m_InputHandler->notifyMouseLeave();
@@ -2488,10 +2540,14 @@ void Session::execInternal()
 
             // After a window resize, we need to reset the pointer lock region
             m_InputHandler->updatePointerRegionLock();
+            m_InputHandler->notifyPointerPosition();
 
             SDL_AtomicUnlock(&m_DecoderLock);
             break;
 
+        case SDL_CLIPBOARDUPDATE:
+            if (m_Clipboard) m_Clipboard->clipboardChanged();
+            break;
         case SDL_KEYUP:
         case SDL_KEYDOWN:
             presence.runCallbacks();
@@ -2547,6 +2603,7 @@ void Session::execInternal()
     }
 
 DispatchDeferredCleanup:
+    m_Clipboard.reset();
     if (!adaptiveRestartPending()) rememberAdaptiveWindow();
     // Uncapture the mouse and hide the window immediately,
     // so we can return to the Qt GUI ASAP.

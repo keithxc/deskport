@@ -603,12 +603,12 @@ int main(int argc, char *argv[])
 #endif
 
     GlobalCommandLineParser parser;
-    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--share"); args.removeAll("--no-host-autostart"); return args; }());
+    GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--background"); args.removeAll("--share"); args.removeAll("--no-host-autostart"); return args; }());
     SingleInstance instance;
     bool pendingActivation = false;
     instance.activate = [&] { pendingActivation = true; };
     if ((commandLineParserResult == GlobalCommandLineParser::NormalStartRequested ||
-         commandLineParserResult == GlobalCommandLineParser::StreamRequested) && !instance.start()) {
+         commandLineParserResult == GlobalCommandLineParser::StreamRequested) && !instance.start(QString(), !app.arguments().contains("--background"))) {
         if (!instance.delivered) qWarning() << "DeskPort is already starting or its activation endpoint is unavailable";
         return instance.delivered ? 0 : 1;
     }
@@ -760,6 +760,30 @@ int main(int argc, char *argv[])
     }
 
     HostManager hostManager;
+    const bool resident = commandLineParserResult == GlobalCommandLineParser::NormalStartRequested;
+    hostManager.setResident(resident);
+    if (resident) app.setQuitOnLastWindowClosed(false);
+    QObject::connect(&hostManager, &HostManager::disconnectRequested, &app, [] {
+        if (Session::get()) {
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
+            SDL_PushEvent(&event);
+        }
+    });
+    QObject::connect(&hostManager, &HostManager::exitRequested, &app, [&] {
+        if (Session::get()) {
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
+            SDL_PushEvent(&event);
+            auto timer = new QTimer(&app);
+            QObject::connect(timer, &QTimer::timeout, &app, [timer, &app] {
+                if (!Session::get()) { timer->stop(); timer->deleteLater(); app.quit(); }
+                else {
+                    SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
+                    SDL_PushEvent(&event); // Also reaches a session crossing an adaptive restart.
+                }
+            });
+            timer->start(100);
+        } else app.quit();
+    });
     PeerManager peerManager(&hostManager, IdentityManager::get()->getCertificate(), IdentityManager::get()->getPrivateKey());
     if (app.arguments().contains("--share")) {
         QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });
@@ -778,10 +802,19 @@ int main(int argc, char *argv[])
             window->raise(); window->requestActivate();
         }
     };
+    QObject::connect(&hostManager, &HostManager::hideRequested, &app, [&] {
+        if (Session::get()) {
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortHideWindow;
+            SDL_PushEvent(&event);
+        } else if (!engine.rootObjects().isEmpty()) {
+            if (auto window = qobject_cast<QWindow*>(engine.rootObjects().first())) window->hide();
+        }
+    });
     instance.activate = recall;
     QObject::connect(&hostManager, &HostManager::openRequested, &app, recall);
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
     engine.rootContext()->setContextProperty("peerManager", &peerManager);
+    engine.rootContext()->setContextProperty("startInBackground", app.arguments().contains("--background"));
     engine.rootContext()->setContextProperty("startSharingPage", app.arguments().contains("--share"));
     QString initialView;
     bool hasGUI = true;

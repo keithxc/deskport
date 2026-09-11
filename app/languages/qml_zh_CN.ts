@@ -1571,6 +1571,18 @@
         <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
         <translation>使用已绑定 Mac 的内置虚拟屏幕。调整窗口后画面会短暂重连，远端应用保持打开。其他主机使用下方分辨率。</translation>
     </message>
+    <message>
+        <source>Share plain text clipboard during a session</source>
+        <translation>会话期间共享纯文本剪贴板</translation>
+    </message>
+    <message>
+        <source>Enable on both paired devices, then reconnect. New copies only; up to 1 MiB. Images and files are not shared.</source>
+        <translation>在已绑定的两台设备上开启后重新连接。仅同步新复制的内容，上限 1 MiB；不共享图片和文件。</translation>
+    </message>
+    <message>
+        <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
+        <translation>鼠标位于已聚焦的远端画面内时接管键盘，离开即释放按键和鼠标按钮。点击画面获取焦点；系统保留快捷键可能仍在本地处理。</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1988,6 +2000,22 @@
     <message>
         <source>Remote control requires access to the system input device.</source>
         <translation>远程控制需要访问系统输入设备。</translation>
+    </message>
+    <message>
+        <source>Open DeskPort</source>
+        <translation>打开 DeskPort</translation>
+    </message>
+    <message>
+        <source>Quit DeskPort</source>
+        <translation>彻底退出 DeskPort</translation>
+    </message>
+    <message>
+        <source>Disconnect viewer</source>
+        <translation>断开查看端</translation>
+    </message>
+    <message>
+        <source> Retrying automatically in %1 seconds.</source>
+        <translation> 将在 %1 秒后自动重试。</translation>
     </message>
 </context>
 <context>

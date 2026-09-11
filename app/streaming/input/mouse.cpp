@@ -8,6 +8,7 @@ void SdlInputHandler::handleMouseButtonEvent(SDL_MouseButtonEvent* event)
 {
     int button;
 
+    if (!(SDL_GetWindowFlags(m_Window) & SDL_WINDOW_INPUT_FOCUS)) return;
     if (event->which == SDL_TOUCH_MOUSEID) {
         // Ignore synthetic mouse events
         return;
@@ -62,6 +63,9 @@ void SdlInputHandler::handleMouseButtonEvent(SDL_MouseButtonEvent* event)
             button = BUTTON_RIGHT;
     }
 
+    if (event->state == SDL_PRESSED) m_ButtonsDown.insert(button);
+    else if (!m_ButtonsDown.remove(button)) return;
+
     LiSendMouseButtonEvent(event->state == SDL_PRESSED ?
                                BUTTON_ACTION_PRESS :
                                BUTTON_ACTION_RELEASE,
@@ -70,6 +74,7 @@ void SdlInputHandler::handleMouseButtonEvent(SDL_MouseButtonEvent* event)
 
 void SdlInputHandler::handleMouseMotionEvent(SDL_MouseMotionEvent* event)
 {
+    notifyPointerPosition();
     if (!isCaptureActive()) {
         // Not capturing
         return;

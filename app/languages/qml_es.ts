@@ -1571,6 +1571,18 @@
         <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
         <translation>Utiliza la pantalla virtual integrada de un Mac vinculado. Al cambiar el tamaño, la imagen se reconecta brevemente y las aplicaciones siguen abiertas. Los demás equipos usan la resolución de abajo.</translation>
     </message>
+    <message>
+        <source>Share plain text clipboard during a session</source>
+        <translation>Compartir el portapapeles de texto durante una sesión</translation>
+    </message>
+    <message>
+        <source>Enable on both paired devices, then reconnect. New copies only; up to 1 MiB. Images and files are not shared.</source>
+        <translation>Actívalo en ambos dispositivos vinculados y vuelve a conectar. Solo copias nuevas, hasta 1 MiB. No se comparten imágenes ni archivos.</translation>
+    </message>
+    <message>
+        <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
+        <translation>El teclado sigue al puntero dentro del vídeo enfocado. Al salir se liberan teclas y botones. Haz clic para enfocar; los atajos reservados del sistema pueden seguir siendo locales.</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1988,6 +2000,22 @@
     <message>
         <source>Remote control requires access to the system input device.</source>
         <translation>El control remoto requiere acceso al dispositivo de entrada del sistema.</translation>
+    </message>
+    <message>
+        <source>Open DeskPort</source>
+        <translation>Abrir DeskPort</translation>
+    </message>
+    <message>
+        <source>Quit DeskPort</source>
+        <translation>Salir de DeskPort</translation>
+    </message>
+    <message>
+        <source>Disconnect viewer</source>
+        <translation>Desconectar el visor</translation>
+    </message>
+    <message>
+        <source> Retrying automatically in %1 seconds.</source>
+        <translation> Se reintentará automáticamente en %1 segundos.</translation>
     </message>
 </context>
 <context>
