@@ -1,0 +1,149 @@
+diff --git a/src/platform/macos/av_video.h b/src/platform/macos/av_video.h
+index 8832f32..59205f6 100644
+--- a/src/platform/macos/av_video.h
++++ b/src/platform/macos/av_video.h
+@@ -87,5 +87,11 @@ typedef bool (^FrameCallbackBlock)(CMSampleBufferRef);
+  * @return Capture status reported to the streaming pipeline.
+  */
+ - (dispatch_semaphore_t)capture:(FrameCallbackBlock)frameCallback;
++/**
++ * @brief Remove a pending capture registered by capture: and restart the session.
++ *
++ * @param signal Semaphore returned by capture:. Unknown signals are ignored.
++ */
++- (void)cancelCapture:(dispatch_semaphore_t)signal;
+ 
+ @end
+diff --git a/src/platform/macos/av_video.m b/src/platform/macos/av_video.m
+index 5ad931c..ddcfc38 100644
+--- a/src/platform/macos/av_video.m
++++ b/src/platform/macos/av_video.m
+@@ -93,6 +93,23 @@
+   }
+ }
+ 
++- (void)cancelCapture:(dispatch_semaphore_t)signal {
++  @synchronized(self) {
++    for (AVCaptureConnection *connection in [[self.captureSignals keyEnumerator] allObjects]) {
++      if ([self.captureSignals objectForKey:connection] != signal) {
++        continue;
++      }
++      [self.session stopRunning];
++      [self.captureCallbacks removeObjectForKey:connection];
++      [self.session removeOutput:[self.videoOutputs objectForKey:connection]];
++      [self.videoOutputs removeObjectForKey:connection];
++      [self.captureSignals removeObjectForKey:connection];
++      [self.session startRunning];
++      break;
++    }
++  }
++}
++
+ - (void)captureOutput:(AVCaptureOutput *)captureOutput
+   didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+          fromConnection:(AVCaptureConnection *)connection {
+diff --git a/src/platform/macos/display.mm b/src/platform/macos/display.mm
+index d5fe3d0..9c446c8 100644
+--- a/src/platform/macos/display.mm
++++ b/src/platform/macos/display.mm
+@@ -6,6 +6,8 @@
+ // standard includes
+ #include <charconv>
+ #include <chrono>
++#include <memory>
++#include <mutex>
+ #include <optional>
+ #include <string_view>
+ 
+@@ -157,36 +159,64 @@ namespace platf {
+         return 1;
+       }
+ 
+-      auto signal = [av_capture capture:^(CMSampleBufferRef sampleBuffer) {
+-        auto new_sample_buffer = std::make_shared<av_sample_buf_t>(sampleBuffer);
+-        auto new_pixel_buffer = std::make_shared<av_pixel_buf_t>(new_sample_buffer->buf);
+-
+-        auto av_img = (av_img_t *) img;
+-
+-        auto old_data_retainer = std::make_shared<temp_retain_av_img_t>(
+-          av_img->sample_buffer,
+-          av_img->pixel_buffer,
+-          img->data
+-        );
+-
+-        av_img->sample_buffer = new_sample_buffer;
+-        av_img->pixel_buffer = new_pixel_buffer;
+-        img->data = new_pixel_buffer->data();
++      // DeskPort: a virtual display can stop delivering frames while its mode
++      // changes. This runs on the HTTPS resume thread, so never wait forever:
++      // restart capture a few times, then fail encoder validation instead.
++      struct pending_t {
++        std::mutex mutex;
++        bool cancelled = false;
++      };
++      for (int attempt = 0; attempt < 3; ++attempt) {
++        auto pending = std::make_shared<pending_t>();
++        auto signal = [av_capture capture:^(CMSampleBufferRef sampleBuffer) {
++          std::lock_guard lock {pending->mutex};
++          if (pending->cancelled) {
++            // dummy_img() already returned; img may no longer exist.
++            return false;
++          }
++
++          auto new_sample_buffer = std::make_shared<av_sample_buf_t>(sampleBuffer);
++          auto new_pixel_buffer = std::make_shared<av_pixel_buf_t>(new_sample_buffer->buf);
++
++          auto av_img = (av_img_t *) img;
++
++          auto old_data_retainer = std::make_shared<temp_retain_av_img_t>(
++            av_img->sample_buffer,
++            av_img->pixel_buffer,
++            img->data
++          );
++
++          av_img->sample_buffer = new_sample_buffer;
++          av_img->pixel_buffer = new_pixel_buffer;
++          img->data = new_pixel_buffer->data();
++
++          img->width = (int) CVPixelBufferGetWidth(new_pixel_buffer->buf);
++          img->height = (int) CVPixelBufferGetHeight(new_pixel_buffer->buf);
++          img->row_pitch = (int) CVPixelBufferGetBytesPerRow(new_pixel_buffer->buf);
++          img->pixel_pitch = img->row_pitch / img->width;
++
++          old_data_retainer = nullptr;
+ 
+-        img->width = (int) CVPixelBufferGetWidth(new_pixel_buffer->buf);
+-        img->height = (int) CVPixelBufferGetHeight(new_pixel_buffer->buf);
+-        img->row_pitch = (int) CVPixelBufferGetBytesPerRow(new_pixel_buffer->buf);
+-        img->pixel_pitch = img->row_pitch / img->width;
+-
+-        old_data_retainer = nullptr;
+-
+-        // returning false here stops capture backend
+-        return false;
+-      }];
++          // returning false here stops capture backend
++          return false;
++        }];
++        if (!signal) {
++          return 1;
++        }
+ 
+-      dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
++        if (dispatch_semaphore_wait(signal, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC)) == 0) {
++          return 0;
++        }
++        {
++          std::lock_guard lock {pending->mutex};
++          pending->cancelled = true;
++        }
++        [av_capture cancelCapture:signal];
++        BOOST_LOG(warning) << "Display "sv << display_id << " delivered no frame within 2 seconds; restarting capture"sv;
++      }
+ 
+-      return 0;
++      BOOST_LOG(error) << "Display "sv << display_id << " delivered no frame; failing encoder validation"sv;
++      return 1;
+     }
+ 
+     /**

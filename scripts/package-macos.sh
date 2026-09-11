@@ -91,7 +91,7 @@ hdiutil detach "$mount"
 rmdir "$mount"
 python3 scripts/fix-macos-dependencies.py "$host_app"
 find "$host_app/Contents/Frameworks" -type f -name '*.dylib' -exec codesign --force --sign - {} \;
-cp host/macos/patches/libvirtualhid-target-display.patch "$host_app/Contents/Resources/"
+cp host/macos/patches/libvirtualhid-target-display.patch host/macos/patches/sunshine-capture-timeout.patch "$host_app/Contents/Resources/"
 cp scripts/build-macos-host.sh "$host_app/Contents/Resources/"
 codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none --options runtime \
     --entitlements host/macos/entitlements.plist "$host_app"

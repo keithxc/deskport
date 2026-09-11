@@ -20,6 +20,13 @@ if git -C "$hid" apply --check "$patch"; then
 else
     git -C "$hid" apply --reverse --check "$patch"
 fi
+# Bound the first-frame wait so a silent virtual display cannot hang /resume.
+capture_patch="$repo/host/macos/patches/sunshine-capture-timeout.patch"
+if git -C "$source_dir" apply --check "$capture_patch"; then
+    git -C "$source_dir" apply "$capture_patch"
+else
+    git -C "$source_dir" apply --reverse --check "$capture_patch"
+fi
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 pc="$repo/build-macos.noindex/host-pkgconfig"
 mkdir -p "$pc"

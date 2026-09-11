@@ -27,8 +27,9 @@ the root window.
 Deployment correction: an interim macOS install was ad-hoc signed, and the
 independent Sunshine agent was removed while diagnosing an offline peer. Both
 were reverted. The package was rebuilt in the Aqua session with the stable
-identity, strictly verified and installed; the previous bundle is kept under
-`dist/installed-backups/claude-20260911-1721`. The tray recall item now uses the
+identity, strictly verified and installed. That interim backup was removed in the
+2026-09-11 `dist` cleanup; the current rollback bundle is
+`dist/backup-20260911-225113/DeskPort.app` (0.1.1). The tray recall item now uses the
 translated "Return to remote desktop" label.
 
 Reason: a retained remote window had no discoverable route back to the device
@@ -294,6 +295,22 @@ connect session signals once, so a control-center round trip no longer repeats
 termination handling. Verified: SIGTERM exit in an isolated profile. Pending:
 real suspend/hibernate and resume on the KDE client; automatic reconnection after
 resume is not implemented.
+
+Host resume hang (2026-09-11): Sunshine's macOS `dummy_img()` waited forever for
+a first frame. A resume racing the idle-mode restore of the virtual display left
+the single HTTPS thread blocked and the host unreachable until Sunshine was
+restarted. `host/macos/patches/sunshine-capture-timeout.patch` bounds the wait to
+three 2-second capture restarts, then fails encoder validation so /resume returns
+an error. The streaming `capture()` loop still waits without a timeout (upstream
+FIXME). Verified: patched host builds and packages; live race not yet reproduced.
+
+Adaptive resize latency (2026-09-11): a measured resize took about 7.5 s from
+restart to the resume request. Adaptive continuations now skip the 3.5 s launch
+warning toast wait and the 1.5 s segue delay before connecting. Remaining work:
+reuse the chosen decoder instead of re-probing, show the scaled previous frame
+during transition, and eventually change resolution in-band at an IDR without
+restarting the stream (as RDP 8.1 dynamic resolution does). Rate-limit layout
+updates and wait for each transition to finish before sending another.
 
 ## Then: daily development
 

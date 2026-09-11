@@ -1122,6 +1122,13 @@ bool Session::initialize()
 
 void Session::emitLaunchWarning(QString text)
 {
+    // The user already saw this warning when the session started. An
+    // adaptive resize must not pause the picture for another 3.5 seconds.
+    if (m_AdaptiveResume) {
+        qInfo() << "Launch warning (adaptive resume):" << text;
+        return;
+    }
+
     // Emit the warning to the UI
     emit displayLaunchWarning(text);
 
@@ -1728,8 +1735,9 @@ public:
 bool Session::startConnectionAsync()
 {
     // Wait 1.5 seconds before connecting to let the user
-    // have time to read any messages present on the segue
-    SDL_Delay(1500);
+    // have time to read any messages present on the segue.
+    // An adaptive resize shows no segue; resume immediately.
+    if (!m_AdaptiveResume) SDL_Delay(1500);
 
     // The UI should have ensured the old game was already quit
     // if we decide to stream a different game.
