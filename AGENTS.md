@@ -13,3 +13,7 @@
 - Do not publish personal hostnames, addresses, credentials, real clipboard data,
   employer material or screenshots of work applications.
 - Keep `docs/ROADMAP.md` current; do not implement deferred features without a reason.
+- Before macOS packaging or installation, read `docs/MACOS_PACKAGE.md`. Run the
+  signing preflight in the same execution session as packaging. A successful
+  manual helper signature does not prove automation can access the private key.
+  Record the verified deployment route and rollback path after installing.

@@ -11,6 +11,7 @@ import SdlGamepadKeyNavigation 1.0
 
 CenteredGridView {
     property ComputerModel computerModel : createModel()
+    property bool controlCenterForActiveSession: false
 
     id: pcGrid
     focus: true
@@ -95,6 +96,23 @@ CenteredGridView {
         Label { width: parent.width; text: qsTr("Add a device by IP address or name. Confirm once on the other computer, then connect in either direction."); color: ui.muted; font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
         UiButton { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Add a device"); highlighted: true; onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         Label { width: parent.width; text: StreamingPreferences.enableMdns ? qsTr("Nearby devices appear here automatically") : qsTr("Nearby discovery is off in Settings"); color: ui.muted; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
+    }
+
+    Rectangle {
+        visible: controlCenterForActiveSession
+        z: 5
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: Math.min(parent.width - 48, 620)
+        height: 58
+        radius: 10
+        color: ui.raised
+        border.color: ui.accent
+        RowLayout {
+            anchors.fill: parent; anchors.margins: 10; spacing: 12
+            Label { text: qsTr("Remote session is still running"); color: ui.text; font.weight: Font.DemiBold; Layout.fillWidth: true }
+            UiButton { text: qsTr("Return to remote desktop"); highlighted: true; onClicked: recallRemoteSession() }
+        }
     }
 
     model: computerModel
@@ -189,6 +207,10 @@ CenteredGridView {
         }
 
         onClicked: {
+            if (controlCenterForActiveSession) {
+                recallRemoteSession()
+                return
+            }
             if (model.online) {
                 if (!model.serverSupported) {
                     errorDialog.text = qsTr("The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.").arg(model.name)

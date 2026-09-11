@@ -789,9 +789,9 @@ int main(int argc, char *argv[])
         QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });
     }
     QQmlApplicationEngine engine;
-    auto recall = [&engine, &pendingActivation] {
+    auto showDevices = [&engine, &pendingActivation] {
         if (Session::get()) {
-            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortRecallWindow;
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortShowDevices;
             SDL_PushEvent(&event);
             return;
         }
@@ -802,6 +802,18 @@ int main(int argc, char *argv[])
             window->raise(); window->requestActivate();
         }
     };
+    auto recallViewer = [&engine, &showDevices] {
+        if (Session::get()) {
+            // In active-session mode, the tray menu switches the view mode:
+            // control-center UI in Qt, or the retained SDL desktop window.
+            if (!engine.rootObjects().isEmpty())
+                QMetaObject::invokeMethod(engine.rootObjects().first(), "prepareViewerRecall");
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortRecallWindow;
+            SDL_PushEvent(&event);
+            return;
+        }
+        showDevices();
+    };
     QObject::connect(&hostManager, &HostManager::hideRequested, &app, [&] {
         if (Session::get()) {
             SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortHideWindow;
@@ -810,8 +822,10 @@ int main(int argc, char *argv[])
             if (auto window = qobject_cast<QWindow*>(engine.rootObjects().first())) window->hide();
         }
     });
-    instance.activate = recall;
-    QObject::connect(&hostManager, &HostManager::openRequested, &app, recall);
+    instance.activate = showDevices;
+    QObject::connect(&hostManager, &HostManager::openRequested, &app, showDevices);
+    QObject::connect(&hostManager, &HostManager::showDevicesRequested, &app, showDevices);
+    QObject::connect(&hostManager, &HostManager::viewerRecallRequested, &app, recallViewer);
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
     engine.rootContext()->setContextProperty("peerManager", &peerManager);
     engine.rootContext()->setContextProperty("startInBackground", app.arguments().contains("--background"));
@@ -871,7 +885,7 @@ int main(int argc, char *argv[])
         engine.load(QUrl(QStringLiteral("qrc:/gui/main.qml")));
         if (engine.rootObjects().isEmpty())
             return -1;
-        if (pendingActivation) recall();
+        if (pendingActivation) showDevices();
     }
 
     int err = app.exec();

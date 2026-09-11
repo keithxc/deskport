@@ -389,6 +389,14 @@
         <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
         <translation>%1 上的主机使用了不支持的协议版本。请更新主机和 DeskPort 后再连接。</translation>
     </message>
+    <message>
+        <source>Remote session is still running</source>
+        <translation>远程会话仍在运行</translation>
+    </message>
+    <message>
+        <source>Return to remote desktop</source>
+        <translation>返回远程桌面</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1937,6 +1945,14 @@
 </context>
 <context>
     <name>HostManager</name>
+    <message>
+        <source>Open device list</source>
+        <translation>打开设备列表</translation>
+    </message>
+    <message>
+        <source>Return to remote desktop</source>
+        <translation>返回远程桌面</translation>
+    </message>
     <message>
         <source>Sharing</source>
         <translation>共享</translation>

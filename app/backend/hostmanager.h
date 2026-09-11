@@ -67,12 +67,15 @@ public:
     Q_INVOKABLE void pair(const QString &pin, const QString &name);
     Q_INVOKABLE void permission(const QString &kind);
     Q_INVOKABLE void openLogs();
+    Q_INVOKABLE void recallViewer() { emit viewerRecallRequested(); }
     void setResident(bool enabled) { m_Resident = enabled; }
     Q_INVOKABLE void requestExit();
     void allowExit() { m_ExitRequested = true; }
 
 signals:
     void openRequested();
+    void showDevicesRequested();
+    void viewerRecallRequested();
     void hideRequested();
     void exitRequested();
     void disconnectRequested();

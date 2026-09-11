@@ -80,6 +80,21 @@ ApplicationWindow {
     }
   
     function showDevices() { stackView.pop(null) }
+    function showDevicesDuringSession() {
+        if (!stackView.currentItem || stackView.currentItem.controlCenterForActiveSession !== true) {
+            stackView.push(Qt.resolvedUrl("PcView.qml"), {"controlCenterForActiveSession": true}, StackView.Immediate)
+        }
+        if (window.windowState === Qt.WindowMinimized) window.showNormal()
+        else window.show()
+        window.raise()
+        window.requestActivate()
+    }
+    function prepareViewerRecall() {
+        if (stackView.currentItem && stackView.currentItem.controlCenterForActiveSession === true)
+            stackView.pop(StackView.Immediate)
+        window.hide()
+    }
+    function recallRemoteSession() { hostManager.recallViewer() }
     function goBack() {
         if (clearOnBack) {
             // Pop all items except the first one

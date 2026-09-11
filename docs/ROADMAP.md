@@ -1,5 +1,53 @@
 # DeskPort roadmap
 
+## Active-session control center (2026-09-11)
+
+Follow-up: the user reported that the first tray action did nothing while viewer
+recall worked. An added regression reproduced a null Qt window passed into
+`Session::exec()` from the deferred StreamSegue Loader. Use the existing root
+`window` context instead of the attached `Window.window` property; assert the
+session receives the actual root window, not just that its page was loaded.
+
+Deployment: the macOS development update was installed and restarted with the
+original signing identity. Strict signatures, bundle dependency checks and the
+running host HTTP endpoint passed. Aqua-session packaging with the full build
+PATH resolved the automation signing failure; `docs/MACOS_PACKAGE.md` records
+the reproducible route and old-process shutdown pitfall. Signing now has an
+early probe, verified to stop before building in the failing session. Linux was
+also deployed; live control-center/recall acceptance remains with the user.
+
+Adaptive continuation fix: the stream page for an adaptive resize was created
+in the context of the page it replaced. Destroying that page aborted the new
+page's Loader ("Object or context destroyed during incubation") and left the
+client on "Adjusting resolution". StackView now creates the continuation and
+quit pages in its own context. A regression test emits readyForDeletion after
+exec() returns, as real sessions do, and requires the continuation to receive
+the root window.
+
+Deployment correction: an interim macOS install was ad-hoc signed, and the
+independent Sunshine agent was removed while diagnosing an offline peer. Both
+were reverted. The package was rebuilt in the Aqua session with the stable
+identity, strictly verified and installed; the previous bundle is kept under
+`dist/installed-backups/claude-20260911-1721`. The tray recall item now uses the
+translated "Return to remote desktop" label.
+
+Reason: a retained remote window had no discoverable route back to the device
+list. Closing it hid the viewer, while tray activation recalled the same viewer,
+leaving sharing and device management inaccessible until disconnect.
+
+The viewer close action now releases remote input, hides the SDL window and opens
+the device list without ending the session. The control center shows an explicit
+active-session banner; its action or a device-card click recalls the retained
+remote window instead of starting a second connection. The tray separates
+**Open device list** from **Return to remote desktop**, and a second application
+launch opens the device list. An explicit disconnect remains separate.
+
+Validation: 13 isolated Linux UI checks cover a control center stacked above an
+active session and cleanup after disconnection; 30 retained-window transition
+cycles cover close, device-list hide, recall and explicit disconnect. A Linux
+Nix build passed. Native Wayland focus placement and live input release/recall
+remain real-session acceptance checks.
+
 ## Input defaults corrected (2026-09-11)
 
 Reason: real use on the KDE Wayland client showed that retained 0.1.1 settings

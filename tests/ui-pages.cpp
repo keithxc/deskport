@@ -17,11 +17,12 @@ class TestSession : public QObject {
 public:
     using QObject::QObject;
     int executions = 0;
+    QQuickWindow* receivedWindow = nullptr;
     TestSession* next = nullptr;
     std::function<void()> duringExec;
     Q_INVOKABLE bool adaptiveRestartPending() const { return next != nullptr; }
     Q_INVOKABLE TestSession* adaptiveContinuation() { auto value = next; next = nullptr; return value; }
-    Q_INVOKABLE void exec(QQuickWindow*) { ++executions; if (duringExec) duringExec(); }
+    Q_INVOKABLE void exec(QQuickWindow* window) { receivedWindow = window; ++executions; if (duringExec) duringExec(); }
 signals:
     void stageStarting(QString stage);
     void stageFailed(QString stage, int error, QString ports);
@@ -134,6 +135,35 @@ ApplicationWindow {
         QTRY_COMPARE(next.executions,1);
         QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
+    void continuationAfterDeferredCleanup() {
+        // Real sessions return from exec() first; readyForDeletion arrives
+        // later from the cleanup worker. The continuation must still start.
+        QQmlEngine engine;
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        TestSession first, next;
+        QQmlEngine::setObjectOwnership(&first, QQmlEngine::CppOwnership);
+        QQmlEngine::setObjectOwnership(&next, QQmlEngine::CppOwnership);
+        engine.rootContext()->setContextProperty("testSession", &first);
+        first.duringExec = [&] {
+            first.next = &next;
+            emit first.sessionFinished(0);
+            QTimer::singleShot(50, &first, [&] { emit first.readyForDeletion(); });
+        };
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function start() { stackView.push(Qt.resolvedUrl("StreamSegue.qml"), {session: testSession, appName: "Test"}, StackView.Immediate) }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/deferred-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"start"));
+        QTRY_COMPARE(next.executions,1);
+        QCOMPARE(next.receivedWindow, qobject_cast<QQuickWindow*>(root.data()));
+        QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
+    }
     void streamAndQuitActivateWithoutLegacyToolbar() {
         QQmlEngine engine;
         QStringList warnings;
@@ -177,6 +207,36 @@ ApplicationWindow {
         QVERIFY(!root->property("navigationVisible").toBool());
         QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
         QVERIFY(root->property("navigationVisible").toBool());
+        QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
+    }
+    void controlCenterDoesNotReplaceActiveSession() {
+        QQmlEngine engine;
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        TestSession session;
+        engine.rootContext()->setContextProperty("testSession", &session);
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600
+ property alias depth: stackView.depth
+ property alias currentPage: stackView.currentItem
+ QtObject { id: streamSegueErrorDialog; property string text: ""; property bool quitAfter: false; function open() {} }
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function start() { stackView.push(Qt.resolvedUrl("StreamSegue.qml"), {session: testSession, appName: "Test"}, StackView.Immediate) }
+ function showDevices() { stackView.push(controlPage, StackView.Immediate) }
+ Component { id: controlPage; Item { property bool controlCenterForActiveSession: true } }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/control-center-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"start"));
+        QTRY_COMPARE(session.executions,1);
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"showDevices"));
+        QCOMPARE(session.receivedWindow, qobject_cast<QQuickWindow*>(root.data()));
+        QCOMPARE(root->property("depth").toInt(),3);
+        QVERIFY(root->property("currentPage").value<QObject*>()->property("controlCenterForActiveSession").toBool());
+        emit session.sessionFinished(0);
+        QTRY_COMPARE(root->property("depth").toInt(),1);
         QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
     void desktopShortcut_data() {

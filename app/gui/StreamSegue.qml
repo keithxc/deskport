@@ -6,6 +6,7 @@ import SdlGamepadKeyNavigation 1.0
 import Session 1.0
 
 Item {
+    id: streamPage
     readonly property bool hidesNavigation: true
     property Session session
     property string appName
@@ -63,9 +64,9 @@ Item {
 
     function quitStarting()
     {
-        // Avoid the push transition animation
-        var component = Qt.createComponent("QuitSegue.qml")
-        stackView.replace(stackView.currentItem, component.createObject(stackView, {"appName": appName}), StackView.Immediate)
+        // Avoid the push transition animation. Let StackView create the page
+        // in its own context; this page's context is destroyed by replace().
+        stackView.replace(stackView.currentItem, Qt.resolvedUrl("QuitSegue.qml"), {"appName": appName}, StackView.Immediate)
 
         // Show the Qt window again to show quit segue
         window.visible = true
@@ -93,7 +94,10 @@ Item {
             }
         } else {
             // Exit this view
-            stackView.pop()
+            // The control center may be stacked above this retained session.
+            // Remove it first, then leave the stream page and return to Devices.
+            if (stackView.currentItem !== streamPage) stackView.pop(streamPage, StackView.Immediate)
+            stackView.pop(StackView.Immediate)
 
             // Show the Qt window again after streaming
             window.visible = true
@@ -113,10 +117,11 @@ Item {
     {
         if (session.adaptiveRestartPending()) {
             var next = session.adaptiveContinuation()
-            var component = Qt.createComponent("StreamSegue.qml")
-            var page = component.createObject(stackView, {"session": next, "appName": appName, "isResume": true, "quitAfter": quitAfter})
+            var properties = {"session": next, "appName": appName, "isResume": true, "quitAfter": quitAfter}
             session = null
-            stackView.replace(stackView.currentItem, page, StackView.Immediate)
+            // A page created from this context loses its scope (including the
+            // root window) and its pending Loader when replace() destroys us.
+            stackView.replace(streamPage, Qt.resolvedUrl("StreamSegue.qml"), properties, StackView.Immediate)
             gc()
             return
         }
@@ -185,7 +190,10 @@ Item {
             // event loop. Adaptive continuation replaces this page; doing so
             // inside onLoaded destroys the incubator that is still executing.
             Qt.callLater(function() {
-                if (session) session.exec(Window.window)
+                // StackView pages can be detached from the visual window
+                // during deferred loading. Use the root window context,
+                // as the other session lifecycle callbacks do.
+                if (session) session.exec(window)
             })
         }
 

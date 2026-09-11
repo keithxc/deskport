@@ -2232,6 +2232,11 @@ void Session::execInternal()
     QElapsedTimer serviceEvents; serviceEvents.start();
     QString clipboardStatus;
     SDL_Event event;
+    const auto showControlCenter = [this] {
+        m_InputHandler->setCaptureActive(false);
+        SDL_HideWindow(m_Window);
+        if (m_QtWindow) QMetaObject::invokeMethod(m_QtWindow, "showDevicesDuringSession", Qt::QueuedConnection);
+    };
     for (;;) {
         if (!m_ThreadedExec && serviceEvents.elapsed() >= 20) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
@@ -2279,8 +2284,7 @@ void Session::execInternal()
 #endif
         switch (event.type) {
         case SDL_QUIT:
-            m_InputHandler->setCaptureActive(false);
-            SDL_HideWindow(m_Window);
+            showControlCenter();
             break;
 
         case SDL_USEREVENT:
@@ -2290,6 +2294,9 @@ void Session::execInternal()
             case DeskPortHideWindow:
                 m_InputHandler->setCaptureActive(false);
                 SDL_HideWindow(m_Window);
+                break;
+            case DeskPortShowDevices:
+                showControlCenter();
                 break;
             case DeskPortRecallWindow:
                 recallDesktopWindow(m_Window);
@@ -2332,8 +2339,7 @@ void Session::execInternal()
             // Early handling of some events
             switch (event.window.event) {
             case SDL_WINDOWEVENT_CLOSE:
-                m_InputHandler->setCaptureActive(false);
-                SDL_HideWindow(m_Window);
+                showControlCenter();
                 break;
             case SDL_WINDOWEVENT_HIDDEN:
             case SDL_WINDOWEVENT_MINIMIZED:

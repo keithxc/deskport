@@ -11,6 +11,18 @@ if [ "$DESKPORT_SIGN_IDENTITY" = - ] && [ "${DESKPORT_ALLOW_ADHOC:-0}" != 1 ]; t
 fi
 export DEVELOPER_DIR=${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}
 qt_bin=${DESKPORT_QT_BIN:-/opt/homebrew/bin}
+# Check the actual signing session before spending time building and staging.
+# Listing identities or signing in another terminal does not prove key access here.
+probe_dir=$(mktemp -d "${TMPDIR:-/tmp}/deskport-signing.XXXXXX")
+cp /usr/bin/true "$probe_dir/probe"
+if ! codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none "$probe_dir/probe"; then
+    rm -f "$probe_dir/probe"
+    rmdir "$probe_dir"
+    echo "Signing preflight failed in this execution session. See docs/MACOS_PACKAGE.md; do not retry the full build or switch identities." >&2
+    exit 1
+fi
+rm -f "$probe_dir/probe"
+rmdir "$probe_dir"
 # Keep intermediate .app bundles out of Spotlight's Applications list.
 for directory in build-macos dist; do
     if [ -d "$directory" ] && [ ! -L "$directory" ]; then

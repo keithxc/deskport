@@ -77,6 +77,9 @@ int main(int argc, char** argv) {
         SDL_Event recall {}; recall.type = SDL_USEREVENT; recall.user.code = DeskPortRecallWindow;
         SDL_PushEvent(&recall); transition.pump();
         assert(!(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN));
+        SDL_Event devices {}; devices.type = SDL_USEREVENT; devices.user.code = DeskPortShowDevices;
+        SDL_PushEvent(&devices); transition.pump();
+        assert(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN);
         SDL_Event end {}; end.type = SDL_USEREVENT; end.user.code = DeskPortEndSession;
         SDL_PushEvent(&end); transition.pump();
         assert(transition.cancelled());

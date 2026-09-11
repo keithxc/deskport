@@ -130,10 +130,12 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         m_Server.start(serverPath(), {m_Directory + "/sunshine.conf"});
     });
     auto menu = new QMenu;
-    auto show = menu->addAction(tr("Open DeskPort"));
-    connect(show, &QAction::triggered, this, &HostManager::openRequested);
+    auto show = menu->addAction(tr("Open device list"));
+    connect(show, &QAction::triggered, this, &HostManager::showDevicesRequested);
+    auto viewer = menu->addAction(tr("Return to remote desktop"));
+    connect(viewer, &QAction::triggered, this, &HostManager::viewerRecallRequested);
     connect(&m_Tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
-        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) emit openRequested();
+        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) emit showDevicesRequested();
     });
     connect(menu->addAction(tr("Disconnect viewer")), &QAction::triggered, this, &HostManager::disconnectRequested);
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);

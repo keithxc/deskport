@@ -70,6 +70,58 @@ is not an App Store package.
 
 ## Build
 
+### Local update troubleshooting (2026-09-11)
+
+`errSecInternalComponent` was reproduced from the automation session even after
+the login keychain was unlocked and a helper was signed successfully in the user's
+terminal. Do not infer a per-bundle key ACL from this alone: execution-session
+access remains the unresolved distinction. The package script now signs a temporary
+probe before building, so a key-access failure stops early. Never change the
+installed signing identity or use ad-hoc signing to get past this failure.
+
+The previous successful update used an Xcode GUI build phase to sign the staged
+application. Keep signing in an authorized GUI session when automation cannot
+access the key. Supply the full build PATH: on this development machine Qt is
+from Homebrew, but CMake is from the Nix user profile; a minimal launchd PATH
+cannot build the host. Do not store passwords in scripts, logs or shell arguments.
+
+Before replacing `/Applications/DeskPort.app`, verify the staged bundle with
+`codesign --verify --deep --strict` and `scripts/check-macos-bundle.py`. Move the
+old installation into a timestamped `.noindex` backup, stop only DeskPort's own
+processes, install and relaunch, then verify the running executable and bundled
+host. Record the backup and source revision; version 0.1.2 alone does not identify
+an uncommitted development update. Keep independently installed Sunshine running.
+
+Verified recovery: launching the full packager with `launchctl submit` in the
+logged-in Aqua session succeeded, including stable signatures for all three
+executables, strict verification, dependency checks and DMG creation. From the
+repository root with the desired identity exported:
+
+```sh
+launchctl submit -l io.github.keithxc.deskport.package-once \
+  -o "$PWD/build-macos.noindex/package-install.log" \
+  -e "$PWD/build-macos.noindex/package-install.err" \
+  -- /usr/bin/env "PATH=$PATH" "DESKPORT_SIGN_IDENTITY=$DESKPORT_SIGN_IDENTITY" \
+  /bin/bash -c "cd '$PWD' && bash scripts/package-macos.sh; echo \$? > '$PWD/build-macos.noindex/package-install.rc'; exec sleep 86400"
+# launchctl submit jobs are KeepAlive: a bare packager call reruns forever,
+# including after failure. Wait for package-install.rc, then remove the job.
+launchctl list io.github.keithxc.deskport.package-once
+launchctl remove io.github.keithxc.deskport.package-once
+```
+
+Do not run duplicate packaging jobs. A launchctl bootout may leave a manually
+started DeskPort alive; SIGTERM also did not terminate the old viewer in this
+update. Check exact PIDs and executable paths before and after stopping. If the
+old viewer persists, terminate that verified PID before starting the replacement,
+then stop its verified helper PIDs. Otherwise the single-instance check can send
+the new launch to the old binary and silently leave the update inactive.
+
+Do not touch `/Applications/Sunshine.app` or its `org.nixos.sunshine` agent. It
+uses different ports from DeskPort's host and is not the cause of an offline
+peer. If its agent is removed, restore the nix-darwin copy from
+`/run/current-system/user/Library/LaunchAgents/` and bootstrap it. An ad-hoc
+installed DeskPort also loses the stable identity's privacy grants.
+
 Build and staging apps are stored in `.noindex` directories, reached through the
 `build-macos` and `dist` convenience symlinks, to avoid duplicate application icons.
 
