@@ -19,6 +19,24 @@
 #include <QElapsedTimer>
 #include <QTemporaryFile>
 #include <QRegularExpression>
+#include <QSocketNotifier>
+#ifdef Q_OS_UNIX
+#include <csignal>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
+#ifdef Q_OS_LINUX
+#include "backend/sleepmonitor.h"
+#endif
+
+#ifdef Q_OS_UNIX
+static int s_TerminationSocket[2] = {-1, -1};
+static void forwardTerminationSignal(int)
+{
+    const char byte = 1;
+    (void)!write(s_TerminationSocket[1], &byte, 1);
+}
+#endif
 
 // Don't let SDL hook our main function, since Qt is already
 // doing the same thing. This needs to be before any headers
@@ -505,6 +523,10 @@ int main(int argc, char *argv[])
     // The DXVA2 renderer uses Direct3D 9Ex itself directly.
     SDL_SetHint("SDL_WINDOWS_USE_D3D9EX", "1");
 
+    // SDL would turn SIGTERM/SIGINT into SDL_QUIT, which only hides a session
+    // window and is never read outside one. main() handles them instead.
+    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+
     if (SDL_InitSubSystem(SDL_INIT_TIMER) != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "SDL_InitSubSystem(SDL_INIT_TIMER) failed: %s",
@@ -784,6 +806,42 @@ int main(int argc, char *argv[])
             timer->start(100);
         } else app.quit();
     });
+#ifdef Q_OS_UNIX
+    // Logout, shutdown and `systemctl stop` must end the session and host
+    // processes instead of waiting for systemd's SIGKILL.
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, s_TerminationSocket) == 0) {
+        auto notifier = new QSocketNotifier(s_TerminationSocket[0], QSocketNotifier::Read, &app);
+        QObject::connect(notifier, &QSocketNotifier::activated, &app, [&hostManager] {
+            char byte;
+            (void)!read(s_TerminationSocket[0], &byte, 1);
+            qInfo() << "Termination signal received; exiting";
+            hostManager.requestExit();
+        });
+        struct sigaction action {};
+        action.sa_handler = forwardTerminationSignal;
+        sigemptyset(&action.sa_mask);
+        action.sa_flags = SA_RESTART;
+        sigaction(SIGTERM, &action, nullptr);
+        sigaction(SIGINT, &action, nullptr);
+    }
+#endif
+#ifdef Q_OS_LINUX
+    SleepMonitor sleepMonitor;
+    QObject::connect(&sleepMonitor, &SleepMonitor::sleeping, &app, [&sleepMonitor, &app] {
+        if (!Session::get()) { sleepMonitor.release(); return; }
+        qInfo() << "System is going to sleep; ending the remote session";
+        Session::get()->endForSystemSleep();
+        QElapsedTimer waited; waited.start();
+        auto timer = new QTimer(&app);
+        QObject::connect(timer, &QTimer::timeout, &app, [timer, waited, &sleepMonitor] {
+            // Also reaches a session crossing an adaptive restart. logind caps
+            // the delay (5 s by default), so never hold sleep longer than that.
+            if (Session::get() && waited.elapsed() < 3000) { Session::get()->endForSystemSleep(); return; }
+            timer->stop(); timer->deleteLater(); sleepMonitor.release();
+        });
+        timer->start(50);
+    });
+#endif
     PeerManager peerManager(&hostManager, IdentityManager::get()->getCertificate(), IdentityManager::get()->getPrivateKey());
     if (app.arguments().contains("--share")) {
         QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });

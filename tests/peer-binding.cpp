@@ -113,15 +113,17 @@ private slots:
     }
     void workspaceUsesClientSystemScale() {
         const auto fractional = DeskPortDisplay::forClient(QSize(2880, 1620), 1.5);
-        QCOMPARE(fractional.pixels, QSize(1920, 1080)); QCOMPARE(fractional.scale, 1);
-        QCOMPARE(DeskPortDisplay::forClient(QSize(2304, 1296), 1.5).pixels, QSize(1536, 864));
+        QCOMPARE(fractional.pixels, QSize(2880, 1620)); QCOMPARE(fractional.scale, 2);
+        QCOMPARE(DeskPortDisplay::forClient(QSize(3828, 2040), 1.5).pixels, QSize(3828, 2040));
         const auto retina = DeskPortDisplay::forClient(QSize(2880, 1800), 2.0);
-        QCOMPARE(retina.pixels, QSize(1440, 900)); QCOMPARE(retina.scale, 1);
+        QCOMPARE(retina.pixels, QSize(2880, 1800)); QCOMPARE(retina.scale, 2);
         const auto standard = DeskPortDisplay::forClient(QSize(1920, 1080), 1.0);
         QCOMPARE(standard.pixels, QSize(1920, 1080)); QCOMPARE(standard.scale, 1);
-        QCOMPARE(DeskPortDisplay::forClient(QSize(3840, 2160), 1.5).pixels, QSize(2560, 1440));
-        QCOMPARE(DeskPortDisplay::forClient(QSize(2560, 1440), 1.5).pixels, QSize(1708, 960));
-        QCOMPARE(DeskPortDisplay::forClient(QSize(800, 450), 2.0).pixels, QSize(960, 540));
+        const auto slight = DeskPortDisplay::forClient(QSize(2400, 1350), 1.25);
+        QCOMPARE(slight.pixels, QSize(2400, 1352)); QCOMPARE(slight.scale, 1);
+        // The 2x logical desktop keeps the 960x540 minimum.
+        QCOMPARE(DeskPortDisplay::forClient(QSize(800, 450), 2.0).pixels, QSize(1920, 1080));
+        QCOMPARE(DeskPortDisplay::forClient(QSize(8000, 4500), 2.0).pixels, QSize(7680, 4320));
         QVERIFY(!DeskPortDisplay::forClient(QSize(), 1.5).pixels.isValid());
         QVERIFY(!DeskPortDisplay::forClient(QSize(1920,1080), 0).pixels.isValid());
     }

@@ -16,7 +16,7 @@ struct SessionWindowState {
             geometry.width() <= 16384 && geometry.height() <= 16384 &&
             streamSize.width() >= 640 && streamSize.width() <= MaxWidth &&
             streamSize.height() >= 360 && streamSize.height() <= MaxHeight &&
-            streamSize.width() % 4 == 0 && streamSize.height() % 4 == 0 && scale == 1;
+            streamSize.width() % 4 == 0 && streamSize.height() % 4 == 0 && (scale == 1 || scale == 2);
     }
 };
 inline QString sessionWindowKey(const QString& hostId) {
@@ -27,7 +27,8 @@ inline SessionWindowState readSessionWindow(QSettings& settings, const QString& 
     if (hostId.isEmpty()) return {};
     settings.beginGroup(sessionWindowKey(hostId));
     SessionWindowState state;
-    if (settings.value("version").toInt() == 1 && settings.value("outputs").toByteArray() == outputs &&
+    // Version 1 stored 1x downscaled workspaces; they no longer match the stream.
+    if (settings.value("version").toInt() == 2 && settings.value("outputs").toByteArray() == outputs &&
         settings.value("windowMode", -1).toInt() == windowMode) {
         state.geometry = settings.value("geometry").toRect();
         state.streamSize = settings.value("streamSize").toSize();
@@ -42,7 +43,7 @@ inline void writeSessionWindow(QSettings& settings, const QString& hostId, const
                               int windowMode, const SessionWindowState& state) {
     if (hostId.isEmpty() || !state.valid()) return;
     settings.beginGroup(sessionWindowKey(hostId));
-    settings.setValue("version", 1);
+    settings.setValue("version", 2);
     settings.setValue("outputs", outputs);
     settings.setValue("windowMode", windowMode);
     settings.setValue("geometry", state.geometry);

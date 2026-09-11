@@ -630,6 +630,12 @@ Session* Session::adaptiveContinuation() {
     next->m_AdaptiveResume = true;
     return next;
 }
+void Session::endForSystemSleep() {
+    // Not a user disconnect: never honor "quit app after streaming".
+    m_UnexpectedTermination = true;
+    SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
+    SDL_PushEvent(&event);
+}
 void Session::initializeClipboard() {
     if (!m_Preferences->sharedClipboard) return;
     const auto peers = PeerStore::read(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/binding/peers.json")["peers"].toObject();

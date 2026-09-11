@@ -136,7 +136,14 @@ Item {
         SdlGamepadKeyNavigation.enable()
     }
 
+    property bool sessionHooked: false
+
     StackView.onActivated: {
+        // The control center can be pushed above this page and popped again.
+        // Reconnecting would deliver every session signal several times.
+        if (sessionHooked) return
+        sessionHooked = true
+
         // Hook up our signals
         session.stageStarting.connect(stageStarting)
         session.stageFailed.connect(stageFailed)

@@ -286,6 +286,15 @@ stream launch per recall, no stuck input, and a local escape that remains usable
 Window appearance under 200 ms is a target to measure, not a current result.
 Initial connection, sleeping hosts and network recovery are separate cases.
 
+Client sleep and termination (2026-09-11): a Linux client holds a logind delay
+inhibitor and ends the stream before suspend/hibernate, without honoring "quit
+app after streaming". SIGTERM/SIGINT now stop the session and host processes;
+SDL's handlers previously swallowed them until systemd sent SIGKILL. Stream pages
+connect session signals once, so a control-center round trip no longer repeats
+termination handling. Verified: SIGTERM exit in an isolated profile. Pending:
+real suspend/hibernate and resume on the KDE client; automatic reconnection after
+resume is not implemented.
+
 ## Then: daily development
 
 ### Dedicated display, client-size resolution and physical mirroring (updated 2026-09-10)
@@ -309,10 +318,12 @@ resize; it sends heartbeats, and loss of its connection releases ownership.
 After a 10-second grace period the display returns to its configured idle size.
 Minimizing preserves the stream and display. Stopping sharing removes the helper.
 
-Client drawable pixels are distinct from logical window size. HiDPI clients use
-2× host scaling for workspaces of at least 1920×1080 pixels; compact workspaces use
-1× because native testing found advertised small HiDPI modes that WindowServer
-rejects. Fractional scaling is mapped to one of these macOS modes. Unsupported or
+Client drawable pixels are distinct from logical window size. Since 2026-09-11 the
+stream matches drawable pixels 1:1; clients at 150% or more use 2× host scaling,
+others 1×. A 2× workspace keeps a 960×540 logical minimum (1920×1080 pixels)
+because native testing found advertised small HiDPI modes that WindowServer
+rejects. The 2026-09-10 1× policy divided by client scale and upscaled visibly
+soft text on a 150% client. Unsupported or
 unbound hosts fall back to the saved fixed streaming resolution. Linux hosting
 continues to capture its existing desktop.
 

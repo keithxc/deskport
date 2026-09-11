@@ -113,6 +113,8 @@ public:
     Q_INVOKABLE void exec(QWindow* qtWindow);
     Q_INVOKABLE bool adaptiveRestartPending() const { return m_AdaptiveNextSize.isValid(); }
     Q_INVOKABLE Session* adaptiveContinuation();
+    // The transport cannot survive client sleep; stop without quitting the host app.
+    void endForSystemSleep();
 
     static
     void getDecoderInfo(SDL_Window* window,

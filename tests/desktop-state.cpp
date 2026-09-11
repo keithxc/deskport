@@ -60,6 +60,12 @@ private slots:
         DeskPortDisplay::writeSessionWindow(settings, "host-a", "outputs-150", 0, invalid);
         QCOMPARE(DeskPortDisplay::readSessionWindow(settings, "host-a", "outputs-150", 0).streamSize, state.streamSize);
         settings.setValue(DeskPortDisplay::sessionWindowKey("host-a") + "/scale", 2);
+        QCOMPARE(DeskPortDisplay::readSessionWindow(settings, "host-a", "outputs-150", 0).scale, 2);
+        settings.setValue(DeskPortDisplay::sessionWindowKey("host-a") + "/scale", 3);
+        QVERIFY(!DeskPortDisplay::readSessionWindow(settings, "host-a", "outputs-150", 0).valid());
+        // Records from the 1x workspace policy no longer match the stream.
+        settings.setValue(DeskPortDisplay::sessionWindowKey("host-a") + "/scale", 1);
+        settings.setValue(DeskPortDisplay::sessionWindowKey("host-a") + "/version", 1);
         QVERIFY(!DeskPortDisplay::readSessionWindow(settings, "host-a", "outputs-150", 0).valid());
     }
 

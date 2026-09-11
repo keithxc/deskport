@@ -30,13 +30,15 @@ A failed resize disables further adaptation for that session and uses the saved
 fixed resolution, avoiding a reconnect loop.
 
 Pixel sizes are aligned to four and bounded to 640×360–7680×4320. As of
-2026-09-10, automatic adaptation always requests 1× host scaling, including
-fractionally scaled and Retina clients. Divide client drawable pixels by client
-system scale to retain the logical workspace, with a minimum 960×540 desktop.
-For example, a 2880×1620 client at 150% requests 1920×1080 at 1× instead of a
-3840×2160 2× backing surface. The viewer scales this lower-resolution image to
-its local window; it trades supersampled text detail for fewer encoded pixels.
-Bitrate and latency improvements depend on codec, bitrate settings and the link.
+2026-09-11, automatic adaptation streams the client's drawable pixels 1:1 so
+the viewer never upscales text. Clients at 150% system scale or more request a
+2× HiDPI host desktop whose logical size is half the pixel size; others use 1×.
+The logical desktop keeps a 960×540 minimum. For example, a 3828×2040 client
+window at 150% requests 3828×2040 pixels at 2× (a 1914×1020 logical desktop).
+Host interface elements then appear about 1.33× the client's own size at 150%
+and 1.1× at 180%. This encodes 2.25× the pixels of the earlier 1× policy
+(2026-09-10), which divided by client scale and produced visibly soft text.
+Cached window workspaces from the 1× policy are discarded.
 
 Sharing startup and the idle-mode restore also use 1×. Existing saved idle pixel
 sizes are preserved. The protocol still accepts explicit 2× requests from older
