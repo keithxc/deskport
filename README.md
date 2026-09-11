@@ -5,7 +5,7 @@ A remote desktop workspace built on Moonlight and Sunshine.
 **Goal:** keep your remote desktop ready in the background, bring it onto your
 current workspace with one action, and tuck it away without reconnecting.
 
-**Version: 0.1.1 — desktop workflow update.** DeskPort combines a viewer and optional host
+**Version: 0.1.2 — input defaults update.** DeskPort combines a viewer and optional host
 in one application, with a shared device list, mutual binding and permission
 controls. The macOS package includes Sunshine and a native virtual display;
 the Linux Nix package includes a Sunshine host for the existing desktop.
@@ -15,7 +15,7 @@ using the client's logical dimensions to avoid a 2× supersampled video stream.
 Resizing briefly reconnects video while retaining the client window and showing
 a loading animation. It is not seamless encoder reconfiguration.
 
-See the [release notes](docs/RELEASE_0.1.1.md),
+See the [release notes](docs/RELEASE_0.1.2.md),
 [architecture](docs/ARCHITECTURE.md) and
 [macOS installation guide](docs/MACOS_PACKAGE.md).
 Persistent hide/show without reconnecting, automatic physical-display topology
@@ -124,10 +124,11 @@ Closing a window keeps DeskPort running in the tray/menu bar. Use **Open DeskPor
 to recall it, **Disconnect viewer** to end only the current connection, or
 **Quit DeskPort** to exit the service. Local sharing continues when a viewer closes.
 
-In **Settings → Keyboard & pointer**, enable plain-text clipboard sharing on both
-bound devices and reconnect. Only new copies are shared, up to 1 MiB; images and
-files are not transferred. In desktop pointer mode, keyboard routing follows the
-pointer inside the focused video. **Ctrl+Alt+Shift+Z** releases input;
+Plain-text clipboard sharing and system-shortcut capture are enabled by default on
+both bound devices. Setting changes apply after reconnecting. Only new copies are
+shared, up to 1 MiB; images and files are not transferred. In desktop pointer
+mode, keyboard routing follows the pointer inside the focused video.
+**Ctrl+Alt+Shift+Z** releases input;
 **Ctrl+Alt+Shift+Q** disconnects the viewer. Click inside to regain input after
 explicit release. OS-reserved shortcuts depend on the desktop compositor.
 

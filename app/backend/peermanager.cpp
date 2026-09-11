@@ -104,7 +104,7 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
             fail(m_DisplayLink, tr("Display controller disconnected"));
     });
     connect(watchdog, &QTimer::timeout, this, [this] {
-        if (m_ClipboardLink && (!m_Host->running() || !QSettings().value("sharedClipboard", false).toBool() ||
+        if (m_ClipboardLink && (!m_Host->running() || !QSettings().value("sharedClipboard", true).toBool() ||
             QDateTime::currentMSecsSinceEpoch() - m_ClipboardLink->lastClipboardRequest > 10000))
             fail(m_ClipboardLink, tr("Clipboard session ended"));
     });
@@ -283,7 +283,7 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
     if (type == "clipboard-start" || type == "clipboard-poll") {
         const auto peer = m_Peers[link->fingerprint].toObject();
         if (!link->incoming || link->requested || link->displayControl || !peer["ready"].toBool() ||
-            !peer["granted"].toBool() || !m_Host->running() || !QSettings().value("sharedClipboard", false).toBool() ||
+            !peer["granted"].toBool() || !m_Host->running() || !QSettings().value("sharedClipboard", true).toBool() ||
             (m_ClipboardLink && m_ClipboardLink != link)) {
             fail(link, tr("Clipboard sharing requires an enabled host and an approved exclusive session")); return;
         }

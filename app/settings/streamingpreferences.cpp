@@ -50,7 +50,7 @@
 #define SER_KEEPAWAKE "keepawake"
 #define SER_LANGUAGE "language"
 
-#define CURRENT_DEFAULT_VER 2
+#define CURRENT_DEFAULT_VER 3
 
 static StreamingPreferences* s_GlobalPrefs;
 static QReadWriteLock s_GlobalPrefsLock;
@@ -130,7 +130,7 @@ void StreamingPreferences::reload()
     enableMdns = settings.value(SER_MDNS, true).toBool();
     quitAppAfter = settings.value(SER_QUITAPPAFTER, false).toBool();
     absoluteMouseMode = settings.value(SER_ABSMOUSEMODE, true).toBool();
-    sharedClipboard = settings.value("sharedClipboard", false).toBool();
+    sharedClipboard = settings.value("sharedClipboard", true).toBool();
     showLocalCursor = settings.value("showLocalCursor", true).toBool();
     absoluteTouchMode = settings.value(SER_ABSTOUCHMODE, true).toBool();
     framePacing = settings.value(SER_FRAMEPACING, false).toBool();
@@ -179,6 +179,15 @@ void StreamingPreferences::reload()
         if (windowMode == WindowMode::WM_FULLSCREEN && WMUtils::isRunningWayland()) {
             windowMode = WindowMode::WM_FULLSCREEN_DESKTOP;
         }
+    }
+    if (defaultVer < 3) {
+        // DeskPort's desktop workflow expects remote shortcuts and plain-text
+        // clipboard sharing to work without configuring both peers first.
+        captureSysKeysMode = CaptureSysKeysMode::CSK_ALWAYS;
+        sharedClipboard = true;
+        settings.setValue(SER_CAPTURESYSKEYS, captureSysKeysMode);
+        settings.setValue("sharedClipboard", sharedClipboard);
+        settings.setValue(SER_DEFAULTVER, CURRENT_DEFAULT_VER);
     }
 
     // Fixup VCC value to the new settings format with codec and HDR separate

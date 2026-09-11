@@ -1,5 +1,14 @@
 # DeskPort roadmap
 
+## Input defaults corrected (2026-09-11)
+
+Reason: real use on the KDE Wayland client showed that retained 0.1.1 settings
+left system-key capture off and clipboard sharing unset, so Super+Space stayed
+local and no clipboard channel was created. DeskPort now enables system shortcut
+capture and plain-text clipboard sharing for new profiles and performs a one-time
+version-3 settings migration for existing profiles. Users can still disable
+either option after migration. Changes take effect on the next connection.
+
 ### Editable remote endpoints (2026-09-11)
 
 Reason: incoming bindings could retain a proxy IP and overwrite repaired host
@@ -552,7 +561,8 @@ step to the normal remote-desktop workflow.
 Reason: daily cross-device development needs shared text and reliable local input
 release; closing a window must not remove an unattended machine's remote access.
 
-- Text clipboard sharing is opt-in on both bound devices in Keyboard & pointer.
+- Text clipboard sharing is enabled by default on both bound devices and can be
+  disabled in Keyboard & pointer.
   A separate pinned mutual-TLS session starts only after streaming starts, works
   without adaptive resolution, and expires on disconnect or a missed lease.
   Initial contents are not transferred. Host revisions order concurrent copies;
