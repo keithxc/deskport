@@ -108,3 +108,14 @@ ditto "$app" dist/DeskPort.app
 ln -s /Applications "$stage/Applications"
 hdiutil create -volname DeskPort -srcfolder "$stage" -ov -format UDZO dist/DeskPort-${version}-macos-arm64.dmg
 shasum -a 256 dist/DeskPort-${version}-macos-arm64.dmg
+# Nix fetches this zip and extracts it with Info-ZIP unzip, which writes
+# AppleDouble entries as literal "._" files inside the sealed bundle. Store no
+# extended attributes, and verify the bundle the way Nix will unpack it.
+zip="dist/DeskPort-${version}-macos-arm64.zip"
+rm -f "$zip"
+ditto -c -k --norsrc --noextattr --noacl --keepParent dist/DeskPort.app "$zip"
+zip_check=$(mktemp -d)
+/usr/bin/unzip -q "$zip" -d "$zip_check"
+codesign --verify --deep --strict "$zip_check/DeskPort.app"
+rm -rf "$zip_check"
+shasum -a 256 "$zip"
