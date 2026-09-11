@@ -10,6 +10,8 @@ import tempfile
 
 
 def main():
+    expected_version = (Path(__file__).resolve().parents[1] / "app/version.txt").read_text().strip()
+    assert expected_version, "Missing application version"
     output = Path(sys.argv[1] if len(sys.argv) > 1 else "result").resolve()
     binary = output / "bin/deskport"
     assert binary.is_file(), f"Missing binary: {binary}"
@@ -43,7 +45,7 @@ def main():
             )
             text = result.stdout + result.stderr
             if flag == "--version":
-                assert "0.1.0" in text, text
+                assert expected_version in text.split(), text
             else:
                 assert "Usage:" in text and "deskport" in text, text
         assert not (root / "config/Moonlight Game Streaming Project").exists()
