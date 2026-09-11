@@ -41,6 +41,8 @@ void TransitionWindow::pump() {
     if (!m_Window) return;
     SDL_PumpEvents();
     SDL_Event event;
+    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_USEREVENT, SDL_USEREVENT) > 0)
+        if (event.user.code == DeskPortRecallWindow) recallDesktopWindow(m_Window);
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_WINDOWEVENT, SDL_WINDOWEVENT) > 0)
         if (event.window.windowID == SDL_GetWindowID(m_Window) && event.window.event == SDL_WINDOWEVENT_CLOSE) m_Cancelled = true;
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_QUIT, SDL_QUIT) > 0) m_Cancelled = true;

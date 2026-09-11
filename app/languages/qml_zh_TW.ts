@@ -1816,6 +1816,14 @@
         <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
         <translation>%1 將無法再控制此電腦。若要雙向撤銷，也請在另一台裝置移除綁定。</translation>
     </message>
+    <message><source>Edit device</source><translation>編輯裝置</translation></message>
+    <message><source>Device name</source><translation>裝置名稱</translation></message>
+    <message><source>Domain name or IP address</source><translation>網域名稱或 IP 位址</translation></message>
+    <message><source>Computer name or IP, without port</source><translation>電腦名稱或 IP，不含連接埠</translation></message>
+    <message><source>A domain name is saved as entered and resolved again when connecting.</source><translation>保留輸入的網域名稱，每次連線時重新解析。</translation></message>
+    <message><source>Host port</source><translation>主機連接埠</translation></message>
+    <message><source>Binding port</source><translation>綁定連接埠</translation></message>
+    <message><source>Save</source><translation>儲存</translation></message>
 </context>
 <context>
     <name>SetupView</name>

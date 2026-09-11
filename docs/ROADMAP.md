@@ -1,5 +1,41 @@
 # DeskPort roadmap
 
+### Editable remote endpoints (2026-09-11)
+
+Reason: incoming bindings could retain a proxy IP and overwrite repaired host
+addresses at startup. Bindings now exchange a separate DNS hostname, prefer
+entered or previously saved DNS names, and use numeric addresses only when no
+DNS name is available. Certificate identity remains pinned.
+
+Saved access now includes an editor for the local device alias, domain/IP,
+host port and binding port. Changes persist atomically, update the host list,
+and preserve trust credentials. Invalid input and failed writes leave the old
+record intact. Explicit endpoints are polled before cached discovery addresses.
+Validation: 13 isolated macOS binding checks and seven-language editor coverage
+passed. Native editor acceptance remains pending.
+
+### Reconnect and application recall (2026-09-11)
+
+- Defer stream execution until asynchronous QML Loader incubation completes.
+  Replacing a page from its nested session loop previously destroyed the active
+  incubator and could strand the retained window on Adjusting resolution.
+- Normal GUI and streaming launches share a per-configuration process lock and
+  local activation socket. Repeated launches request recall instead of creating
+  another GUI or loading host state. CLI list/pair/quit commands remain separate.
+- Tray Open and tray activation use the same recall action. Active streams and
+  resize transitions raise their existing SDL window on its owning thread;
+  idle clients raise the existing QML root window. Linux keeps the Qt event loop
+  responsive while the SDL worker runs.
+- Validation: 12 Linux UI checks, including nested-loop continuation and repeated
+  activation/lock release, passed; the Linux package built successfully.
+  Installed on the target Wayland client with persistent package rooting and
+  matching command, menu and autostart entries. A real adaptive resize resumed
+  streaming and decoded video after the retained-window handoff. Two additional
+  launches exited successfully while the original session process remained.
+  Invoking the installed tray's Open action twice also retained that one process.
+  Cross-workspace focus behavior and extended resize stability remain acceptance
+  checks; this does not claim a long-duration streaming soak.
+
 Status: v0.1.0, first release, 2026-09-10. Unfinished capabilities and native
 acceptance limits are listed below. See [release notes](RELEASE_0.1.0.md).
 

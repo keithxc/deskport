@@ -1816,6 +1816,14 @@
         <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
         <translation>%1 ne pourra plus contrôler cet ordinateur. Supprimez aussi l’association sur l’autre appareil pour révoquer les deux sens.</translation>
     </message>
+    <message><source>Edit device</source><translation>Modifier l’appareil</translation></message>
+    <message><source>Device name</source><translation>Nom de l’appareil</translation></message>
+    <message><source>Domain name or IP address</source><translation>Nom de domaine ou adresse IP</translation></message>
+    <message><source>Computer name or IP, without port</source><translation>Nom d’ordinateur ou IP, sans port</translation></message>
+    <message><source>A domain name is saved as entered and resolved again when connecting.</source><translation>Le nom de domaine est conservé tel quel et résolu à chaque connexion.</translation></message>
+    <message><source>Host port</source><translation>Port de l’hôte</translation></message>
+    <message><source>Binding port</source><translation>Port d’association</translation></message>
+    <message><source>Save</source><translation>Enregistrer</translation></message>
 </context>
 <context>
     <name>SetupView</name>

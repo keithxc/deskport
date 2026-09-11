@@ -5,7 +5,9 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QTranslator>
+#include <functional>
 #include "peermanager.h"
+#include "singleinstance.h"
 
 static QByteArray credential(const char* name) {
     QFile f(qEnvironmentVariable(name)); if (!f.open(QIODevice::ReadOnly)) return {}; return f.readAll();
@@ -16,9 +18,10 @@ public:
     using QObject::QObject;
     int executions = 0;
     TestSession* next = nullptr;
+    std::function<void()> duringExec;
     Q_INVOKABLE bool adaptiveRestartPending() const { return next != nullptr; }
     Q_INVOKABLE TestSession* adaptiveContinuation() { auto value = next; next = nullptr; return value; }
-    Q_INVOKABLE void exec(QQuickWindow*) { ++executions; }
+    Q_INVOKABLE void exec(QQuickWindow*) { ++executions; if (duringExec) duringExec(); }
 signals:
     void stageStarting(QString stage);
     void stageFailed(QString stage, int error, QString ports);
@@ -54,6 +57,23 @@ public:
 class UiPages : public QObject {
     Q_OBJECT
 private slots:
+    void repeatedLaunchActivatesOnlyTheOwner() {
+        QTemporaryDir directory;
+        int activations = 0;
+        {
+            SingleInstance owner;
+            owner.activate = [&] { ++activations; };
+            QVERIFY(owner.start(directory.path()));
+            for (int i = 0; i < 3; ++i) {
+                SingleInstance duplicate;
+                QVERIFY(!duplicate.start(directory.path()));
+                QVERIFY(duplicate.delivered);
+                QTRY_COMPARE(activations, i + 1);
+            }
+        }
+        SingleInstance restarted;
+        QVERIFY(restarted.start(directory.path()));
+    }
     void initTestCase() {
         qmlRegisterType<TestSession>("Session",1,0,"Session");
         qmlRegisterType<TestDesktopApps>("AppModel",1,0,"AppModel");
@@ -81,6 +101,33 @@ TestPreferences {
         qmlRegisterSingletonType<QObject>("SystemProperties",1,0,"SystemProperties",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool hasBrowser: false }",QUrl()); return c.create();
         });
+    }
+    void continuationDuringNestedEventLoop() {
+        QQmlEngine engine;
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        TestSession first, next;
+        QQmlEngine::setObjectOwnership(&first, QQmlEngine::CppOwnership);
+        QQmlEngine::setObjectOwnership(&next, QQmlEngine::CppOwnership);
+        engine.rootContext()->setContextProperty("testSession", &first);
+        first.duringExec = [&] {
+            first.next = &next;
+            emit first.sessionFinished(0);
+            QTimer::singleShot(0, &first, [&] { emit first.readyForDeletion(); });
+            QTest::qWait(100);
+        };
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function start() { stackView.push(Qt.resolvedUrl("StreamSegue.qml"), {session: testSession, appName: "Test"}, StackView.Immediate) }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/nested-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"start"));
+        QTRY_COMPARE(next.executions,1);
+        QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
     void streamAndQuitActivateWithoutLegacyToolbar() {
         QQmlEngine engine;

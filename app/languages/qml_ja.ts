@@ -1816,6 +1816,14 @@
         <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
         <translation>%1 はこのコンピューターを操作できなくなります。双方向で解除するには相手側の連携も削除してください。</translation>
     </message>
+    <message><source>Edit device</source><translation>デバイスを編集</translation></message>
+    <message><source>Device name</source><translation>デバイス名</translation></message>
+    <message><source>Domain name or IP address</source><translation>ドメイン名または IP アドレス</translation></message>
+    <message><source>Computer name or IP, without port</source><translation>コンピューター名または IP（ポートなし）</translation></message>
+    <message><source>A domain name is saved as entered and resolved again when connecting.</source><translation>ドメイン名は入力どおりに保存され、接続時に再解決されます。</translation></message>
+    <message><source>Host port</source><translation>ホストポート</translation></message>
+    <message><source>Binding port</source><translation>バインドポート</translation></message>
+    <message><source>Save</source><translation>保存</translation></message>
 </context>
 <context>
     <name>SetupView</name>

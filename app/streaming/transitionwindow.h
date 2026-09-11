@@ -3,6 +3,14 @@
 #include <QString>
 #include "waylandloading.h"
 
+constexpr int DeskPortRecallWindow = 105;
+inline void recallDesktopWindow(SDL_Window* window) {
+    if (!window) return;
+    if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) SDL_RestoreWindow(window);
+    SDL_ShowWindow(window);
+    SDL_RaiseWindow(window);
+}
+
 // Owns the existing native window between streaming sessions. All calls are made
 // by the current SDL event owner; ownership moves only after its thread exits.
 class TransitionWindow {

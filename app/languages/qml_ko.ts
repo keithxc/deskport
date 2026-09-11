@@ -1816,6 +1816,14 @@
         <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
         <translation>%1에서 이 컴퓨터를 더 이상 제어할 수 없습니다. 양방향으로 해제하려면 상대 기기에서도 연결 승인을 제거하세요.</translation>
     </message>
+    <message><source>Edit device</source><translation>기기 편집</translation></message>
+    <message><source>Device name</source><translation>기기 이름</translation></message>
+    <message><source>Domain name or IP address</source><translation>도메인 이름 또는 IP 주소</translation></message>
+    <message><source>Computer name or IP, without port</source><translation>컴퓨터 이름 또는 IP, 포트 제외</translation></message>
+    <message><source>A domain name is saved as entered and resolved again when connecting.</source><translation>입력한 도메인 이름을 저장하고 연결할 때 다시 확인합니다.</translation></message>
+    <message><source>Host port</source><translation>호스트 포트</translation></message>
+    <message><source>Binding port</source><translation>연결 승인 포트</translation></message>
+    <message><source>Save</source><translation>저장</translation></message>
 </context>
 <context>
     <name>SetupView</name>

@@ -32,6 +32,8 @@ public:
     Q_INVOKABLE void cancel();
     Q_INVOKABLE void restoreHosts();
     Q_INVOKABLE void revoke(const QString& fingerprint);
+    Q_INVOKABLE bool editPeer(const QString& fingerprint, const QString& name,
+                              const QString& address, int hostPort, int bindingPort);
 signals:
     void changed();
     void incomingRequest();

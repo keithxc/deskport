@@ -3,6 +3,7 @@
 #include "adaptivedisplay.h"
 #include "workspaceresolution.h"
 #include <QTemporaryDir>
+#include <QHostInfo>
 #include <QSignalSpy>
 #include <QSslSocket>
 #include <QQmlEngine>
@@ -19,6 +20,35 @@ static QByteArray credential(const char* name) {
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void editedEndpointSurvivesRestartAndRejectsInvalidInput() {
+        QTemporaryDir dir;
+        const QString path = dir.path()+"/binding";
+        QVERIFY(QDir().mkpath(path));
+        const auto cert = credential("TEST_CERT_A"), key = credential("TEST_KEY_A");
+        QVERIFY(PeerStore::write(path+"/peers.json", {{"version", 1}, {"peers", QJsonObject{
+            {"saved", QJsonObject{{"address", "192.0.2.1"}, {"name", "old"}, {"ready", true},
+                {"hostCert", "pinned"}, {"clientCert", "client"}, {"hostId", "stable"}}}}}}));
+        {
+            HostManager host(nullptr, dir.path()+"/host");
+            PeerManager manager(&host,cert,key,path,0,QHostAddress::LocalHost);
+            QSignalSpy updated(&manager,&PeerManager::peerBound);
+            QVERIFY(manager.editPeer("saved", "My desktop", "desktop.example", 48989, 48991));
+            QCOMPARE(updated.size(), 1);
+            const auto saved = PeerStore::read(path+"/peers.json");
+            QVERIFY(!manager.editPeer("saved", "bad", "https://host/path", 48989, 48991));
+            QVERIFY(!manager.editPeer("saved", "bad", "host", 65535, 48991));
+            QVERIFY(!manager.editPeer("missing", "bad", "host", 48989, 48991));
+            QCOMPARE(PeerStore::read(path+"/peers.json"), saved);
+        }
+        HostManager host(nullptr, dir.path()+"/host");
+        PeerManager manager(&host,cert,key,path,0,QHostAddress::LocalHost);
+        const auto peer = manager.peers().first().toMap();
+        QCOMPARE(peer["address"].toString(), QString("desktop.example"));
+        QCOMPARE(peer["name"].toString(), QString("My desktop"));
+        QCOMPARE(peer["hostCert"].toString(), QString("pinned"));
+        QVERIFY(manager.editPeer("saved", "IPv6 desktop", "2001:db8::1", 48989, 48991));
+        QCOMPARE(manager.peers().first().toMap()["requestedAddress"].toString(), QString("[2001:db8::1]:48991"));
+    }
     void fractionalOutputScale() {
         QCOMPARE(DeskPortDisplay::scaleForOutput({2880, 1620}, {1920, 1080}, 2.0), 1.5);
         QCOMPARE(DeskPortDisplay::scaleForOutput({3840, 2160}, {1920, 1080}, 1.0), 2.0);
@@ -180,6 +210,7 @@ private slots:
             QTRY_COMPARE_WITH_TIMEOUT(aDone.size(),1,7000);
             QTRY_COMPARE_WITH_TIMEOUT(bDone.size(),1,7000);
             QCOMPARE(a.peers().first().toMap()["address"].toString(), QString("localhost"));
+            QCOMPARE(b.peers().first().toMap()["address"].toString(), QHostInfo::localHostName());
             QVERIFY(a.peers().first().toMap()["ready"].toBool()); QVERIFY(b.peers().first().toMap()["ready"].toBool());
             auto clients=PeerStore::read(dir.path()+"/ah/state.json")["root"].toObject()["named_devices"].toArray();
             QCOMPARE(clients.size(),1); QCOMPARE(QSslCertificate(clients[0].toObject()["cert"].toString().toUtf8()),QSslCertificate(bCert));

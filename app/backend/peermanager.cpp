@@ -13,6 +13,7 @@
 #include <QDateTime>
 #include <functional>
 #include <QDebug>
+#include <QRegularExpression>
 
 namespace {
 constexpr int MaxFrame = 32768;
@@ -27,6 +28,12 @@ QString requestedHost(const QString& endpoint) {
 }
 QString trustId(const QString& fp) {
     return fp.mid(0,8)+"-"+fp.mid(8,4)+"-"+fp.mid(12,4)+"-"+fp.mid(16,4)+"-"+fp.mid(20,12);
+}
+QString dnsName(const QString& value) {
+    const QString name = value.trimmed();
+    static const QRegularExpression syntax(QStringLiteral(
+        "^(?=.{1,253}$)[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\\.?$"));
+    return QHostAddress(name).isNull() && syntax.match(name).hasMatch() ? name : QString();
 }
 class Listener : public QTcpServer {
 public:
@@ -61,7 +68,9 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
     // Recover the locally entered endpoint without changing the pinned identity.
     for (auto it = m_Peers.begin(); it != m_Peers.end(); ++it) {
         auto peer = it.value().toObject();
-        const auto hostName = requestedHost(peer["requestedAddress"].toString());
+        const auto requested = requestedHost(peer["requestedAddress"].toString());
+        const auto storedName = dnsName(peer["address"].toString());
+        const auto hostName = !storedName.isEmpty() ? storedName : requested;
         if (!hostName.isEmpty()) {
             if (!peer.contains("resolvedAddress")) peer["resolvedAddress"] = peer["address"];
             peer["address"] = hostName;
@@ -124,6 +133,7 @@ bool PeerManager::save() { return PeerStore::write(m_Path, {{"version", 1}, {"pe
 QJsonObject PeerManager::metadata() const {
     auto meta = m_Host->identity();
     meta["name"] = QHostInfo::localHostName().left(64);
+    meta["dnsName"] = dnsName(QHostInfo::localHostName());
     meta["version"] = 1;
     meta["adaptiveDisplay"] = m_Host->adaptiveDisplayAvailable() ? 1 : 0;
     meta["bindingPort"] = int(m_Server->serverPort());
@@ -155,7 +165,8 @@ void PeerManager::attach(Link* link) {
         const auto address = link->socket->peerAddress().toString();
         for (auto it = m_Peers.begin(); it != m_Peers.end(); ++it) {
             const auto peer = it.value().toObject();
-            if (!link->incoming && (((peer["address"].toString() == address || peer["resolvedAddress"].toString() == address) && peer["bindingPort"].toInt(48991) == link->socket->peerPort()) ||
+            if (!link->incoming && (((peer["address"].toString() == address || peer["resolvedAddress"].toString() == address ||
+                 peer["address"].toString().compare(requestedHost(link->requestedAddress), Qt::CaseInsensitive) == 0) && peer["bindingPort"].toInt(48991) == link->socket->peerPort()) ||
                  (!link->requestedAddress.isEmpty() && peer["requestedAddress"].toString() == link->requestedAddress)) &&
                     it.key() != link->fingerprint) {
                 fail(link, tr("This address has a different device key. Remove the old binding before replacing it.")); return;
@@ -220,8 +231,22 @@ bool PeerManager::acceptMetadata(Link* link, const QJsonObject& metadata) {
         metadata["name"].toString().trimmed().isEmpty() || metadata["name"].toString().size() > 64) return false;
     link->peer = metadata;
     link->peer["resolvedAddress"] = link->socket->peerAddress().toString();
-    const auto hostName = requestedHost(link->requestedAddress);
-    link->peer["address"] = hostName.isEmpty() ? link->socket->peerAddress().toString() : hostName;
+    const auto previous = m_Peers.value(link->fingerprint).toObject();
+    const auto requested = requestedHost(link->requestedAddress);
+    QString address = dnsName(requested);
+    if (address.isEmpty()) address = dnsName(previous["address"].toString());
+    if (address.isEmpty()) address = dnsName(requestedHost(previous["requestedAddress"].toString()));
+    if (address.isEmpty()) address = dnsName(metadata["dnsName"].toString());
+    // Older DeskPort versions advertised localHostName in name. Accept only
+    // hostname syntax here, never a friendly display label containing spaces.
+    if (address.isEmpty() && !metadata.contains("dnsName")) address = dnsName(metadata["name"].toString());
+    if (address.isEmpty()) address = requested.isEmpty() ? link->socket->peerAddress().toString() : requested;
+    // Only locally chosen aliases may override the remote display name.
+    if (previous["customName"].toBool()) {
+        link->peer["name"] = previous["name"];
+        link->peer["customName"] = true;
+    }
+    link->peer["address"] = address;
     link->peer["requestedAddress"] = link->requestedAddress;
     link->peer["clientCert"] = QString::fromUtf8(link->socket->peerCertificate().toPem());
     return true;
@@ -346,6 +371,35 @@ void PeerManager::fail(Link* link, const QString& message) {
 void PeerManager::cancel() { if (m_Link) fail(m_Link, tr("Binding cancelled. Review saved access if approval had already completed.")); }
 void PeerManager::restoreHosts() {
     for (const auto& peer : m_Peers) if (peer.toObject()["ready"].toBool()) emit peerBound(peer.toObject().toVariantMap());
+}
+bool PeerManager::editPeer(const QString& fp, const QString& nameValue,
+                           const QString& addressValue, int hostPort, int bindingPort) {
+    auto reject = [this](const QString& message) {
+        m_Status = message; emit changed(); return false;
+    };
+    if (busy() || m_DisplayLink) return reject(tr("Finish the current connection before editing this device."));
+    if (!m_Peers.contains(fp)) return reject(tr("This saved device no longer exists."));
+    const auto name = nameValue.trimmed();
+    QString address = addressValue.trimmed();
+    if (address.startsWith('[') && address.endsWith(']')) address = address.mid(1, address.size() - 2);
+    if (name.isEmpty() || name.size() > 64 || name.contains(QRegularExpression("[\\x00-\\x1f\\x7f]")))
+        return reject(tr("Enter a device name between 1 and 64 characters."));
+    if (dnsName(address).isEmpty() && QHostAddress(address).isNull())
+        return reject(tr("Enter a domain name or IP address without a port or URL path."));
+    if (hostPort < 1024 || hostPort > 65514 || bindingPort < 1 || bindingPort > 65535)
+        return reject(tr("Enter valid host and binding ports."));
+    auto peer = m_Peers[fp].toObject();
+    peer["name"] = name; peer["customName"] = true;
+    peer["address"] = address;
+    peer["hostPort"] = hostPort; peer["bindingPort"] = bindingPort;
+    peer["requestedAddress"] = (address.contains(':') ? "[" + address + "]" : address) + ":" + QString::number(bindingPort);
+    peer.remove("resolvedAddress");
+    const auto old = m_Peers;
+    m_Peers[fp] = peer;
+    if (!save()) { m_Peers = old; return reject(tr("Could not save device information. Please retry.")); }
+    if (peer["ready"].toBool()) emit peerBound(peer.toVariantMap());
+    m_Status = tr("Device information saved. Reconnect to use the updated address.");
+    emit changed(); return true;
 }
 void PeerManager::revoke(const QString& fp) {
     if (busy() || !m_Peers.contains(fp)) return;

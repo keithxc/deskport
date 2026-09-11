@@ -181,7 +181,12 @@ Item {
             gc()
 
             // Run the streaming session to completion
-            session.exec(Window.window)
+            // Finish Loader incubation before entering the nested streaming
+            // event loop. Adaptive continuation replaces this page; doing so
+            // inside onLoaded destroys the incubator that is still executing.
+            Qt.callLater(function() {
+                if (session) session.exec(Window.window)
+            })
         }
 
         sourceComponent: Item {}

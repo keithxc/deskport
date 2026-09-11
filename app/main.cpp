@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include "backend/hostmanager.h"
 #include "backend/peermanager.h"
+#include "backend/singleinstance.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
@@ -603,6 +604,14 @@ int main(int argc, char *argv[])
 
     GlobalCommandLineParser parser;
     GlobalCommandLineParser::ParseResult commandLineParserResult = parser.parse([&app] { auto args = app.arguments(); args.removeAll("--share"); args.removeAll("--no-host-autostart"); return args; }());
+    SingleInstance instance;
+    bool pendingActivation = false;
+    instance.activate = [&] { pendingActivation = true; };
+    if ((commandLineParserResult == GlobalCommandLineParser::NormalStartRequested ||
+         commandLineParserResult == GlobalCommandLineParser::StreamRequested) && !instance.start()) {
+        if (!instance.delivered) qWarning() << "DeskPort is already starting or its activation endpoint is unavailable";
+        return instance.delivered ? 0 : 1;
+    }
     switch (commandLineParserResult) {
     case GlobalCommandLineParser::ListRequested:
         // Don't log to the console since it will jumble the command output
@@ -756,6 +765,21 @@ int main(int argc, char *argv[])
         QTimer::singleShot(0, &hostManager, [&hostManager] { hostManager.start(2560, 1440); });
     }
     QQmlApplicationEngine engine;
+    auto recall = [&engine, &pendingActivation] {
+        if (Session::get()) {
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortRecallWindow;
+            SDL_PushEvent(&event);
+            return;
+        }
+        if (engine.rootObjects().isEmpty()) { pendingActivation = true; return; }
+        if (auto window = qobject_cast<QWindow*>(engine.rootObjects().first())) {
+            if (window->windowState() == Qt::WindowMinimized) window->showNormal();
+            else window->show();
+            window->raise(); window->requestActivate();
+        }
+    };
+    instance.activate = recall;
+    QObject::connect(&hostManager, &HostManager::openRequested, &app, recall);
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
     engine.rootContext()->setContextProperty("peerManager", &peerManager);
     engine.rootContext()->setContextProperty("startSharingPage", app.arguments().contains("--share"));
@@ -814,6 +838,7 @@ int main(int argc, char *argv[])
         engine.load(QUrl(QStringLiteral("qrc:/gui/main.qml")));
         if (engine.rootObjects().isEmpty())
             return -1;
+        if (pendingActivation) recall();
     }
 
     int err = app.exec();

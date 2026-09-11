@@ -67,6 +67,7 @@ public:
     Q_INVOKABLE void permission(const QString &kind);
     Q_INVOKABLE void openLogs();
 signals:
+    void openRequested();
     void changed();
     void permissionsChanged();
     void trustUpdated(bool success);

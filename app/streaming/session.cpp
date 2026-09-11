@@ -1910,9 +1910,11 @@ void Session::exec(QWindow* qtWindow)
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         QCoreApplication::sendPostedEvents();
 
-        // SDL is in charge now. Wait until the streaming thread exits
-        // to further update the Qt window.
-        execThread.wait();
+        // Keep tray and local activation requests responsive while SDL owns
+        // its window on the worker. Recall itself is queued to that owner.
+        while (!execThread.wait(10)) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+        }
     }
     else {
         // Run the streaming session on the main thread for Windows and macOS
@@ -2246,6 +2248,9 @@ void Session::execInternal()
 
         case SDL_USEREVENT:
             switch (event.user.code) {
+            case DeskPortRecallWindow:
+                recallDesktopWindow(m_Window);
+                break;
             case SDL_CODE_FRAME_READY:
                 if (m_VideoDecoder != nullptr) {
                     m_VideoDecoder->renderFrameOnMainThread();

@@ -121,10 +121,9 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     });
     auto menu = new QMenu;
     auto show = menu->addAction(tr("Open DeskPort"));
-    connect(show, &QAction::triggered, this, [] {
-        for (auto window : QGuiApplication::topLevelWindows()) {
-            if (window->type() == Qt::Window) { window->show(); window->raise(); window->requestActivate(); break; }
-        }
+    connect(show, &QAction::triggered, this, &HostManager::openRequested);
+    connect(&m_Tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
+        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) emit openRequested();
     });
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
     connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, [] { qApp->quit(); });

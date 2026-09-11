@@ -482,12 +482,13 @@ QVector<NvAddress> NvComputer::uniqueAddresses() const
     QReadLocker readLocker(&lock);
     QVector<NvAddress> uniqueAddressList;
 
-    // Start with addresses correctly ordered
+    // An explicitly configured endpoint takes precedence over cached discovery
+    // and last-session IPs, so DNS corrections take effect on the next poll.
+    uniqueAddressList.append(manualAddress);
     uniqueAddressList.append(activeAddress);
     uniqueAddressList.append(localAddress);
     uniqueAddressList.append(remoteAddress);
     uniqueAddressList.append(ipv6Address);
-    uniqueAddressList.append(manualAddress);
 
     // Prune duplicates (always giving precedence to the first)
     for (int i = 0; i < uniqueAddressList.count(); i++) {
