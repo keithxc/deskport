@@ -459,6 +459,17 @@ void HostManager::completeSetup() {
     if (!m_Isolated && !QSettings().contains("host/startAtLogin")) setLoginStart(true);
     emit permissionsChanged();
 }
+QString HostManager::readiness() const {
+    bool pending = false;
+    for (const auto& value : permissions()) {
+        const auto permission = value.toMap();
+        if (permission.value("key") == "microphone") continue;
+        const auto state = permission.value("state").toString();
+        if (state == "denied" || state == "needsSetup" || state == "restricted") return "attention";
+        if (state != "allowed") pending = true;
+    }
+    return pending ? "unverified" : "allowed";
+}
 void HostManager::refreshPermissions() { emit permissionsChanged(); }
 QVariantList HostManager::permissions() const {
     QVariantList result;

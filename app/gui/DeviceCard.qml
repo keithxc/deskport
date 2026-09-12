@@ -2,31 +2,49 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 Rectangle {
-    property string deviceName
-    property string address
+    id: card
+    property string deviceName: ""
+    property string address: ""
     property bool online: false
     property bool paired: false
     property bool unknown: false
     property bool selected: false
+    property bool compact: false
+    property bool favorite: false
+    property bool activeSession: false
+    property bool anotherSession: false
     signal moreRequested()
-    radius: 14
+    signal activateRequested()
+    readonly property string actionText: activeSession ? qsTr("Return to desktop") : anotherSession ? qsTr("View details") : unknown ? qsTr("Checking…") : !online ? qsTr("Troubleshoot") : paired ? qsTr("Connect") : qsTr("Set up access")
+    radius: ui.radius
     color: selected ? ui.raised : ui.surface
-    border.color: selected ? ui.accent : ui.line
-    ColumnLayout {
-        anchors.fill: parent; anchors.margins: 20; spacing: 12
-        RowLayout {
-            Layout.fillWidth: true
-            Rectangle {
-                width: 38; height: 32; radius: 6; color: ui.raised
-                Rectangle { anchors.centerIn: parent; width: 22; height: 15; radius: 2; color: "transparent"; border.color: ui.accent; border.width: 1.5 }
+    border.color: selected || activeSession ? ui.accent : ui.line
+    border.width: selected ? 2 : 1
+    GridLayout {
+        anchors.fill: parent; anchors.margins: card.compact ? 12 : 16
+        columns: card.compact ? 3 : 2
+        columnSpacing: 12; rowSpacing: 8
+        ColumnLayout {
+            Layout.fillWidth: true; Layout.columnSpan: card.compact ? 1 : 2
+            spacing: 4
+            Label { text: (card.favorite ? "★  " : "") + card.deviceName; textFormat: Text.PlainText; font.pixelSize: ui.title; font.weight: Font.DemiBold; color: ui.text; elide: Text.ElideRight; Layout.fillWidth: true }
+            Label {
+                text: card.activeSession ? qsTr("Connected") : card.unknown ? qsTr("Checking availability") : card.online ? qsTr("Online") : qsTr("Offline")
+                color: card.online || card.activeSession ? ui.accent : ui.muted; font.pixelSize: ui.small
+                Layout.fillWidth: true; elide: Text.ElideRight
             }
-            Item { Layout.fillWidth: true }
-            Label { text: unknown ? qsTr("Checking") : online ? qsTr("Online") : qsTr("Offline"); color: online ? ui.accent : ui.muted; font.pixelSize: 12 }
-            ToolButton { text: "⋯"; Accessible.name: qsTr("Device actions"); onClicked: moreRequested() }
         }
-        Label { text: deviceName; textFormat: Text.PlainText; font.pixelSize: 21; font.weight: Font.DemiBold; color: ui.text; elide: Text.ElideRight; Layout.fillWidth: true }
-        Label { text: address.length ? address : qsTr("Looking for an address"); textFormat: Text.PlainText; color: ui.muted; elide: Text.ElideMiddle; Layout.fillWidth: true; font.pixelSize: 12 }
-        Rectangle { height: 1; color: ui.line; Layout.fillWidth: true }
-        Label { text: unknown ? qsTr("Checking connection…") : !online ? qsTr("Unavailable · check device or network") : paired ? qsTr("Connect to desktop  →") : qsTr("Set up access  →"); color: online ? ui.accent : ui.muted; font.pixelSize: 13 }
+        UiButton {
+            text: card.actionText; highlighted: card.activeSession || (card.online && card.paired && !card.anotherSession)
+            enabled: !card.unknown || card.activeSession || card.anotherSession
+            Layout.fillWidth: !card.compact
+            onClicked: card.activateRequested()
+            Accessible.name: text + " · " + card.deviceName
+        }
+        ToolButton {
+            text: "⋯"; implicitWidth: 36
+            Accessible.name: qsTr("Device actions") + " · " + card.deviceName
+            onClicked: card.moreRequested()
+        }
     }
 }

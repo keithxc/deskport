@@ -6,9 +6,16 @@
 #include <QQuickItem>
 #include <QTranslator>
 #include <functional>
+#include <QAbstractListModel>
+#include <QDir>
 #include "peermanager.h"
 #include "singleinstance.h"
 
+static QQuickItem* findVisual(QQuickItem* item, const QString& name) {
+    if (item->objectName() == name) return item;
+    for (auto child : item->childItems()) if (auto found = findVisual(child, name)) return found;
+    return nullptr;
+}
 static QByteArray credential(const char* name) {
     QFile f(qEnvironmentVariable(name)); if (!f.open(QIODevice::ReadOnly)) return {}; return f.readAll();
 }
@@ -16,6 +23,10 @@ class TestSession : public QObject {
     Q_OBJECT
 public:
     using QObject::QObject;
+    Q_PROPERTY(QString hostId READ hostId CONSTANT)
+    Q_PROPERTY(QString hostName READ hostName CONSTANT)
+    QString hostId() const { return "device-a"; }
+    QString hostName() const { return "Studio"; }
     int executions = 0;
     QQuickWindow* receivedWindow = nullptr;
     TestSession* next = nullptr;
@@ -32,6 +43,37 @@ signals:
     void quitStarting();
     void sessionFinished(int result);
     void readyForDeletion();
+};
+class TestComputers : public QAbstractListModel {
+    Q_OBJECT
+public:
+    using QAbstractListModel::QAbstractListModel;
+    Q_INVOKABLE void initialize(QObject*) {}
+    Q_INVOKABLE void refreshFavorites() {}
+    int rowCount(const QModelIndex& parent = {}) const override { return parent.isValid() ? 0 : 2; }
+    QHash<int,QByteArray> roleNames() const override {
+        return {{Qt::UserRole,"name"},{Qt::UserRole+1,"hostId"},{Qt::UserRole+2,"online"},
+        {Qt::UserRole+3,"paired"},{Qt::UserRole+4,"statusUnknown"},{Qt::UserRole+5,"address"},
+        {Qt::UserRole+6,"favorite"},{Qt::UserRole+7,"sourceIndex"},{Qt::UserRole+8,"details"},
+        {Qt::UserRole+9,"serverSupported"},{Qt::UserRole+10,"wakeable"}};
+    }
+    QVariant data(const QModelIndex& index,int role) const override {
+        const bool first = index.row() == 0;
+        switch(role-Qt::UserRole) {
+        case 0: return first ? "Studio" : "Travel laptop";
+        case 1: return first ? "device-a" : "device-b";
+        case 2: case 3: case 9: return true;
+        case 4: case 10: return false;
+        case 5: return "example.invalid";
+        case 6: return first;
+        case 7: return first ? 1 : 0;
+        case 8: return "Synthetic device details";
+        default: return {};
+        }
+    }
+signals:
+    void pairingCompleted(QVariant error);
+    void connectionTestCompleted(int result,QString ports);
 };
 static QString desktopTestState;
 static TestSession* desktopTestSession;
@@ -54,6 +96,20 @@ public:
     using QObject::QObject;
     enum Language { LANG_AUTO, LANG_EN, LANG_FR, LANG_ZH_CN, LANG_DE, LANG_NB_NO, LANG_RU, LANG_ES, LANG_JA, LANG_VI, LANG_TH, LANG_KO, LANG_HU, LANG_NL, LANG_SV, LANG_TR, LANG_UK, LANG_ZH_TW, LANG_PT, LANG_PT_BR, LANG_EL, LANG_IT, LANG_HI, LANG_PL, LANG_CS, LANG_HE, LANG_CKB, LANG_LT, LANG_ET };
     Q_ENUM(Language)
+};
+class PreviewHost : public HostManager {
+    Q_OBJECT
+    Q_PROPERTY(QString deviceName READ previewName CONSTANT)
+    Q_PROPERTY(QVariantList permissions READ previewPermissions NOTIFY permissionsChanged)
+    Q_PROPERTY(QString readiness READ previewReadiness NOTIFY permissionsChanged)
+public:
+    using HostManager::HostManager;
+    QString previewName() const { return "This computer"; }
+    QString previewReadiness() const { return "attention"; }
+    QVariantList previewPermissions() const {
+        return {QVariantMap{{"key","screen"},{"title","Screen recording"},{"purpose","Synthetic screen permission"},{"state","allowed"}},
+                QVariantMap{{"key","input"},{"title","Keyboard and pointer"},{"purpose","Synthetic input permission"},{"state","needsSetup"}}};
+    }
 };
 class UiPages : public QObject {
     Q_OBJECT
@@ -81,13 +137,15 @@ private slots:
         QVERIFY(restarted.start(directory.path()));
     }
     void initTestCase() {
+        qmlRegisterType<TestComputers>("ComputerModel",1,0,"ComputerModel");
+        qmlRegisterSingletonType<QObject>("AutoUpdateChecker",1,0,"AutoUpdateChecker",+[](QQmlEngine*,QJSEngine*) -> QObject* { return new QObject; });
         qmlRegisterType<TestSession>("Session",1,0,"Session");
         qmlRegisterType<TestDesktopApps>("AppModel",1,0,"AppModel");
         qmlRegisterSingletonType<QObject>("SdlGamepadKeyNavigation",1,0,"SdlGamepadKeyNavigation",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
             QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { function enable() {} function disable() {} function getConnectedGamepads() { return 0 } }",QUrl()); return c.create();
         });
         qmlRegisterSingletonType<QObject>("ComputerManager",1,0,"ComputerManager",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
-            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { signal quitAppCompleted(var error) }",QUrl()); return c.create();
+            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { signal quitAppCompleted(var error); signal computerAddCompleted(bool success, bool blocked); function startPolling() {} function stopPollingAsync() {} }",QUrl()); return c.create();
         });
         qmlRegisterType<TestPreferences>("TestPreferences",1,0,"TestPreferences");
         qmlRegisterSingletonType<TestPreferences>("StreamingPreferences",1,0,"StreamingPreferences",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
@@ -95,6 +153,7 @@ private slots:
             c.setData(R"(import QtQuick 2.9
 import TestPreferences 1.0
 TestPreferences {
+ property int uiTheme: 0; property bool compactDevices: true; property int uiDisplayMode: 0
  property int language: 1; property int retranslations: 0
  function retranslate() { retranslations++; return true }
  property int width: 2048; property int height: 1152; property int fps: 75; property int bitrateKbps: 125000
@@ -105,7 +164,7 @@ TestPreferences {
 })",QUrl()); return c.create();
         });
         qmlRegisterSingletonType<QObject>("SystemProperties",1,0,"SystemProperties",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
-            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool hasBrowser: false }",QUrl()); return c.create();
+            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool hasBrowser: false; property bool hasDesktopEnvironment: true; property bool isWow64: false; property bool hasHardwareAcceleration: true; property bool isRunningXWayland: false; property string unmappedGamepads: \"\"; property string friendlyNativeArchName: \"test\"; property string versionString: \"test\" }",QUrl()); return c.create();
         });
     }
     void continuationDuringNestedEventLoop() {
@@ -359,9 +418,140 @@ ApplicationWindow {
                 QVERIFY(QMetaObject::invokeMethod(keys,"activated",Q_ARG(int,2)));
                 QCOMPARE(prefs->property("captureSysKeysMode").toInt(),2);
                 QCOMPARE(prefs->property("saves").toInt(),5);
+                auto preset=page->findChild<QObject*>("qualityPreset"); QVERIFY(preset);
+                for(int index=1;index<=3;++index) {
+                    QVERIFY(QMetaObject::invokeMethod(preset,"activated",Q_ARG(int,index)));
+                    QCOMPARE(prefs->property("fps").toInt(),index==1 ? 30 : 60);
+                    QCOMPARE(prefs->property("bitrateKbps").toInt(),index==1 ? 10000 : index==2 ? 40000 : 15000);
+                    QCOMPARE(prefs->property("width").toInt(),2560);
+                    QVERIFY(prefs->property("adaptiveResolution").toBool());
+                }
+                auto themeChoice=page->findChild<QObject*>("themeChoice"); QVERIFY(themeChoice);
+                QVERIFY(QMetaObject::invokeMethod(themeChoice,"activated",Q_ARG(int,2)));
+                QCOMPARE(prefs->property("uiTheme").toInt(),2);
+                QCOMPARE(prefs->property("saves").toInt(),9);
             }
         }
-        const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign"));
+        const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign|Missing parent|Component is not ready"));
+        QVERIFY2(bad.isEmpty(),qPrintable(bad.join('\n')));
+    }
+    void navigationAndDeviceIdentity() {
+        QTemporaryDir directory;
+        PreviewHost host(nullptr,directory.path()+"/host");
+        PeerManager peers(&host,credential("TEST_CERT_A"),credential("TEST_KEY_A"),directory.path()+"/peers",0,QHostAddress::LocalHost);
+        TestSession session;
+        QQmlEngine::setObjectOwnership(&session,QQmlEngine::CppOwnership);
+        QQmlEngine engine;
+        engine.rootContext()->setContextProperty("hostManager", &host);
+        engine.rootContext()->setContextProperty("peerManager", &peers);
+        engine.rootContext()->setContextProperty("initialView", QString("qrc:/gui/PcView.qml"));
+        engine.rootContext()->setContextProperty("startInBackground", true);
+        engine.rootContext()->setContextProperty("startSharingPage", false);
+        engine.rootContext()->setContextProperty("testSession", &session);
+        QFile source(qEnvironmentVariable("TEST_GUI_DIR")+"/main.qml"); QVERIFY(source.open(QIODevice::ReadOnly));
+        auto qml=source.readAll();
+        qml.insert(qml.lastIndexOf('}'), R"(
+ function testStart() { stackView.push("qrc:/gui/StreamSegue.qml", {session:testSession, appName:"Desktop"}, StackView.Immediate) }
+ function testSettings() { showDevices(); navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome") }
+ function testSharing() { showDevices(); navigateTo("qrc:/gui/HostView.qml", "HostView") }
+ function testGrid() { return stackView.currentItem }
+ function testCards() { StreamingPreferences.compactDevices = false }
+ function testSameSettings() { navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome") }
+ property alias testDepth: stackView.depth
+ property alias testCurrentPage: stackView.currentItem
+)");
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        QQmlComponent component(&engine); component.setData(qml,QUrl("qrc:/gui/main-test.qml"));
+        QScopedPointer<QObject> root(component.create()); QVERIFY2(root,qPrintable(component.errorString()));
+        auto window=qobject_cast<QQuickWindow*>(root.data()); QVERIFY(window);
+        window->resize(800,620); window->show(); QTest::qWait(100);
+        QCOMPARE(root->property("testDepth").toInt(),2);
+        // Discard only initial setup navigation, which is scheduled once.
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"showDevices"));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"testStart"));
+        QTRY_COMPARE(session.executions,1);
+        QCOMPARE(root->property("activeHostId").toString(),QString("device-a"));
+        int recalls=0;
+        connect(&host,&HostManager::viewerRecallRequested,this,[&]{recalls++;});
+        for(int i=0;i<50;++i) {
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"showDevicesDuringSession"));
+            QCOMPARE(root->property("testDepth").toInt(),3);
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testSettings"));
+            QCOMPARE(root->property("testDepth").toInt(),4);
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testSameSettings"));
+            QCOMPARE(root->property("testDepth").toInt(),4);
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testSharing"));
+            QCOMPARE(root->property("testDepth").toInt(),4);
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"prepareViewerRecall"));
+            QCOMPARE(root->property("testDepth").toInt(),2);
+            QTest::qWait(20);
+        }
+        QCOMPARE(session.executions,1);
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"showDevicesDuringSession"));
+        QTest::qWait(150);
+        auto grid=root->property("testCurrentPage").value<QObject*>(); QVERIFY(grid);
+        QCOMPARE(grid->property("count").toInt(),2);
+        auto gridItem=qobject_cast<QQuickItem*>(grid); QVERIFY(gridItem);
+        auto a=findVisual(gridItem,"device-device-a");
+        auto b=findVisual(gridItem,"device-device-b");
+        QVERIFY(a); QVERIFY(b);
+        auto cardB=b->property("contentItem").value<QObject*>(); QVERIFY(cardB);
+        auto cardA=a->property("contentItem").value<QObject*>(); QVERIFY(cardA);
+        QVERIFY(QMetaObject::invokeMethod(cardB,"activateRequested"));
+        QCOMPARE(recalls,0);
+        QVERIFY(QMetaObject::invokeMethod(cardA,"activateRequested"));
+        QCOMPARE(recalls,1);
+        auto header=findVisual(gridItem,"deviceHeader"); QVERIFY(header);
+        auto first=qobject_cast<QQuickItem*>(a); QVERIFY(first);
+        QVERIFY(first->mapToScene(QPointF()).y() >= header->mapToScene(QPointF(0,header->height())).y());
+        // Capture only synthetic pages, never the user's running application.
+        const QString shots=qEnvironmentVariable("DESKPORT_UI_SCREENSHOTS");
+        if(!shots.isEmpty()) {
+            QDir().mkpath(shots);
+            // Dismiss the synthetic details dialog before screenshots.
+            auto details=grid->findChild<QObject*>("deviceDetails"); QVERIFY(details);
+            QVERIFY(QMetaObject::invokeMethod(details,"close"));
+            window->resize(800,620); QTest::qWait(400);
+            QVERIFY(window->grabWindow().save(shots+"/devices.png"));
+            auto buttons=a->findChildren<QObject*>();
+            for(auto button : buttons) if(button->property("text").toString()=="Return to desktop" && button->property("highlighted").isValid()) {
+                auto content=button->property("contentItem").value<QObject*>(); QVERIFY(content);
+                QCOMPARE(content->property("color").value<QColor>(), QColor("#ffffff"));
+            }
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testSharing"));
+            window->resize(640,620); QTest::qWait(400);
+            QVERIFY(window->grabWindow().save(shots+"/sharing-narrow.png"));
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testSettings"));
+            QTest::qWait(400); QVERIFY(window->grabWindow().save(shots+"/settings-narrow.png"));
+            auto settings=root->property("testCurrentPage").value<QObject*>(); QVERIFY(settings);
+            auto choice=settings->findChild<QObject*>("themeChoice"); QVERIFY(choice);
+            QVERIFY(QMetaObject::invokeMethod(choice,"activated",Q_ARG(int,2)));
+            QTest::qWait(100); QVERIFY(window->grabWindow().save(shots+"/settings-dark.png"));
+            auto sections=settings->findChild<QObject*>("settingsSections"); QVERIFY(sections);
+            sections->setProperty("currentIndex",5);
+            QTest::qWait(100); QVERIFY(window->grabWindow().save(shots+"/appearance-dark.png"));
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"showDevicesDuringSession"));
+            window->resize(1120,760); QTest::qWait(100);
+            QVERIFY(window->grabWindow().save(shots+"/devices-dark.png"));
+            QVERIFY(QMetaObject::invokeMethod(root.data(),"testCards"));
+            QTest::qWait(100);
+            auto current=root->property("testCurrentPage").value<QObject*>(); QVERIFY(current);
+            QVERIFY(!current->property("compact").toBool());
+            QVERIFY(window->grabWindow().save(shots+"/cards-dark.png"));
+            window->resize(640,620); QTest::qWait(100);
+            QVERIFY(current->property("compact").toBool());
+            QTranslator chinese;
+            QVERIFY(chinese.load(qEnvironmentVariable("TEST_GUI_DIR")+"/../languages/qml_zh_CN.qm"));
+            QVERIFY(QCoreApplication::installTranslator(&chinese)); engine.retranslate();
+            QTest::qWait(100); QVERIFY(window->grabWindow().save(shots+"/devices-chinese-narrow.png"));
+            QCoreApplication::removeTranslator(&chinese); engine.retranslate();
+        }
+        emit session.sessionFinished(0);
+        QTRY_COMPARE(root->property("testDepth").toInt(),1);
+        QVERIFY(root->property("activeHostId").toString().isEmpty());
+        emit session.readyForDeletion(); QTest::qWait(50);
+        const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign|Missing parent|Component is not ready"));
         QVERIFY2(bad.isEmpty(),qPrintable(bad.join('\n')));
     }
     void commonLanguagesRetranslateSettings() {

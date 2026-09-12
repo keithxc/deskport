@@ -18,6 +18,9 @@ class ComputerModel : public QAbstractListModel
         ServerSupportedRole,
         AddressRole,
         HostAddressRole,
+        HostIdRole,
+        FavoriteRole,
+        SourceIndexRole,
         DetailsRole
     };
 
@@ -32,6 +35,9 @@ public:
     int rowCount(const QModelIndex &parent) const override;
 
     virtual QHash<int, QByteArray> roleNames() const override;
+
+    Q_INVOKABLE void refreshFavorites();
+    Q_INVOKABLE void setFavorite(int computerIndex, bool favorite);
 
     Q_INVOKABLE void deleteComputer(int computerIndex);
 
@@ -57,6 +63,7 @@ private slots:
     void handlePairingCompleted(NvComputer* computer, QString error);
 
 private:
+    void sortFavorites(QVector<NvComputer*>& computers) const;
     QVector<NvComputer*> m_Computers;
     ComputerManager* m_ComputerManager;
 };

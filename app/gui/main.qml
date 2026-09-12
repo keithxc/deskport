@@ -26,11 +26,11 @@ ApplicationWindow {
     }
     width: 1120
     height: 760
-    minimumWidth: 760
+    minimumWidth: 640
     minimumHeight: 560
     font.pixelSize: 14
-    UiTheme { id: ui }
-    Material.theme: Material.Dark
+    UiTheme { id: ui; mode: StreamingPreferences.uiTheme }
+    Material.theme: ui.dark ? Material.Dark : Material.Light
     Material.accent: ui.accent
     Material.primary: ui.surface
     Material.background: ui.canvas
@@ -79,26 +79,38 @@ ApplicationWindow {
         }
     }
   
-    function showDevices() { stackView.pop(null) }
-    function showDevicesDuringSession() {
-        if (!stackView.currentItem || stackView.currentItem.controlCenterForActiveSession !== true) {
+    readonly property var activeStreamPage: {
+        var count = stackView.depth
+        return stackView.find(function(item) { return item.session !== undefined && item.session !== null })
+    }
+    readonly property string activeHostId: activeStreamPage && activeStreamPage.session ? activeStreamPage.session.hostId : ""
+    readonly property string activeHostName: activeStreamPage && activeStreamPage.session ? activeStreamPage.session.hostName : ""
+    function showDevices() {
+        if (activeStreamPage) {
+            if (stackView.currentItem !== activeStreamPage) stackView.pop(activeStreamPage, StackView.Immediate)
             stackView.push(Qt.resolvedUrl("PcView.qml"), {"controlCenterForActiveSession": true}, StackView.Immediate)
-        }
+        } else stackView.pop(null)
+    }
+    function showDevicesDuringSession() {
+        showDevices()
         if (window.windowState === Qt.WindowMinimized) window.showNormal()
         else window.show()
         window.raise()
         window.requestActivate()
     }
     function prepareViewerRecall() {
-        if (stackView.currentItem && stackView.currentItem.controlCenterForActiveSession === true)
-            stackView.pop(StackView.Immediate)
+        if (activeStreamPage && stackView.currentItem !== activeStreamPage) stackView.pop(activeStreamPage, StackView.Immediate)
         window.hide()
     }
     function recallRemoteSession() { hostManager.recallViewer() }
     function goBack() {
+        if (activeStreamPage && stackView.currentItem.controlCenterForActiveSession === true) {
+            window.hide()
+            return
+        }
         if (clearOnBack) {
             // Pop all items except the first one
-            stackView.pop(null)
+            showDevices()
             clearOnBack = false
         }
         else {
@@ -110,7 +122,8 @@ ApplicationWindow {
         id: stackView
         initialItem: initialView
         anchors.fill: parent
-        anchors.leftMargin: navigationVisible ? navigation.width : 0
+        anchors.leftMargin: navigationVisible ? navigation.width + 16 : 0
+        anchors.rightMargin: navigationVisible ? 16 : 0
         anchors.topMargin: navigationVisible ? 66 : 0
         focus: true
 
@@ -140,14 +153,14 @@ ApplicationWindow {
         }
 
         Keys.onMenuPressed: {
-            settingsButton.clicked()
+            navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome")
         }
 
         // This is a keypress we've reserved for letting the
         // SdlGamepadKeyNavigation object tell us to show settings
         // when Menu is consumed by a focused control.
         Keys.onHangupPressed: {
-            settingsButton.clicked()
+            navigateTo("qrc:/gui/SettingsHome.qml", "SettingsHome")
         }
     }
 
@@ -220,17 +233,18 @@ ApplicationWindow {
 
     function navigateTo(url, objectType)
     {
+        if (objectType === "PcView") { showDevices(); return }
         var existingItem = stackView.find(function(item, index) {
-            return qmltypeof(item, objectType)
+            return qmltypeof(item, objectType) && (!activeStreamPage || index > activeStreamPage.StackView.index)
         })
 
         if (existingItem !== null) {
             // Pop to the existing item
-            stackView.pop(existingItem)
+            if (stackView.currentItem !== existingItem) stackView.pop(existingItem, StackView.Immediate)
         }
         else {
             // Create a new item
-            stackView.push(url)
+            stackView.push(url, StackView.Immediate)
         }
     }
 
@@ -246,16 +260,16 @@ ApplicationWindow {
     Rectangle {
         id: navigation
         visible: navigationVisible
-        width: window.width < 900 ? 174 : 208
+        width: window.width < 780 ? 140 : 184
         anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
         color: ui.surface
         Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: ui.line }
         ColumnLayout {
-            anchors.fill: parent; anchors.margins: 18; spacing: 8
+            anchors.fill: parent; anchors.margins: 12; spacing: 8
             RowLayout {
                 Layout.topMargin: 12; Layout.bottomMargin: 30
                 Image { source: "qrc:/res/deskport.svg"; Layout.preferredWidth: 30; Layout.preferredHeight: 30 }
-                Label { text: "DeskPort"; font.pixelSize: 22; font.weight: Font.DemiBold; color: ui.text }
+                Label { text: "DeskPort"; font.pixelSize: 18; font.weight: Font.DemiBold; color: ui.text }
             }
             Repeater {
                 model: [qsTr("Devices"), qsTr("Sharing"), qsTr("Settings")]
@@ -263,7 +277,7 @@ ApplicationWindow {
                     Layout.fillWidth: true; implicitHeight: 46
                     text: modelData; flat: true
                     highlighted: index === 0 ? qmltypeof(stackView.currentItem, "PcView") || qmltypeof(stackView.currentItem, "AppView") || qmltypeof(stackView.currentItem, "BindView") : index === 1 ? qmltypeof(stackView.currentItem, "HostView") : qmltypeof(stackView.currentItem, "SettingsHome") || qmltypeof(stackView.currentItem, "SettingsView")
-                    background: Rectangle { radius: 9; color: parent.highlighted ? ui.raised : parent.hovered ? "#252b2f" : "transparent"; border.color: parent.highlighted ? ui.line : "transparent" }
+                    background: Rectangle { radius: 9; color: parent.highlighted ? ui.raised : parent.hovered ? ui.raised : "transparent"; border.color: parent.highlighted ? ui.line : "transparent" }
                     onClicked: {
                         showDevices()
                         if (index === 1) navigateTo("qrc:/gui/HostView.qml", "HostView")
@@ -272,10 +286,10 @@ ApplicationWindow {
                 }
             }
             Item { Layout.fillHeight: true }
-            Button { text: qsTr("Getting started"); flat: true; Layout.fillWidth: true; onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
+            Button { text: qsTr("Getting started"); font.pixelSize: ui.small; leftPadding: 4; rightPadding: 4; flat: true; Layout.fillWidth: true; onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
             Rectangle { Layout.fillWidth: true; height: 1; color: ui.line }
             Label { text: hostManager.deviceName; textFormat: Text.PlainText; color: ui.text; Layout.fillWidth: true; elide: Text.ElideRight; Layout.topMargin: 12 }
-            Label { text: hostManager.running ? qsTr("Sharing on") : qsTr("Sharing off"); color: hostManager.running ? ui.accent : ui.muted; font.pixelSize: 12 }
+            Label { text: !hostManager.running ? qsTr("Sharing off") : hostManager.readiness === "attention" ? qsTr("Check permissions") : qsTr("Sharing service on"); color: hostManager.running ? ui.accent : ui.muted; font.pixelSize: 12 }
             Label { text: "DeskPort " + SystemProperties.versionString; color: ui.muted; font.pixelSize: 11; Layout.bottomMargin: 6 }
         }
     }

@@ -16,10 +16,14 @@ CenteredGridView {
     id: pcGrid
     focus: true
     activeFocusOnTab: true
-    minMargin: 28
-    topMargin: 24
+    readonly property bool compact: StreamingPreferences.compactDevices || width < 660
+    readonly property string sessionHostId: typeof window !== "undefined" ? window.activeHostId : ""
+    readonly property string sessionHostName: typeof window !== "undefined" ? window.activeHostName : ""
+    minMargin: 0
+    topMargin: 16
     bottomMargin: 5
-    cellWidth: 310; cellHeight: 235;
+    cellWidth: compact ? Math.max(280, width) : Math.max(280, width / Math.max(1, Math.floor(width / 310)))
+    cellHeight: compact ? 102 : 186
     objectName: qsTr("Devices")
 
     Component.onCompleted: {
@@ -33,6 +37,7 @@ CenteredGridView {
     // also be done in CliStartStreamSegue.qml, since this code does not run
     // for command-line initiated streams.
     StackView.onActivated: {
+        computerModel.refreshFavorites()
         // Setup signals on CM
         ComputerManager.computerAddCompleted.connect(addComplete)
 
@@ -82,7 +87,7 @@ CenteredGridView {
 
     function createModel()
     {
-        var model = Qt.createQmlObject('import ComputerModel 1.0; ComputerModel {}', parent, '')
+        var model = Qt.createQmlObject('import ComputerModel 1.0; ComputerModel {}', pcGrid, '')
         model.initialize(ComputerManager)
         model.pairingCompleted.connect(pairingComplete)
         model.connectionTestCompleted.connect(testConnectionDialog.connectionTestComplete)
@@ -98,27 +103,43 @@ CenteredGridView {
         Label { width: parent.width; text: StreamingPreferences.enableMdns ? qsTr("Nearby devices appear here automatically") : qsTr("Nearby discovery is off in Settings"); color: ui.muted; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
     }
 
-    Rectangle {
-        visible: controlCenterForActiveSession
-        z: 5
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(parent.width - 48, 620)
-        height: 58
-        radius: 10
-        color: ui.raised
-        border.color: ui.accent
-        RowLayout {
-            anchors.fill: parent; anchors.margins: 10; spacing: 12
-            Label { text: qsTr("Remote session is still running"); color: ui.text; font.weight: Font.DemiBold; Layout.fillWidth: true }
-            UiButton { text: qsTr("Return to remote desktop"); highlighted: true; onClicked: recallRemoteSession() }
+    header: Item {
+        objectName: "deviceHeader"
+        width: pcGrid.width - 12
+        height: controls.implicitHeight + 24
+        ColumnLayout {
+            id: controls; width: parent.width; spacing: ui.gap
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: sessionRow.implicitHeight + 24
+                visible: pcGrid.controlCenterForActiveSession
+                radius: ui.radius; color: ui.raised; border.color: ui.accent
+                RowLayout {
+                    id: sessionRow; anchors.fill: parent; anchors.margins: 12; spacing: 12
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Label { text: pcGrid.sessionHostName; textFormat: Text.PlainText; color: ui.text; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
+                        Label { text: qsTr("Connected · workspace stays open"); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                    }
+                    UiButton { text: qsTr("Return to desktop"); highlighted: true; onClicked: recallRemoteSession() }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Label { text: qsTr("Your computers"); font.pixelSize: ui.title; font.bold: true; color: ui.text; Layout.fillWidth: true }
+                UiButton {
+                    visible: pcGrid.width >= 660; text: pcGrid.compact ? qsTr("Card view") : qsTr("List view")
+                    onClicked: { StreamingPreferences.compactDevices = !StreamingPreferences.compactDevices; StreamingPreferences.save() }
+                }
+            }
         }
     }
 
     model: computerModel
 
     delegate: NavigableItemDelegate {
-        width: 294; height: 218;
+        objectName: "device-" + model.hostId
+        width: pcGrid.cellWidth - 12; height: pcGrid.cellHeight - 12;
         padding: 0
         background: Item {}
         grid: pcGrid
@@ -127,6 +148,10 @@ CenteredGridView {
 
         contentItem: DeviceCard {
             deviceName: model.name; address: model.address
+            compact: pcGrid.compact; favorite: model.favorite
+            activeSession: pcGrid.sessionHostId.length > 0 && model.hostId === pcGrid.sessionHostId
+            anotherSession: pcGrid.controlCenterForActiveSession && !activeSession
+            onActivateRequested: parent.clicked()
             online: model.online; paired: model.paired; unknown: model.statusUnknown
             selected: parent.hovered || parent.highlighted
             onMoreRequested: if (pcContextMenuLoader.item) pcContextMenuLoader.item.open()
@@ -144,13 +169,18 @@ CenteredGridView {
                 }
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
+                    text: model.favorite ? qsTr("Unpin device") : qsTr("Pin device")
+                    onTriggered: computerModel.setFavorite(index, !model.favorite)
+                }
+                NavigableMenuItem {
+                    parentMenu: pcContextMenu
                     text: qsTr("Applications")
                     onTriggered: {
                         var component = Qt.createComponent("AppView.qml")
-                        var appView = component.createObject(stackView, {"computerIndex": index, "objectName": model.name, "showHiddenGames": true})
+                        var appView = component.createObject(stackView, {"computerIndex": model.sourceIndex, "objectName": model.name, "showHiddenGames": true})
                         stackView.push(appView)
                     }
-                    visible: model.online && model.paired
+                    visible: model.online && model.paired && !pcGrid.controlCenterForActiveSession
                 }
                 NavigableMenuItem {
                     parentMenu: pcContextMenu
@@ -208,7 +238,11 @@ CenteredGridView {
 
         onClicked: {
             if (controlCenterForActiveSession) {
-                recallRemoteSession()
+                if (model.hostId === pcGrid.sessionHostId && pcGrid.sessionHostId.length > 0) recallRemoteSession()
+                else {
+                    showPcDetailsDialog.pcDetails = qsTr("A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.").arg(pcGrid.sessionHostName) + "\n\n" + model.details
+                    showPcDetailsDialog.open()
+                }
                 return
             }
             if (model.online) {
@@ -218,7 +252,7 @@ CenteredGridView {
                     errorDialog.open()
                 }
                 else if (model.paired) {
-                    stackView.push(Qt.resolvedUrl("DesktopSegue.qml"), {"computerIndex": index, "objectName": model.name})
+                    stackView.push(Qt.resolvedUrl("DesktopSegue.qml"), {"computerIndex": model.sourceIndex, "objectName": model.name})
                 }
                 else {
                     navigateTo("qrc:/gui/BindView.qml", "BindView")
@@ -381,6 +415,7 @@ CenteredGridView {
 
     NavigableMessageDialog {
         id: showPcDetailsDialog
+        objectName: "deviceDetails"
         property string pcDetails : "";
         text: showPcDetailsDialog.pcDetails
         imageSrc: "qrc:/res/baseline-help_outline-24px.svg"

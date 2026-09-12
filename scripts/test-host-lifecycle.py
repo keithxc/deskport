@@ -57,9 +57,13 @@ while True: time.sleep(1)
         linux_host.parent.mkdir(parents=True)
         linux_host.write_text(host.read_text())
         linux_host.chmod(0o700)
-    icons = ["baseline-error_outline-24px.svg", "deskport.svg", "deskport-tray-black.svg", "deskport-tray-white.svg"]
+    icons = ["baseline-help_outline-24px.svg", "baseline-error_outline-24px.svg", "deskport.svg", "deskport-tray-black.svg", "deskport-tray-white.svg"]
     (work / "test-resources.qrc").write_text('<RCC><qresource prefix="/res">' + ''.join(
         f'<file alias="{name}">{root}/app/res/{name}</file>' for name in icons) + '</qresource></RCC>')
+    if "--ui" in sys.argv:
+        resources = work / "test-resources.qrc"
+        resources.write_text(resources.read_text().replace('</RCC>', '<qresource prefix="/gui">' + ''.join(
+            f'<file alias="{p.name}">{p}</file>' for p in (root / "app/gui").glob("*.qml")) + '</qresource></RCC>'))
     for executable in (display, host):
         executable.chmod(0o700)
     binding = "--binding" in sys.argv or "--ui" in sys.argv or "--clipboard" in sys.argv
@@ -90,7 +94,7 @@ macx {{
                 f.write(f'\nQMAKE_CXXFLAGS += -F"{sdl}"\nINCLUDEPATH += "{sdl}/SDL2.framework/Versions/A/Headers"\nLIBS += -F"{sdl}" -framework SDL2\nQMAKE_RPATHDIR += "{sdl}"\n')
             else:
                 f.write('\nCONFIG += link_pkgconfig\nPKGCONFIG += sdl2\n')
-    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_CONTROLS_STYLE="Material")
+    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_CONTROLS_STYLE="Material", QML_DISABLE_DISK_CACHE="1", XDG_CACHE_HOME=str(work / "cache"), XDG_CONFIG_HOME=str(work / "config"))
     if binding:
         environment["TEST_GUI_DIR"] = str(root / "app/gui")
         environment["TEST_BINDING_QML"] = str(root / "app/gui/BindingApproval.qml")
@@ -101,6 +105,7 @@ macx {{
                 check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             environment[f"TEST_CERT_{name}"] = str(cert)
             environment[f"TEST_KEY_{name}"] = str(key)
+    environment.setdefault("QT_QUICK_BACKEND", "software")
     environment.setdefault("DEVELOPER_DIR", "/Applications/Xcode.app/Contents/Developer")
     subprocess.run([qmake, str(project)], cwd=work, env=environment, check=True)
     subprocess.run(["make", "-j4"], cwd=work, env=environment, check=True, stdout=subprocess.DEVNULL)

@@ -1,6 +1,8 @@
 #include "computermodel.h"
 
 #include <QThreadPool>
+#include <QSettings>
+#include <algorithm>
 
 ComputerModel::ComputerModel(QObject* object)
     : QAbstractListModel(object) {}
@@ -14,6 +16,7 @@ void ComputerModel::initialize(ComputerManager* computerManager)
             this, &ComputerModel::handlePairingCompleted);
 
     m_Computers = m_ComputerManager->getComputers();
+    sortFavorites(m_Computers);
 }
 
 QVariant ComputerModel::data(const QModelIndex& index, int role) const
@@ -25,9 +28,14 @@ QVariant ComputerModel::data(const QModelIndex& index, int role) const
     Q_ASSERT(index.row() < m_Computers.count());
 
     NvComputer* computer = m_Computers[index.row()];
+    // getComputers() takes manager and host locks. Resolve the source index
+    // before taking this host lock to avoid recursive locking / lock inversion.
+    if (role == SourceIndexRole) return m_ComputerManager->getComputers().indexOf(computer);
     QReadLocker lock(&computer->lock);
 
     switch (role) {
+    case HostIdRole: return computer->uuid;
+    case FavoriteRole: return QSettings().value("ui/favorites").toStringList().contains(computer->uuid);
     case NameRole:
         return computer->name;
     case OnlineRole:
@@ -108,6 +116,9 @@ QHash<int, QByteArray> ComputerModel::roleNames() const
 {
     QHash<int, QByteArray> names;
 
+    names[HostIdRole] = "hostId";
+    names[FavoriteRole] = "favorite";
+    names[SourceIndexRole] = "sourceIndex";
     names[NameRole] = "name";
     names[OnlineRole] = "online";
     names[PairedRole] = "paired";
@@ -237,6 +248,8 @@ void ComputerModel::handleComputerStateChanged(NvComputer* computer)
 {
     QVector<NvComputer*> newComputerList = m_ComputerManager->getComputers();
 
+    sortFavorites(newComputerList);
+
     // Reset the model if the structural layout of the list has changed
     if (m_Computers != newComputerList) {
         beginResetModel();
@@ -248,6 +261,34 @@ void ComputerModel::handleComputerStateChanged(NvComputer* computer)
         int index = m_Computers.indexOf(computer);
         if (index >= 0) emit dataChanged(createIndex(index, 0), createIndex(index, 0));
     }
+}
+
+void ComputerModel::sortFavorites(QVector<NvComputer*>& computers) const
+{
+    const auto favorites = QSettings().value("ui/favorites").toStringList();
+    std::stable_partition(computers.begin(), computers.end(), [&](NvComputer* c) {
+        QReadLocker lock(&c->lock); return favorites.contains(c->uuid);
+    });
+}
+
+void ComputerModel::setFavorite(int index, bool favorite)
+{
+    if (index < 0 || index >= m_Computers.size()) return;
+    QString id;
+    { QReadLocker lock(&m_Computers[index]->lock); id = m_Computers[index]->uuid; }
+    auto favorites = QSettings().value("ui/favorites").toStringList();
+    favorites.removeAll(id);
+    if (favorite) favorites.append(id);
+    QSettings().setValue("ui/favorites", favorites);
+    refreshFavorites();
+}
+
+void ComputerModel::refreshFavorites()
+{
+    beginResetModel();
+    m_Computers = m_ComputerManager->getComputers();
+    sortFavorites(m_Computers);
+    endResetModel();
 }
 
 #include "computermodel.moc"

@@ -2733,3 +2733,6 @@ DispatchDeferredCleanup:
     // reference.
     QThreadPool::globalInstance()->start(new DeferredSessionCleanupTask(this));
 }
+
+QString Session::hostId() const { QReadLocker lock(&m_Computer->lock); return m_Computer->uuid; }
+QString Session::hostName() const { QReadLocker lock(&m_Computer->lock); return m_Computer->name; }

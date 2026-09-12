@@ -397,6 +397,38 @@
         <source>Return to remote desktop</source>
         <translation>返回遠端桌面</translation>
     </message>
+    <message>
+        <source>Connected · workspace stays open</source>
+        <translation>已連線 · 工作區保持開啟</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>返回桌面</translation>
+    </message>
+    <message>
+        <source>Your computers</source>
+        <translation>我的電腦</translation>
+    </message>
+    <message>
+        <source>Card view</source>
+        <translation>卡片檢視</translation>
+    </message>
+    <message>
+        <source>List view</source>
+        <translation>清單檢視</translation>
+    </message>
+    <message>
+        <source>Unpin device</source>
+        <translation>取消置頂</translation>
+    </message>
+    <message>
+        <source>Pin device</source>
+        <translation>置頂裝置</translation>
+    </message>
+    <message>
+        <source>A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.</source>
+        <translation>與 %1 的工作階段仍在執行。連線其他電腦前，請從系統匣選單中斷目前連線。</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1410,6 +1442,14 @@
         <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
         <translation>DeskPort 預設使用 :48989。若共享頁顯示其他連接埠，請輸入 位址:連接埠。原生 Sunshine 預設使用 :47989。</translation>
     </message>
+    <message>
+        <source>Check permissions</source>
+        <translation>檢查權限</translation>
+    </message>
+    <message>
+        <source>Sharing service on</source>
+        <translation>共享服務已開啟</translation>
+    </message>
 </context>
 <context>
     <name>SettingsHome</name>
@@ -1595,6 +1635,78 @@
         <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
         <translation>滑鼠位於已聚焦的遠端畫面內時接管鍵盤，離開即釋放按鍵和滑鼠按鈕。點擊畫面取得焦點；系統保留快捷鍵可能仍在本機處理。</translation>
     </message>
+    <message>
+        <source>Saved · connection changes apply next time you connect.</source>
+        <translation>已儲存 · 連線設定將於下次連線時生效。</translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation>外觀</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>淺色</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>深色</translation>
+    </message>
+    <message>
+        <source>Appearance changes apply immediately.</source>
+        <translation>外觀設定立即生效。</translation>
+    </message>
+    <message>
+        <source>Connecting to remote computers</source>
+        <translation>連線遠端電腦</translation>
+    </message>
+    <message>
+        <source>Quality preset</source>
+        <translation>畫質預設</translation>
+    </message>
+    <message>
+        <source>Choose a preset…</source>
+        <translation>選擇預設…</translation>
+    </message>
+    <message>
+        <source>Office · 30 fps / 10 Mbps</source>
+        <translation>辦公 · 30 fps / 10 Mbps</translation>
+    </message>
+    <message>
+        <source>Clear · 60 fps / 40 Mbps</source>
+        <translation>清晰 · 60 fps / 40 Mbps</translation>
+    </message>
+    <message>
+        <source>Smooth · 60 fps / 15 Mbps</source>
+        <translation>流暢 · 60 fps / 15 Mbps</translation>
+    </message>
+    <message>
+        <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
+        <translation>預設僅調整幀率和頻寬，可在下方依網路情況微調。</translation>
+    </message>
+    <message>
+        <source>Fallback resolution</source>
+        <translation>備用解析度</translation>
+    </message>
+    <message>
+        <source>Sound from the remote computer</source>
+        <translation>遠端電腦的聲音</translation>
+    </message>
+    <message>
+        <source>Sharing this computer</source>
+        <translation>共享本機</translation>
+    </message>
+    <message>
+        <source>Manage incoming access, shared audio and login startup on the Sharing page.</source>
+        <translation>在共享頁管理存取授權、聲音共享和登入啟動。</translation>
+    </message>
+    <message>
+        <source>Open sharing settings</source>
+        <translation>開啟共享設定</translation>
+    </message>
+    <message>
+        <source>Picture adjustments</source>
+        <translation>畫面微調</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1633,6 +1745,38 @@
     <message>
         <source>Set up access  →</source>
         <translation>設定存取權限  →</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>返回桌面</translation>
+    </message>
+    <message>
+        <source>View details</source>
+        <translation>檢視詳細資料</translation>
+    </message>
+    <message>
+        <source>Checking…</source>
+        <translation>正在檢查…</translation>
+    </message>
+    <message>
+        <source>Troubleshoot</source>
+        <translation>排查連線</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>連線</translation>
+    </message>
+    <message>
+        <source>Set up access</source>
+        <translation>設定存取</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>已連線</translation>
+    </message>
+    <message>
+        <source>Checking availability</source>
+        <translation>正在檢查可用狀態</translation>
     </message>
 </context>
 <context>
@@ -1768,6 +1912,66 @@
     <message>
         <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
         <translation>登入啟動由這部電腦的系統設定管理，請在該處修改。</translation>
+    </message>
+    <message>
+        <source>Sharing service is running</source>
+        <translation>共享服務執行中</translation>
+    </message>
+    <message>
+        <source>Connection readiness</source>
+        <translation>連線就緒檢查</translation>
+    </message>
+    <message>
+        <source>Start sharing to accept connections.</source>
+        <translation>開啟共享以接受連線。</translation>
+    </message>
+    <message>
+        <source>Sharing needs permission. Review the items below.</source>
+        <translation>共享需要權限，請檢查以下項目。</translation>
+    </message>
+    <message>
+        <source>Service available. Verify picture and control from an approved device.</source>
+        <translation>服務可用，請從已授權裝置驗證畫面與控制。</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>已允許</translation>
+    </message>
+    <message>
+        <source>Verify when sharing</source>
+        <translation>共享時驗證</translation>
+    </message>
+    <message>
+        <source>Optional · audio is off</source>
+        <translation>選用 · 聲音共享已關閉</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>需要處理</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>開啟系統設定</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>權限引導</translation>
+    </message>
+    <message>
+        <source>Approved DeskPort devices: %1</source>
+        <translation>已授權 DeskPort 裝置：%1</translation>
+    </message>
+    <message>
+        <source>Saved approval and network reachability are separate. Legacy PIN clients are managed separately.</source>
+        <translation>已儲存授權不代表網路可達。傳統 PIN 用戶端另行管理。</translation>
+    </message>
+    <message>
+        <source>Share this computer's sound</source>
+        <translation>共享本機聲音</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply audio changes.</source>
+        <translation>已儲存 · 重新啟動共享後聲音設定生效。</translation>
     </message>
 </context>
 <context>

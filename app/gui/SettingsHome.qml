@@ -8,8 +8,49 @@ UiPage {
     objectName: qsTr("Settings")
     heading: qsTr("Make DeskPort your own.")
     description: qsTr("Language changes apply immediately. Connection preferences apply to your next connection from this computer.")
-    function save() { StreamingPreferences.save() }
+    id: page
+    property bool changed: false
+    function save() { StreamingPreferences.save(); changed = true }
+    function applyPreset(index) {
+        var rates = [30, 60, 60]
+        var bitrates = [10000, 40000, 15000]
+        StreamingPreferences.fps = rates[index]
+        StreamingPreferences.bitrateKbps = bitrates[index]
+        save()
+    }
+    Label { visible: page.changed; text: qsTr("Saved · connection changes apply next time you connect."); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+    Label { text: qsTr("Connecting to remote computers"); color: ui.text; font.pixelSize: ui.title; font.bold: true; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+    ComboBox {
+        id: sections
+        objectName: "settingsSections"
+        Layout.fillWidth: true
+        textRole: "label"
+        model: ListModel {
+            ListElement { label: qsTr("Picture") }
+            ListElement { label: qsTr("Input") }
+            ListElement { label: qsTr("Sound") }
+            ListElement { label: qsTr("Connections") }
+            ListElement { label: qsTr("Advanced") }
+            ListElement { label: qsTr("Appearance") }
+        }
+    }
+
     UiCard {
+        visible: sections.currentIndex === 5
+        ColumnLayout {
+            anchors.fill: parent; spacing: ui.gap
+            Label { text: qsTr("Appearance"); font.pixelSize: ui.title; font.bold: true; color: ui.text }
+            ComboBox {
+                objectName: "themeChoice"; Layout.fillWidth: true
+                model: [qsTr("Follow system"), qsTr("Light"), qsTr("Dark")]
+                currentIndex: StreamingPreferences.uiTheme
+                onActivated: function(index) { StreamingPreferences.uiTheme = index; StreamingPreferences.save() }
+            }
+            Label { text: qsTr("Appearance changes apply immediately."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+        }
+    }
+    UiCard {
+        visible: sections.currentIndex === 5
         ColumnLayout {
             anchors.fill: parent; spacing: 10
             Label { text: qsTr("Language"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
@@ -75,21 +116,6 @@ UiPage {
             Label { text: qsTr("Saved on this computer. Missing translations appear in English."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
-    TabBar {
-        id: sections
-        objectName: "settingsSections"
-        Layout.fillWidth: true
-        Repeater {
-            model: ListModel {
-                ListElement { label: qsTr("Picture") }
-                ListElement { label: qsTr("Input") }
-                ListElement { label: qsTr("Sound") }
-                ListElement { label: qsTr("Connections") }
-                ListElement { label: qsTr("Advanced") }
-            }
-            TabButton { text: label }
-        }
-    }
     UiCard {
         visible: sections.currentIndex === 0
 
@@ -98,7 +124,18 @@ UiPage {
             Label { text: qsTr("Picture"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Switch { text: qsTr("Match the client window resolution"); checked: StreamingPreferences.adaptiveResolution; onClicked: { StreamingPreferences.adaptiveResolution=checked; save() } }
             Label { text: qsTr("Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            Label { text: qsTr("Resolution"); color: ui.muted }
+            Label { text: qsTr("Quality preset"); color: ui.text }
+            ComboBox {
+                objectName: "qualityPreset"; Layout.fillWidth: true
+                model: [qsTr("Choose a preset…"), qsTr("Office · 30 fps / 10 Mbps"), qsTr("Clear · 60 fps / 40 Mbps"), qsTr("Smooth · 60 fps / 15 Mbps")]
+                currentIndex: 0
+                onActivated: function(index) { if (index > 0) page.applyPreset(index - 1); currentIndex = 0 }
+            }
+            Label { text: qsTr("Presets change frame rate and bandwidth only. Tune them for your network below."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            UiButton { id: pictureDetails; objectName: "pictureDetails"; text: qsTr("Picture adjustments"); checkable: true; highlighted: checked; onClicked: {} }
+            ColumnLayout {
+            visible: pictureDetails.checked; Layout.fillWidth: true; spacing: ui.gap
+            Label { text: StreamingPreferences.adaptiveResolution ? qsTr("Fallback resolution") : qsTr("Resolution"); color: ui.muted }
             ComboBox {
                 id: resolution; objectName: "resolutionChoice"
                 model: ["1920 × 1080", "2560 × 1440", "2880 × 1800", "3840 × 2160"]
@@ -135,6 +172,7 @@ UiPage {
             Slider { objectName: "bitrateSlider"; from: 5; to: 100; stepSize: 1; value: StreamingPreferences.bitrateKbps/1000; Layout.fillWidth: true; onMoved: { StreamingPreferences.bitrateKbps=Math.round(value)*1000; save() } }
             Label { text: qsTr("Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Synchronize frames to this display"); checked: StreamingPreferences.enableVsync; onClicked: { StreamingPreferences.enableVsync=checked; save() } }
+            }
         }
     }
     UiCard {
@@ -172,9 +210,7 @@ UiPage {
 
         ColumnLayout {
             anchors.fill: parent; spacing: 12
-            Label { text: qsTr("Sound"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-            Switch { text: qsTr("Send this computer's audio to connected devices"); checked: hostManager.streamAudio; onClicked: hostManager.streamAudio=checked }
-            Label { text: qsTr("Off by default: sound stays on this computer. Changes apply after restarting sharing."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: qsTr("Sound from the remote computer"); color: ui.text; font.pixelSize: ui.title; font.weight: Font.DemiBold; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Mute when DeskPort loses focus"); checked: StreamingPreferences.muteOnFocusLoss; onClicked: { StreamingPreferences.muteOnFocusLoss=checked; save() } }
             Switch { text: qsTr("Also play audio on the host"); checked: StreamingPreferences.playAudioOnHost; onClicked: { StreamingPreferences.playAudioOnHost=checked; save() } }
         }
@@ -191,13 +227,21 @@ UiPage {
         }
     }
     UiCard {
+        ColumnLayout {
+            anchors.fill: parent; spacing: ui.gap
+            Label { text: qsTr("Sharing this computer"); color: ui.text; font.pixelSize: ui.title; font.bold: true }
+            Label { text: qsTr("Manage incoming access, shared audio and login startup on the Sharing page."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            UiButton { text: qsTr("Open sharing settings"); onClicked: navigateTo("qrc:/gui/HostView.qml", "HostView") }
+        }
+    }
+    UiCard {
         visible: sections.currentIndex === 4
 
         ColumnLayout {
             anchors.fill: parent; spacing: 12
             Label { text: qsTr("Advanced & support"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Label { text: qsTr("Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            RowLayout {
+            ColumnLayout {
                 UiButton { text: qsTr("Advanced settings"); onClicked: navigateTo("qrc:/gui/SettingsView.qml", "SettingsView") }
                 UiButton { text: qsTr("Permission guide"); onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
             }

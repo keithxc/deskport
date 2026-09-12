@@ -389,6 +389,38 @@
         <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
         <translation>%1 호스트의 프로토콜 버전을 지원하지 않습니다. 호스트와 DeskPort를 업데이트하세요.</translation>
     </message>
+    <message>
+        <source>Connected · workspace stays open</source>
+        <translation>연결됨 · 작업 공간 유지</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>데스크톱으로 돌아가기</translation>
+    </message>
+    <message>
+        <source>Your computers</source>
+        <translation>내 컴퓨터</translation>
+    </message>
+    <message>
+        <source>Card view</source>
+        <translation>카드 보기</translation>
+    </message>
+    <message>
+        <source>List view</source>
+        <translation>목록 보기</translation>
+    </message>
+    <message>
+        <source>Unpin device</source>
+        <translation>고정 해제</translation>
+    </message>
+    <message>
+        <source>Pin device</source>
+        <translation>기기 고정</translation>
+    </message>
+    <message>
+        <source>A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.</source>
+        <translation>%1 세션이 열려 있습니다. 다른 컴퓨터에 연결하기 전에 트레이 메뉴에서 연결을 끊으세요.</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1402,6 +1434,14 @@
         <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
         <translation>DeskPort 기본 포트는 :48989입니다. 공유 페이지의 포트가 다르면 주소:포트를 입력하세요. 기본 Sunshine 호스트는 :47989를 사용합니다.</translation>
     </message>
+    <message>
+        <source>Check permissions</source>
+        <translation>권한 확인</translation>
+    </message>
+    <message>
+        <source>Sharing service on</source>
+        <translation>공유 서비스 켜짐</translation>
+    </message>
 </context>
 <context>
     <name>SettingsHome</name>
@@ -1587,6 +1627,78 @@
         <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
         <translation>포커스된 영상 안에서 포인터를 따라 키보드를 전달합니다. 벗어나면 키와 버튼을 놓습니다. 클릭하여 포커스하세요. 시스템 예약 단축키는 로컬에서 처리될 수 있습니다.</translation>
     </message>
+    <message>
+        <source>Saved · connection changes apply next time you connect.</source>
+        <translation>저장됨 · 연결 설정은 다음 연결 시 적용됩니다.</translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation>모양</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>밝게</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>어둡게</translation>
+    </message>
+    <message>
+        <source>Appearance changes apply immediately.</source>
+        <translation>모양 변경 사항은 즉시 적용됩니다.</translation>
+    </message>
+    <message>
+        <source>Connecting to remote computers</source>
+        <translation>원격 컴퓨터 연결</translation>
+    </message>
+    <message>
+        <source>Quality preset</source>
+        <translation>화질 프리셋</translation>
+    </message>
+    <message>
+        <source>Choose a preset…</source>
+        <translation>프리셋 선택…</translation>
+    </message>
+    <message>
+        <source>Office · 30 fps / 10 Mbps</source>
+        <translation>사무용 · 30 fps / 10 Mbps</translation>
+    </message>
+    <message>
+        <source>Clear · 60 fps / 40 Mbps</source>
+        <translation>선명하게 · 60 fps / 40 Mbps</translation>
+    </message>
+    <message>
+        <source>Smooth · 60 fps / 15 Mbps</source>
+        <translation>부드럽게 · 60 fps / 15 Mbps</translation>
+    </message>
+    <message>
+        <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
+        <translation>프리셋은 프레임 속도와 대역폭만 변경합니다. 아래에서 네트워크에 맞게 조정하세요.</translation>
+    </message>
+    <message>
+        <source>Fallback resolution</source>
+        <translation>대체 해상도</translation>
+    </message>
+    <message>
+        <source>Sound from the remote computer</source>
+        <translation>원격 컴퓨터의 소리</translation>
+    </message>
+    <message>
+        <source>Sharing this computer</source>
+        <translation>이 컴퓨터 공유</translation>
+    </message>
+    <message>
+        <source>Manage incoming access, shared audio and login startup on the Sharing page.</source>
+        <translation>공유 페이지에서 접근 권한, 오디오 공유 및 로그인 시 시작을 관리하세요.</translation>
+    </message>
+    <message>
+        <source>Open sharing settings</source>
+        <translation>공유 설정 열기</translation>
+    </message>
+    <message>
+        <source>Picture adjustments</source>
+        <translation>화면 조정</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1625,6 +1737,38 @@
     <message>
         <source>Set up access  →</source>
         <translation>접근 권한 설정  →</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>데스크톱으로 돌아가기</translation>
+    </message>
+    <message>
+        <source>View details</source>
+        <translation>세부 정보 보기</translation>
+    </message>
+    <message>
+        <source>Checking…</source>
+        <translation>확인 중…</translation>
+    </message>
+    <message>
+        <source>Troubleshoot</source>
+        <translation>연결 문제 해결</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>연결</translation>
+    </message>
+    <message>
+        <source>Set up access</source>
+        <translation>접근 설정</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>연결됨</translation>
+    </message>
+    <message>
+        <source>Checking availability</source>
+        <translation>사용 가능 여부 확인 중</translation>
     </message>
 </context>
 <context>
@@ -1760,6 +1904,66 @@
     <message>
         <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
         <translation>로그인 시 시작은 이 컴퓨터의 시스템 설정에서 관리합니다. 해당 설정에서 변경하세요.</translation>
+    </message>
+    <message>
+        <source>Sharing service is running</source>
+        <translation>공유 서비스 실행 중</translation>
+    </message>
+    <message>
+        <source>Connection readiness</source>
+        <translation>연결 준비 상태</translation>
+    </message>
+    <message>
+        <source>Start sharing to accept connections.</source>
+        <translation>연결을 허용하려면 공유를 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Sharing needs permission. Review the items below.</source>
+        <translation>공유 권한이 필요합니다. 아래 항목을 확인하세요.</translation>
+    </message>
+    <message>
+        <source>Service available. Verify picture and control from an approved device.</source>
+        <translation>서비스를 사용할 수 있습니다. 승인된 기기에서 화면과 제어를 확인하세요.</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>허용됨</translation>
+    </message>
+    <message>
+        <source>Verify when sharing</source>
+        <translation>공유 시 확인</translation>
+    </message>
+    <message>
+        <source>Optional · audio is off</source>
+        <translation>선택 사항 · 오디오 꺼짐</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>확인 필요</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>시스템 설정 열기</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>권한 안내</translation>
+    </message>
+    <message>
+        <source>Approved DeskPort devices: %1</source>
+        <translation>승인된 DeskPort 기기: %1</translation>
+    </message>
+    <message>
+        <source>Saved approval and network reachability are separate. Legacy PIN clients are managed separately.</source>
+        <translation>저장된 승인과 네트워크 연결 가능 여부는 별개입니다. 기존 PIN 클라이언트는 별도로 관리됩니다.</translation>
+    </message>
+    <message>
+        <source>Share this computer's sound</source>
+        <translation>이 컴퓨터의 소리 공유</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply audio changes.</source>
+        <translation>저장됨 · 오디오 변경 사항을 적용하려면 공유를 다시 시작하세요.</translation>
     </message>
 </context>
 <context>

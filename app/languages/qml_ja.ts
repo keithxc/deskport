@@ -389,6 +389,38 @@
         <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
         <translation>%1 のホストのプロトコルに対応していません。ホストと DeskPort を更新してください。</translation>
     </message>
+    <message>
+        <source>Connected · workspace stays open</source>
+        <translation>接続中 · ワークスペースは開いたまま</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>デスクトップに戻る</translation>
+    </message>
+    <message>
+        <source>Your computers</source>
+        <translation>コンピューター</translation>
+    </message>
+    <message>
+        <source>Card view</source>
+        <translation>カード表示</translation>
+    </message>
+    <message>
+        <source>List view</source>
+        <translation>リスト表示</translation>
+    </message>
+    <message>
+        <source>Unpin device</source>
+        <translation>固定を解除</translation>
+    </message>
+    <message>
+        <source>Pin device</source>
+        <translation>端末を固定</translation>
+    </message>
+    <message>
+        <source>A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.</source>
+        <translation>%1 とのセッションが開いています。他のコンピューターに接続する前にトレイメニューから切断してください。</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1402,6 +1434,14 @@
         <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
         <translation>DeskPort の既定値は :48989 です。共有ページのポートが異なる場合は アドレス:ポート を入力してください。標準の Sunshine は :47989 です。</translation>
     </message>
+    <message>
+        <source>Check permissions</source>
+        <translation>権限を確認</translation>
+    </message>
+    <message>
+        <source>Sharing service on</source>
+        <translation>共有サービス有効</translation>
+    </message>
 </context>
 <context>
     <name>SettingsHome</name>
@@ -1587,6 +1627,78 @@
         <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
         <translation>フォーカス中の映像内ではキーボードがポインターに従います。外に出るとキーとボタンを解放します。クリックでフォーカスし、システム予約キーはローカルに残る場合があります。</translation>
     </message>
+    <message>
+        <source>Saved · connection changes apply next time you connect.</source>
+        <translation>保存済み · 接続設定は次回接続時に適用されます。</translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation>外観</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>ライト</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>ダーク</translation>
+    </message>
+    <message>
+        <source>Appearance changes apply immediately.</source>
+        <translation>外観の変更はすぐに適用されます。</translation>
+    </message>
+    <message>
+        <source>Connecting to remote computers</source>
+        <translation>リモートコンピューターへの接続</translation>
+    </message>
+    <message>
+        <source>Quality preset</source>
+        <translation>画質プリセット</translation>
+    </message>
+    <message>
+        <source>Choose a preset…</source>
+        <translation>プリセットを選択…</translation>
+    </message>
+    <message>
+        <source>Office · 30 fps / 10 Mbps</source>
+        <translation>オフィス · 30 fps / 10 Mbps</translation>
+    </message>
+    <message>
+        <source>Clear · 60 fps / 40 Mbps</source>
+        <translation>鮮明 · 60 fps / 40 Mbps</translation>
+    </message>
+    <message>
+        <source>Smooth · 60 fps / 15 Mbps</source>
+        <translation>スムーズ · 60 fps / 15 Mbps</translation>
+    </message>
+    <message>
+        <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
+        <translation>プリセットはフレームレートと帯域幅のみ変更します。下でネットワークに合わせて調整できます。</translation>
+    </message>
+    <message>
+        <source>Fallback resolution</source>
+        <translation>代替解像度</translation>
+    </message>
+    <message>
+        <source>Sound from the remote computer</source>
+        <translation>リモートコンピューターの音声</translation>
+    </message>
+    <message>
+        <source>Sharing this computer</source>
+        <translation>このコンピューターの共有</translation>
+    </message>
+    <message>
+        <source>Manage incoming access, shared audio and login startup on the Sharing page.</source>
+        <translation>共有ページでアクセス許可、音声共有、ログイン時の起動を管理します。</translation>
+    </message>
+    <message>
+        <source>Open sharing settings</source>
+        <translation>共有設定を開く</translation>
+    </message>
+    <message>
+        <source>Picture adjustments</source>
+        <translation>映像の調整</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1625,6 +1737,38 @@
     <message>
         <source>Set up access  →</source>
         <translation>アクセスを設定  →</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>デスクトップに戻る</translation>
+    </message>
+    <message>
+        <source>View details</source>
+        <translation>詳細を表示</translation>
+    </message>
+    <message>
+        <source>Checking…</source>
+        <translation>確認中…</translation>
+    </message>
+    <message>
+        <source>Troubleshoot</source>
+        <translation>接続を診断</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>接続</translation>
+    </message>
+    <message>
+        <source>Set up access</source>
+        <translation>アクセスを設定</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>接続済み</translation>
+    </message>
+    <message>
+        <source>Checking availability</source>
+        <translation>利用可能か確認中</translation>
     </message>
 </context>
 <context>
@@ -1760,6 +1904,66 @@
     <message>
         <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
         <translation>ログイン時の起動は、このコンピューターのシステム設定で管理されています。変更はそちらで行ってください。</translation>
+    </message>
+    <message>
+        <source>Sharing service is running</source>
+        <translation>共有サービス実行中</translation>
+    </message>
+    <message>
+        <source>Connection readiness</source>
+        <translation>接続の準備状況</translation>
+    </message>
+    <message>
+        <source>Start sharing to accept connections.</source>
+        <translation>共有を開始すると接続を受け付けます。</translation>
+    </message>
+    <message>
+        <source>Sharing needs permission. Review the items below.</source>
+        <translation>共有には権限が必要です。以下を確認してください。</translation>
+    </message>
+    <message>
+        <source>Service available. Verify picture and control from an approved device.</source>
+        <translation>サービスは利用可能です。承認済みの端末で映像と操作を確認してください。</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>許可済み</translation>
+    </message>
+    <message>
+        <source>Verify when sharing</source>
+        <translation>共有時に確認</translation>
+    </message>
+    <message>
+        <source>Optional · audio is off</source>
+        <translation>任意 · 音声共有はオフ</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>確認が必要</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>システム設定を開く</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>権限ガイド</translation>
+    </message>
+    <message>
+        <source>Approved DeskPort devices: %1</source>
+        <translation>承認済みの DeskPort 端末：%1</translation>
+    </message>
+    <message>
+        <source>Saved approval and network reachability are separate. Legacy PIN clients are managed separately.</source>
+        <translation>承認の保存とネットワーク到達性は別です。従来の PIN クライアントは個別に管理します。</translation>
+    </message>
+    <message>
+        <source>Share this computer's sound</source>
+        <translation>このコンピューターの音声を共有</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply audio changes.</source>
+        <translation>保存済み · 音声設定は共有の再起動後に適用されます。</translation>
     </message>
 </context>
 <context>

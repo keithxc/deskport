@@ -389,6 +389,38 @@
         <source>The host on %1 uses an unsupported protocol version. Update the host and DeskPort before connecting.</source>
         <translation>El anfitrión en %1 usa un protocolo no compatible. Actualiza el anfitrión y DeskPort antes de conectar.</translation>
     </message>
+    <message>
+        <source>Connected · workspace stays open</source>
+        <translation>Conectado · el espacio de trabajo permanece abierto</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>Volver al escritorio</translation>
+    </message>
+    <message>
+        <source>Your computers</source>
+        <translation>Mis equipos</translation>
+    </message>
+    <message>
+        <source>Card view</source>
+        <translation>Vista de tarjetas</translation>
+    </message>
+    <message>
+        <source>List view</source>
+        <translation>Vista de lista</translation>
+    </message>
+    <message>
+        <source>Unpin device</source>
+        <translation>Desfijar dispositivo</translation>
+    </message>
+    <message>
+        <source>Pin device</source>
+        <translation>Fijar dispositivo</translation>
+    </message>
+    <message>
+        <source>A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.</source>
+        <translation>Hay una sesión abierta con %1. Desconéctala desde el menú de la bandeja antes de conectar a otro equipo.</translation>
+    </message>
 </context>
 <context>
     <name>PendingPairingTask</name>
@@ -1402,6 +1434,14 @@
         <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
         <translation>DeskPort usa :48989 por defecto. Si la página de compartir indica otro puerto, introduce dirección:puerto. Sunshine usa :47989 por defecto.</translation>
     </message>
+    <message>
+        <source>Check permissions</source>
+        <translation>Comprobar permisos</translation>
+    </message>
+    <message>
+        <source>Sharing service on</source>
+        <translation>Servicio de uso compartido activado</translation>
+    </message>
 </context>
 <context>
     <name>SettingsHome</name>
@@ -1587,6 +1627,78 @@
         <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
         <translation>El teclado sigue al puntero dentro del vídeo enfocado. Al salir se liberan teclas y botones. Haz clic para enfocar; los atajos reservados del sistema pueden seguir siendo locales.</translation>
     </message>
+    <message>
+        <source>Saved · connection changes apply next time you connect.</source>
+        <translation>Guardado · los cambios se aplicarán en la próxima conexión.</translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation>Apariencia</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>Claro</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>Oscuro</translation>
+    </message>
+    <message>
+        <source>Appearance changes apply immediately.</source>
+        <translation>Los cambios de apariencia se aplican inmediatamente.</translation>
+    </message>
+    <message>
+        <source>Connecting to remote computers</source>
+        <translation>Conexión a equipos remotos</translation>
+    </message>
+    <message>
+        <source>Quality preset</source>
+        <translation>Preajuste de calidad</translation>
+    </message>
+    <message>
+        <source>Choose a preset…</source>
+        <translation>Elegir un preajuste…</translation>
+    </message>
+    <message>
+        <source>Office · 30 fps / 10 Mbps</source>
+        <translation>Oficina · 30 fps / 10 Mbps</translation>
+    </message>
+    <message>
+        <source>Clear · 60 fps / 40 Mbps</source>
+        <translation>Nitidez · 60 fps / 40 Mbps</translation>
+    </message>
+    <message>
+        <source>Smooth · 60 fps / 15 Mbps</source>
+        <translation>Fluidez · 60 fps / 15 Mbps</translation>
+    </message>
+    <message>
+        <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
+        <translation>Los preajustes solo cambian la frecuencia y el ancho de banda. Ajústalos a tu red abajo.</translation>
+    </message>
+    <message>
+        <source>Fallback resolution</source>
+        <translation>Resolución alternativa</translation>
+    </message>
+    <message>
+        <source>Sound from the remote computer</source>
+        <translation>Sonido del equipo remoto</translation>
+    </message>
+    <message>
+        <source>Sharing this computer</source>
+        <translation>Compartir este equipo</translation>
+    </message>
+    <message>
+        <source>Manage incoming access, shared audio and login startup on the Sharing page.</source>
+        <translation>Gestiona el acceso, el audio compartido y el inicio de sesión en la página Compartir.</translation>
+    </message>
+    <message>
+        <source>Open sharing settings</source>
+        <translation>Abrir ajustes de uso compartido</translation>
+    </message>
+    <message>
+        <source>Picture adjustments</source>
+        <translation>Ajustes de imagen</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1625,6 +1737,38 @@
     <message>
         <source>Set up access  →</source>
         <translation>Configurar acceso  →</translation>
+    </message>
+    <message>
+        <source>Return to desktop</source>
+        <translation>Volver al escritorio</translation>
+    </message>
+    <message>
+        <source>View details</source>
+        <translation>Ver detalles</translation>
+    </message>
+    <message>
+        <source>Checking…</source>
+        <translation>Comprobando…</translation>
+    </message>
+    <message>
+        <source>Troubleshoot</source>
+        <translation>Diagnosticar</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>Conectar</translation>
+    </message>
+    <message>
+        <source>Set up access</source>
+        <translation>Configurar acceso</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Conectado</translation>
+    </message>
+    <message>
+        <source>Checking availability</source>
+        <translation>Comprobando disponibilidad</translation>
     </message>
 </context>
 <context>
@@ -1760,6 +1904,66 @@
     <message>
         <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
         <translation>El inicio al entrar en la sesión se gestiona desde la configuración del sistema de este equipo. Cámbielo allí.</translation>
+    </message>
+    <message>
+        <source>Sharing service is running</source>
+        <translation>Servicio de uso compartido activo</translation>
+    </message>
+    <message>
+        <source>Connection readiness</source>
+        <translation>Preparación de la conexión</translation>
+    </message>
+    <message>
+        <source>Start sharing to accept connections.</source>
+        <translation>Inicia el uso compartido para aceptar conexiones.</translation>
+    </message>
+    <message>
+        <source>Sharing needs permission. Review the items below.</source>
+        <translation>Faltan permisos. Revisa los elementos siguientes.</translation>
+    </message>
+    <message>
+        <source>Service available. Verify picture and control from an approved device.</source>
+        <translation>Servicio disponible. Comprueba la imagen y el control desde un dispositivo autorizado.</translation>
+    </message>
+    <message>
+        <source>Allowed</source>
+        <translation>Permitido</translation>
+    </message>
+    <message>
+        <source>Verify when sharing</source>
+        <translation>Verificar al compartir</translation>
+    </message>
+    <message>
+        <source>Optional · audio is off</source>
+        <translation>Opcional · audio desactivado</translation>
+    </message>
+    <message>
+        <source>Needs attention</source>
+        <translation>Requiere atención</translation>
+    </message>
+    <message>
+        <source>Open system settings</source>
+        <translation>Abrir ajustes del sistema</translation>
+    </message>
+    <message>
+        <source>Permission guide</source>
+        <translation>Guía de permisos</translation>
+    </message>
+    <message>
+        <source>Approved DeskPort devices: %1</source>
+        <translation>Dispositivos DeskPort autorizados: %1</translation>
+    </message>
+    <message>
+        <source>Saved approval and network reachability are separate. Legacy PIN clients are managed separately.</source>
+        <translation>La autorización guardada no garantiza acceso por red. Los clientes PIN antiguos se gestionan por separado.</translation>
+    </message>
+    <message>
+        <source>Share this computer's sound</source>
+        <translation>Compartir el sonido de este equipo</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply audio changes.</source>
+        <translation>Guardado · reinicia el uso compartido para aplicar los cambios de audio.</translation>
     </message>
 </context>
 <context>

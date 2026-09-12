@@ -98,6 +98,8 @@ public:
 class Session : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString hostId READ hostId CONSTANT)
+    Q_PROPERTY(QString hostName READ hostName CONSTANT)
 
     friend class SdlInputHandler;
     friend class DeferredSessionCleanupTask;
@@ -111,6 +113,8 @@ public:
     // Use Session::exec() or DeferredSessionCleanupTask instead.
     virtual ~Session() {};
 
+    QString hostId() const;
+    QString hostName() const;
     Q_INVOKABLE void exec(QWindow* qtWindow);
     Q_INVOKABLE bool adaptiveRestartPending() const { return m_AdaptiveNextSize.isValid(); }
     Q_INVOKABLE Session* adaptiveContinuation();

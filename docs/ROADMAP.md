@@ -1,3 +1,18 @@
+## UI refresh — 2026-09-12
+
+User-approved scope: retain Qt and implement the six UI review recommendations.
+Version 0.1.11 adds identity-aware session recall, an inline session header,
+persistent favorite ordering and compact/card views, separate host service /
+permission / trust status, client quality presets and host-specific audio controls,
+and a shared light/dark/system theme. Session navigation must retain the active
+StreamSegue when switching among Devices, Sharing and Settings.
+
+Release checks: isolated page/lifecycle tests, 50 simulated navigation cycles,
+synthetic narrow-window screenshots, Linux Nix build and signed macOS package.
+Native input, compositor focus and live hide/recall remain user acceptance checks.
+Next backlog: per-device connection preferences, actionable network diagnostics,
+and actual sustained-session resource measurements.
+
 # DeskPort roadmap
 
 ## Nix-managed macOS build dependencies (2026-09-12)

@@ -127,7 +127,7 @@ Build and staging apps are stored in `.noindex` directories, reached through the
 
 Initialize the pinned upstream submodules, including `libs`, before native builds.
 The Apple Silicon macOS devShell manages Qt, CMake, pkg-config, Python, Git, Make,
-OpenSSL, Opus, miniupnpc, ICU and Boost with the project's locked nixpkgs revision.
+OpenSSL, Opus, miniupnpc, ICU, Boost and Node.js/npm with the project's locked nixpkgs revision.
 Xcode supplies Apple's compiler and SDK; Keychain/Aqua supplies code signing.
 The existing pinned upstream viewer media libraries and Sunshine FFmpeg prebuilts
 remain in use. This is a Nix-managed development environment, not a sandboxed
@@ -237,3 +237,11 @@ Offsets and discovery behavior were checked against the bundled upstream version
 [stream ports](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/stream.h),
 [RTSP port](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/rtsp.h),
 [macOS Bonjour registration](https://github.com/LizardByte/Sunshine/blob/v2026.906.222525/src/platform/macos/publish.cpp).
+
+### 0.1.11 packaging dependency correction
+
+The locked devShell now includes Node.js/npm in both its packages and explicit
+PATH. Sunshine checks for npm during CMake configuration even when building only
+the host target. The previous shell depended on a cached NPM path; clean
+configuration exposed the missing dependency. The cache dry-run required only
+the shell derivation, without third-party source builds.

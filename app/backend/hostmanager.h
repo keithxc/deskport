@@ -32,6 +32,7 @@ class HostManager : public QObject {
     Q_PROPERTY(bool streamAudio READ streamAudio WRITE setStreamAudio NOTIFY changed)
     Q_PROPERTY(bool loginStart READ loginStart NOTIFY changed)
     Q_PROPERTY(bool loginStartManaged READ loginStartManaged NOTIFY changed)
+    Q_PROPERTY(QString readiness READ readiness NOTIFY permissionsChanged)
     Q_PROPERTY(QString status READ status NOTIFY changed)
 public:
     explicit HostManager(QObject *parent = nullptr, const QString &directory = QString());
@@ -64,6 +65,7 @@ public:
     bool loginStart() const;
     bool loginStartManaged() const;
     Q_INVOKABLE void setLoginStart(bool enabled);
+    QString readiness() const;
     QString status() const { return m_Status; }
     Q_INVOKABLE void start(int width, int height);
     Q_INVOKABLE void stop();

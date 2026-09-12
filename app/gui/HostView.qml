@@ -3,6 +3,9 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 UiPage {
+    id: page
+    Component.onCompleted: hostManager.refreshPermissions()
+    Timer { interval: 3000; repeat: true; running: page.visible; onTriggered: hostManager.refreshPermissions() }
     objectName: qsTr("Sharing")
     heading: qsTr("Share this computer.")
     description: Qt.platform.os === "osx" ? qsTr("Share a dedicated virtual display. DeskPort stays available when its window is hidden.") : qsTr("Share your current desktop. DeskPort stays available when its window is hidden.")
@@ -14,7 +17,7 @@ UiPage {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Label { text: hostManager.deviceName; textFormat: Text.PlainText; font.pixelSize: 23; color: ui.text; font.weight: Font.DemiBold }
-                    Label { text: hostManager.changing ? qsTr("Updating sharing…") : hostManager.running ? qsTr("Sharing is on") : qsTr("Sharing is off"); color: hostManager.running ? ui.accent : ui.muted }
+                    Label { id: sharingState; text: hostManager.changing ? qsTr("Updating sharing…") : hostManager.running ? qsTr("Sharing service is running") : qsTr("Sharing is off"); color: hostManager.running ? ui.accent : ui.muted }
                 }
                 UiButton {
                     text: hostManager.running ? qsTr("Stop sharing") : qsTr("Start sharing")
@@ -23,18 +26,37 @@ UiPage {
                     onClicked: hostManager.running ? hostManager.stop() : hostManager.start([2560,2880,3840][size.currentIndex], [1440,1800,2160][size.currentIndex])
                 }
             }
-            Label { text: hostManager.status; color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { visible: text.length > 0 && text !== sharingState.text; text: hostManager.status; color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
     UiCard {
         ColumnLayout {
-            anchors.fill: parent; spacing: 12
-            Label { text: qsTr("Access & permissions"); color: ui.text; font.pixelSize: 18; font.weight: Font.DemiBold }
-            Label { text: qsTr("Only devices you approve can connect. A saved binding does not grant system recording or input permissions."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            RowLayout {
-                UiButton { text: qsTr("Review permissions"); onClicked: navigateTo("qrc:/gui/SetupView.qml", "SetupView") }
-                UiButton { text: qsTr("Manage devices"); onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
+            anchors.fill: parent; spacing: ui.gap
+            Label { text: qsTr("Connection readiness"); color: ui.text; font.pixelSize: ui.title; font.bold: true }
+            Label {
+                text: !hostManager.running ? qsTr("Start sharing to accept connections.") : hostManager.readiness === "attention" ? qsTr("Sharing needs permission. Review the items below.") : qsTr("Service available. Verify picture and control from an approved device.")
+                color: hostManager.readiness === "attention" ? ui.warning : ui.muted
+                wrapMode: Text.WordWrap; Layout.fillWidth: true
             }
+            Repeater {
+                model: hostManager.permissions
+                ColumnLayout {
+                    Layout.fillWidth: true; spacing: 4
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Label { text: modelData.title; color: ui.text; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                        Label { text: modelData.state === "allowed" ? qsTr("Allowed") : modelData.state === "onShare" ? qsTr("Verify when sharing") : modelData.key === "microphone" && !hostManager.streamAudio ? qsTr("Optional · audio is off") : qsTr("Needs attention"); color: modelData.state === "allowed" ? ui.accent : ui.warning; font.pixelSize: ui.small }
+                    }
+                    UiButton {
+                        visible: modelData.state !== "allowed" && modelData.state !== "onShare" && (modelData.key !== "microphone" || hostManager.streamAudio)
+                        text: Qt.platform.os === "osx" ? qsTr("Open system settings") : qsTr("Permission guide")
+                        onClicked: Qt.platform.os === "osx" ? hostManager.permission(modelData.key) : navigateTo("qrc:/gui/SetupView.qml", "SetupView")
+                    }
+                }
+            }
+            Label { text: qsTr("Approved DeskPort devices: %1").arg(peerManager.peers.length); color: ui.text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: qsTr("Saved approval and network reachability are separate. Legacy PIN clients are managed separately."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            UiButton { text: qsTr("Manage devices"); onClicked: navigateTo("qrc:/gui/BindView.qml", "BindView") }
         }
     }
     UiCard {
@@ -54,6 +76,11 @@ UiPage {
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Virtual display size"); color: ui.muted }
             ComboBox { id: size; currentIndex: Math.max(0, [2560,2880,3840].indexOf(hostManager.sharingWidth)); visible: Qt.platform.os === "osx"; model: ["2560 × 1440", "2880 × 1800", "3840 × 2160"]; enabled: !hostManager.running && !hostManager.changing; Layout.preferredWidth: 250 }
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Switch {
+                text: qsTr("Share this computer's sound"); checked: hostManager.streamAudio
+                onClicked: { hostManager.streamAudio = checked; sharingNotice.visible = true }
+            }
+            Label { id: sharingNotice; visible: false; text: qsTr("Saved · restart sharing to apply audio changes."); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Start sharing when I log in"); enabled: hostManager.available && !hostManager.loginStartManaged; checked: hostManager.loginStart; onClicked: hostManager.setLoginStart(checked) }
             Label { visible: hostManager.loginStartManaged; text: qsTr("Login startup is installed by this computer's system configuration. Change it there, not here."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }

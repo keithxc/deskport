@@ -21,7 +21,7 @@
           };
         in pkgs.moonlight-qt.overrideAttrs (old: {
           pname = "deskport";
-          version = "0.1.10";
+          version = "0.1.11";
           src = pkgs.lib.cleanSourceWith {
             src = pkgs.lib.cleanSource self;
             # Documentation and CI edits do not change the client binary.
@@ -79,14 +79,14 @@
             in pkgs.mkShellNoCC {
               packages = with pkgs; [
                 qt6.qtbase qt6.qtdeclarative qt6.qtshadertools qt6.qtsvg qt6.qttools
-                cmake pkg-config python3 git gnumake openssl libopus miniupnpc icu boost
+                cmake pkg-config python3 git gnumake nodejs openssl libopus miniupnpc icu boost
               ];
               # Apple SDK/compiler and signing use the installed Xcode/Aqua
               # session. Third-party tools and libraries come from this lock.
               shellHook = ''
                 export DEVELOPER_DIR="''${DESKPORT_DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
                 export DESKPORT_NIX_DEPS=1
-                export PATH="${pkgs.lib.makeBinPath [ pkgs.qt6.qtbase pkgs.qt6.qttools pkgs.cmake pkgs.pkg-config pkgs.python3 pkgs.git pkgs.gnumake ]}:/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin"
+                export PATH="${pkgs.lib.makeBinPath [ pkgs.qt6.qtbase pkgs.qt6.qttools pkgs.cmake pkgs.pkg-config pkgs.python3 pkgs.git pkgs.gnumake pkgs.nodejs ]}:/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin"
                 export DESKPORT_QT_BIN=${pkgs.qt6.qtbase}/bin
                 export DESKPORT_QML_IMPORT_PATH=${pkgs.qt6.qtdeclarative}/lib/qt-6/qml
                 export DESKPORT_QML_CACHEGEN=${pkgs.qt6.qtdeclarative}/libexec/qmlcachegen
