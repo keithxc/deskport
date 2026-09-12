@@ -1,5 +1,10 @@
 # DeskPort roadmap
 
+## Shorter tray menu (2026-09-12)
+
+The tray menu's restart and quit entries dropped the application name; inside
+DeskPort's own menu it said nothing.
+
 ## Tray left click moves the window (2026-09-12)
 
 Reason: the tray had two window entries ("Open device list" and "Return to

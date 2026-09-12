@@ -136,8 +136,8 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     // Restarting from the tray is how a remote viewer picks up a version that a
     // package upgrade already wrote to disk: the running process keeps the old
     // binary until it exits, and a clean exit never comes back on its own.
-    connect(m_Menu->addAction(tr("Restart DeskPort")), &QAction::triggered, this, &HostManager::requestRestart);
-    connect(m_Menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, &HostManager::requestExit);
+    connect(m_Menu->addAction(tr("Restart")), &QAction::triggered, this, &HostManager::requestRestart);
+    connect(m_Menu->addAction(tr("Quit")), &QAction::triggered, this, &HostManager::requestExit);
     // The left button shows and hides the window; the menu belongs to the right
     // one. A menu attached to a macOS status item is opened by either button and
     // suppresses the button action entirely, so it is popped up natively there.

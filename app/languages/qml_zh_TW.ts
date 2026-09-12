@@ -1946,6 +1946,14 @@
 <context>
     <name>HostManager</name>
     <message>
+        <source>Restart</source>
+        <translation>重新啟動</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation>結束</translation>
+    </message>
+    <message>
         <source>Disconnect</source>
         <translation>中斷連線</translation>
     </message>
