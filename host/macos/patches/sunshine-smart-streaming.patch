@@ -1,0 +1,147 @@
+--- a/src/video.cpp
++++ b/src/video.cpp
+@@ -29,6 +29,8 @@
+ #include "config.h"
+ #include "display_device.h"
+ #include "globals.h"
++#include "deskport/common/smartstream.h"
++#include <cstdlib>
+ #include "input.h"
+ #include "logging.h"
+ #include "nvenc/nvenc_encoder.h"
+@@ -2405,8 +2407,17 @@
+       }
+     });
+ 
++    const bool smart = std::getenv("DESKPORT_SMART_STREAMING") &&
++        std::string_view(std::getenv("DESKPORT_SMART_STREAMING")) == "1";
++    deskport::StreamPolicy policy(config.framerate);
++    auto congestion = mail->event<bool>("deskport_congestion");
++    const auto smart_start = std::chrono::steady_clock::now();
++    int last_target = config.framerate;
++    auto last_encoded = smart_start;
++
+     // set max frame time based on client-requested target framerate.
+     double minimum_fps_target = (config::video.minimum_fps_target > 0.0) ? config::video.minimum_fps_target : (config.framerate / 2);
++    if (smart) minimum_fps_target = std::min(5.0, double(config.framerate));
+     std::chrono::duration<double, std::milli> max_frametime {1000.0 / minimum_fps_target};
+     BOOST_LOG(info) << "Minimum FPS target set to ~"sv << minimum_fps_target << "fps ("sv << max_frametime.count() << "ms)"sv;
+ 
+@@ -2428,6 +2439,13 @@
+ 
+     while (true) {
+       bool requested_idr_frame = false;
++      const auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(
++          std::chrono::steady_clock::now() - smart_start).count();
++      if (smart && congestion->pop(0ms)) policy.loss(now_us / 1000);
++      if (smart && policy.frameRate(now_us / 1000) != last_target) {
++        last_target = policy.frameRate(now_us / 1000);
++        BOOST_LOG(info) << "DeskPort congestion frame-rate ceiling: " << last_target << " fps";
++      }
+ 
+       while (invalidate_ref_frames_events->peek()) {
+         if (auto frames = invalidate_ref_frames_events->pop(0ms)) {
+@@ -2448,7 +2466,17 @@
+ 
+       // Encode at a minimum FPS to avoid image quality issues with static content
+       if (!requested_idr_frame || images->peek()) {
+-        if (auto img = images->pop(max_frametime)) {
++        // Leave the latest image in the mailbox while rate-limited. Consuming
++        // and dropping it would lose a final text/cursor update on an idle screen.
++        if (smart && images->peek()) {
++          const auto captured_us = std::chrono::duration_cast<std::chrono::microseconds>(
++              std::chrono::steady_clock::now() - smart_start).count();
++          if (!policy.admit(captured_us, requested_idr_frame)) {
++            std::this_thread::sleep_for(2ms);
++            continue;
++          }
++        }
++        if (auto img = images->pop(smart ? std::chrono::duration<double, std::milli>(10ms) : max_frametime)) {
+           frame_timestamp = img->frame_timestamp;
+           if (session->convert(*img)) {
+             BOOST_LOG(error) << "Could not convert image"sv;
+@@ -2456,6 +2484,9 @@
+           }
+         } else if (!images->running()) {
+           break;
++        } else if (smart && !requested_idr_frame && !shutdown_event->peek() && !reinit_event.peek() &&
++                   std::chrono::steady_clock::now() - last_encoded < max_frametime) {
++          continue; // Poll recovery/shutdown promptly without encoding duplicates.
+         }
+       }
+ 
+@@ -2473,6 +2504,7 @@
+         break;
+       }
+ 
++      last_encoded = std::chrono::steady_clock::now();
+       if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
+         BOOST_LOG(error) << "Could not encode video packet"sv;
+         return;
+--- a/src/stream.cpp
++++ b/src/stream.cpp
+@@ -33,6 +33,7 @@
+ #include "process.h"
+ #include "stream.h"
+ #include "sync.h"
++#include "deskport/common/smartstream.h"
+ #include "system_tray.h"
+ #include "thread_safe.h"
+ #include "utility.h"
+@@ -1174,6 +1175,14 @@
+       BOOST_LOG(debug) << "type [IDX_START_B]"sv;
+     });
+ 
++    // Existing Sunshine FEC feedback is scoped to the authenticated stream.
++    // Only final, unrecoverable blocks count; repaired loss must not lower FPS.
++    server->map(0x5502, [](session_t *session, const std::string_view &payload) {
++      if (deskport::unrecoverableFec(reinterpret_cast<const unsigned char *>(payload.data()), payload.size())) {
++        session->mail->event<bool>("deskport_congestion")->raise(true);
++      }
++    });
++
+     server->map(packetTypes[IDX_LOSS_STATS], [&](session_t *session, const std::string_view &payload) {
+       int32_t *stats = (int32_t *) payload.data();
+       auto count = stats[0];
+--- a/src/platform/macos/display.mm
++++ b/src/platform/macos/display.mm
+@@ -30,6 +30,9 @@
+ #include "src/video.h"
+ #undef AVMediaType
+ 
++#include "src/deskport/macos/pixelmatch.h"
++#include <cstdlib>
++
+ namespace platf {
+   using namespace std::literals;
+ 
+@@ -69,9 +72,29 @@
+     }
+ 
+     capture_e capture(const push_captured_image_cb_t &push_captured_image_cb, const pull_free_image_cb_t &pull_free_image_cb, bool *cursor) override {
++      struct duplicate_state {
++        std::shared_ptr<av_sample_buf_t> sample;
++        std::shared_ptr<av_pixel_buf_t> pixels;
++        std::chrono::steady_clock::time_point delivered {};
++      };
++      auto previous = std::make_shared<duplicate_state>();
++      const bool smart = std::getenv("DESKPORT_SMART_STREAMING") &&
++          std::string_view(std::getenv("DESKPORT_SMART_STREAMING")) == "1";
+       auto signal = [av_capture capture:^(CMSampleBufferRef sampleBuffer) {
+         auto new_sample_buffer = std::make_shared<av_sample_buf_t>(sampleBuffer);
+         auto new_pixel_buffer = std::make_shared<av_pixel_buf_t>(new_sample_buffer->buf);
++
++        const auto now = std::chrono::steady_clock::now();
++        if (smart && previous->pixels && now - previous->delivered < 1s &&
++            deskport::samePixels(previous->pixels->buf, new_pixel_buffer->buf)) {
++          // Still visit the capture lifecycle callback so static screens cannot
++          // prevent shutdown, a new viewer, or display reconfiguration.
++          return push_captured_image_cb({}, false);
++        }
++        previous->pixels.reset(); // Unlock before releasing the owning sample.
++        previous->sample = new_sample_buffer;
++        previous->pixels = new_pixel_buffer;
++        previous->delivered = now;
+ 
+         std::shared_ptr<img_t> img_out;
+         if (!pull_free_image_cb(img_out)) {

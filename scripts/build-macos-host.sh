@@ -46,6 +46,15 @@ if git -C "$source_dir" apply --check "$link_patch"; then
 else
     git -C "$source_dir" apply --reverse --check "$link_patch"
 fi
+smart_patch="$repo/host/macos/patches/sunshine-smart-streaming.patch"
+if git -C "$source_dir" apply --check "$smart_patch"; then
+    git -C "$source_dir" apply "$smart_patch"
+else
+    git -C "$source_dir" apply --reverse --check "$smart_patch"
+fi
+mkdir -p "$source_dir/src/deskport/common" "$source_dir/src/deskport/macos"
+cp "$repo/host/common/smartstream.h" "$source_dir/src/deskport/common/smartstream.h"
+cp "$repo/host/macos/pixelmatch.h" "$source_dir/src/deskport/macos/pixelmatch.h"
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 pc="$build_root/host-pkgconfig"
 mkdir -p "$pc"

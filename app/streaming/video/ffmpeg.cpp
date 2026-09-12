@@ -835,7 +835,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
         ret = snprintf(&output[offset],
                        length - offset,
                        "Frames dropped by your network connection: %.2f%%\n"
-                       "Frames dropped due to network jitter: %.2f%%\n"
+                       "Frames dropped by presentation queue (timing / display): %.2f%%\n"
                        "Average network latency: %s\n"
                        "Average decoding time: %.2f ms\n"
                        "Average frame queue delay: %.2f ms\n"
@@ -1763,6 +1763,14 @@ int FFmpegVideoDecoder::submitDecodeUnit(PDECODE_UNIT du)
                                 Session::get()->getOverlayManager().getOverlayText(Overlay::OverlayDebug),
                                 Session::get()->getOverlayManager().getOverlayMaxTextLength());
             Session::get()->getOverlayManager().setOverlayTextUpdated(Overlay::OverlayDebug);
+        }
+
+        if (SDL_TICKS_PASSED(SDL_GetTicks(), m_LastStatsLogTime + 10000)) {
+            VIDEO_STATS recent = {};
+            addVideoStats(m_LastWndVideoStats, recent);
+            addVideoStats(m_ActiveWndVideoStats, recent);
+            logVideoStats(recent, "Recent video stats (intentional idle FPS may be lower)");
+            m_LastStatsLogTime = SDL_GetTicks();
         }
 
         // Accumulate these values into the global stats

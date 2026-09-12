@@ -77,10 +77,19 @@ UiPage {
             ComboBox { id: size; currentIndex: Math.max(0, [2560,2880,3840].indexOf(hostManager.sharingWidth)); visible: Qt.platform.os === "osx"; model: ["2560 × 1440", "2880 × 1800", "3840 × 2160"]; enabled: !hostManager.running && !hostManager.changing; Layout.preferredWidth: 250 }
             Label { visible: Qt.platform.os === "osx"; text: qsTr("Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch {
+                visible: Qt.platform.os === "osx"
+                text: qsTr("Save bandwidth on static screens"); checked: hostManager.smartHost
+                onClicked: { hostManager.smartHost = checked; sharingNotice.visible = true }
+            }
+            Label {
+                visible: Qt.platform.os === "osx"; text: qsTr("Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.")
+                color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true
+            }
+            Switch {
                 text: qsTr("Share this computer's sound"); checked: hostManager.streamAudio
                 onClicked: { hostManager.streamAudio = checked; sharingNotice.visible = true }
             }
-            Label { id: sharingNotice; visible: false; text: qsTr("Saved · restart sharing to apply audio changes."); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { id: sharingNotice; visible: false; text: qsTr("Saved · restart sharing to apply changes."); color: ui.accent; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Switch { text: qsTr("Start sharing when I log in"); enabled: hostManager.available && !hostManager.loginStartManaged; checked: hostManager.loginStart; onClicked: hostManager.setLoginStart(checked) }
             Label { visible: hostManager.loginStartManaged; text: qsTr("Login startup is installed by this computer's system configuration. Change it there, not here."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }

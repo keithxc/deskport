@@ -96,6 +96,7 @@ private:
     IFFmpegRenderer* m_FrontendRenderer;
     int m_ConsecutiveFailedDecodes;
     Pacer* m_Pacer;
+    Uint32 m_LastStatsLogTime = 0;
     VIDEO_STATS m_ActiveWndVideoStats;
     VIDEO_STATS m_LastWndVideoStats;
     VIDEO_STATS m_GlobalVideoStats;

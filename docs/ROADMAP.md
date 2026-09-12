@@ -1,5 +1,30 @@
 ## UI refresh — 2026-09-12
 
+## Smart desktop streaming (2026-09-12, 0.1.12)
+
+Reason: video playback exposed presentation drops and bursts of unrecoverable
+network frames; static desktop capture also repeatedly encoded unchanged content.
+
+Implemented exact Mac capture deduplication, a five-fps idle encode target,
+FEC-driven output-cadence reduction with hysteresis and gradual recovery, a
+resolution-aware client startup bandwidth ceiling, pacing controls/defaults,
+and correctly named periodic presentation diagnostics. No resolution cycling,
+encoder recreation, or live bitrate reconfiguration is introduced. Host savings
+are independently switchable and Mac-specific.
+
+Validation: Linux Nix build and Mac viewer/host compilation passed; both platforms
+passed 15 isolated UI checks and seven service checks. Policy and native synthetic
+CoreVideo tests passed. Signed ZIP/DMG packaging verifies all Mach-O signatures
+and excludes Nix/Homebrew runtime dependencies. Live playback/traffic/power
+acceptance remains pending; no running installation was replaced.
+
+See RELEASE_0.1.12.md for behavior, limitations and acceptance steps.
+Next action: compare static/editor/video sessions after both devices are updated.
+Checkpoint: ten minutes each at fixed window dimensions; inspect intentional idle
+FPS separately from packet loss and presentation drops, then repeat the existing
+resize/reconnect and two-hour stability acceptance.
+
+
 User-approved scope: retain Qt and implement the six UI review recommendations.
 Version 0.1.11 adds identity-aware session recall, an inline session header,
 persistent favorite ordering and compact/card views, separate host service /

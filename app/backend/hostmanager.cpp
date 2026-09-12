@@ -305,6 +305,8 @@ void HostManager::start(int width, int height) {
         if (m_Starting && m_Generation == generation) { beginStop(tr("Host startup timed out; see logs")); }
     });
 }
+bool HostManager::smartHost() const { return QSettings().value("host.smartStreaming", true).toBool(); }
+void HostManager::setSmartHost(bool enabled) { QSettings().setValue("host.smartStreaming", enabled); emit changed(); }
 bool HostManager::streamAudio() const {
     return QSettings().value("host.streamAudio", false).toBool();
 }
@@ -327,6 +329,7 @@ void HostManager::startServer(int displayId) {
     config.write(QString("output_name = %1\n").arg(displayId).toUtf8());
     auto hostEnvironment = QProcessEnvironment::systemEnvironment();
     hostEnvironment.insert("DESKPORT_CAPTURE_DISPLAY", QString::number(displayId));
+    hostEnvironment.insert("DESKPORT_SMART_STREAMING", smartHost() ? "1" : "0");
     m_Server.setProcessEnvironment(hostEnvironment);
     m_Credentials.setProcessEnvironment(hostEnvironment);
 #else

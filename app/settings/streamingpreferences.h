@@ -123,6 +123,7 @@ public:
     Q_PROPERTY(bool compactDevices MEMBER compactDevices NOTIFY compactDevicesChanged)
     Q_PROPERTY(bool showLocalCursor MEMBER showLocalCursor NOTIFY showLocalCursorChanged)
     Q_PROPERTY(bool absoluteTouchMode MEMBER absoluteTouchMode NOTIFY absoluteTouchModeChanged)
+    Q_PROPERTY(bool smartStreaming MEMBER smartStreaming NOTIFY smartStreamingChanged)
     Q_PROPERTY(bool framePacing MEMBER framePacing NOTIFY framePacingChanged)
     Q_PROPERTY(bool connectionWarnings MEMBER connectionWarnings NOTIFY connectionWarningsChanged)
     Q_PROPERTY(bool richPresence MEMBER richPresence NOTIFY richPresenceChanged)
@@ -167,6 +168,7 @@ public:
     bool compactDevices;
     bool showLocalCursor;
     bool absoluteTouchMode;
+    bool smartStreaming;
     bool framePacing;
     bool connectionWarnings;
     bool richPresence;
@@ -216,6 +218,7 @@ signals:
     void videoDecoderSelectionChanged();
     void uiDisplayModeChanged();
     void windowModeChanged();
+    void smartStreamingChanged();
     void framePacingChanged();
     void connectionWarningsChanged();
     void richPresenceChanged();

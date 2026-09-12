@@ -158,6 +158,7 @@ TestPreferences {
  function retranslate() { retranslations++; return true }
  property int width: 2048; property int height: 1152; property int fps: 75; property int bitrateKbps: 125000
  property int windowMode: 2; property int captureSysKeysMode: 1; property int saves: 0
+ property bool smartStreaming: true; property bool framePacing: false; property bool showPerformanceOverlay: false
  property bool sharedClipboard: false; property bool showLocalCursor: true; property bool adaptiveResolution: true; property bool enableVsync: true; property bool absoluteMouseMode: true; property bool reverseScrollDirection: false
  property bool muteOnFocusLoss: true; property bool playAudioOnHost: false; property bool enableMdns: true; property bool keepAwake: true
  function save() { saves++ }
@@ -426,10 +427,14 @@ ApplicationWindow {
                     QCOMPARE(prefs->property("width").toInt(),2560);
                     QVERIFY(prefs->property("adaptiveResolution").toBool());
                 }
+                auto smart=page->findChild<QObject*>("smartStreamingSwitch"); QVERIFY(smart);
+                smart->setProperty("checked", false);
+                QVERIFY(QMetaObject::invokeMethod(smart,"clicked"));
+                QVERIFY(!prefs->property("smartStreaming").toBool());
                 auto themeChoice=page->findChild<QObject*>("themeChoice"); QVERIFY(themeChoice);
                 QVERIFY(QMetaObject::invokeMethod(themeChoice,"activated",Q_ARG(int,2)));
                 QCOMPARE(prefs->property("uiTheme").toInt(),2);
-                QCOMPARE(prefs->property("saves").toInt(),9);
+                QCOMPARE(prefs->property("saves").toInt(),10);
             }
         }
         const auto bad=warnings.filter(QRegularExpression("ReferenceError|TypeError|binding loop|Binding loop|Cannot assign|Unable to assign|Missing parent|Component is not ready"));

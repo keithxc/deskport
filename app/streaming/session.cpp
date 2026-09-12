@@ -4,6 +4,7 @@
 #include "backend/macdock.h"
 #endif
 #include "backend/peerstore.h"
+#include "backend/streambudget.h"
 #include "backend/sessionwindowstate.h"
 #include <QDataStream>
 #include "backend/identitymanager.h"
@@ -862,7 +863,10 @@ bool Session::initialize()
     m_VideoCallbacks.setup = drSetup;
 
     m_StreamConfig.fps = m_Preferences->fps;
-    m_StreamConfig.bitrate = m_Preferences->bitrateKbps;
+    m_StreamConfig.bitrate = m_Preferences->smartStreaming
+        ? DeskPortStream::initialBitrate(m_Preferences->bitrateKbps, m_StreamConfig.width, m_StreamConfig.height,
+                                        m_StreamConfig.fps, m_Preferences->enableYUV444)
+        : m_Preferences->bitrateKbps;
 
 #ifndef STEAM_LINK
     // Opt-in to all encryption features if we detect that the platform
@@ -2560,7 +2564,7 @@ void Session::execInternal()
                                    m_Window, m_ActiveVideoFormat, m_ActiveVideoWidth,
                                    m_ActiveVideoHeight, m_ActiveVideoFrameRate,
                                    enableVsync,
-                                   enableVsync && m_Preferences->framePacing,
+                                   enableVsync && (m_Preferences->smartStreaming || m_Preferences->framePacing),
                                    false,
                                    s_ActiveSession->m_VideoDecoder)) {
                     SDL_AtomicUnlock(&m_DecoderLock);

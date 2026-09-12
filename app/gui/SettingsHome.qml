@@ -124,6 +124,8 @@ UiPage {
             Label { text: qsTr("Picture"); color: ui.text; font.pixelSize: 20; font.weight: Font.DemiBold }
             Switch { text: qsTr("Match the client window resolution"); checked: StreamingPreferences.adaptiveResolution; onClicked: { StreamingPreferences.adaptiveResolution=checked; save() } }
             Label { text: qsTr("Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Switch { objectName: "smartStreamingSwitch"; text: qsTr("Smart streaming"); checked: StreamingPreferences.smartStreaming; onClicked: { StreamingPreferences.smartStreaming=checked; save() } }
+            Label { text: qsTr("Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: qsTr("Quality preset"); color: ui.text }
             ComboBox {
                 objectName: "qualityPreset"; Layout.fillWidth: true
@@ -171,6 +173,8 @@ UiPage {
             Label { text: qsTr("Bandwidth · %1 Mbps").arg(Math.round(StreamingPreferences.bitrateKbps/1000)); color: ui.muted }
             Slider { objectName: "bitrateSlider"; from: 5; to: 100; stepSize: 1; value: StreamingPreferences.bitrateKbps/1000; Layout.fillWidth: true; onMoved: { StreamingPreferences.bitrateKbps=Math.round(value)*1000; save() } }
             Label { text: qsTr("Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Switch { objectName: "framePacingSwitch"; text: qsTr("Smooth frame pacing"); checked: StreamingPreferences.smartStreaming || StreamingPreferences.framePacing; enabled: !StreamingPreferences.smartStreaming; onClicked: { StreamingPreferences.framePacing=checked; save() } }
+            Switch { text: qsTr("Show streaming statistics"); checked: StreamingPreferences.showPerformanceOverlay; onClicked: { StreamingPreferences.showPerformanceOverlay=checked; save() } }
             Switch { text: qsTr("Synchronize frames to this display"); checked: StreamingPreferences.enableVsync; onClicked: { StreamingPreferences.enableVsync=checked; save() } }
             }
         }

@@ -1699,6 +1699,22 @@
         <source>Picture adjustments</source>
         <translation>Ajustements de l’image</translation>
     </message>
+    <message>
+        <source>Smart streaming</source>
+        <translation>Streaming intelligent</translation>
+    </message>
+    <message>
+        <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
+        <translation>Adapte le plafond de débit à la résolution et régularise les images. Désactivez pour régler ces options manuellement.</translation>
+    </message>
+    <message>
+        <source>Smooth frame pacing</source>
+        <translation>Régulariser les images</translation>
+    </message>
+    <message>
+        <source>Show streaming statistics</source>
+        <translation>Afficher les statistiques du streaming</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1964,6 +1980,18 @@
     <message>
         <source>Saved · restart sharing to apply audio changes.</source>
         <translation>Enregistré · redémarrez le partage pour appliquer les réglages audio.</translation>
+    </message>
+    <message>
+        <source>Save bandwidth on static screens</source>
+        <translation>Économiser le débit sur les images fixes</translation>
+    </message>
+    <message>
+        <source>Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.</source>
+        <translation>Ignore les images inchangées et réduit leur fréquence en cas de pertes répétées de paquets. Prend effet au redémarrage du partage.</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply changes.</source>
+        <translation>Enregistré · redémarrez le partage pour appliquer les modifications.</translation>
     </message>
 </context>
 <context>

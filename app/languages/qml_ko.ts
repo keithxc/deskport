@@ -1699,6 +1699,22 @@
         <source>Picture adjustments</source>
         <translation>화면 조정</translation>
     </message>
+    <message>
+        <source>Smart streaming</source>
+        <translation>스마트 스트리밍</translation>
+    </message>
+    <message>
+        <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
+        <translation>해상도에 맞는 대역폭 상한과 부드러운 프레임 표시를 사용합니다. 수동 설정을 사용하려면 끄세요.</translation>
+    </message>
+    <message>
+        <source>Smooth frame pacing</source>
+        <translation>부드러운 프레임 표시</translation>
+    </message>
+    <message>
+        <source>Show streaming statistics</source>
+        <translation>스트리밍 통계 표시</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1964,6 +1980,18 @@
     <message>
         <source>Saved · restart sharing to apply audio changes.</source>
         <translation>저장됨 · 오디오 변경 사항을 적용하려면 공유를 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Save bandwidth on static screens</source>
+        <translation>정지 화면에서 대역폭 절약</translation>
+    </message>
+    <message>
+        <source>Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.</source>
+        <translation>변화 없는 프레임을 건너뛰고 패킷 손실이 반복되면 프레임 속도를 낮춥니다. 공유를 다시 시작하면 적용됩니다.</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply changes.</source>
+        <translation>저장됨 · 변경 사항을 적용하려면 공유를 다시 시작하세요.</translation>
     </message>
 </context>
 <context>

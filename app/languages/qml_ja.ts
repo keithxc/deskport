@@ -1699,6 +1699,22 @@
         <source>Picture adjustments</source>
         <translation>映像の調整</translation>
     </message>
+    <message>
+        <source>Smart streaming</source>
+        <translation>スマートストリーミング</translation>
+    </message>
+    <message>
+        <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
+        <translation>解像度に応じた帯域上限と滑らかなフレーム表示を使用します。手動設定を使うにはオフにしてください。</translation>
+    </message>
+    <message>
+        <source>Smooth frame pacing</source>
+        <translation>フレーム表示を平滑化</translation>
+    </message>
+    <message>
+        <source>Show streaming statistics</source>
+        <translation>ストリーミング統計を表示</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1964,6 +1980,18 @@
     <message>
         <source>Saved · restart sharing to apply audio changes.</source>
         <translation>保存済み · 音声設定は共有の再起動後に適用されます。</translation>
+    </message>
+    <message>
+        <source>Save bandwidth on static screens</source>
+        <translation>静止画面で帯域を節約</translation>
+    </message>
+    <message>
+        <source>Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.</source>
+        <translation>変化のないフレームを省略し、パケット損失が続くとフレームレートを下げます。共有の再起動後に適用されます。</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply changes.</source>
+        <translation>保存済み · 変更を適用するには共有を再起動してください。</translation>
     </message>
 </context>
 <context>

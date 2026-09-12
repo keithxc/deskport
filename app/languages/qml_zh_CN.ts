@@ -1707,6 +1707,22 @@
         <source>Picture adjustments</source>
         <translation>画面微调</translation>
     </message>
+    <message>
+        <source>Smart streaming</source>
+        <translation>智能串流</translation>
+    </message>
+    <message>
+        <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
+        <translation>根据分辨率控制带宽上限并平滑显示帧。关闭后使用手动带宽与帧平滑设置。</translation>
+    </message>
+    <message>
+        <source>Smooth frame pacing</source>
+        <translation>帧平滑</translation>
+    </message>
+    <message>
+        <source>Show streaming statistics</source>
+        <translation>显示串流统计</translation>
+    </message>
 </context>
 <context>
     <name>DeviceCard</name>
@@ -1972,6 +1988,18 @@
     <message>
         <source>Saved · restart sharing to apply audio changes.</source>
         <translation>已保存 · 重启共享后声音设置生效。</translation>
+    </message>
+    <message>
+        <source>Save bandwidth on static screens</source>
+        <translation>静态画面节省带宽</translation>
+    </message>
+    <message>
+        <source>Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.</source>
+        <translation>跳过未变化的画面，连续丢包时降低帧率。重新启动共享后生效。</translation>
+    </message>
+    <message>
+        <source>Saved · restart sharing to apply changes.</source>
+        <translation>已保存 · 重新启动共享以应用更改。</translation>
     </message>
 </context>
 <context>

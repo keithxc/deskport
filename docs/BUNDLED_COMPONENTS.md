@@ -15,6 +15,10 @@ verified capture display without changing the physical main display.
 keyframe failure logs without changing encoder settings or packet contents.
 `sunshine-pkgconfig-link.patch` links miniupnpc using the full path resolved by
 pkg-config, including Nix store libraries.
+`sunshine-smart-streaming.patch`, `host/common/smartstream.h`, and
+`host/macos/pixelmatch.h` add exact static-frame suppression and session-scoped
+FEC-driven frame-rate limits. The new patch and headers are also included in the
+bundled host resources under `deskport-smart-source`.
 `scripts/build-macos-host.sh` reproduces this host build. Use the locked macOS
 devShell for CMake, pkg-config, OpenSSL, ICU, Opus, miniupnpc and Boost, plus
 Apple Xcode; see `docs/MACOS_PACKAGE.md`. Upstream source,

@@ -19,3 +19,8 @@ jobs:
         run: nix build -L
       - name: CLI and desktop-entry smoke check
         run: python3 scripts/deskport-smoke.py ./result
+
+      - name: Smart streaming policy and translations
+        run: |
+          nix develop -c python3 scripts/test-smart-stream.py
+          python3 scripts/test-translations.py

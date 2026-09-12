@@ -135,6 +135,7 @@ void StreamingPreferences::reload()
     compactDevices = settings.value("ui/compactDevices", true).toBool();
     showLocalCursor = settings.value("showLocalCursor", true).toBool();
     absoluteTouchMode = settings.value(SER_ABSTOUCHMODE, true).toBool();
+    smartStreaming = settings.value("smartStreaming", true).toBool();
     framePacing = settings.value(SER_FRAMEPACING, false).toBool();
     connectionWarnings = settings.value(SER_CONNWARNINGS, true).toBool();
     richPresence = settings.value(SER_RICHPRESENCE, false).toBool();
@@ -345,6 +346,7 @@ void StreamingPreferences::save()
     settings.setValue("ui/compactDevices", compactDevices);
     settings.setValue("showLocalCursor", showLocalCursor);
     settings.setValue(SER_ABSTOUCHMODE, absoluteTouchMode);
+    settings.setValue("smartStreaming", smartStreaming);
     settings.setValue(SER_FRAMEPACING, framePacing);
     settings.setValue(SER_CONNWARNINGS, connectionWarnings);
     settings.setValue(SER_RICHPRESENCE, richPresence);
