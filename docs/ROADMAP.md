@@ -1,5 +1,26 @@
 # DeskPort roadmap
 
+## Tray left click moves the window (2026-09-12)
+
+Reason: the tray had two window entries ("Open device list" and "Return to
+remote desktop") and no way to put the window away again, while the left click
+duplicated one of them.
+
+The left button now toggles: it shows the remote window during a session and the
+device list otherwise, and hides whichever is up. A new `DeskPortToggleWindow`
+event makes that decision on the session's own thread, where the SDL window's
+visibility is known. The right button owns the menu, reduced to opening the
+device list, disconnecting, restarting and quitting; stopping sharing lives in
+the device list with the other sharing controls.
+
+macOS needed its own path: a menu attached to a status item is opened by either
+mouse button and suppresses the button action, so the menu is popped up as a
+native `NSMenu` from the `Context` activation and no Qt menu is attached there.
+
+Validation: a Nix build and the service and UI suites on pk4, and a tray toggle
+added to the 30-cycle retained-window transition test. Live clicks on both
+desktops remain a user acceptance check.
+
 ## Active-session control center (2026-09-11)
 
 Follow-up: the user reported that the first tray action did nothing while viewer

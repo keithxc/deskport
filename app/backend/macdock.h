@@ -1,4 +1,5 @@
 #pragma once
+#include <QStringList>
 
 // DeskPort lives in the menu bar: the tray icon is the only entry point, so the
 // application starts as an accessory (LSUIElement in Info.plist) and keeps no
@@ -9,3 +10,9 @@ void deskPortSetDockIconVisible(bool visible);
 
 // An accessory application is not activated by ordering a window front alone.
 void deskPortActivateApplication();
+
+// A menu attached to a status item opens on either mouse button and swallows the
+// button action, which leaves no left click for the window toggle. The right
+// button pops this native menu up at the pointer instead; it returns the index
+// of the chosen title, or -1 when the menu is dismissed.
+int deskPortShowStatusMenu(const QStringList& titles);

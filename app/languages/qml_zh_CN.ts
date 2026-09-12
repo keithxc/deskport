@@ -1946,6 +1946,14 @@
 <context>
     <name>HostManager</name>
     <message>
+        <source>Disconnect</source>
+        <translation>断开连接</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort</source>
+        <translation>重启 DeskPort</translation>
+    </message>
+    <message>
         <source>Open device list</source>
         <translation>打开设备列表</translation>
     </message>

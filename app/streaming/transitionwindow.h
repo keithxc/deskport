@@ -7,6 +7,10 @@ constexpr int DeskPortRecallWindow = 105;
 constexpr int DeskPortEndSession = 106;
 constexpr int DeskPortHideWindow = 107;
 constexpr int DeskPortShowDevices = 108;
+constexpr int DeskPortToggleWindow = 109;
+inline bool desktopWindowVisible(SDL_Window* window) {
+    return window && !(SDL_GetWindowFlags(window) & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED));
+}
 inline void recallDesktopWindow(SDL_Window* window) {
     if (!window) return;
     if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) SDL_RestoreWindow(window);

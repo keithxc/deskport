@@ -80,11 +80,16 @@ int main(int argc, char** argv) {
         SDL_Event devices {}; devices.type = SDL_USEREVENT; devices.user.code = DeskPortShowDevices;
         SDL_PushEvent(&devices); transition.pump();
         assert(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN);
+        SDL_Event toggle {}; toggle.type = SDL_USEREVENT; toggle.user.code = DeskPortToggleWindow;
+        SDL_PushEvent(&toggle); transition.pump();
+        assert(!(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN));
+        SDL_PushEvent(&toggle); transition.pump();
+        assert(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN);
         SDL_Event end {}; end.type = SDL_USEREVENT; end.user.code = DeskPortEndSession;
         SDL_PushEvent(&end); transition.pump();
         assert(transition.cancelled());
     }
     assert(SDL_GetWindowFromID(id) == nullptr);
     SDL_Quit();
-    puts("PASS: 30 transitions retain native window, consume waiting input, and hide/recall on close and clean up on explicit disconnect");
+    puts("PASS: 30 transitions retain native window, consume waiting input, and hide/recall on close, toggle from the tray, and clean up on explicit disconnect");
 }

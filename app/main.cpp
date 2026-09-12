@@ -932,10 +932,26 @@ int main(int argc, char *argv[])
             if (auto window = qobject_cast<QWindow*>(engine.rootObjects().first())) window->hide();
         }
     });
+    // The tray's left button is the one-action route to the window: it shows the
+    // remote desktop or the device list, and hides whichever of them is up.
+    auto toggleWindow = [&engine, &showDevices] {
+        if (Session::get()) {
+            SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortToggleWindow;
+            SDL_PushEvent(&event);
+            return;
+        }
+        if (!engine.rootObjects().isEmpty()) {
+            if (auto window = qobject_cast<QWindow*>(engine.rootObjects().first())) {
+                if (window->isVisible() && window->windowState() != Qt::WindowMinimized) { window->hide(); return; }
+            }
+        }
+        showDevices();
+    };
     instance.activate = showDevices;
     QObject::connect(&hostManager, &HostManager::openRequested, &app, showDevices);
     QObject::connect(&hostManager, &HostManager::showDevicesRequested, &app, showDevices);
     QObject::connect(&hostManager, &HostManager::viewerRecallRequested, &app, recallViewer);
+    QObject::connect(&hostManager, &HostManager::toggleWindowRequested, &app, toggleWindow);
     engine.rootContext()->setContextProperty("hostManager", &hostManager);
     engine.rootContext()->setContextProperty("peerManager", &peerManager);
     engine.rootContext()->setContextProperty("startInBackground", app.arguments().contains("--background"));

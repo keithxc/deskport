@@ -1938,6 +1938,14 @@
 <context>
     <name>HostManager</name>
     <message>
+        <source>Disconnect</source>
+        <translation>Desconectar</translation>
+    </message>
+    <message>
+        <source>Restart DeskPort</source>
+        <translation>Reiniciar DeskPort</translation>
+    </message>
+    <message>
         <source>Sharing</source>
         <translation>Compartir</translation>
     </message>

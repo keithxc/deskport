@@ -31,6 +31,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include "macpermissions.h"
+#include "macdock.h"
 #endif
 
 HostManager::HostManager(QObject *parent, const QString &directory) : QObject(parent) {
@@ -129,22 +130,28 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         m_Ports.release();
         m_Server.start(serverPath(), {m_Directory + "/sunshine.conf"});
     });
-    auto menu = new QMenu;
-    auto show = menu->addAction(tr("Open device list"));
-    connect(show, &QAction::triggered, this, &HostManager::showDevicesRequested);
-    auto viewer = menu->addAction(tr("Return to remote desktop"));
-    connect(viewer, &QAction::triggered, this, &HostManager::viewerRecallRequested);
-    connect(&m_Tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
-        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) emit showDevicesRequested();
-    });
-    connect(menu->addAction(tr("Disconnect viewer")), &QAction::triggered, this, &HostManager::disconnectRequested);
-    connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
+    m_Menu = new QMenu;
+    connect(m_Menu->addAction(tr("Open device list")), &QAction::triggered, this, &HostManager::showDevicesRequested);
+    connect(m_Menu->addAction(tr("Disconnect")), &QAction::triggered, this, &HostManager::disconnectRequested);
     // Restarting from the tray is how a remote viewer picks up a version that a
     // package upgrade already wrote to disk: the running process keeps the old
     // binary until it exits, and a clean exit never comes back on its own.
-    connect(menu->addAction(tr("Restart DeskPort")), &QAction::triggered, this, &HostManager::requestRestart);
-    connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, &HostManager::requestExit);
-    m_Tray.setContextMenu(menu);
+    connect(m_Menu->addAction(tr("Restart DeskPort")), &QAction::triggered, this, &HostManager::requestRestart);
+    connect(m_Menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, &HostManager::requestExit);
+    // The left button shows and hides the window; the menu belongs to the right
+    // one. A menu attached to a macOS status item is opened by either button and
+    // suppresses the button action entirely, so it is popped up natively there.
+#ifndef Q_OS_MACOS
+    m_Tray.setContextMenu(m_Menu);
+#endif
+    connect(&m_Tray, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
+        // A double click arrives after its own Trigger. Toggling twice would
+        // undo itself, so only the single click acts.
+        if (reason == QSystemTrayIcon::Trigger) emit toggleWindowRequested();
+#ifdef Q_OS_MACOS
+        else if (reason == QSystemTrayIcon::Context) showTrayMenu();
+#endif
+    });
     updateTrayIcon();
     qApp->installEventFilter(this);
     m_Tray.setToolTip("DeskPort");
@@ -160,6 +167,15 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
         });
     }
 }
+#ifdef Q_OS_MACOS
+void HostManager::showTrayMenu() {
+    QStringList titles;
+    for (auto action : m_Menu->actions()) titles += action->text();
+    const int chosen = deskPortShowStatusMenu(titles);
+    const auto actions = m_Menu->actions();
+    if (chosen >= 0 && chosen < actions.size()) actions.at(chosen)->trigger();
+}
+#endif
 void HostManager::updateTrayIcon() {
 #ifdef Q_OS_MACOS
     // AppKit renders a template image with the menu bar's current contrast,
@@ -208,7 +224,7 @@ HostManager::~HostManager() {
             process->kill(); process->waitForFinished(1000);
         }
     }
-    delete m_Tray.contextMenu();
+    delete m_Menu;
 }
 QString HostManager::helperPath() const { return QCoreApplication::applicationDirPath() + "/../Helpers/deskport-display"; }
 QString HostManager::serverPath() const {

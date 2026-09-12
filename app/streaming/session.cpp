@@ -2318,6 +2318,18 @@ void Session::execInternal()
             case DeskPortRecallWindow:
                 recallDesktopWindow(m_Window);
                 break;
+            case DeskPortToggleWindow:
+                // The control center and the remote window are never shown at
+                // the same time, so a hidden remote window means the tray click
+                // is coming back from the control center.
+                if (desktopWindowVisible(m_Window)) {
+                    m_InputHandler->setCaptureActive(false);
+                    SDL_HideWindow(m_Window);
+                } else {
+                    if (m_QtWindow) QMetaObject::invokeMethod(m_QtWindow, "prepareViewerRecall", Qt::QueuedConnection);
+                    recallDesktopWindow(m_Window);
+                }
+                break;
             case SDL_CODE_FRAME_READY:
                 if (m_VideoDecoder != nullptr) {
                     m_VideoDecoder->renderFrameOnMainThread();

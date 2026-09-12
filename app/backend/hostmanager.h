@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include <QSystemTrayIcon>
+#include <QMenu>
 #include <QTimer>
 
 class HostManager : public QObject {
@@ -78,6 +79,7 @@ public:
 
 signals:
     void openRequested();
+    void toggleWindowRequested();
     void showDevicesRequested();
     void viewerRecallRequested();
     void hideRequested();
@@ -89,6 +91,9 @@ signals:
     void displayResized(int sequence, int width, int height, const QString& error);
 private:
     void updateTrayIcon();
+#ifdef Q_OS_MACOS
+    void showTrayMenu();
+#endif
     void scheduleRecovery();
     bool eventFilter(QObject* watched, QEvent* event) override;
     void setStatus(const QString &value);
@@ -108,6 +113,7 @@ private:
     int m_DisplayScale = 1;
     QNetworkAccessManager m_Network;
     QSystemTrayIcon m_Tray;
+    QMenu* m_Menu = nullptr;
     bool m_TrustBusy = false;
     bool m_Starting = false;
     bool m_Stopping = false;
