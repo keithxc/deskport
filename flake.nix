@@ -72,6 +72,34 @@
         in { default = pkgs.mkShell {
           inputsFrom = [ self.packages.${system}.default ];
           packages = [ pkgs.git pkgs.python3 pkgs.desktop-file-utils ];
-        }; });
+        }; }) // {
+          aarch64-darwin.default =
+            let
+              pkgs = import nixpkgs { system = "aarch64-darwin"; };
+            in pkgs.mkShellNoCC {
+              packages = with pkgs; [
+                qt6.qtbase qt6.qtdeclarative qt6.qtshadertools qt6.qtsvg qt6.qttools
+                cmake pkg-config python3 git gnumake openssl libopus miniupnpc icu boost
+              ];
+              # Apple SDK/compiler and signing use the installed Xcode/Aqua
+              # session. Third-party tools and libraries come from this lock.
+              shellHook = ''
+                export DEVELOPER_DIR="''${DESKPORT_DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
+                export DESKPORT_NIX_DEPS=1
+                export PATH="${pkgs.lib.makeBinPath [ pkgs.qt6.qtbase pkgs.qt6.qttools pkgs.cmake pkgs.pkg-config pkgs.python3 pkgs.git pkgs.gnumake ]}:/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin"
+                export DESKPORT_QT_BIN=${pkgs.qt6.qtbase}/bin
+                export DESKPORT_QML_IMPORT_PATH=${pkgs.qt6.qtdeclarative}/lib/qt-6/qml
+                export DESKPORT_QML_CACHEGEN=${pkgs.qt6.qtdeclarative}/libexec/qmlcachegen
+                export DESKPORT_QT_PLUGIN_PATH="${pkgs.qt6.qtbase}/lib/qt-6/plugins:${pkgs.qt6.qtsvg}/lib/qt-6/plugins"
+                export QML_IMPORT_PATH="$DESKPORT_QML_IMPORT_PATH"
+                export QT_PLUGIN_PATH="$DESKPORT_QT_PLUGIN_PATH"
+                export DESKPORT_QML_SCANNER=${pkgs.qt6.qtdeclarative}/libexec/qmlimportscanner
+                export DESKPORT_OPENSSL_ROOT=${pkgs.openssl.dev}
+                export DESKPORT_OPUS_ROOT=${pkgs.libopus.dev}
+                export DESKPORT_ICU_ROOT=${pkgs.icu.dev}
+                export DESKPORT_CMAKE_PREFIX_PATH="${pkgs.openssl.dev};${pkgs.openssl.out};${pkgs.libopus.dev};${pkgs.libopus};${pkgs.miniupnpc};${pkgs.icu.dev};${pkgs.icu};${pkgs.boost.dev};${pkgs.boost}"
+              '';
+            };
+        };
     };
 }

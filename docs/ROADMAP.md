@@ -1,5 +1,20 @@
 # DeskPort roadmap
 
+## Nix-managed macOS build dependencies (2026-09-12)
+
+Reason: prefer Nix-managed tools without compiling large third-party dependencies.
+
+- Add an Apple Silicon devShell using cached Qt and Sunshine build dependencies,
+  while keeping Apple's SDK/compiler/signing and the pinned media prebuilts.
+- Separate Nix build/output directories; support split Qt tools/QML/plugins and
+  writable staging of store files. Resolve miniupnpc through pkg-config's full
+  library path instead of silently falling back to Homebrew.
+- Validation: native viewer/host builds, 14 isolated UI checks, signed bundle and
+  ZIP checks, cleared-environment CLI and packaged QML/TLS loading (both
+  Secure Transport and OpenSSL); Linux `nix build` and mynix nix-darwin build. Published
+  0.1.10 assets and installed applications remain unchanged; stream acceptance
+  is still the user's next checkpoint.
+
 ## Recovery and diagnostic follow-up (2026-09-12, 0.1.10)
 
 Reason: review of current client/host logs and the retained 0.1.6 crash report.

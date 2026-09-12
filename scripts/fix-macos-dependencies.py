@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Complete and relocate a Homebrew Qt deployment before signing it.
+"""Complete and relocate a Qt deployment before signing it.
 
 Run separately on each application before nesting and signing its bundle.
 """
@@ -61,6 +61,9 @@ while True:
                     dest_root = frameworks / src_root.name
                     if not dest_root.exists():
                         subprocess.run(['ditto', str(src_root), str(dest_root)], check=True)
+                        for copied in [dest_root, *dest_root.rglob('*')]:
+                            if not copied.is_symlink():
+                                copied.chmod(copied.stat().st_mode | 0o200)
                     target = dest_root / Path(*parts[framework + 1:])
                 else:
                     target = frameworks / source.name
@@ -81,6 +84,6 @@ while True:
                 if path.startswith(('/opt/homebrew/', '/usr/local/', '/nix/', '/Users/')):
                     edits.extend(['-delete_rpath', path])
         if edits:
-            subprocess.run(['install_name_tool', *edits, str(binary)], check=True, stderr=subprocess.DEVNULL)
+            subprocess.run(['install_name_tool', *edits, str(binary)], check=True)
         processed.add(binary)
 print(f'Relocated {len(processed)} Mach-O files into the application')

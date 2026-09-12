@@ -13,8 +13,11 @@ verified capture display without changing the physical main display.
 `sunshine-capture-timeout.patch` bounds the capture first-frame wait;
 `sunshine-idr-diagnostics.patch` adds submitted/returned frame timestamps to
 keyframe failure logs without changing encoder settings or packet contents.
-`scripts/build-macos-host.sh` reproduces this host build (Xcode, CMake, pkg-config,
-Homebrew OpenSSL 3, ICU 78, Opus and miniupnpc are required). Upstream source,
+`sunshine-pkgconfig-link.patch` links miniupnpc using the full path resolved by
+pkg-config, including Nix store libraries.
+`scripts/build-macos-host.sh` reproduces this host build. Use the locked macOS
+devShell for CMake, pkg-config, OpenSSL, ICU, Opus, miniupnpc and Boost, plus
+Apple Xcode; see `docs/MACOS_PACKAGE.md`. Upstream source,
 dependency gitlinks, and license notices:
 https://github.com/LizardByte/Sunshine/tree/cb72dffa3233c5815cd5ba88f09f049dd679ba75
 The checksum-verified official package supplies same-version web assets and notices.

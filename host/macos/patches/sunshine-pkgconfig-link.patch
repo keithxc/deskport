@@ -1,0 +1,9 @@
+diff --git a/cmake/compile_definitions/common.cmake b/cmake/compile_definitions/common.cmake
+index c662a00..f6469b0 100644
+--- a/cmake/compile_definitions/common.cmake
++++ b/cmake/compile_definitions/common.cmake
+@@ -221,3 +221,3 @@
+ list(APPEND SUNSHINE_EXTERNAL_LIBRARIES
+-        ${MINIUPNP_LIBRARIES}
++        ${MINIUPNP_LINK_LIBRARIES}
+         ${CMAKE_THREAD_LIBS_INIT}

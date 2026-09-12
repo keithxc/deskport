@@ -3,12 +3,12 @@
 The package contains one `DeskPort.app` with three components:
 
 - The Moonlight-derived Qt viewer and its device list.
-- An unmodified, signed Sunshine host inside `Contents/Helpers/Sunshine.app`.
+- A patched, signed Sunshine host inside `Contents/Helpers/Sunshine.app`.
 - DeskPort's native virtual-display helper inside `Contents/Helpers/deskport-display`.
 
 The installed app does not require Nix, Homebrew, BetterDisplay or a separately
 installed Sunshine. The current build targets Apple Silicon and macOS 26 because
-its Qt bottles target that OS. Older macOS versions and Intel Macs are not qualified.
+the package currently sets that deployment target. Older macOS versions and Intel Macs are not qualified.
 
 ## Install and use
 
@@ -81,9 +81,9 @@ installed signing identity or use ad-hoc signing to get past this failure.
 
 The previous successful update used an Xcode GUI build phase to sign the staged
 application. Keep signing in an authorized GUI session when automation cannot
-access the key. Supply the full build PATH: on this development machine Qt is
-from Homebrew, but CMake is from the Nix user profile; a minimal launchd PATH
-cannot build the host. Do not store passwords in scripts, logs or shell arguments.
+access the key. Supply a PATH containing `nix` to launchd, then enter the
+project devShell for the build; a minimal launchd PATH cannot find Nix. Do not
+store passwords in scripts, logs or shell arguments.
 
 Before replacing `/Applications/DeskPort.app`, verify the staged bundle with
 `codesign --verify --deep --strict` and `scripts/check-macos-bundle.py`. Move the
@@ -102,7 +102,7 @@ launchctl submit -l io.github.keithxc.deskport.package-once \
   -o "$PWD/build-macos.noindex/package-install.log" \
   -e "$PWD/build-macos.noindex/package-install.err" \
   -- /usr/bin/env "PATH=$PATH" "DESKPORT_SIGN_IDENTITY=$DESKPORT_SIGN_IDENTITY" \
-  /bin/bash -c "cd '$PWD' && bash scripts/package-macos.sh; echo \$? > '$PWD/build-macos.noindex/package-install.rc'; exec sleep 86400"
+  /bin/bash -c "cd '$PWD' && nix develop -c bash scripts/package-macos.sh; echo \$? > '$PWD/build-macos.noindex/package-install.rc'; exec sleep 86400"
 # launchctl submit jobs are KeepAlive: a bare packager call reruns forever,
 # including after failure. Wait for package-install.rc, then remove the job.
 launchctl list io.github.keithxc.deskport.package-once
@@ -126,18 +126,44 @@ Build and staging apps are stored in `.noindex` directories, reached through the
 `build-macos` and `dist` convenience symlinks, to avoid duplicate application icons.
 
 Initialize the pinned upstream submodules, including `libs`, before native builds.
-Build dependencies are Xcode and Qt with qmake/qmlimportscanner (currently Homebrew Qt).
-The build uses the project's Moonlight sources, not the official Moonlight binary.
+The Apple Silicon macOS devShell manages Qt, CMake, pkg-config, Python, Git, Make,
+OpenSSL, Opus, miniupnpc, ICU and Boost with the project's locked nixpkgs revision.
+Xcode supplies Apple's compiler and SDK; Keychain/Aqua supplies code signing.
+The existing pinned upstream viewer media libraries and Sunshine FFmpeg prebuilts
+remain in use. This is a Nix-managed development environment, not a sandboxed
+macOS Nix derivation or a complete source rebuild of those media dependencies.
 
 ```sh
-DESKPORT_SIGN_IDENTITY='your local signing identity' bash scripts/package-macos.sh
+DESKPORT_SIGN_IDENTITY='your local signing identity' \
+  nix develop -c bash scripts/package-macos.sh
+nix develop -c python3 scripts/test-host-lifecycle.py --ui
 ```
 
-`DESKPORT_QT_BIN` and `DEVELOPER_DIR` can override the tool locations. The script
-pins the Sunshine DMG version/hash, preserves its publisher signature, deploys Qt,
-checks linked-library paths and signs the outer app and helper. Do not ad-hoc
-re-sign an installed host as an update strategy. Public distribution needs a
-Developer ID signature, notarization and a corresponding-source release; the
+Nix builds use `build-macos.noindex/nix` and `dist.noindex/nix`, separate from
+Homebrew builds and published artifacts. `DESKPORT_MACOS_BUILD_DIR` and
+`DESKPORT_MACOS_DIST_DIR` override these locations. Use
+`DESKPORT_DEVELOPER_DIR` to override the devShell's Xcode location.
+The shell selects split Nix Qt tool, QML and plugin paths explicitly. Packaging
+makes copied store files writable before relocation and signing, and verifies
+that no linked library requires `/nix/store`, Homebrew or a user directory.
+
+On 2026-09-12 all third-party Nix dependencies used binary substitutes: about
+33 MiB of additional downloads on the existing machine, including Boost headers.
+Viewer/host compilation, 14 isolated UI checks, stable signing, ZIP extraction
+verification and a packaged QML/TLS probe passed. The probe used a cleared
+environment and checked loaded libraries for Nix/Homebrew paths. Native streaming
+acceptance remains separate. Cache availability can change: inspect a future
+`nix build .#devShells.aarch64-darwin.default --dry-run` before accepting
+substantial dependency source builds.
+
+The Homebrew fallback remains available outside `nix develop`, using
+`DESKPORT_QT_BIN` and `DEVELOPER_DIR` overrides. It requires Qt, miniupnpc, Opus,
+OpenSSL and ICU to be installed explicitly; mynix no longer retains these solely
+for DeskPort. The script builds the patched Sunshine executable from pinned
+sources and verifies the pinned publisher-signed DMG used for its resources.
+It then relocates libraries and signs all nested code with the chosen identity.
+Do not ad-hoc re-sign an installed host as an update strategy. Public distribution
+needs a Developer ID signature, notarization and a corresponding-source release;
 local development builds do not satisfy those public-release requirements.
 Use the same Apple Development signing identity and bundle identifier across local
 updates. Ad-hoc signing requires explicit `DESKPORT_ALLOW_ADHOC=1` and is only for

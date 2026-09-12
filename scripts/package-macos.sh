@@ -11,6 +11,20 @@ if [ "$DESKPORT_SIGN_IDENTITY" = - ] && [ "${DESKPORT_ALLOW_ADHOC:-0}" != 1 ]; t
 fi
 export DEVELOPER_DIR=${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}
 qt_bin=${DESKPORT_QT_BIN:-/opt/homebrew/bin}
+# Keep dependency-provider builds and artifacts separate, including qmake's
+# cached SDK/tool paths. Never overwrite a published Homebrew-built artifact.
+if [ "${DESKPORT_NIX_DEPS:-0}" = 1 ]; then
+    export DESKPORT_MACOS_BUILD_DIR=${DESKPORT_MACOS_BUILD_DIR:-$repo/build-macos.noindex/nix}
+    dist_dir=${DESKPORT_MACOS_DIST_DIR:-$repo/dist.noindex/nix}
+else
+    export DESKPORT_MACOS_BUILD_DIR=${DESKPORT_MACOS_BUILD_DIR:-$repo/build-macos.noindex}
+    dist_dir=${DESKPORT_MACOS_DIST_DIR:-$repo/dist.noindex}
+fi
+build_dir=$DESKPORT_MACOS_BUILD_DIR
+qml_args=()
+if [ -n "${DESKPORT_QML_CACHEGEN:-}" ]; then
+    qml_args+=("QT_TOOL.qmlcachegen.binary=$DESKPORT_QML_CACHEGEN")
+fi
 # Check the actual signing session before spending time building and staging.
 # Listing identities or signing in another terminal does not prove key access here.
 probe_dir=$(mktemp -d "${TMPDIR:-/tmp}/deskport-signing.XXXXXX")
@@ -37,18 +51,23 @@ for directory in build-macos dist; do
     fi
 done
 (
-    cd build-macos
+    mkdir -p "$build_dir/app" "$dist_dir"
+    touch "$build_dir/.qmake.stash"
+    cd "$build_dir"
     # Refresh subprojects too: app/Info.plist is generated during qmake.
-    "$qt_bin/qmake" -r ../moonlight-qt.pro CONFIG+=release CONFIG-=debug_and_release QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0
+    "$qt_bin/qmake" -r "$repo/moonlight-qt.pro" CONFIG+=release CONFIG-=debug_and_release \
+        QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0 \
+        QMAKE_CC=/usr/bin/clang QMAKE_CXX=/usr/bin/clang++ \
+        "QMAKE_XCODE_DEVELOPER_PATH=$DEVELOPER_DIR" "${qml_args[@]}"
     make -j6
 )
 bash scripts/build-macos-host.sh
 xcrun clang -fobjc-arc -framework Foundation -framework CoreGraphics \
-    host/macos/display-helper.m -o build-macos/deskport-display
-stage=$(mktemp -d "$repo/dist/.package.XXXXXX")
+    host/macos/display-helper.m -o "$build_dir/deskport-display"
+stage=$(mktemp -d "$dist_dir/.package.XXXXXX")
 trap 'chmod -R u+w "$stage" 2>/dev/null || true; rm -rf "$stage"' EXIT
 app="$stage/DeskPort.app"
-ditto build-macos/app/DeskPort.app "$app"
+ditto "$build_dir/app/DeskPort.app" "$app"
 chmod -R u+w "$app"
 PATH="$qt_bin:$PATH" python3 scripts/deploy-macos-runtime.py "$app" "$repo/app"
 python3 scripts/fix-macos-dependencies.py "$app"
@@ -67,7 +86,7 @@ for path in pathlib.Path(sys.argv[1]).rglob('*'):
 PY
 codesign --force --deep --sign - "$app"
 mkdir -p "$app/Contents/Helpers"
-cp build-macos/deskport-display "$app/Contents/Helpers/deskport-display"
+cp "$build_dir/deskport-display" "$app/Contents/Helpers/deskport-display"
 dmg="$repo/build-macos/Sunshine-macOS-arm64.dmg"
 if [ ! -f "$dmg" ]; then
     curl -fL --retry 3 https://github.com/LizardByte/Sunshine/releases/download/v2026.906.222525/Sunshine-macOS-arm64.dmg -o "$dmg"
@@ -83,7 +102,7 @@ if ! codesign --verify --deep --strict \
     hdiutil detach "$mount"; exit 1
 fi
 host_app="$app/Contents/Helpers/Sunshine.app"
-ditto build-macos.noindex/sunshine-build/Sunshine.app "$host_app"
+ditto "$build_dir/sunshine-build/Sunshine.app" "$host_app"
 if ! ditto "$mount/Sunshine.app/Contents/Resources" "$host_app/Contents/Resources"; then
     hdiutil detach "$mount"; exit 1
 fi
@@ -91,7 +110,7 @@ hdiutil detach "$mount"
 rmdir "$mount"
 python3 scripts/fix-macos-dependencies.py "$host_app"
 find "$host_app/Contents/Frameworks" -type f -name '*.dylib' -exec codesign --force --sign - {} \;
-cp host/macos/patches/libvirtualhid-target-display.patch host/macos/patches/sunshine-capture-timeout.patch host/macos/patches/sunshine-idr-diagnostics.patch "$host_app/Contents/Resources/"
+cp host/macos/patches/libvirtualhid-target-display.patch host/macos/patches/sunshine-capture-timeout.patch host/macos/patches/sunshine-idr-diagnostics.patch host/macos/patches/sunshine-pkgconfig-link.patch "$host_app/Contents/Resources/"
 cp scripts/build-macos-host.sh "$host_app/Contents/Resources/"
 codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none --options runtime \
     --entitlements host/macos/entitlements.plist "$host_app"
@@ -103,17 +122,17 @@ codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none \
 codesign --verify --deep --strict "$app"
 # Do not distribute a bundle with unresolved build-machine dependencies.
 python3 scripts/check-macos-bundle.py "$app"
-rm -rf dist/DeskPort.app
-ditto "$app" dist/DeskPort.app
+rm -rf "$dist_dir/DeskPort.app"
+ditto "$app" "$dist_dir/DeskPort.app"
 ln -s /Applications "$stage/Applications"
-hdiutil create -volname DeskPort -srcfolder "$stage" -ov -format UDZO dist/DeskPort-${version}-macos-arm64.dmg
-shasum -a 256 dist/DeskPort-${version}-macos-arm64.dmg
+hdiutil create -volname DeskPort -srcfolder "$stage" -ov -format UDZO "$dist_dir/DeskPort-${version}-macos-arm64.dmg"
+shasum -a 256 "$dist_dir/DeskPort-${version}-macos-arm64.dmg"
 # Nix fetches this zip and extracts it with Info-ZIP unzip, which writes
 # AppleDouble entries as literal "._" files inside the sealed bundle. Store no
 # extended attributes, and verify the bundle the way Nix will unpack it.
-zip="dist/DeskPort-${version}-macos-arm64.zip"
+zip="$dist_dir/DeskPort-${version}-macos-arm64.zip"
 rm -f "$zip"
-ditto -c -k --norsrc --noextattr --noacl --keepParent dist/DeskPort.app "$zip"
+ditto -c -k --norsrc --noextattr --noacl --keepParent "$dist_dir/DeskPort.app" "$zip"
 zip_check=$(mktemp -d)
 /usr/bin/unzip -q "$zip" -d "$zip_check"
 codesign --verify --deep --strict "$zip_check/DeskPort.app"
