@@ -602,8 +602,9 @@ INCLUDEPATH += $$OUT_PWD
 HEADERS += $$OUT_PWD/version.h
 
 macx {
-    OBJECTIVE_SOURCES += backend/macpermissions.mm
-    LIBS += -framework AVFoundation -framework ApplicationServices
+    OBJECTIVE_SOURCES += backend/macpermissions.mm backend/macdock.mm
+    HEADERS += backend/macdock.h
+    LIBS += -framework AVFoundation -framework ApplicationServices -framework AppKit
 }
 
 SOURCES += backend/adaptivedisplay.cpp

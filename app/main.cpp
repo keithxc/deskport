@@ -7,6 +7,9 @@
 #include "backend/peermanager.h"
 #include "backend/singleinstance.h"
 #include "version.h"
+#ifdef Q_OS_MACOS
+#include "backend/macdock.h"
+#endif
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
@@ -903,6 +906,10 @@ int main(int argc, char *argv[])
             if (window->windowState() == Qt::WindowMinimized) window->showNormal();
             else window->show();
             window->raise(); window->requestActivate();
+#ifdef Q_OS_MACOS
+            // Ordering a window front does not activate an accessory application.
+            deskPortActivateApplication();
+#endif
         }
     };
     auto recallViewer = [&engine, &showDevices] {

@@ -20,6 +20,9 @@
 	<string>26.0</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<!-- 常驻托盘服务：不占 Dock，入口只有状态栏那个图标。 -->
+	<key>LSUIElement</key>
+	<true/>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
 	<key>GCSupportedGameControllers</key>

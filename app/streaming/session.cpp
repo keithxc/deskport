@@ -1,5 +1,8 @@
 #include <QElapsedTimer>
 #include "session.h"
+#ifdef Q_OS_MACOS
+#include "backend/macdock.h"
+#endif
 #include "backend/peerstore.h"
 #include "backend/sessionwindowstate.h"
 #include <QDataStream>
@@ -2690,6 +2693,13 @@ DispatchDeferredCleanup:
     }
 
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+
+#ifdef Q_OS_MACOS
+    // Initializing SDL video turned us into a regular Dock application. Now that
+    // the session is over, go back to the menu bar. An adaptive restart keeps the
+    // window and comes straight back, so leave the Dock tile alone for that.
+    if (!adaptiveRestartPending()) deskPortSetDockIconVisible(false);
+#endif
 
     // Cleanup can take a while, so dispatch it to a worker thread.
     // When it is complete, it will release our s_ActiveSessionSemaphore
