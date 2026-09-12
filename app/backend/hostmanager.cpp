@@ -474,7 +474,22 @@ void HostManager::permission(const QString &kind) {
 }
 void HostManager::openLogs() { QDesktopServices::openUrl(QUrl::fromLocalFile(m_Directory)); }
 
-bool HostManager::loginStart() const { return QSettings().value("host/startAtLogin", false).toBool(); }
+bool HostManager::loginStartManaged() const {
+#ifdef Q_OS_LINUX
+    return DeskPortService::storeManaged(DeskPortService::autostartPath()) ||
+           DeskPortService::storeManaged(DeskPortService::unitPath());
+#else
+    return false;
+#endif
+}
+bool HostManager::loginStart() const {
+#ifdef Q_OS_LINUX
+    // 系统配置接管时以磁盘为准: 自启由它开关, 我们自己那份 QSettings 不作数。
+    if (loginStartManaged())
+        return QFile::exists(DeskPortService::autostartPath()) || QFile::exists(DeskPortService::unitPath());
+#endif
+    return QSettings().value("host/startAtLogin", false).toBool();
+}
 void HostManager::setLoginStart(bool enabled) {
 #ifdef Q_OS_MACOS
     const QString bundle = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../..");
@@ -494,11 +509,15 @@ void HostManager::setLoginStart(bool enabled) {
     QSettings().setValue("host/startAtLogin", enabled);
     emit changed();
 #elif defined(Q_OS_LINUX)
-    const QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/autostart/io.github.keithxc.DeskPort.desktop";
+    const QString path = DeskPortService::autostartPath();
+    if (loginStartManaged()) {
+        // Nix 优先: 它已经装好了自启, 这里一个字都不写, 免得两边来回覆盖。
+        setStatus(tr("Login startup is managed by your system configuration")); emit changed(); return;
+    }
     if (enabled) {
         QDir().mkpath(QFileInfo(path).absolutePath());
         const QString executable = QCoreApplication::applicationDirPath() + "/deskport";
-        const QString unitPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/systemd/user/io.github.keithxc.DeskPort.service";
+        const QString unitPath = DeskPortService::unitPath();
         QDir().mkpath(QFileInfo(unitPath).absolutePath());
         QSaveFile unit(unitPath);
         if (!unit.open(QIODevice::WriteOnly)) { setStatus(tr("Cannot install login startup")); return; }

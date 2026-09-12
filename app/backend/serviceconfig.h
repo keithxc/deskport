@@ -1,7 +1,23 @@
 #pragma once
 #include <QString>
+#include <QFileInfo>
+#include <QStandardPaths>
 
 namespace DeskPortService {
+#ifdef Q_OS_LINUX
+inline QString autostartPath() {
+    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/autostart/io.github.keithxc.DeskPort.desktop";
+}
+inline QString unitPath() {
+    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/systemd/user/io.github.keithxc.DeskPort.service";
+}
+#endif
+// 声明式系统配置 (Nix home-manager) 把自启文件链接进 /nix/store。那份配置才是
+// 事实源: 我们既不能覆盖也不能删除, 否则下次 switch 会把改动悄悄还原回去。
+inline bool storeManaged(const QString& path) {
+    const QFileInfo info(path);
+    return info.isSymLink() && info.symLinkTarget().startsWith("/nix/store/");
+}
 inline QString launchAgent() {
     return QStringLiteral("<?xml version=\"1.0\" encoding=\"UTF-8\"?><plist version=\"1.0\"><dict>"
         "<key>Label</key><string>io.github.keithxc.DeskPort</string>"

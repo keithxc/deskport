@@ -22,6 +22,18 @@ private slots:
         QVERIFY(unit.contains("KillMode=control-group"));
         QVERIFY(DeskPortService::desktopEntry().contains("systemctl --user start"));
     }
+    void declarativeConfigurationKeepsOwnershipOfLoginStartup() {
+        QTemporaryDir dir;
+        const QString linked = dir.path() + "/linked.desktop", plain = dir.path() + "/plain.desktop";
+        // 悬空也算数: home-manager 的链接在 store 回收后仍是它的地盘。
+        QVERIFY(QFile::link("/nix/store/abc-deskport/share/applications/x.desktop", linked));
+        QFile file(plain); QVERIFY(file.open(QIODevice::WriteOnly)); file.close();
+        QVERIFY(DeskPortService::storeManaged(linked));
+        QVERIFY(!DeskPortService::storeManaged(plain));
+        QVERIFY(!DeskPortService::storeManaged(dir.path() + "/missing.desktop"));
+        QVERIFY(QFile::link(dir.path() + "/elsewhere", dir.path() + "/other.desktop"));
+        QVERIFY(!DeskPortService::storeManaged(dir.path() + "/other.desktop"));
+    }
     void ordinaryQuitHidesUntilExplicitExit() {
         QTemporaryDir dir; HostManager host(nullptr, dir.path());
         host.setResident(true);
