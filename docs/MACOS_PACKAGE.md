@@ -156,6 +156,14 @@ acceptance remains separate. Cache availability can change: inspect a future
 `nix build .#devShells.aarch64-darwin.default --dry-run` before accepting
 substantial dependency source builds.
 
+For subsequent development, keep the working lock when a dependency update would
+require large local Qt/Boost builds or a complicated migration. The project builds
+itself locally; avoiding substantial third-party source builds is the constraint.
+The Nix migration landed in DeskPort `d7c014f1`; mynix `eadc754` removed its
+DeskPort-only Homebrew declarations. The Nix trial artifacts are local, separate
+from the published `v0.1.10` assets. Neither a successful build nor a mynix commit
+means the installed application has been switched or restarted.
+
 The Homebrew fallback remains available outside `nix develop`, using
 `DESKPORT_QT_BIN` and `DEVELOPER_DIR` overrides. It requires Qt, miniupnpc, Opus,
 OpenSSL and ICU to be installed explicitly; mynix no longer retains these solely
