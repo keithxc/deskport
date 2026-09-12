@@ -72,7 +72,9 @@ public:
     Q_INVOKABLE void recallViewer() { emit viewerRecallRequested(); }
     void setResident(bool enabled) { m_Resident = enabled; }
     Q_INVOKABLE void requestExit();
+    Q_INVOKABLE void requestRestart();
     void allowExit() { m_ExitRequested = true; }
+    bool restarting() const { return m_RestartRequested; }
 
 signals:
     void openRequested();
@@ -111,6 +113,7 @@ private:
     bool m_Stopping = false;
     bool m_Isolated = false;
     bool m_ServerRequested = false;
+    bool m_RestartRequested = false;
     quint64 m_Generation = 0;
     qint64 m_LogOffset = 0;
     QTimer m_RecoveryTimer;

@@ -139,6 +139,10 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
     });
     connect(menu->addAction(tr("Disconnect viewer")), &QAction::triggered, this, &HostManager::disconnectRequested);
     connect(menu->addAction(tr("Stop sharing")), &QAction::triggered, this, &HostManager::stop);
+    // Restarting from the tray is how a remote viewer picks up a version that a
+    // package upgrade already wrote to disk: the running process keeps the old
+    // binary until it exits, and a clean exit never comes back on its own.
+    connect(menu->addAction(tr("Restart DeskPort")), &QAction::triggered, this, &HostManager::requestRestart);
     connect(menu->addAction(tr("Quit DeskPort")), &QAction::triggered, this, &HostManager::requestExit);
     m_Tray.setContextMenu(menu);
     updateTrayIcon();
@@ -172,6 +176,12 @@ void HostManager::requestExit() {
     if (m_ExitRequested) return;
     m_ExitRequested = true;
     emit exitRequested();
+}
+void HostManager::requestRestart() {
+    if (m_ExitRequested) return;
+    m_RestartRequested = true;
+    setStatus(tr("Restarting DeskPort"));
+    requestExit();
 }
 void HostManager::scheduleRecovery() {
     if (!m_DesiredSharing || m_ShuttingDown || m_RecoveryTimer.isActive()) return;

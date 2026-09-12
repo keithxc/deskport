@@ -21,6 +21,9 @@
 #include <QTemporaryFile>
 #include <QRegularExpression>
 #include <QSocketNotifier>
+#include <QProcess>
+#include <QDir>
+#include <QFile>
 #ifdef Q_OS_UNIX
 #include <csignal>
 #include <sys/socket.h>
@@ -28,6 +31,7 @@
 #endif
 #ifdef Q_OS_LINUX
 #include "backend/sleepmonitor.h"
+#include "backend/serviceconfig.h"
 #endif
 
 #ifdef Q_OS_UNIX
@@ -315,6 +319,46 @@ LONG WINAPI UnhandledExceptionHandler(struct _EXCEPTION_POINTERS *ExceptionInfo)
 }
 
 #endif
+
+// Both service managers we install deliberately leave a clean quit alone
+// (launchd's KeepAlive.SuccessfulExit=false, systemd's Restart=on-failure), so a
+// restart is handed to a detached shell that waits for this process to
+// disappear -- releasing the single instance lock and the host's ports -- and
+// only then starts DeskPort again. The relaunch runs the binary that is on disk
+// now, which is the point: an upgrade cannot reach the running process.
+static void relaunchAfterExit()
+{
+#ifdef Q_OS_UNIX
+    const auto quote = [](const QString& value) -> QString {
+        QString quoted = value; quoted.replace("'", "'\\''"); return "'" + quoted + "'";
+    };
+    QStringList arguments = QCoreApplication::arguments();
+    if (!arguments.isEmpty()) arguments.removeFirst();
+    QString options;
+    for (const QString& argument : arguments) options += " " + quote(argument);
+
+    QString relaunch;
+#ifdef Q_OS_MACOS
+    const QString label = QStringLiteral("io.github.keithxc.DeskPort");
+    // Prefer the login agent, so the new process stays launchd-managed.
+    if (QFile::exists(QDir::homePath() + "/Library/LaunchAgents/" + label + ".plist"))
+        relaunch = QString("launchctl kickstart gui/%1/%2 || ").arg(getuid()).arg(label);
+    const QString bundle = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../..");
+    relaunch += "open -n -a " + quote(bundle);
+    if (!options.isEmpty()) relaunch += " --args" + options;
+#else
+    if (QFile::exists(DeskPortService::unitPath()))
+        relaunch = "systemctl --user restart io.github.keithxc.DeskPort.service || ";
+    relaunch += quote(QCoreApplication::applicationFilePath()) + options;
+#endif
+    const QString command = QString("while kill -0 %1 2>/dev/null; do sleep 0.2; done; %2")
+            .arg(QCoreApplication::applicationPid()).arg(relaunch);
+    if (!QProcess::startDetached("/bin/sh", {"-c", command}))
+        qCritical() << "Could not schedule the restart";
+#else
+    QProcess::startDetached(QCoreApplication::applicationFilePath(), QCoreApplication::arguments().mid(1));
+#endif
+}
 
 int main(int argc, char *argv[])
 {
@@ -948,6 +992,8 @@ int main(int argc, char *argv[])
     }
 
     int err = app.exec();
+
+    if (hostManager.restarting()) relaunchAfterExit();
 
     // Give worker tasks time to properly exit. Fixes PendingQuitTask
     // sometimes freezing and blocking process exit.
