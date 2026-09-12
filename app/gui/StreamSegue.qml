@@ -74,7 +74,8 @@ Item {
 
     function sessionFinished(portTestResult)
     {
-        if (session && session.adaptiveRestartPending()) return
+        if (typeof session === 'undefined' || !session) return
+        if (session.adaptiveRestartPending()) return
         if (portTestResult !== 0 && portTestResult !== -1 && streamSegueErrorDialog.text) {
             streamSegueErrorDialog.text += "\n\n" + qsTr("This PC's Internet connection is blocking Moonlight. Streaming over the Internet may not work while connected to this network.")
         }
@@ -116,8 +117,10 @@ Item {
     function sessionReadyForDeletion()
     {
         // sessionFinished() may already have popped and destroyed this page's
-        // bindings; the Session then cleans itself up without our help.
-        if (!session) return
+        // bindings; the Session then cleans itself up without our help. A
+        // destroyed context takes its properties with it, so `session` is not
+        // merely null here: naming it at all throws a ReferenceError.
+        if (typeof session === 'undefined' || !session) return
         if (session.adaptiveRestartPending()) {
             var next = session.adaptiveContinuation()
             var properties = {"session": next, "appName": appName, "isResume": true, "quitAfter": quitAfter}
@@ -128,8 +131,8 @@ Item {
             gc()
             return
         }
-        // Garbage collect the Session object since it's pretty heavyweight
-        // and keeps other libraries (like SDL_TTF) around until it is deleted.
+        // Drop the page reference. C++ releases the Session after both exec()
+        // and asynchronous transport cleanup have finished.
         session = null
         gc()
     }

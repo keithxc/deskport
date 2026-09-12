@@ -707,6 +707,10 @@
         <source>Unable to initialize video decoder. Please check your streaming settings and try again.</source>
         <translation>비디오 디코더를 초기화 할 수 없습니다. 스트리밍 설정을 확인하고 다시 시도하십시오.</translation>
     </message>
+    <message>
+        <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
+        <translation>호스트가 새 크기로 데스크톱을 다시 시작하지 못했습니다. 다시 연결하여 작업을 계속하세요.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1752,6 +1756,10 @@
     <message>
         <source>Workspace · %1 × %2 · %3× scaling</source>
         <translation>작업 공간 · %1 × %2 · %3배 배율</translation>
+    </message>
+    <message>
+        <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
+        <translation>로그인 시 시작은 이 컴퓨터의 시스템 설정에서 관리합니다. 해당 설정에서 변경하세요.</translation>
     </message>
 </context>
 <context>

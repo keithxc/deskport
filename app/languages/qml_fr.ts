@@ -707,6 +707,10 @@
         <source>Unable to initialize video decoder. Please check your streaming settings and try again.</source>
         <translation>Impossible d&apos;initialiser le décodeur vidéo. Veuillez vérifier vos paramètres de streaming et réessayez.</translation>
     </message>
+    <message>
+        <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
+        <translation>L’hôte n’a pas repris le bureau à la nouvelle taille. Reconnectez-vous pour continuer votre travail.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1752,6 +1756,10 @@
     <message>
         <source>Workspace · %1 × %2 · %3× scaling</source>
         <translation>Espace de travail · %1 × %2 · échelle %3×</translation>
+    </message>
+    <message>
+        <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
+        <translation>Le lancement à la connexion est géré par la configuration système de cet ordinateur. Modifiez-le dans celle-ci.</translation>
     </message>
 </context>
 <context>

@@ -715,6 +715,10 @@
         <source>Unable to initialize video decoder. Please check your streaming settings and try again.</source>
         <translation>無法初始化畫面解碼器。請檢查您的串流設定並再試一次。</translation>
     </message>
+    <message>
+        <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
+        <translation>主機未能以新的尺寸恢復桌面。請重新連線以繼續工作。</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1760,6 +1764,10 @@
     <message>
         <source>Workspace · %1 × %2 · %3× scaling</source>
         <translation>工作區 · %1 × %2 · %3× 縮放</translation>
+    </message>
+    <message>
+        <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
+        <translation>登入啟動由這部電腦的系統設定管理，請在該處修改。</translation>
     </message>
 </context>
 <context>

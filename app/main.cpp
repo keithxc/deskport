@@ -638,6 +638,22 @@ int main(int argc, char *argv[])
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
 #endif
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    // --version and --help are answered by the command line parser, which only
+    // runs once QApplication exists. Qt aborts when it cannot load a platform
+    // plugin, so those queries died over SSH. Answer them offscreen instead.
+    if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM") && !qEnvironmentVariableIsSet("WAYLAND_DISPLAY") &&
+            !qEnvironmentVariableIsSet("DISPLAY")) {
+        for (int i = 1; i < argc; i++) {
+            const QByteArray argument(argv[i]);
+            if (argument == "--version" || argument == "-v" || argument == "--help" || argument == "-h") {
+                qputenv("QT_QPA_PLATFORM", "offscreen");
+                break;
+            }
+        }
+    }
+#endif
+
     QApplication app(argc, argv);
     if (app.arguments().contains("--host-self-test")) {
         QTemporaryDir directory;

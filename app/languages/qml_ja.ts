@@ -707,6 +707,10 @@
         <source>Unable to initialize video decoder. Please check your streaming settings and try again.</source>
         <translation>ビデオデコーダを初期化できませんでした。ストリーミングの設定を確認して再度お試しください。</translation>
     </message>
+    <message>
+        <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
+        <translation>ホストが新しいサイズでデスクトップを再開できませんでした。再接続して作業を続けてください。</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1752,6 +1756,10 @@
     <message>
         <source>Workspace · %1 × %2 · %3× scaling</source>
         <translation>ワークスペース · %1 × %2 · %3倍表示</translation>
+    </message>
+    <message>
+        <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
+        <translation>ログイン時の起動は、このコンピューターのシステム設定で管理されています。変更はそちらで行ってください。</translation>
     </message>
 </context>
 <context>

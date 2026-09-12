@@ -5,21 +5,22 @@ A remote desktop workspace built on Moonlight and Sunshine.
 **Goal:** keep your remote desktop ready in the background, bring it onto your
 current workspace with one action, and tuck it away without reconnecting.
 
-**Version: 0.1.9 — one click on the tray icon shows and hides the window.** DeskPort combines a viewer and optional host
+**Version: 0.1.10 — safer session cleanup and bounded resize recovery.** DeskPort combines a viewer and optional host
 in one application, with a shared device list, mutual binding and permission
 controls. The macOS package includes Sunshine and a native virtual display;
 the Linux Nix package includes a Sunshine host for the existing desktop.
 
-The dedicated macOS workspace follows the client window at 1× host scaling,
-using the client's logical dimensions to avoid a 2× supersampled video stream.
+The dedicated macOS workspace follows the client window's drawable pixel size.
+Clients at 150% scale or above request a 2× HiDPI workspace for sharp text.
 Resizing briefly reconnects video while retaining the client window and showing
 a loading animation. It is not seamless encoder reconfiguration.
 
-See the [release notes](docs/RELEASE_0.1.9.md),
+See the [release notes](docs/RELEASE_0.1.10.md),
 [architecture](docs/ARCHITECTURE.md) and
 [macOS installation guide](docs/MACOS_PACKAGE.md).
-Persistent hide/show without reconnecting, automatic physical-display topology
-management, image clipboard sharing and Windows packaging remain unfinished.
+Persistent hide/show is implemented; native long-session acceptance remains open.
+Automatic physical-display topology management, image clipboard sharing and
+Windows packaging remain unfinished.
 Bidirectional text sharing is available between opted-in bound DeskPort devices.
 
 ## Build and run on Linux

@@ -27,6 +27,13 @@ if git -C "$source_dir" apply --check "$capture_patch"; then
 else
     git -C "$source_dir" apply --reverse --check "$capture_patch"
 fi
+# Include frame identities in recovery diagnostics without changing encoded data.
+idr_patch="$repo/host/macos/patches/sunshine-idr-diagnostics.patch"
+if git -C "$source_dir" apply --check "$idr_patch"; then
+    git -C "$source_dir" apply "$idr_patch"
+else
+    git -C "$source_dir" apply --reverse --check "$idr_patch"
+fi
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 pc="$repo/build-macos.noindex/host-pkgconfig"
 mkdir -p "$pc"

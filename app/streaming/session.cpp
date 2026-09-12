@@ -568,6 +568,9 @@ Session::Session(NvComputer* computer, NvApp& app, StreamingPreferences *prefere
       m_AudioSampleCount(0),
       m_DropAudioEndTime(0)
 {
+    connect(this, &Session::readyForDeletion, this, [this] {
+        m_Lifetime.cleanupFinished();
+    }, Qt::QueuedConnection);
 }
 
 namespace {
@@ -1735,6 +1738,11 @@ public:
 };
 
 // Called in a non-main thread
+// The host is resuming a desktop it is already running. Failing after two
+// minutes of a blank transition window is worse than failing quickly and
+// leaving the user at the device list, where reconnecting resumes the session.
+#define ADAPTIVE_RESUME_TIMEOUT_MS 15000
+
 bool Session::startConnectionAsync()
 {
     // Wait 1.5 seconds before connecting to let the user
@@ -1781,12 +1789,17 @@ bool Session::startConnectionAsync()
                       m_Preferences->playAudioOnHost,
                       m_InputHandler->getAttachedGamepadMask(),
                       !m_Preferences->multiController,
-                      rtspSessionUrl);
+                      rtspSessionUrl,
+                      m_AdaptiveResume ? ADAPTIVE_RESUME_TIMEOUT_MS : 0);
     } catch (const GfeHttpResponseException& e) {
         emit displayLaunchError(tr("Host returned error: %1").arg(e.toQString()));
         return false;
     } catch (const QtNetworkReplyException& e) {
-        emit displayLaunchError(e.toQString());
+        if (m_AdaptiveResume) {
+            qWarning() << "Adaptive resize resume failed:" << e.toQString();
+            emit displayLaunchError(tr("The host did not resume the desktop at the new size. Connect again to continue where you left off."));
+        }
+        else emit displayLaunchError(e.toQString());
         return false;
     }
 
@@ -1919,6 +1932,7 @@ public:
 
 void Session::exec(QWindow* qtWindow)
 {
+    m_Lifetime.beginExec();
     m_QtWindow = qtWindow;
     m_ClientScreens.clear();
     m_ClientWayland = QGuiApplication::platformName().startsWith("wayland");
@@ -1965,6 +1979,7 @@ void Session::exec(QWindow* qtWindow)
         connect(m_TransitionTimer, &QTimer::timeout, this, [this] { if (m_TransitionWindow) m_TransitionWindow->pump(); });
         m_TransitionTimer->start(20);
     }
+    m_Lifetime.endExec();
 }
 
 void Session::execInternal()

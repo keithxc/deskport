@@ -170,7 +170,11 @@ public:
              bool localAudio,
              int gamepadMask,
              bool persistGameControllersOnDisconnect,
-             QString& rtspSessionUrl);
+             QString& rtspSessionUrl,
+             // Launching an app can take a host a long time. Resuming a desktop
+             // that is already running for an adaptive resize cannot, and the
+             // picture is gone while the client waits.
+             int timeoutMs = 0);
 
     QVector<NvApp>
     getAppList();

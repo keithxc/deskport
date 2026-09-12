@@ -1,5 +1,6 @@
 #pragma once
 #include "clipboardsync.h"
+#include "sessionlifetime.h"
 
 #include <QSemaphore>
 #include <QWindow>
@@ -152,6 +153,7 @@ signals:
     void readyForDeletion();
 
 private:
+    SessionLifetime m_Lifetime{this};
     std::unique_ptr<ClipboardSync> m_Clipboard;
     void initializeClipboard();
     std::shared_ptr<AdaptiveDisplay> m_AdaptiveDisplay;

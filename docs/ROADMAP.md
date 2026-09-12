@@ -1,5 +1,36 @@
 # DeskPort roadmap
 
+## Recovery and diagnostic follow-up (2026-09-12, 0.1.10)
+
+Reason: review of current client/host logs and the retained 0.1.6 crash report.
+
+- Keep each executing Session under C++ ownership until both exec() and queued
+  transport cleanup finish. Page destruction/garbage collection must not free a
+  Session still referenced by audio cleanup. This closes a lifetime hazard;
+  the historical heap corruption is not proven resolved without reproduction.
+- Bound adaptive /resume requests to 15 seconds, retain normal launch timeouts,
+  and make late QML teardown callbacks tolerate a destroyed page context.
+- Answer headless --help/--version with Qt's offscreen platform on Linux.
+- Keep VAAPI eligible on native Wayland instead of preferring unavailable VDPAU.
+  Retain the conservative Gallium RFI workaround; do not claim a driver-version
+  cutoff or a measured latency/power improvement.
+- Repair macOS test linkage for the native status menu and translate the new
+  startup-management and resize-failure messages in seven languages.
+- Add submitted/returned PTS and encoder name to host IDR failures. Current
+  logs correlate these with client loss/queue overflow; synthetic VideoToolbox
+  requests succeeded, so the real-session cause remains open. The old message
+  alone does not prove SPS/VPS injection was suppressed.
+
+Validation: Linux Nix build, headless CLI, UI/service/state tests and macOS
+UI/service/state tests passed during development. Lifetime tests cover page
+collection and cleanup both before and after exec returns. Final release
+verification is recorded in RELEASE_0.1.10.md.
+
+Next action: native two-device acceptance after switching to 0.1.10.
+Checkpoint: 30 alternating resizes, 20 disconnect/reconnect cycles, then a
+2-hour session. Check frame recovery, no stuck input, actual decoder selection,
+and whether any heap/IDR errors recur. Do not erase existing diagnostic logs.
+
 ## Shorter tray menu (2026-09-12)
 
 The tray menu's restart and quit entries dropped the application name; inside

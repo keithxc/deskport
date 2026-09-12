@@ -1,11 +1,41 @@
 #include <QtTest>
 #include <QTemporaryDir>
+#include <QJSEngine>
+#include <QPointer>
+#include "streaming/sessionlifetime.h"
 #include "backend/sessionwindowstate.h"
 #include "settings/streamingpreferences.h"
 namespace WMUtils { bool isRunningWayland() { return false; } }
 class DesktopState : public QObject {
     Q_OBJECT
 private slots:
+    void sessionSurvivesPageCollectionUntilCleanup_data() {
+        QTest::addColumn<bool>("cleanupFirst");
+        QTest::newRow("cleanup-during-exec") << true;
+        QTest::newRow("cleanup-after-exec") << false;
+    }
+    void sessionSurvivesPageCollectionUntilCleanup() {
+        QFETCH(bool, cleanupFirst);
+        QJSEngine engine;
+        QPointer<QObject> session = new QObject;
+        QQmlEngine::setObjectOwnership(session, QQmlEngine::JavaScriptOwnership);
+        engine.globalObject().setProperty("session", engine.newQObject(session));
+        SessionLifetime lifetime(session);
+        lifetime.beginExec();
+        engine.evaluate("session = null");
+        engine.collectGarbage();
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        QVERIFY(session);
+        if (cleanupFirst) lifetime.cleanupFinished();
+        else lifetime.endExec();
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        QVERIFY(session);
+        if (cleanupFirst) lifetime.endExec();
+        else lifetime.cleanupFinished();
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        QVERIFY(session.isNull());
+    }
+
     void defaultsAndExplicitInputChoicesPersist() {
         QTemporaryDir directory;
         QSettings::setDefaultFormat(QSettings::IniFormat);

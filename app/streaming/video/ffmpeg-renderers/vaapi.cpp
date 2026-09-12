@@ -376,7 +376,7 @@ VAAPIRenderer::initialize(PDECODER_PARAMETERS params)
     m_HasRfiLatencyBug = vendorStr.contains("Gallium", Qt::CaseInsensitive) && qgetenv("IGNORE_RFI_LATENCY_BUG") != "1";
     if (m_HasRfiLatencyBug) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "VAAPI driver is affected by RFI latency bug");
+                    "Applying conservative Gallium RFI latency workaround");
     }
 
     if (m_DecoderSelectionPass == 0 && qgetenv("FORCE_VAAPI") != "1") {
@@ -385,7 +385,10 @@ VAAPIRenderer::initialize(PDECODER_PARAMETERS params)
         // resolved in the libva2 drivers (VAAPI 1.x). We will try to use VDPAU
         // instead for old VAAPI versions or drivers affected by the RFI latency bug
         // as long as we're not streaming HDR (which is unsupported by VDPAU).
-        if ((major == 0 || (m_HasRfiLatencyBug && !(m_VideoFormat & VIDEO_FORMAT_MASK_10BIT))) &&
+        // VDPAU cannot run on native Wayland. Keep VAAPI eligible there, while
+        // retaining the conservative RFI workaround independently of selection.
+        if (m_WindowSystem == SDL_SYSWM_X11 &&
+                (major == 0 || (m_HasRfiLatencyBug && !(m_VideoFormat & VIDEO_FORMAT_MASK_10BIT))) &&
                 vendorStr.contains("Gallium", Qt::CaseInsensitive)) {
             // Fail and let VDPAU pick this up
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,

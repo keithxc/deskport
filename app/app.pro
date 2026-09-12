@@ -610,7 +610,7 @@ macx {
 SOURCES += backend/adaptivedisplay.cpp
 HEADERS += backend/adaptivedisplay.h
 
-HEADERS += backend/workspaceresolution.h backend/sessionwindowstate.h
+HEADERS += backend/workspaceresolution.h backend/sessionwindowstate.h streaming/sessionlifetime.h
 
 SOURCES += streaming/transitionwindow.cpp
 HEADERS += streaming/transitionwindow.h

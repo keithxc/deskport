@@ -10,6 +10,9 @@ cb72dffa3233c5815cd5ba88f09f049dd679ba75. Its libvirtualhid dependency at commit
 6fdb8bd4de3b68d96c30e5303ac2ebb333c09746 receives the patch in
 `host/macos/patches/libvirtualhid-target-display.patch`: input follows DeskPort's
 verified capture display without changing the physical main display.
+`sunshine-capture-timeout.patch` bounds the capture first-frame wait;
+`sunshine-idr-diagnostics.patch` adds submitted/returned frame timestamps to
+keyframe failure logs without changing encoder settings or packet contents.
 `scripts/build-macos-host.sh` reproduces this host build (Xcode, CMake, pkg-config,
 Homebrew OpenSSL 3, ICU 78, Opus and miniupnpc are required). Upstream source,
 dependency gitlinks, and license notices:

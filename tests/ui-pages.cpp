@@ -237,6 +237,10 @@ ApplicationWindow {
         QVERIFY(root->property("currentPage").value<QObject*>()->property("controlCenterForActiveSession").toBool());
         emit session.sessionFinished(0);
         QTRY_COMPARE(root->property("depth").toInt(),1);
+        QTest::qWait(50);
+        engine.collectGarbage();
+        emit session.readyForDeletion();
+        QTest::qWait(20);
         QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
     void desktopShortcut_data() {

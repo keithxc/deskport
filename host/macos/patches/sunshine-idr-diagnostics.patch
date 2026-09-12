@@ -1,0 +1,15 @@
+diff --git a/src/video.cpp b/src/video.cpp
+index 6e99ada..6e0c9cf 100644
+--- a/src/video.cpp
++++ b/src/video.cpp
+@@ -1830,7 +1830,9 @@ namespace video {
+       }
+ 
+       if ((frame->flags & AV_FRAME_FLAG_KEY) && !(av_packet->flags & AV_PKT_FLAG_KEY)) {
+-        BOOST_LOG(error) << "Encoder did not produce IDR frame when requested!"sv;
++        BOOST_LOG(error) << "Encoder did not produce IDR frame when requested! Submitted PTS="sv
++                         << frame->pts << ", returned PTS="sv << av_packet->pts
++                         << ", encoder="sv << ctx->codec->name;
+       }
+ 
+       if (session.inject) {

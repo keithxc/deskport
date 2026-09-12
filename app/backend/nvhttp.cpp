@@ -195,7 +195,8 @@ NvHTTP::startApp(QString verb,
                  bool localAudio,
                  int gamepadMask,
                  bool persistGameControllersOnDisconnect,
-                 QString& rtspSessionUrl)
+                 QString& rtspSessionUrl,
+                 int timeoutMs)
 {
     int riKeyId;
 
@@ -225,7 +226,7 @@ NvHTTP::startApp(QString verb,
                                    "&gcmap="+QString::number(gamepadMask)+
                                    "&gcpersist="+QString::number(persistGameControllersOnDisconnect ? 1 : 0)+
                                    LiGetLaunchUrlQueryParameters(),
-                                   LAUNCH_TIMEOUT_MS);
+                                   timeoutMs ? timeoutMs : LAUNCH_TIMEOUT_MS);
 
     qInfo() << "Launch response:" << response;
 
