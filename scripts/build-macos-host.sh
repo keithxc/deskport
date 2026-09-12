@@ -25,6 +25,11 @@ if git -C "$hid" apply --check "$patch"; then
 else
     git -C "$hid" apply --reverse --check "$patch"
 fi
+# Undo our final overlay before checking the earlier pinned patches on rebuilds.
+sck_patch="$repo/host/macos/patches/sunshine-screen-capture-kit.patch"
+if git -C "$source_dir" apply --reverse --check "$sck_patch" 2>/dev/null; then
+    git -C "$source_dir" apply --reverse "$sck_patch"
+fi
 # Bound the first-frame wait so a silent virtual display cannot hang /resume.
 capture_patch="$repo/host/macos/patches/sunshine-capture-timeout.patch"
 if git -C "$source_dir" apply --check "$capture_patch"; then
@@ -55,6 +60,9 @@ fi
 mkdir -p "$source_dir/src/deskport/common" "$source_dir/src/deskport/macos"
 cp "$repo/host/common/smartstream.h" "$source_dir/src/deskport/common/smartstream.h"
 cp "$repo/host/macos/pixelmatch.h" "$source_dir/src/deskport/macos/pixelmatch.h"
+git -C "$source_dir" apply --check "$sck_patch"
+git -C "$source_dir" apply "$sck_patch"
+cp "$repo/host/macos/screen-video.h" "$repo/host/macos/screen-video.m" "$source_dir/src/deskport/macos/"
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 pc="$build_root/host-pkgconfig"
 mkdir -p "$pc"

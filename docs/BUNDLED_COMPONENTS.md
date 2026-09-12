@@ -43,3 +43,12 @@ LICENSE and the relevant submodule licenses in the source distribution.
 This is a local development preview signed locally using the configured identity. It has no
 Developer ID distribution signing or notarization. Public release packaging must
 include corresponding sources, exact dependency versions and license notices.
+
+## ScreenCaptureKit overlay (0.1.13)
+
+`host/macos/patches/sunshine-screen-capture-kit.patch` follows the smart-streaming
+patch and removes its CPU pixel comparison. `host/macos/screen-video.h` and
+`screen-video.m` implement native BGRA/NV12 capture, idle lifecycle callbacks and
+retained-surface refresh. They are copied into the host's corresponding-source
+resources. P010 retains upstream AVFoundation capture without pixel comparison.
+ScreenCaptureKit and QuartzCore are operating-system frameworks.

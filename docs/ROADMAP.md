@@ -1,3 +1,15 @@
+## Native macOS idle capture (0.1.13, 2026-09-12)
+
+Reason: static-frame suppression still scanned entire pixel buffers on the CPU.
+BGRA/NV12 now uses ScreenCaptureKit frame status and retained-surface idle refresh.
+The P010 compatibility path also stops comparing pixels. Preserve the hardware
+encoder buffer path and provide lifecycle ticks independent of screen updates.
+
+Checkpoint: synthetic callback/lifetime tests, full host and Linux Nix builds,
+stable signed package, then live static/video CPU comparison and reconnect/resize.
+Actual resource savings and native visual acceptance require a running new build.
+See RELEASE_0.1.13.md for the 10-bit compatibility limitation.
+
 ## UI refresh — 2026-09-12
 
 ## Smart desktop streaming (2026-09-12, 0.1.12)
