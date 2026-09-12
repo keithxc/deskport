@@ -1,4 +1,5 @@
 #include "autoupdatechecker.h"
+#include "version.h"
 
 #include <QNetworkReply>
 #include <QJsonDocument>

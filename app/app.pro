@@ -589,7 +589,17 @@ macx {
 }
 
 VERSION = "$$cat(version.txt)"
-DEFINES += VERSION_STR=\\\"$$cat(version.txt)\\\"
+# Carry the version in a generated header rather than a DEFINE. A DEFINE only
+# lives in the Makefile, so an incremental build after a version bump leaves
+# every already-compiled object on the old string (0.1.5 shipped a binary that
+# still reported 0.1.4). qmake's write_file() leaves the file untouched when the
+# contents match, so this costs a rebuild only when the version really changes.
+VERSION_HEADER_CONTENTS = \
+    "$${LITERAL_HASH}pragma once" \
+    "$${LITERAL_HASH}define VERSION_STR \"$$cat(version.txt)\""
+write_file($$OUT_PWD/version.h, VERSION_HEADER_CONTENTS)|error("Cannot generate version.h")
+INCLUDEPATH += $$OUT_PWD
+HEADERS += $$OUT_PWD/version.h
 
 macx {
     OBJECTIVE_SOURCES += backend/macpermissions.mm

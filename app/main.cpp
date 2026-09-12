@@ -6,6 +6,7 @@
 #include "backend/hostmanager.h"
 #include "backend/peermanager.h"
 #include "backend/singleinstance.h"
+#include "version.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>

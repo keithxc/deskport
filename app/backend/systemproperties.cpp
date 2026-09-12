@@ -1,5 +1,6 @@
 #include "systemproperties.h"
 #include "utils.h"
+#include "version.h"
 
 #include <QGuiApplication>
 #include <QLibraryInfo>
