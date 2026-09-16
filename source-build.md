@@ -1,6 +1,6 @@
 # DeskPort Apple source distribution
 
-Version: 1.0, builds 1, 2 and 3. Copyright (C) 2026 毛尔昊.
+Version: 1.0, builds 1, 2, 3 and 4. Copyright (C) 2026 毛尔昊.
 DeskPort integration is GPL-3.0-or-later. Upstream copyright and license notices
 remain applicable. This is a modified Moonlight client, not an official Moonlight
 release. No warranty is provided.
@@ -19,6 +19,9 @@ OpenSSL sources, plus the original media and OpenSSL packaging build scripts.
 records source pins and artifact hashes; `SHA256SUMS` covers the delivered files.
 There is no private development history, signing material, device data or capture
 content in these source archives.
+
+Build 4 filters native Sunshine services, uses DeskPort approval binding, and adds
+identity-preserving domain/IP editing. The discovery transport is unchanged.
 
 Build 3 changes the offline notices and fixes the existing OpenSSL package version
 at 3.3.2000 (OpenSSL 3.3.2). App behavior is unchanged from build 2. Build 2's original
@@ -49,10 +52,10 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 xcodebuild -project Client/Moonlight.xcodeproj -scheme DeskPortStore \
   -configuration Release -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath Build.noindex CODE_SIGNING_ALLOWED=NO \
-  MARKETING_VERSION=1.0 CURRENT_PROJECT_VERSION=3 build
+  MARKETING_VERSION=1.0 CURRENT_PROJECT_VERSION=4 build
 ```
 
-Use CURRENT_PROJECT_VERSION=1 or 2 for the corresponding earlier archive. To make a modified version,
+Use CURRENT_PROJECT_VERSION=1, 2 or 3 for the corresponding earlier archive. To make a modified version,
 edit the complete sources directly in Client and rebuild. Xcode resolves the exact
 OpenSSL-Package version recorded in Package.resolved and downloads the artifact
 whose SHA-256 is recorded in its Package.swift. No private repository is required.
