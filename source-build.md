@@ -1,6 +1,6 @@
 # DeskPort Apple source distribution
 
-Version: 1.0, builds 1, 2, 3, 4 and 5. Copyright (C) 2026 毛尔昊.
+Versions: 1.0 (builds 1–5) and 1.0.1 (build 6). Copyright (C) 2026 毛尔昊.
 DeskPort integration is GPL-3.0-or-later. Upstream copyright and license notices
 remain applicable. This is a modified Moonlight client, not an official Moonlight
 release. No warranty is provided.
@@ -19,6 +19,9 @@ OpenSSL sources, plus the original media and OpenSSL packaging build scripts.
 records source pins and artifact hashes; `SHA256SUMS` covers the delivered files.
 There is no private development history, signing material, device data or capture
 content in these source archives.
+
+Build 6 adds direct desktop entry, per-device desktop tuning and confirmed session
+takeover with an authenticated explanation on the displaced client.
 
 Build 5 adds the pinned shared workspace core and per-device virtual-screen
 policies with strict capability negotiation. Address identity remains unchanged.
