@@ -1,6 +1,6 @@
 # DeskPort Apple source distribution
 
-Versions: 1.0 (builds 1–5), 1.0.1 (build 6), 1.1 (build 7), 1.2 (builds 8 and 11), and 1.3 (build 13). Copyright (C) 2026 毛尔昊.
+Versions: 1.0 (builds 1–5), 1.0.1 (build 6), 1.1 (build 7), 1.2 (builds 8 and 11), 1.3 (build 13), and 1.5 (build 14). Copyright (C) 2026 毛尔昊.
 DeskPort integration is GPL-3.0-or-later. Upstream copyright and license notices
 remain applicable. This is a modified Moonlight client, not an official Moonlight
 release. No warranty is provided.
@@ -19,6 +19,8 @@ OpenSSL sources, plus the original media and OpenSSL packaging build scripts.
 records source pins and artifact hashes; `SHA256SUMS` covers the delivered files.
 There is no private development history, signing key, device data or capture
 content in these source archives.
+
+Build 14 repackages the signed SDK correction as version 1.5 for TestFlight and App Store review.
 
 Build 13 fixes SDK-origin signing for the source-built OpenSSL XCFramework. Its
 public certificate chain and signature accompany the binary; private keys are
@@ -69,7 +71,7 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 xcodebuild -project Client/Moonlight.xcodeproj -scheme DeskPortStore \
   -configuration Release -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath Build.noindex CODE_SIGNING_ALLOWED=NO \
-  MARKETING_VERSION=1.3 CURRENT_PROJECT_VERSION=13 build
+  MARKETING_VERSION=1.5 CURRENT_PROJECT_VERSION=14 build
 ```
 
 Use the version and build number shown in MANIFEST.json for an earlier archive. To make a modified version,
