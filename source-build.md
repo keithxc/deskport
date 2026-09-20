@@ -1,6 +1,6 @@
 # DeskPort Apple source distribution
 
-Versions: 1.0 (builds 1–5) 1.0.1 (build 6), and 1.1 (build 7). Copyright (C) 2026 毛尔昊.
+Versions: 1.0 (builds 1–5), 1.0.1 (build 6), 1.1 (build 7), and 1.2 (build 8). Copyright (C) 2026 毛尔昊.
 DeskPort integration is GPL-3.0-or-later. Upstream copyright and license notices
 remain applicable. This is a modified Moonlight client, not an official Moonlight
 release. No warranty is provided.
@@ -19,6 +19,10 @@ OpenSSL sources, plus the original media and OpenSSL packaging build scripts.
 records source pins and artifact hashes; `SHA256SUMS` covers the delivered files.
 There is no private development history, signing material, device data or capture
 content in these source archives.
+
+Build 8 includes the responsive mobile device cards and the current four-language
+resources. It retains universal iPhone/iPad support. Its source package is prepared
+locally alongside the TestFlight archive; public publication is tracked separately.
 
 Build 7 repackages build 6 as version 1.1 for App Store release, with no application behavior changes.
 
@@ -60,7 +64,7 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 xcodebuild -project Client/Moonlight.xcodeproj -scheme DeskPortStore \
   -configuration Release -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath Build.noindex CODE_SIGNING_ALLOWED=NO \
-  MARKETING_VERSION=1.1 CURRENT_PROJECT_VERSION=7 build
+  MARKETING_VERSION=1.2 CURRENT_PROJECT_VERSION=8 build
 ```
 
 Use the version and build number shown in MANIFEST.json for an earlier archive. To make a modified version,
@@ -112,8 +116,8 @@ product/module name, then relink. Full crypto source and packaging patches are
 included so the binary package is not the only available form.
 
 The editable integration overlay is supplied for completeness. To regenerate the
-project from upstream, create the public upstream checkouts at the pins above under
-Integration/Vendor, initialize their submodules, then run
+project, use the verified vendored Apple sources and manifest included under
+Integration/Vendor, then run
 `python3 Scripts/prepare.py ios` from Integration. The generated Client project is
 already complete, so regeneration is optional.
 
@@ -122,3 +126,22 @@ client under its licenses. They do not supply proprietary Apple SDKs, signing ke
 or a guarantee of App Store approval. Third-party names and trademarks are not an
 endorsement. DeskPort supplies no third-party media catalog or paid-content access;
 users connect to computers and content they are authorized to use.
+
+## Source-built OpenSSL symbols in future iOS archives
+
+Archives made with the current `Scripts/archive-apple.sh` use the same audited
+OpenSSL 3.3.2 sources to build a local arm64 device/simulator XCFramework with real
+dSYMs. Corresponding source packages include it at `Client/DeskPortOpenSSL`, its
+file-hash/build manifest, and the editable build recipe in
+`Integration/Scripts/build-openssl-ios.py`. Both Xcode projects use that local
+package, so opening `Client/Moonlight.xcodeproj` needs no crypto binary download.
+Earlier versioned source packages retain their original upstream package.
+
+To rebuild this framework, run `python3 Scripts/build-openssl-ios.py` in the
+integration checkout after supplying the source inputs listed in
+`docs/apple-source-inputs.json` (or permit the hash-checked downloads). Its final
+output line is the local package directory. Copy that directory over
+`Client/DeskPortOpenSSL` in your disposable source checkout and rebuild the app.
+The source hashes, Xcode version and recipe hash are recorded in the manifest.
+Keep the rebuilt framework paired with its own generated dSYM; an older release's
+dSYM cannot be used for a newly linked binary.
