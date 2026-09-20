@@ -1,6 +1,6 @@
 # DeskPort Apple source distribution
 
-Versions: 1.0 (builds 1–5), 1.0.1 (build 6), 1.1 (build 7), and 1.2 (build 8). Copyright (C) 2026 毛尔昊.
+Versions: 1.0 (builds 1–5), 1.0.1 (build 6), 1.1 (build 7), 1.2 (builds 8 and 11), and 1.3 (build 13). Copyright (C) 2026 毛尔昊.
 DeskPort integration is GPL-3.0-or-later. Upstream copyright and license notices
 remain applicable. This is a modified Moonlight client, not an official Moonlight
 release. No warranty is provided.
@@ -17,8 +17,13 @@ scripts. `Dependencies/` contains complete version-matched FFmpeg, SDL, Opus and
 OpenSSL sources, plus the original media and OpenSSL packaging build scripts.
 `Licenses/` and `NOTICES.txt` preserve the applicable notices. `MANIFEST.json`
 records source pins and artifact hashes; `SHA256SUMS` covers the delivered files.
-There is no private development history, signing material, device data or capture
+There is no private development history, signing key, device data or capture
 content in these source archives.
+
+Build 13 fixes SDK-origin signing for the source-built OpenSSL XCFramework. Its
+public certificate chain and signature accompany the binary; private keys are
+never distributed. Archive scripts require the builder's own Apple signing
+identity and verify SDK-origin metadata independently from the app signature.
 
 Build 8 includes the responsive mobile device cards and the current four-language
 resources. It retains universal iPhone/iPad support. Its source package is prepared
@@ -64,13 +69,14 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 xcodebuild -project Client/Moonlight.xcodeproj -scheme DeskPortStore \
   -configuration Release -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath Build.noindex CODE_SIGNING_ALLOWED=NO \
-  MARKETING_VERSION=1.2 CURRENT_PROJECT_VERSION=8 build
+  MARKETING_VERSION=1.3 CURRENT_PROJECT_VERSION=13 build
 ```
 
 Use the version and build number shown in MANIFEST.json for an earlier archive. To make a modified version,
 edit the complete sources directly in Client and rebuild. Xcode resolves the exact
-OpenSSL-Package version recorded in Package.resolved and downloads the artifact
-whose SHA-256 is recorded in its Package.swift. No private repository is required.
+OpenSSL-Package version recorded in Package.resolved for older builds. Builds 11
+and 13 use the included local `Client/DeskPortOpenSSL` package, built from the
+audited OpenSSL sources with matching debug symbols. No private repository is required.
 
 ## Dependency sources and rebuilding
 
