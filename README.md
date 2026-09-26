@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.6.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.6.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v0.6.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.6.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
@@ -63,16 +63,17 @@ for the full-size image; these previews do not imply store or release availabili
 
 | Platform | Role | Release status | Download |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Viewer + host + native virtual display | **0.6.0 stable**, Developer ID signed and Apple-notarized | [DMG](https://github.com/keithxc/deskport/releases/download/v0.6.0/DeskPort-0.6.0-macos-arm64.dmg) |
-| Linux x86_64 | Viewer + host; adaptive virtual workspace on capable KDE hosts | **0.6.0 stable**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.6.0) · [installation guide](docs/LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Viewer only | **0.6.0 stable**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.6.0) |
+| macOS Apple Silicon, macOS 26+ | Viewer + host + native virtual display | **0.6.3 stable**, Developer ID signed and Apple-notarized | [DMG](https://github.com/keithxc/deskport/releases/download/v0.6.3/DeskPort-0.6.3-macos-arm64.dmg) |
+| Linux x86_64 | Viewer + host; adaptive virtual workspace on capable KDE hosts | **0.6.3 stable**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.6.3) · [installation guide](docs/LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Viewer only | **0.6.3 stable**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.6.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Client only | Development; physical-device checks, no public store release yet | Not yet available |
-| Windows x64 | Viewer + host + virtual display | **0.6.1** Windows correction; installer and portable ZIP; see verification scope below | [Installer](https://github.com/keithxc/deskport/releases/download/v0.6.0/DeskPort-0.6.1-windows-x64-setup-full.exe) |
+| Windows x64 | Viewer + host + virtual display | **0.6.3 stable**; installer and portable ZIP; see verification scope below | [Installer](https://github.com/keithxc/deskport/releases/download/v0.6.3/DeskPort-0.6.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
-> **Windows antivirus notice (2026-09-24):** The exact 0.6.0 installer passed
-> three protected local runtime/scan rounds. Microsoft separately classified the
+> **Windows antivirus notice (2026-09-26):** The exact 0.6.3 installer and
+> extracted payload passed a protected Defender scan and native CLI checks.
+> Installation and live streaming acceptance remain separate. Microsoft classified the
 > previously reported 0.5.6 r4 helper as **Not malware** and stated that its
 > detection was removed. That decision applies to the submitted old sample,
 > not every newer build. Keep Defender enabled; do not add exclusions or restore
@@ -80,20 +81,22 @@ for the full-size image; these previews do not imply store or release availabili
 
 Native Linux packages require glibc 2.39+: Ubuntu 24.04+/Debian 13+, Fedora 44,
 current Arch, or a compatible AppImage system. KDE virtual-display hosting needs
-a native or Nix installation with compositor permission entries; use AppImage as
-a viewer on KDE. Mobile apps do not host desktops.
+compositor permission entries. Native/Nix packages supply fixed entries; 0.6.3
+AppImage and portable builds register the current display-helper path automatically
+when sharing starts. Host input still requires device permissions. Mobile apps do
+not host desktops.
 A source definition or successful compilation alone is not a supported platform.
 
 ## Install
 
-**macOS:** Open the [notarized DMG](https://github.com/keithxc/deskport/releases/download/v0.6.0/DeskPort-0.6.0-macos-arm64.dmg),
+**macOS:** Open the [notarized DMG](https://github.com/keithxc/deskport/releases/download/v0.6.3/DeskPort-0.6.3-macos-arm64.dmg),
 drag DeskPort into Applications and open it. Grant Screen Recording and
 Accessibility permissions to use host features. Nix and Homebrew are not required.
 
-**Linux:** Choose the [0.6.0 package](https://github.com/keithxc/deskport/releases/tag/v0.6.0)
+**Linux:** Choose the [0.6.3 package](https://github.com/keithxc/deskport/releases/tag/v0.6.3)
 for your system and follow the [installation guide](docs/LINUX_PACKAGES.md),
-including host input permissions. With Nix: `nix run github:keithxc/deskport/v0.6.0`.
-Flatpak provides viewing only. Release assets include [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v0.6.0/SHA256SUMS.txt) and a [verification report](https://github.com/keithxc/deskport/releases/download/v0.6.0/VERIFICATION.txt).
+including host input permissions. With Nix: `nix run github:keithxc/deskport/v0.6.3`.
+Flatpak provides viewing only. Release assets include [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v0.6.3/SHA256SUMS.txt) and a [verification report](https://github.com/keithxc/deskport/releases/download/v0.6.3/VERIFICATION.txt).
 
 **iPhone / iPad:** Install [DeskPort from the App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 The mobile app is a paid, one-time purchase; see your storefront for current local
@@ -130,7 +133,7 @@ Sources: [Moonlight](https://moonlight-stream.org/),
 DeskPort's current platform limits are listed above; this table does not imply
 feature parity across every OS or a measured performance advantage.
 
-See the [0.6.0 release notes](docs/RELEASE_0.6.0.md),
+See the [0.6.3 release notes](docs/RELEASE_0.6.3.md),
 [architecture](docs/ARCHITECTURE.md) and [roadmap](docs/ROADMAP.md).
 
 ## Build and run on Linux

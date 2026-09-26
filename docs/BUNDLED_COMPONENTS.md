@@ -34,7 +34,7 @@ The Linux Nix package references Sunshine 2026.516.143833 from the locked nixpkg
 revision as a separate runtime dependency. Upstream source:
 https://github.com/LizardByte/Sunshine/tree/v2026.516.143833
 
-The 0.4.2 portable Linux AppImage, DEB, RPM and pacman packages build Sunshine
+The 0.6.3 portable Linux AppImage, DEB, RPM and pacman packages build Sunshine
 2026.906.222525 from commit cb72dffa3233c5815cd5ba88f09f049dd679ba75 using
 `scripts/build-linux-host.sh`. The session-settings, session-takeover and
 Linux-display patch scripts are shared with the Nix build.
@@ -46,7 +46,11 @@ collected from the build environment. The host remains in a separate
 `usr/libexec/sunshine` tree. DeskPort's launcher supplies private configuration
 without invoking upstream installation/service commands.
 Source: https://github.com/LizardByte/Sunshine/tree/cb72dffa3233c5815cd5ba88f09f049dd679ba75
-Asset URL and SHA-256 are in `scripts/linux-tools.json`.
+Asset URLs and SHA-256 values are in `scripts/linux-tools.json`. The host
+uses the same pinned FFmpeg fb216b5 binaries as Nix, with three Vulkan lifetime
+backports in `host/linux/ffmpeg-vulkan-*.patch`. The portable build recompiles
+only four affected units against matching source and Vulkan headers, after
+comparing ABI headers. Source and relinking materials accompany the release.
 
 Portable viewer Qt 6, SDL2, FFmpeg and supporting libraries come from the Ubuntu
 24.04 build environment. The build emits `build-packages.txt` with exact package

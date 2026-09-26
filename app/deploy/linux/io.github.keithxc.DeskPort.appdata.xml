@@ -6,12 +6,13 @@
   <name>DeskPort</name>
   <summary>Remote desktop workspace based on Moonlight</summary>
   <description>
-    <p>DeskPort is an experimental Moonlight derivative for remote development with Sunshine hosts.</p>
-    <p>This initial development build provides an independent application identity and desktop-oriented defaults. Persistent background sessions and one-action window recall are planned.</p>
+    <p>DeskPort is a Moonlight-based remote desktop workspace with an optional bundled Sunshine host.</p>
+    <p>Use an independent application identity, per-computer workspace preferences, background sharing and tray recall. Hosting requires supported desktop and device permissions.</p>
   </description>
   <launchable type="desktop-id">io.github.keithxc.DeskPort.desktop</launchable>
   <url type="homepage">https://github.com/keithxc/deskport</url>
   <url type="bugtracker">https://github.com/keithxc/deskport/issues</url>
   <url type="vcs-browser">https://github.com/keithxc/deskport</url>
+  <releases><release version="0.6.3" date="2026-09-26"/></releases>
   <provides><binary>deskport</binary></provides>
 </component>
