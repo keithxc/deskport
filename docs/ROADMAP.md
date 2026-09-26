@@ -1,3 +1,39 @@
+## Windows reconnect handle ownership (2026-09-26)
+
+Native handle creation stacks identify the three remaining handles per reconnect:
+
+- Two `RawInputManager` objects originate in libvirtualhid touchscreen/pen
+  creation. A standalone Windows 11 build 26200 reproduction also retains two
+  handles per create/destroy pair, including when both calls share a thread.
+  Keep exclusive touch/pen leases in the host input context, bounded by peak
+  concurrent clients. Clear active contacts, pen buttons and tool state before
+  reuse; discard a device if cancellation fails. This bounds the exercised OS
+  lifetime issue rather than claiming to fix Windows itself.
+- A QWave file handle originates in ENet's global `qosHandle`: enabling QoS
+  overwrites the previous handle. Close it before replacement or disable, so its
+  flows are also released. Apply the correction to both the vendored client and
+  prepared Windows host; retain normal deinitialization cleanup.
+
+Upstream review: Sunshine [PR 4340](https://github.com/LizardByte/Sunshine/pull/4340)
+fixes DXGI adapter enumeration ownership and is already included in the pinned
+host. The pinned/current ENet
+[moonlight branch](https://github.com/cgutman/enet/blob/aca87840b57f045a1f7f9299e4b1b9b8e2a5e2f1/win32.c)
+still overwrites the handle. No corresponding synthetic-pointer lifetime fix was
+found in the reviewed libvirtualhid history; its
+[Windows backend](https://github.com/LizardByte/libvirtualhid/blob/6fdb8bd4de3b68d96c30e5303ac2ebb333c09746/src/platform/windows/windows_backend.cpp) already calls
+`DestroySyntheticPointerDevice`.
+
+The executable regression tests run the patched upstream constructor/destructor
+and both QoS switch arms against failure-injecting API doubles. They cover
+concurrent lease exclusion, contact/button cancellation, replacement after failed
+cleanup, failed creation, repeated QoS enable/disable, and final destruction.
+A Windows 11 / AMD AMF run completed 30 capture/encoding reconnects and received
+H.264 frames every round. After warm-up, total handles fluctuated between 381
+and 384 rather than growing by three per round. The cooled sample had 379
+handles, one Desktop, two RawInputManager objects and 25 File handles, with
+19,087,360 private bytes. The full Linux Nix build and native regression tests
+pass. These results do not establish visual or live pen/touch acceptance.
+
 ## Desktop memory display and production diagnostics (2026-09-26)
 
 Show local resident memory after the traffic indicator and refresh every three

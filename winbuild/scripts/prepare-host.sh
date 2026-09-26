@@ -35,6 +35,8 @@ apply_patch "$HOST_SOURCE/third-party/libvirtualhid" \
 # no platform-specific display implementation is pulled into Windows.
 python3 "$SRC_ROOT/scripts/patch-host-windows-display.py" "$HOST_SOURCE"
 python3 "$SRC_ROOT/scripts/patch-host-windows-desktop-lifetime.py" "$HOST_SOURCE"
+python3 "$SRC_ROOT/scripts/patch-host-windows-pointer-lifetime.py" "$HOST_SOURCE"
+python3 "$SRC_ROOT/scripts/patch-enet-windows-qos.py" "$HOST_SOURCE/third-party/moonlight-common-c/enet/win32.c"
 python3 "$SRC_ROOT/scripts/patch-host-diagnostics.py" "$HOST_SOURCE"
 python3 "$SRC_ROOT/scripts/patch-host-network.py" "$HOST_SOURCE"
 python3 "$SRC_ROOT/scripts/patch-host-smart-stream.py" "$HOST_SOURCE"

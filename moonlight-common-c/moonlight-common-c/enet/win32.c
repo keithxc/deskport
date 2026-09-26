@@ -331,6 +331,12 @@ enet_socket_set_option (ENetSocket socket, ENetSocketOption option, int value)
             enableEcn = value != 0 && IsWindows10OrGreater();
 
 #ifdef HAS_QWAVE
+            // DeskPort close the previous global QWave handle before replacement.
+            if (qosHandle != INVALID_HANDLE_VALUE)
+            {
+                pfnQOSCloseHandle(qosHandle);
+                qosHandle = INVALID_HANDLE_VALUE;
+            }
             if (value)
             {
                 QOS_VERSION qosVersion;
@@ -341,11 +347,6 @@ enet_socket_set_option (ENetSocket socket, ENetSocketOption option, int value)
                 {
                     qosHandle = INVALID_HANDLE_VALUE;
                 }
-            }
-            else if (qosHandle != INVALID_HANDLE_VALUE)
-            {
-                pfnQOSCloseHandle(qosHandle);
-                qosHandle = INVALID_HANDLE_VALUE;
             }
 
             qosAddedFlow = FALSE;
