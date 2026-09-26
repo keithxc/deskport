@@ -1,0 +1,65 @@
+From 569674ac8dc00c11eaa96d86870b186cfb076639 Mon Sep 17 00:00:00 2001
+From: Lynne <dev@lynne.ee>
+Date: Tue, 14 Jul 2026 00:29:09 +0900
+Subject: [PATCH] vulkan_encode: free CBS context, fragment and SEI buffers on
+ close
+
+The CBS context, its current access unit fragment, and the SEI
+buffers were never freed, leaking the refcounted parameter set
+clones stored in the CBS private data on every encoder teardown.
+---
+ libavcodec/vulkan_encode_av1.c  | 4 ++++
+ libavcodec/vulkan_encode_h264.c | 7 +++++++
+ libavcodec/vulkan_encode_h265.c | 6 ++++++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/libavcodec/vulkan_encode_av1.c b/libavcodec/vulkan_encode_av1.c
+index c280f37a914e8..b12d44c582df0 100644
+--- a/libavcodec/vulkan_encode_av1.c
++++ b/libavcodec/vulkan_encode_av1.c
+@@ -1359,6 +1359,10 @@ static av_cold int vulkan_encode_av1_init(AVCodecContext *avctx)
+ static av_cold int vulkan_encode_av1_close(AVCodecContext *avctx)
+ {
+     VulkanEncodeAV1Context *enc = avctx->priv_data;
++
++    ff_cbs_fragment_free(&enc->current_access_unit);
++    ff_cbs_close(&enc->cbs);
++
+     av_free(enc->padding_payload);
+     ff_vulkan_encode_uninit(&enc->common);
+     return 0;
+diff --git a/libavcodec/vulkan_encode_h264.c b/libavcodec/vulkan_encode_h264.c
+index 0327ccba0b41e..c5c06bdbc763f 100644
+--- a/libavcodec/vulkan_encode_h264.c
++++ b/libavcodec/vulkan_encode_h264.c
+@@ -1561,6 +1561,13 @@ static av_cold int vulkan_encode_h264_init(AVCodecContext *avctx)
+ static av_cold int vulkan_encode_h264_close(AVCodecContext *avctx)
+ {
+     VulkanEncodeH264Context *enc = avctx->priv_data;
++
++    ff_cbs_fragment_free(&enc->current_access_unit);
++    ff_cbs_close(&enc->cbs);
++
++    av_freep(&enc->sei_a53cc_data);
++    av_freep(&enc->sei_identifier_string);
++
+     ff_vulkan_encode_uninit(&enc->common);
+     return 0;
+ }
+diff --git a/libavcodec/vulkan_encode_h265.c b/libavcodec/vulkan_encode_h265.c
+index 8831e3220ceaa..049c3da5f1f19 100644
+--- a/libavcodec/vulkan_encode_h265.c
++++ b/libavcodec/vulkan_encode_h265.c
+@@ -1696,6 +1696,12 @@ static av_cold int vulkan_encode_h265_init(AVCodecContext *avctx)
+ static av_cold int vulkan_encode_h265_close(AVCodecContext *avctx)
+ {
+     VulkanEncodeH265Context *enc = avctx->priv_data;
++
++    ff_cbs_fragment_free(&enc->current_access_unit);
++    ff_cbs_close(&enc->cbs);
++
++    av_freep(&enc->sei_a53cc_data);
++
+     ff_vulkan_encode_uninit(&enc->common);
+     return 0;
+ }

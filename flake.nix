@@ -12,7 +12,20 @@
       packageFor = system:
         let
           pkgs = import nixpkgs { inherit system; };
-          sessionHost = pkgs.sunshine.overrideAttrs (old: {
+          sessionHost = pkgs.sunshine.overrideAttrs (old: let
+            ffmpegFlag = "-DFFMPEG_PREPARED_BINARIES:STRING=";
+            ffmpegFlags = builtins.filter (pkgs.lib.hasPrefix ffmpegFlag) old.cmakeFlags;
+            ffmpegPrebuilt = assert builtins.length ffmpegFlags == 1;
+              pkgs.lib.removePrefix ffmpegFlag (builtins.head ffmpegFlags);
+            fixedFFmpeg = import ./host/linux/ffmpeg-vulkan-cbs.nix {
+              inherit pkgs;
+              prebuilt = ffmpegPrebuilt;
+            };
+          in {
+            cmakeFlags = map (flag:
+              if pkgs.lib.hasPrefix ffmpegFlag flag
+              then "${ffmpegFlag}${fixedFFmpeg}" else flag
+            ) old.cmakeFlags;
             # Keep the distribution's existing host revision and build recipe,
             # but obtain its source from this repository instead of upstream.
             src = pkgs.runCommand "deskport-sunshine-vendored-source" {} ''

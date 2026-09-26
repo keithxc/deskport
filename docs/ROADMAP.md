@@ -1,3 +1,21 @@
+## Vulkan encoder teardown backport (2026-09-26)
+
+Real reconnect stress exposed roughly 30 MB of retained allocations per session
+despite balanced host lifetime counters. An isolated Vulkan reproduction and
+heaptrack traced the dominant allocations to FFmpeg CBS parameter-set clones
+created during both encoder probing and streaming. The pinned FFmpeg `fb216b5`
+predates the upstream cleanup fixes.
+
+Backport upstream `569674ac`, `ddfa8420` and `b672ae39` to release CBS contexts,
+access units, queued image views and session-parameter feedback buffers, and
+propagate feedback API errors. Recompile only the four affected archive members
+using the original configuration; fail on a version/header mismatch. See
+`host/linux/FFMPEG_BACKPORT.md` for provenance and the dependency upgrade guard.
+
+The original three-session heap profile retained 111.95 MB on exit; the CBS-only
+control retained 276 KB, with no outstanding CBS-clone allocation stacks. Full
+candidate hardware stress and deployed GUI acceptance remain separate gates.
+
 ## Session memory lifetime diagnostics (2026-09-26)
 
 Add opt-in counters to the pinned Linux host's session, encoder, capture,
