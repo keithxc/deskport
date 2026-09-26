@@ -315,7 +315,7 @@ TestPreferences {
 })",QUrl()); return c.create();
         });
         qmlRegisterSingletonType<QObject>("SystemProperties",1,0,"SystemProperties",+[](QQmlEngine* engine,QJSEngine*) -> QObject* {
-            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool systemDark: false; property color systemAccent: \"#3269d7\"; property bool hasBrowser: false; property bool hasDesktopEnvironment: true; property bool isWow64: false; property bool hasHardwareAcceleration: true; property bool isRunningXWayland: false; property string unmappedGamepads: \"\"; property string friendlyNativeArchName: \"test\"; property string versionString: \"test\" }",QUrl()); return c.create();
+            QQmlComponent c(engine); c.setData("import QtQuick 2.9; QtObject { property bool systemDark: false; property color systemAccent: \"#3269d7\"; property bool hasBrowser: false; property bool hasDesktopEnvironment: true; property bool isWow64: false; property bool hasHardwareAcceleration: true; property bool isRunningXWayland: false; property string unmappedGamepads: \"\"; property string friendlyNativeArchName: \"test\"; property string versionString: \"test\"; property int memorySamples: 0; function memoryUsage(pid) { memorySamples++; return {available: true, complete: true, client: 10485760, host: 0, helpers: 0, total: 10485760} } }",QUrl()); return c.create();
         });
     }
     void continuationDuringNestedEventLoop() {
@@ -751,7 +751,14 @@ ApplicationWindow {
         QQmlComponent component(&engine); component.setData(qml,QUrl("qrc:/gui/main.qml"));
         QScopedPointer<QObject> root(component.create()); QVERIFY2(root,qPrintable(component.errorString()));
         auto window=qobject_cast<QQuickWindow*>(root.data()); QVERIFY(window);
-        window->resize(800,620); window->show(); QTest::qWait(100);
+        window->resize(1120,620); window->show(); QTest::qWait(100);
+        auto memoryButton = findVisual(window->contentItem(), "memorySummary"); QVERIFY(memoryButton);
+        QVERIFY(memoryButton->property("text").toString().contains("10 MiB"));
+        QVERIFY(QMetaObject::invokeMethod(memoryButton, "clicked"));
+        auto memoryPopup = root->findChild<QObject*>("memoryDetails"); QVERIFY(memoryPopup);
+        QVERIFY(memoryPopup->property("visible").toBool());
+        QVERIFY(QMetaObject::invokeMethod(memoryPopup, "close"));
+        window->resize(800,620); QTest::qWait(100);
         auto updateButton = findVisual(window->contentItem(), "versionUpdateButton"); QVERIFY(updateButton);
         QVERIFY(updateButton->property("highlighted").toBool());
         QVERIFY(QMetaObject::invokeMethod(updateButton, "clicked"));

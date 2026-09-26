@@ -342,6 +342,7 @@ ApplicationWindow {
             }
             UiButton {
                 id: trafficSummary; objectName: "trafficSummary"
+                Layout.maximumWidth: Math.max(120, window.width - (topBar.compact ? 560 : 850))
                 visible: !topBar.narrow
                 Layout.leftMargin: 4
                 flat: true; font.pixelSize: ui.small
@@ -374,7 +375,8 @@ ApplicationWindow {
             }
             UiButton {
                 id: memorySummary; objectName: "memorySummary"
-                visible: !topBar.narrow
+                Layout.maximumWidth: 170
+                visible: !topBar.compact
                 flat: true; font.pixelSize: ui.small
                 property var usage: ({available: false, complete: false, total: 0, client: -1, host: 0, helpers: 0})
                 function amount(bytes) { return bytes < 0 ? qsTr("Unavailable") : (bytes / 1048576).toFixed(0) + " MiB" }
@@ -596,7 +598,7 @@ ApplicationWindow {
         }
     }
     Dialog {
-        id: memoryDetails; title: qsTr("Local memory usage"); modal: true
+        id: memoryDetails; objectName: "memoryDetails"; title: qsTr("Local memory usage"); modal: true
         width: Math.min(window.width - 40, 460); anchors.centerIn: parent
         standardButtons: Dialog.Ok
         contentItem: ColumnLayout {
