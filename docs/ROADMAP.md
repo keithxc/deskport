@@ -1,3 +1,16 @@
+## Session memory lifetime diagnostics (2026-09-26)
+
+Add opt-in counters to the pinned Linux host's session, encoder, capture,
+PipeWire stream, image, dummy-pixel, AVFrame and EGL-context owners. Set
+`DESKPORT_MEMORY_DIAGNOSTICS` to an absolute private JSONL path before launching
+an isolated diagnostic host. Snapshots after thread joins and after full session
+member destruction distinguish outstanding resources from glibc free arena
+retention. Dummy pixel counts use owned allocation sizes, never borrowed capture
+pixels. Default hosts perform no counter updates or diagnostic file writes.
+This instrumentation is diagnostic evidence, not a memory-leak fix or live
+acceptance claim. Test the actual extracted owner and allocation functions with
+`scripts/test-host-pipewire-memory.py --diagnostics`.
+
 ## Public CI core pin repair (2026-09-26)
 
 Publish the shared session admission commit before its desktop consumer. Replace

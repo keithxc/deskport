@@ -67,13 +67,26 @@ int main() {
   assert(arrays==0 && "dummy images retained after destruction");
 }
 ''')
+            if patched and '--diagnostics' in sys.argv:
+                contents = unit.read_text()
+                contents = '#include "src/deskport/common/memorydiagnostics.h"\n' + contents
+                contents = contents.replace('  assert(arrays==0 && "dummy images retained after destruction");', '''  assert(arrays==0 && "dummy images retained after destruction");
+  using namespace deskport_memory;
+  for (const auto& t : counters) assert(t.live == 0 && t.bytes == 0 && t.created == t.destroyed);
+  assert(counters[static_cast<unsigned>(kind::image)].created == 5000);
+  assert(counters[static_cast<unsigned>(kind::dummy_pixels)].created == 15000);
+  snapshot("test-complete");''')
+                unit.write_text(contents)
             binary=target/'memory-test'
             subprocess.run([os.environ.get('CXX','c++'),'-std=c++17','-O1','-g','-fsanitize=' + ('undefined' if sys.platform == 'darwin' else 'address,undefined'),str(unit),'-o',str(binary)],check=True)
-            result=subprocess.run([str(binary)],stdout=subprocess.PIPE,stderr=subprocess.PIPE, timeout=60)
+            result=subprocess.run([str(binary)],env=dict(os.environ, DESKPORT_MEMORY_DIAGNOSTICS=str(target/'counters.jsonl')),stdout=subprocess.PIPE,stderr=subprocess.PIPE, timeout=60)
             if patched and result.returncode: raise SystemExit(result.stderr.decode())
             if not patched:
                 assert result.returncode != 0 and b'dummy images retained' in result.stderr, result.stderr
         exercise(False)
         for _ in range(2): subprocess.run(['python3',str(root/'scripts/patch-host-pipewire-memory.py'),str(target)],check=True)
+        if '--diagnostics' in sys.argv:
+            for _ in range(2):
+                subprocess.run(['python3',str(root/'scripts/patch-host-memory-diagnostics.py'),str(target),str(root/'host/common/memorydiagnostics.h')],check=True)
         exercise(True)
         print(f'PASS {archive}: original leaks; 5000 patched reuse/destruction/borrowed-buffer/FD cycles with allocation accounting and sanitizers')
