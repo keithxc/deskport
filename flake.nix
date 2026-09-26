@@ -52,6 +52,7 @@
               python3 ${./scripts/patch-host-linux-cadence.py} .
               python3 ${./scripts/patch-host-pipewire-memory.py} .
               python3 ${./scripts/patch-host-display-ownership.py} .
+              python3 ${./scripts/patch-host-egl-query-lifetime.py} .
               python3 ${./scripts/patch-host-vulkan-lifetime.py} . ${./host/linux/vulkan-driver-lifetime.h}
               python3 ${./scripts/patch-host-memory-diagnostics.py} . ${./host/common/memorydiagnostics.h}
               cp ${./host/common/encoderpolicy.h} src/deskport/common/encoderpolicy.h

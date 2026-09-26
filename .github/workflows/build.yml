@@ -36,6 +36,8 @@ jobs:
           nix develop -c python3 scripts/test-memory-diagnostics-build.py
           nix develop -c python3 scripts/test-host-windows-desktop-lifetime.py
           nix develop -c python3 scripts/test-windows-session-lifetime.py
+          nix develop -c python3 scripts/test-pipewire-buffer-watch.py
+          nix develop -c python3 scripts/test-host-egl-query-lifetime.py
           nix develop -c python3 scripts/test-host-pipewire-memory.py --diagnostics
           nix develop -c python3 scripts/test-host-lifecycle.py --binding
 

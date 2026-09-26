@@ -1,3 +1,54 @@
+## Linux residual allocation investigation (2026-09-26)
+
+Upstream PipeWire 1.6.8 fixes a client-node mix cleanup error in
+[ed9f83d8](https://gitlab.freedesktop.org/pipewire/pipewire/-/commit/ed9f83d805474e877cffaecface9c0bd73bb01cf).
+That change does not match the previously observed 32 KiB native-connection
+buffer stack: `module-protocol-native/connection.c` is identical between the
+reviewed 1.6.6 and 1.6.8 sources. Do not report an untested dependency upgrade as
+the fix for this candidate.
+
+A separate allocator observer now records each exact 32 KiB allocation and its
+stack, tracks realloc/free by allocation identity, and requires a complete log.
+It is a Linux/glibc-only diagnostic under `scripts/diagnostics`, not linked or
+loaded in shipping builds. Positive/negative controls include 8 concurrent
+threads and 16,001 allocations, with both deliberate retention and complete
+cleanup. Across 140 actual Vulkan capture/encoding reconnects, all 852 observed
+PipeWire native buffers were released. This narrows the intermittent
+candidate but does not establish its absence on all machines or timing paths.
+
+The EGL records match upstream display-identity caching. Mesa's
+[`_eglFindDisplay`](https://gitlab.freedesktop.org/mesa/mesa/-/blob/mesa-26.1.8/src/egl/main/egldisplay.c)
+retains display handles for repeated calls with the same platform/native-display
+parameters; libglvnd's
+[`__eglMappingTeardown`](https://github.com/NVIDIA/libglvnd/blob/v1.7.0/src/EGL/libeglmapping.c)
+releases its mappings on library teardown. `eglTerminate` does not remove that
+identity mapping. In isolated native tests, 1,000 serial reconnects used one
+EGLDisplay, as did 1,000 cycles on a retained Wayland connection. A distinct
+identity control held 100 native connections and produced 100 EGLDisplay
+mappings. More importantly, ten actual capture sessions made 32 queries with
+23 distinct native/EGL identities. This is a process-lifetime cache whose size
+depends on identities, not evidence of a missing host `eglTerminate`.
+
+The host now retains one query-only Wayland connection behind a mutex. Each
+query still initializes/terminates EGL and refreshes capabilities; capture
+connections retain their independent ownership. A failed roundtrip or changed
+Wayland/runtime route discards the connection before retrying. The change avoids
+adding an EGL identity per reconnect without unloading graphics libraries.
+Ownership/recovery tests exercise 9,004 queries, including concurrent queries,
+route changes, disconnects and failed initialization retries. A full Linux Nix
+build passed. With the patched production host, 30 actual Vulkan capture/encoding
+reconnects returned frames and made 92 queries with one native/EGL identity;
+all 184 observed native buffers were released. A separate ten-session test
+restarted the isolated compositor halfway through while retaining the host PID:
+all sessions returned encoded frames, all 64 native buffers were released, and
+queries retained one identity (allocator address reuse across compositor restart
+is allowed). These checks cover normal reconnects and one compositor recovery,
+not arbitrary driver stacks or unbounded compositor restarts.
+
+Open gate: reproduce the intermittent 32 KiB native buffer with an unmatched
+allocation identity and release/teardown evidence. These isolated encoded-frame
+tests do not constitute deployed GUI or complete long-duration acceptance.
+
 ## Windows reconnect handle ownership (2026-09-26)
 
 Native handle creation stacks identify the three remaining handles per reconnect:
