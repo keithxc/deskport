@@ -850,6 +850,14 @@
     </message>
 
     <message><source>Connecting to desktop…</source><translation>正在连接桌面…</translation></message>
+    <message>
+        <source>This connection would create a loop. Disconnect one of the existing links first.</source>
+        <translation>此连接会形成回环。请先断开其中一条已有连接。</translation>
+    </message>
+    <message>
+        <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
+        <translation>无法验证连接路径。请更新连接链中每台电脑上的 DeskPort 后重试。</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>

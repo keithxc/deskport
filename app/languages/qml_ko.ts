@@ -818,6 +818,14 @@
     </message>
 
     <message><source>Connecting to desktop…</source><translation>데스크톱에 연결 중…</translation></message>
+    <message>
+        <source>This connection would create a loop. Disconnect one of the existing links first.</source>
+        <translation>이 연결은 순환 연결을 만듭니다. 먼저 기존 연결 중 하나를 끊으세요.</translation>
+    </message>
+    <message>
+        <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
+        <translation>연결 경로를 확인할 수 없습니다. 연결된 모든 컴퓨터의 DeskPort를 업데이트한 후 다시 시도하세요.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>

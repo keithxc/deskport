@@ -821,6 +821,14 @@
 <message><source>Virtual screen control ended. Reconnect to apply the selected mode.</source><translation>仮想ディスプレイの制御が終了しました。再接続して選択したモードを適用してください。</translation></message>
 
     <message><source>Connecting to desktop…</source><translation>デスクトップに接続中…</translation></message>
+    <message>
+        <source>This connection would create a loop. Disconnect one of the existing links first.</source>
+        <translation>この接続はループを作成します。先に既存の接続のいずれかを切断してください。</translation>
+    </message>
+    <message>
+        <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
+        <translation>接続経路を確認できませんでした。経路上のすべてのコンピューターの DeskPort を更新して、再試行してください。</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>

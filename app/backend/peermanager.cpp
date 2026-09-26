@@ -1,6 +1,7 @@
 #include "smalltcp.h"
 #include "../../shared/deskport-core/include/deskport/protocol.h"
 #include "peermanager.h"
+#include "sessiongraph.h"
 #include <QSysInfo>
 #include <QPointer>
 #include "peerstore.h"
@@ -75,6 +76,7 @@ struct PeerManager::Link : QObject {
     int clipboardRevision = 0, clipboardSequence = 0;
     qint64 lastClipboardRequest = 0;
     bool sessionOptIn = false, sessionAdmitted = false;
+    bool topologyPending = false, topologyQuery = false, topologyOptIn = false;
     QString sessionChallenge, sessionSnapshot, sessionLease;
     qint64 sessionDeadline = 0;
     quint64 sessionEpoch = 0;
@@ -294,6 +296,7 @@ QJsonObject PeerManager::metadata() const {
     meta["endpointRefresh"] = 1;
     meta["clipboard"] = 1;
     meta["sessionTakeover"] = DP_SESSION_TAKEOVER_VERSION;
+    meta["sessionTopology"] = DP_SESSION_TOPOLOGY_VERSION;
     meta["clientWindow"] = DP_CLIENT_WINDOW_VERSION;
     meta["sessionLifecycle"] = DP_SESSION_LIFECYCLE_VERSION;
 #if defined(Q_OS_MACOS) || defined(Q_OS_LINUX) || defined(Q_OS_WIN)
@@ -488,6 +491,29 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
         link->socket->disconnectFromHost();
         QTimer::singleShot(2000, link, &QObject::deleteLater); return;
     }
+    if (type == DP_MESSAGE_SESSION_PATH) {
+        const auto peer = m_Peers.value(link->fingerprint).toObject();
+        const auto path = message["path"].toArray();
+        if (!link->incoming || link->requested || link->sessionOptIn || link->clipboardControl ||
+            link->displayControl || link->topologyQuery || !peer["ready"].toBool() ||
+            !peer["granted"].toBool() || m_Revoking == link->fingerprint ||
+            path.isEmpty() || path.last().toString() != link->fingerprint || m_TopologyOperations >= 32) {
+            fail(link, tr("Connection path could not be verified")); return;
+        }
+        if (m_Link == link) m_Link = nullptr;
+        link->topologyQuery = true; ++m_TopologyOperations;
+        const QPointer<Link> alive(link);
+        SessionGraph::check(SessionGraph::identity(m_Certificate), path, this, [this, alive](QString code) {
+            --m_TopologyOperations;
+            if (!alive || alive->ended) return;
+            send(alive, {{"type", DP_MESSAGE_SESSION_PATH_RESULT}, {"safe", code.isEmpty()}, {"code", code}});
+            alive->ended = true;
+            alive->socket->disconnectFromHost();
+            QTimer::singleShot(2000, alive, &QObject::deleteLater);
+        });
+        return;
+    }
+    if (link->topologyQuery) { fail(link, tr("Connection path query already used")); return; }
     if (type == DP_MESSAGE_SESSION_RELEASE) {
         if (link == m_SessionLink && link->lifecycle && link->sessionAdmitted)
             fail(link, tr("Client disconnected"));
@@ -832,6 +858,29 @@ void PeerManager::sessionError(Link* link, const QString& code) {
                 {"error", tr("Session access was not granted (%1). Reconnect and try again.").arg(code)}});
 }
 void PeerManager::sessionRequest(Link* link, const QJsonObject& message) {
+    const auto peer = m_Peers.value(link->fingerprint).toObject();
+    if (!link->incoming || !peer["ready"].toBool() || !peer["granted"].toBool() ||
+        m_Revoking == link->fingerprint) { sessionError(link, "unauthorized"); return; }
+    const bool takeover = message["type"] == DP_MESSAGE_SESSION_TAKEOVER;
+    if (takeover && !link->sessionOptIn) { sessionError(link, "unauthorized"); return; }
+    if (!takeover) link->topologyOptIn = message["sessionTopology"].toInt() == DP_SESSION_TOPOLOGY_VERSION;
+    // Old client-only mobile peers cannot be a host in a return path. Desktop
+    // peers must register pending edges; otherwise concurrent cycles are unsafe.
+    if (!link->topologyOptIn && peer["role"] != "client") { sessionError(link, "topology-unsupported"); return; }
+    if (link->topologyPending || m_TopologyOperations >= 32) { sessionError(link, "busy"); return; }
+    if (m_Link == link) m_Link = nullptr;
+    link->topologyPending = true; ++m_TopologyOperations;
+    const QPointer<Link> alive(link);
+    SessionGraph::check(SessionGraph::identity(m_Certificate), {link->fingerprint}, this,
+        [this, alive, message](QString code) {
+        --m_TopologyOperations;
+        if (!alive || alive->ended) return;
+        alive->topologyPending = false;
+        if (!code.isEmpty()) { sessionError(alive, code); return; }
+        sessionRequestVerified(alive, message);
+    });
+}
+void PeerManager::sessionRequestVerified(Link* link, const QJsonObject& message) {
     const auto peer = m_Peers.value(link->fingerprint).toObject();
     if (!link->incoming || link->requested || link->clipboardControl ||
         !peer["ready"].toBool() || !peer["granted"].toBool() || m_Revoking == link->fingerprint || !m_Host->running()) {

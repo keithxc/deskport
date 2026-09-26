@@ -4,6 +4,8 @@
 #include "smalltcp.h"
 #include "../../shared/deskport-core/include/deskport/protocol.h"
 #include "adaptivedisplay.h"
+#include "sessiongraph.h"
+#include <QUuid>
 #include "workspaceresolution.h"
 #include <QSslSocket>
 #include <QSslError>
@@ -15,12 +17,20 @@
 
 AdaptiveDisplay::AdaptiveDisplay(QString address, quint16 port, QSslCertificate peer,
                                  QByteArray certificate, QByteArray key, int policy, QString resumeToken)
-    : m_Address(address), m_Port(port), m_Peer(peer), m_Certificate(certificate), m_Key(key), m_Policy(policy), m_ResumeToken(resumeToken) { start(); }
+    : m_Address(address), m_Port(port), m_Peer(peer), m_Certificate(certificate), m_Key(key), m_Policy(policy), m_ResumeToken(resumeToken) {
+    m_GraphIdentity = SessionGraph::identity(QSslCertificate(certificate));
+    m_GraphToken = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    m_GraphReserved = SessionGraph::reserve(m_GraphIdentity, {m_GraphToken, address, port, peer, certificate, key});
+    if (!m_GraphReserved) { m_TopologyError = "cycle"; m_Failed = true; m_Retryable = false; }
+    else start();
+}
 AdaptiveDisplay::~AdaptiveDisplay() {
     requestInterruption();
     { QMutexLocker lock(&m_Mutex); m_Wake.wakeAll(); }
     wait();
+    if (m_GraphReserved) SessionGraph::release(m_GraphIdentity, m_GraphToken);
 }
+QString AdaptiveDisplay::topologyError() { QMutexLocker lock(&m_Mutex); return m_TopologyError; }
 bool AdaptiveDisplay::retryable() { QMutexLocker lock(&m_Mutex); return m_Retryable && !m_TakenOver; }
 QString AdaptiveDisplay::warning() { QMutexLocker lock(&m_Mutex); return m_Warning; }
 QString AdaptiveDisplay::resumeToken() { QMutexLocker lock(&m_Mutex); return m_ResumeToken; }
@@ -142,9 +152,14 @@ void AdaptiveDisplay::run() {
         }
         { QMutexLocker lock(&m_Mutex); m_Modes=modes; }
         const bool admission = hello["meta"].toObject()["sessionTakeover"].toInt() == DP_SESSION_TAKEOVER_VERSION;
-        { QMutexLocker lock(&m_Mutex); m_AdmissionRequired = admission; }
-        if (admission) {
-            QJsonObject query{{"type", DP_MESSAGE_SESSION_STATUS}, {"sessionTakeover", DP_SESSION_TAKEOVER_VERSION}};
+        const bool topology = hello["meta"].toObject()["sessionTopology"].toInt() == DP_SESSION_TOPOLOGY_VERSION;
+        if (!admission || !topology) {
+            QMutexLocker lock(&m_Mutex); m_TopologyError = "topology-unsupported"; m_Retryable = false;
+            connected = false;
+        }
+        if (connected && admission) {
+            QJsonObject query{{"type", DP_MESSAGE_SESSION_STATUS}, {"sessionTakeover", DP_SESSION_TAKEOVER_VERSION},
+                              {"sessionTopology", DP_SESSION_TOPOLOGY_VERSION}};
             if (m_Lifecycle) { query["sessionLifecycle"] = DP_SESSION_LIFECYCLE_VERSION; query["resumeToken"] = m_ResumeToken; }
             send(query);
             auto state = receive();
@@ -167,6 +182,7 @@ void AdaptiveDisplay::run() {
             { QMutexLocker lock(&m_Mutex);
               if (admitted && m_Lifecycle) m_ResumeToken = state["resumeToken"].toString();
               if (!admitted && !state.isEmpty()) m_Retryable = false;
+              if (!admitted) m_TopologyError = state["code"].toString();
             }
             connected = connected && admitted;
         }

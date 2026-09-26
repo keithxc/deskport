@@ -830,6 +830,14 @@
 <message><source>Virtual screen control ended. Reconnect to apply the selected mode.</source><translation>虛擬螢幕控制已中斷，請重新連線以套用所選模式。</translation></message>
 
     <message><source>Connecting to desktop…</source><translation>正在連線至桌面…</translation></message>
+    <message>
+        <source>This connection would create a loop. Disconnect one of the existing links first.</source>
+        <translation>此連線會形成迴圈。請先中斷其中一條現有連線。</translation>
+    </message>
+    <message>
+        <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
+        <translation>無法驗證連線路徑。請更新連線鏈中每台電腦上的 DeskPort 後重試。</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>

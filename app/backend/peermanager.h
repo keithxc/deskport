@@ -67,6 +67,8 @@ private:
     QJsonObject metadata() const;
     bool save();
     void sessionRequest(Link* link, const QJsonObject& message);
+    void sessionRequestVerified(Link* link, const QJsonObject& message);
+    int m_TopologyOperations = 0;
     void acquireSession(Link* link, const QString& snapshot, bool takeover);
     void sessionError(Link* link, const QString& code);
     HostManager* m_Host;

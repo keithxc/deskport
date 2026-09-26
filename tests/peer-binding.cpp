@@ -13,6 +13,7 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include "peermanager.h"
+#include "sessiongraph.h"
 #include "peerstore.h"
 #include "qmlcachekey.h"
 
@@ -54,6 +55,106 @@ private:
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void sessionGraph_data() {
+        QTest::addColumn<QString>("scenario");
+        for (const char* item : {"chain", "reciprocal", "three-cycle", "simultaneous", "takeover-cycle", "unreachable", "old-desktop", "old-mobile", "reservation-lifetime"})
+            QTest::newRow(item) << QString(item);
+    }
+    void sessionGraph() {
+        QFETCH(QString, scenario);
+        QTemporaryDir dir;
+        const QList<QByteArray> certs{credential("TEST_CERT_A"),credential("TEST_CERT_B"),credential("TEST_CERT_C")};
+        const QList<QByteArray> keys{credential("TEST_KEY_A"),credential("TEST_KEY_B"),credential("TEST_KEY_C")};
+        QStringList ids;
+        for (const auto& cert : certs) ids << SessionGraph::identity(QSslCertificate(cert));
+        std::vector<std::unique_ptr<HostManager>> hosts;
+        std::vector<std::unique_ptr<PeerManager>> peers;
+        QStringList tokens{"edge-a", "edge-b", "edge-c"};
+        struct Cleanup {
+            QStringList ids, tokens;
+            ~Cleanup() { for (int i=0;i<ids.size();++i) SessionGraph::release(ids[i],tokens[i]); }
+        } cleanup{ids,tokens};
+        for (int i=0;i<3;++i) {
+            const auto base = dir.path()+QString("/%1").arg(i);
+            QDir().mkpath(base+"/binding"); QJsonObject records;
+            for (int j=0;j<3;++j) if (i!=j) {
+                QJsonObject record{{"ready",true},{"granted",true}};
+                if (scenario=="old-mobile" && j==0) record["role"]="client";
+                records[ids[j]]=record;
+            }
+            QVERIFY(PeerStore::write(base+"/binding/peers.json",{{"version",1},{"peers",records}}));
+            hosts.emplace_back(new HostManager(nullptr,base+"/host"));
+            peers.emplace_back(new PeerManager(hosts.back().get(),certs[i],keys[i],base+"/binding",0,QHostAddress::LocalHost));
+            hosts.back()->start(2560,1440);
+            QTRY_VERIFY_WITH_TIMEOUT(hosts.back()->canPair() && QFile::exists(base+"/host/test-sessions.json"),5000);
+        }
+        auto edge = [&](int from,int to) {
+            return SessionGraph::Edge{tokens[from],"127.0.0.1",quint16(peers[to]->port()),QSslCertificate(certs[to]),certs[from],keys[from]};
+        };
+        auto reserve = [&](int from,int to) { return SessionGraph::reserve(ids[from],edge(from,to)); };
+        auto receive = [&](QSslSocket& socket) {
+            QElapsedTimer timer; timer.start();
+            while (!socket.canReadLine() && timer.elapsed()<7000) QTest::qWait(5);
+            return QJsonDocument::fromJson(socket.readLine()).object();
+        };
+        auto connectPeer = [&](QSslSocket& socket,int from,int to) {
+            socket.setLocalCertificate(QSslCertificate(certs[from])); socket.setPrivateKey(QSslKey(keys[from],QSsl::Rsa));
+            connect(&socket,qOverload<const QList<QSslError>&>(&QSslSocket::sslErrors),&socket,[&socket](const QList<QSslError>& errors){socket.ignoreSslErrors(errors);});
+            socket.connectToHostEncrypted("127.0.0.1",peers[to]->port());
+            QTRY_VERIFY_WITH_TIMEOUT(socket.isEncrypted(),5000);
+            QCOMPARE(receive(socket)["meta"].toObject()["sessionTopology"].toInt(),1);
+        };
+        auto send = [](QSslSocket& socket,QJsonObject message) { socket.write(QJsonDocument(message).toJson(QJsonDocument::Compact)+'\n'); };
+        const QJsonObject query{{"type","session-status"},{"sessionTakeover",1},{"sessionTopology",1}};
+        auto state = [&](int i) { return PeerStore::read(dir.path()+QString("/%1/host/test-sessions.json").arg(i)); };
+        if (scenario=="reservation-lifetime") {
+            QVERIFY(!reserve(0,0)); QVERIFY(reserve(0,1)); QVERIFY(!reserve(0,2));
+            SessionGraph::release(ids[0],"stale-token"); QCOMPARE(SessionGraph::snapshot(ids[0]).first.token,tokens[0]);
+            SessionGraph::release(ids[0],tokens[0]); QVERIFY(reserve(0,2)); return;
+        }
+        QSslSocket a,b,c;
+        if (scenario=="old-desktop" || scenario=="old-mobile") {
+            connectPeer(a,0,1); auto legacy=query; legacy.remove("sessionTopology"); send(a,legacy);
+            const auto result=receive(a);
+            if(scenario=="old-mobile") QVERIFY(result["admitted"].toBool());
+            else { QCOMPARE(result["code"].toString(),QString("topology-unsupported")); QVERIFY(state(1)["lease"].toString().isEmpty()); }
+            return;
+        }
+        QVERIFY(reserve(0,1)); connectPeer(a,0,1);
+        if(scenario=="simultaneous") { QVERIFY(reserve(1,2)); QVERIFY(reserve(2,0)); }
+        send(a,query); auto result=receive(a);
+        if(scenario=="simultaneous") {
+            QCOMPARE(result["code"].toString(),QString("cycle"));
+            connectPeer(b,1,2); connectPeer(c,2,0); send(b,query); send(c,query);
+            QCOMPARE(receive(b)["code"].toString(),QString("cycle")); QCOMPARE(receive(c)["code"].toString(),QString("cycle"));
+            for(int i=0;i<3;++i) QVERIFY(state(i)["lease"].toString().isEmpty()); return;
+        }
+        QVERIFY(result["admitted"].toBool()); const auto oldB=state(1);
+        if(scenario=="takeover-cycle") {
+            QVERIFY(reserve(2,1)); connectPeer(c,2,1); send(c,query); const auto occupied=receive(c);
+            QVERIFY(occupied["busy"].toBool()); QVERIFY(!occupied["challenge"].toString().isEmpty());
+            QVERIFY(reserve(1,2));
+            send(c,{{"type","session-takeover"},{"challenge",occupied["challenge"]}});
+            QCOMPARE(receive(c)["code"].toString(),QString("cycle")); QCOMPARE(state(1),oldB); return;
+        }
+        if(scenario=="reciprocal") {
+            QVERIFY(reserve(1,0)); connectPeer(b,1,0); send(b,query);
+            QCOMPARE(receive(b)["code"].toString(),QString("cycle")); QCOMPARE(state(1),oldB);
+            SessionGraph::release(ids[1],tokens[1]); SessionGraph::release(ids[0],tokens[0]);
+            QVERIFY(reserve(1,0)); send(b,query); QVERIFY(receive(b)["admitted"].toBool()); return;
+        }
+        if(scenario=="unreachable") {
+            auto broken=edge(1,2); broken.port=1; QVERIFY(SessionGraph::reserve(ids[1],broken));
+            QVERIFY(reserve(2,0)); connectPeer(c,2,0); send(c,query);
+            QCOMPARE(receive(c)["code"].toString(),QString("topology-unavailable")); QCOMPARE(state(1),oldB); return;
+        }
+        QVERIFY(reserve(1,2)); connectPeer(b,1,2); send(b,query); QVERIFY(receive(b)["admitted"].toBool());
+        if(scenario=="three-cycle") {
+            QVERIFY(reserve(2,0)); connectPeer(c,2,0); send(c,query);
+            QCOMPARE(receive(c)["code"].toString(),QString("cycle")); QCOMPARE(state(1),oldB);
+            QVERIFY(state(0)["lease"].toString().isEmpty());
+        }
+    }
     void sessionAdmission_data() {
         QTest::addColumn<QString>("scenario");
         for (const char* name : {"recover-owner", "recover-before-eof", "recover-wrong-token", "recover-wrong-identity", "release-explicit", "client-window"}) QTest::newRow(name) << QString(name);
@@ -95,7 +196,7 @@ private slots:
             while (!socket.canReadLine() && timer.elapsed() < 6000) QTest::qWait(10);
             return QJsonDocument::fromJson(socket.readLine()).object();
         };
-        const QJsonObject query{{"type","session-status"},{"sessionTakeover",1}};
+        const QJsonObject query{{"type","session-status"},{"sessionTakeover",1},{"sessionTopology",1}};
         const QJsonObject resize{{"type","display-resize"},{"seq",1},{"width",1920},{"height",1080},{"scale",1}};
         QSslSocket old, incoming, rival;
         if (scenario.startsWith("recover-") || scenario == "release-explicit") {
@@ -776,8 +877,11 @@ private slots:
         AdaptiveDisplay channel("127.0.0.1",server.serverPort(),QSslCertificate(bCert),aCert,credential("TEST_KEY_A"));
         auto result=std::async(std::launch::async,[&]{return channel.resize(QSize(1400,800),2);});
         QTRY_VERIFY_WITH_TIMEOUT(server.socket && server.socket->isEncrypted(),5000);
-        server.send({{"type","hello"},{"meta",QJsonObject{{"adaptiveDisplay",1},{"displayModes",QJsonArray{
+        server.send({{"type","hello"},{"meta",QJsonObject{{"adaptiveDisplay",1},{"sessionTakeover",1},{"sessionTopology",1},{"displayModes",QJsonArray{
             QJsonObject{{"width",1280},{"height",720}},QJsonObject{{"width",1920},{"height",1080}}}}}}});
+        QTRY_VERIFY_WITH_TIMEOUT(!server.messages.isEmpty(),5000);
+        QCOMPARE(server.messages.takeFirst()["type"].toString(),QString("session-status"));
+        server.send({{"type","session-state"},{"busy",false},{"admitted",true}});
         QTRY_VERIFY_WITH_TIMEOUT(!server.messages.isEmpty(),5000);
         const auto request=server.messages.takeFirst();
         QCOMPARE(request["width"].toInt(),1280);QCOMPARE(request["height"].toInt(),720);QCOMPARE(request["scale"].toInt(),1);

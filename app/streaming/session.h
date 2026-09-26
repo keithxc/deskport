@@ -193,6 +193,7 @@ private:
     void initializeClipboard();
     std::shared_ptr<AdaptiveDisplay> m_AdaptiveDisplay;
     bool m_SessionAdmissionFailed = false;
+    QString m_SessionTopologyError;
     std::shared_ptr<TransitionWindow> m_TransitionWindow;
     QTimer* m_TransitionTimer = nullptr;
     QSize m_AdaptiveNextSize, m_AdaptiveObservedSize;

@@ -75,3 +75,13 @@ See core `protocol/ENDPOINTS.md`. Mobile and desktop authenticated refresh retai
 the configured connection entry independently from streaming endpoints. Mobile
 legacy stream overrides migrate their hostname to the default entry; new explicit
 entries are preserved. Run the endpoint transport and binding regressions.
+
+## Private cycle-guard snapshot — 2026-09-26
+
+This test branch pins the core Git tree and the identical immutable NAR snapshot.
+The path input is preloaded from the private test Release, not a mutable working
+directory. `test-core.py` verifies the Git archive NAR hash against flake.lock.
+The delivery preparation tool restores both source snapshots after GC or on a
+new machine. Core/source commits remain local; a later public integration must
+publish the reviewed core and restore a reachable public input before publishing
+its consumer. This private pin must not be merged into the public release branch.

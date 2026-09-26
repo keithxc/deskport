@@ -756,7 +756,9 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
             break;
         }
     }
-    if (!m_AdaptiveDisplay) return;
+    if (!m_AdaptiveDisplay) {
+        m_SessionAdmissionFailed = true; m_SessionTopologyError = "topology-unsupported"; return;
+    }
     // The retained native window has received any intervening drag events.
     // Read its newest size once before committing the next host request.
     if (m_AdaptiveResume && m_TransitionWindow) {
@@ -819,6 +821,7 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
         // Disable adaptation for this session to avoid reconnect loops.
         deskportResizeStage("mode-failed");
         m_SessionAdmissionFailed = m_RecoveryDeadline || m_AdaptiveDisplay->admissionRequired();
+        m_SessionTopologyError = m_AdaptiveDisplay->topologyError();
         if (m_RecoveryDeadline) scheduleNetworkRecovery();
         m_AdaptiveDisplay.reset();
         qWarning() << "Using fixed-resolution streaming; adaptive display negotiation was unavailable";
@@ -1022,7 +1025,11 @@ bool Session::initialize()
     if (!m_AdaptiveGeometry.isValid()) m_AdaptiveGeometry = QRect(x, y, width, height);
     initializeAdaptiveDisplay(m_TransitionWindow ? m_TransitionWindow->window() : testWindow);
     if (m_SessionAdmissionFailed) {
-        emit displayLaunchError(tr("Connection cancelled or session access was not granted. Reconnect to try again."));
+        emit displayLaunchError(m_SessionTopologyError == "cycle"
+            ? tr("This connection would create a loop. Disconnect one of the existing links first.")
+            : m_SessionTopologyError.startsWith("topology-")
+            ? tr("The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.")
+            : tr("Connection cancelled or session access was not granted. Reconnect to try again."));
         SDL_DestroyWindow(testWindow); SDL_QuitSubSystem(SDL_INIT_VIDEO);
         return false;
     }
@@ -1286,7 +1293,8 @@ bool Session::initialize()
     // signals for them, if appropriate
     const QSize negotiatedSize(m_StreamConfig.width, m_StreamConfig.height);
     bool ret = validateLaunch(testWindow);
-    if (negotiatedSize != QSize(m_StreamConfig.width, m_StreamConfig.height)) m_AdaptiveDisplay.reset();
+    if (negotiatedSize != QSize(m_StreamConfig.width, m_StreamConfig.height) &&
+        m_AdaptiveDisplay && !m_AdaptiveDisplay->admissionRequired()) m_AdaptiveDisplay.reset();
 
     deskportResizeStage("probe-end");
     if (ret) {

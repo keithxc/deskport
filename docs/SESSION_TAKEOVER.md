@@ -93,27 +93,10 @@ and local shortcut handling. A cycle may recursively capture a viewer or feed
 input back, depending on display layout and focus; it is not necessarily a
 recursive image when separate virtual displays are used.
 
-Recommended policy: preserve mutual binding permissions, allow acyclic active
-session chains, and reject a new session that closes any cycle, including cycles
-longer than two machines. This policy is **not yet enforced**. Correct enforcement
-needs a shared-core identity/path contract, admission-time revalidation (including
-simultaneous connection attempts), stale-session cleanup, and explicit behavior
-for peers lacking the capability. A two-host-only block would leave longer cycles
-and simultaneous races unresolved.
-
-## Automated evidence
-
-```sh
-nix develop -c python3 scripts/test-core.py
-nix develop -c python3 scripts/test-host-lifecycle.py --binding
-nix develop -c python3 scripts/test-host-lifecycle.py --ui
-nix develop -c python3 scripts/test-device-preferences.py
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer python3 scripts/test-session-topology.py
-```
-
-The host suite uses real loopback TLS plus an authenticated fake Sunshine server.
-Its cases cover idle reservations, same-identity contenders, legacy control
-exclusion, cancel, successful takeover, changed snapshots, backend errors, expiry,
-foreign/replayed tokens, competing confirmations and unapproved devices. The
-macOS topology suite uses an in-memory WindowServer under ASan/UBSan and verifies
-that isolated mode cannot write another display's state or shared journal.
+The sessionTopology 1 extension now enforces acyclic session chains for updated
+desktop peers, including pending connections and takeover revalidation. Mutual
+binding remains allowed. Desktop peers without the capability are rejected;
+existing client-only mobile bindings remain compatible. Unreachable or changing
+paths fail closed. See shared core `protocol/SESSION_GRAPH.md` for the contract,
+concurrency argument, identity rules and limits. There is no fixed-resolution
+fallback after a topology failure.

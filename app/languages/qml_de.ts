@@ -818,6 +818,14 @@
     </message>
 
     <message><source>Connecting to desktop…</source><translation>Verbindung zum Desktop…</translation></message>
+    <message>
+        <source>This connection would create a loop. Disconnect one of the existing links first.</source>
+        <translation>Diese Verbindung würde eine Schleife bilden. Trennen Sie zuerst eine der bestehenden Verbindungen.</translation>
+    </message>
+    <message>
+        <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
+        <translation>Der Verbindungspfad konnte nicht geprüft werden. Aktualisieren Sie DeskPort auf allen Computern der Kette und versuchen Sie es erneut.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsView</name>

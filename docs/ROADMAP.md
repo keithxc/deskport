@@ -1,3 +1,18 @@
+## Acyclic session admission — 2026-09-26
+
+Reason: allow chained desktops without recursive control paths. Register outgoing
+edges before admission, retain them through media restarts and teardown, and
+walk authenticated pinned peer links before admission and confirmed takeover.
+Reject reciprocal/longer cycles and unknown paths before touching the old lease.
+Client-only mobile compatibility remains; desktop chains require updated peers.
+
+Validation: 111 isolated production TLS/binding checks passed on macOS, including
+chain, reciprocal/three-node cycle, concurrent pending edges, takeover recheck,
+unreachable peers, old desktop/client-only compatibility and reservation cleanup.
+Shared C/C++ path validation and core adapter checks passed. Private package
+build/notarization and configuration preparation follow; activation and real
+video/input acceptance remain the user's separate checkpoint.
+
 ## Non-disruptive binding — 2026-09-26
 
 Reason: a new binding must save permission without automatically connecting or
@@ -14,9 +29,8 @@ arm64 host compiled. The real Linux host passed disposable loopback TLS grant,
 existing-client/lease preservation, repeat grant, corrupt-state failure and API
 authorization checks. Deployed active-stream acceptance remains separate.
 
-Follow-up: allow acyclic chains and reject all active-session cycles, while keeping
-mutual device binding. Current per-host exclusivity does not enforce this proposed
-graph policy; see [session policy](SESSION_TAKEOVER.md#chained-sessions-and-cycles).
+Acyclic chains are enforced by the subsequent sessionTopology extension; see
+[session policy](SESSION_TAKEOVER.md#chained-sessions-and-cycles).
 
 ## Connection feedback localization — 2026-09-26
 

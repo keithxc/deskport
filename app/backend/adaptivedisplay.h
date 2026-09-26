@@ -30,6 +30,7 @@ public:
     bool retryable();
     QString resumeToken();
     QString warning();
+    QString topologyError();
     void release();
     void cancel();
     bool wasTakenOver(int timeoutMs = 0);
@@ -50,6 +51,8 @@ private:
     bool m_LeaveFullscreen = false, m_FullScreen = false;
     bool m_Retryable = true, m_Release = true, m_Lifecycle = false;
     QString m_ResumeToken, m_Warning;
-    bool m_AdmissionRequired = false, m_ConfirmationNeeded = false, m_ConfirmationReady = false, m_Confirmed = false;
+    QString m_GraphIdentity, m_GraphToken, m_TopologyError;
+    bool m_GraphReserved = false;
+    bool m_AdmissionRequired = true, m_ConfirmationNeeded = false, m_ConfirmationReady = false, m_Confirmed = false;
     bool m_Pending = false, m_Complete = false, m_Result = false, m_Failed = false;
 };
