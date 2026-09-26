@@ -28,6 +28,9 @@ jobs:
         run: |
           nix develop -c python3 scripts/test-smart-stream.py
           python3 scripts/test-translations.py
+          nix develop -c python3 scripts/test-compiled-translations.py
+          nix develop -c python3 scripts/test-host-pipewire-memory.py
+          nix develop -c python3 scripts/test-host-lifecycle.py --binding
 
       - name: VM disk guard checks (no virtual machine required)
         run: python3 scripts/test-macos-vm-guard.py

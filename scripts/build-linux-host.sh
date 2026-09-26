@@ -15,7 +15,7 @@ for patch in session-settings session-takeover linux-display; do
 done
 mkdir -p "$source/src/deskport/common"
 cp "$repo"/host/common/{smartstream,inputactivity,framecadence,encoderpolicy}.h "$source/src/deskport/common/"
-for patch in input-activity sync-cadence linux-cadence encoder-policy; do
+for patch in input-activity sync-cadence linux-cadence pipewire-memory encoder-policy; do
     python3 "$repo/scripts/patch-host-$patch.py" "$source"
 done
 # Ubuntu 24.04's libstdc++ lacks ranges::to; only debug formatting changes.

@@ -10,7 +10,7 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
             f.extractall(target, filter='data')
         if not (target / 'src').exists():
             target = next(p for p in target.iterdir() if (p / 'src').exists())
-        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'input-activity', 'sync-cadence', 'linux-cadence', 'encoder-policy'):
+        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'encoder-policy'):
             subprocess.run(['python3', str(root / f'scripts/patch-host-{name}.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'scripts/patch-host-encoder-policy.py'), str(target)], check=True)
         video = (target / 'src/video.cpp').read_text()

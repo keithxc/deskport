@@ -538,6 +538,15 @@ TRANSLATIONS += \
     languages/qml_lt.ts \
     languages/qml_et.ts
 
+# resources.qrc embeds source-tree catalogs. Compile them before generating
+# resource dependencies so every platform packages the current translations.
+qtPrepareTool(DESKPORT_LRELEASE, lrelease)
+# Split Qt packages (including Nix) put linguist tools outside QT_HOST_BINS.
+!exists($$DESKPORT_LRELEASE): DESKPORT_LRELEASE = lrelease
+for(catalog, TRANSLATIONS) {
+    !system($$DESKPORT_LRELEASE -silent $$shell_quote($$PWD/$$catalog)): error(Could not compile translation $$catalog)
+}
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

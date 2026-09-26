@@ -25,7 +25,11 @@ for language in languages:
     for source_file in ("streaming/input/input.cpp", "backend/clipboardchannel.cpp"):
         source = (root / "app" / source_file).read_text()
         messages_to_check += re.findall(r'QCoreApplication::translate\("([^"]+)",\s*"((?:[^"\\]|\\.)*)"', source)
-    messages_to_check.append(("Session", "Connecting to desktop…"))
+    messages_to_check += [("Session", text) for text in (
+        "Connecting to desktop…",
+        "This connection would create a loop. Disconnect one of the existing links first.",
+        "The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.",
+    )]
     for context, text in messages_to_check:
         translation = contexts.get(context, {}).get(text)
         assert translation is not None, (language, context, text)

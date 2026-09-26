@@ -55,6 +55,84 @@ private:
 class PeerBinding : public QObject {
     Q_OBJECT
 private slots:
+    void concurrentControlWhileBinding() {
+        QTemporaryDir dir;
+        const auto cert = credential("TEST_CERT_A"), key = credential("TEST_KEY_A");
+        const auto peerId = SessionGraph::identity(QSslCertificate(cert));
+        QVERIFY(QDir().mkpath(dir.path()+"/binding"));
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json", {{"version",1},
+            {"peers",QJsonObject{{peerId,QJsonObject{{"ready",true},{"granted",true}}}}}}));
+        HostManager host(nullptr,dir.path()+"/host");
+        PeerManager manager(&host,credential("TEST_CERT_B"),credential("TEST_KEY_B"),dir.path()+"/binding",0,QHostAddress::LocalHost);
+        auto start = [&](QSslSocket& socket) {
+            socket.setLocalCertificate(QSslCertificate(cert)); socket.setPrivateKey(QSslKey(key,QSsl::Rsa));
+            connect(&socket,qOverload<const QList<QSslError>&>(&QSslSocket::sslErrors),&socket,
+                    [&socket](const QList<QSslError>& errors){socket.ignoreSslErrors(errors);});
+            socket.connectToHostEncrypted("127.0.0.1",manager.port());
+        };
+        auto send = [](QSslSocket& socket,const QJsonObject& frame) {
+            socket.write(QJsonDocument(frame).toJson(QJsonDocument::Compact)+'\n');
+        };
+        QTcpSocket stalled; stalled.connectToHost(QHostAddress::LocalHost,manager.port());
+        QTRY_COMPARE(stalled.state(),QAbstractSocket::ConnectedState);
+        // The original stalled TLS candidate stays open while a fresh retry succeeds.
+        QSslSocket endpoint; start(endpoint); QTRY_VERIFY(endpoint.isEncrypted());
+        QTRY_VERIFY(endpoint.canReadLine()); endpoint.readLine();
+        send(endpoint,{{"type","endpoint-query"}});
+        QTRY_VERIFY(endpoint.canReadLine());
+        QCOMPARE(QJsonDocument::fromJson(endpoint.readLine()).object()["type"].toString(),QString("endpoint-result"));
+        QCOMPARE(stalled.state(),QAbstractSocket::ConnectedState);
+        stalled.abort();
+        QSslSocket binding;
+        start(binding); QTRY_VERIFY(binding.isEncrypted());
+        QTRY_VERIFY(binding.canReadLine()); binding.readLine();
+        const auto tx=QUuid::createUuid().toString(QUuid::WithoutBraces);
+        const QJsonObject meta{{"version",1},{"clientBinding",1},{"role","client"},{"name","Test tablet"}};
+        send(binding,{{"type","request"},{"tx",tx},{"meta",meta}});
+        QTRY_COMPARE(manager.requestId(),tx);
+        const auto status = manager.status();
+        // A second binding must not replace the existing approval or its status.
+        QSslSocket rival; start(rival); QTRY_VERIFY(rival.isEncrypted());
+        QTRY_VERIFY(rival.canReadLine()); rival.readLine();
+        send(rival,{{"type","request"},{"tx",QUuid::createUuid().toString()},{"meta",meta}});
+        QTRY_COMPARE(rival.state(),QAbstractSocket::UnconnectedState);
+        QCOMPARE(manager.requestId(),tx); QCOMPARE(manager.status(),status);
+        // Fresh simultaneous TLS sockets exercise classification and prompt cleanup.
+        for (int round=0; round<64; ++round) {
+            std::vector<std::unique_ptr<QSslSocket>> sockets;
+            for(int i=0;i<8;++i) { sockets.emplace_back(new QSslSocket); start(*sockets.back()); }
+            for(auto& socket:sockets) {
+                QTRY_VERIFY_WITH_TIMEOUT(socket->isEncrypted(),5000);
+                QTRY_VERIFY(socket->canReadLine()); socket->readLine();
+                send(*socket,{{"type","session-path"},{"path",QJsonArray{peerId}}});
+            }
+            for(auto& socket:sockets) {
+                QTRY_VERIFY_WITH_TIMEOUT(socket->canReadLine(),5000);
+                const auto result=QJsonDocument::fromJson(socket->readLine()).object();
+                QCOMPARE(result["type"].toString(),QString("session-path-result"));
+                QVERIFY(result["safe"].toBool());
+                QTRY_COMPARE(socket->state(),QAbstractSocket::UnconnectedState);
+            }
+            QCOMPARE(manager.requestId(),tx); QCOMPARE(manager.status(),status);
+        }
+        manager.reject(tx); QTRY_VERIFY(!manager.busy());
+        QTRY_VERIFY(manager.findChildren<QSslSocket*>().isEmpty());
+        // Slow handshakes are bounded, and disconnecting them restores capacity.
+        std::vector<std::unique_ptr<QTcpSocket>> slow;
+        for(int i=0;i<64;++i) {
+            slow.emplace_back(new QTcpSocket);
+            slow.back()->connectToHost(QHostAddress::LocalHost,manager.port());
+            QTRY_COMPARE(slow.back()->state(),QAbstractSocket::ConnectedState);
+            QTRY_COMPARE(manager.findChildren<QSslSocket*>().size(),i+1);
+        }
+        QTRY_COMPARE(manager.findChildren<QSslSocket*>().size(),64);
+        QTcpSocket overflow; overflow.connectToHost(QHostAddress::LocalHost,manager.port());
+        QSignalSpy disconnected(&overflow,&QTcpSocket::disconnected);
+        QTRY_VERIFY(!disconnected.isEmpty());
+        for(auto& socket:slow) socket->abort();
+        QTest::qWait(100);
+        QSslSocket recovered; start(recovered); QTRY_VERIFY(recovered.isEncrypted());
+    }
     void sessionGraph_data() {
         QTest::addColumn<QString>("scenario");
         for (const char* item : {"chain", "reciprocal", "three-cycle", "simultaneous", "takeover-cycle", "unreachable", "old-desktop", "old-mobile", "reservation-lifetime"})

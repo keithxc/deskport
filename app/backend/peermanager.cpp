@@ -199,9 +199,13 @@ QTcpServer* PeerManager::createListener() {
     server->incoming = [this](qintptr fd) {
         auto socket = new QSslSocket;
         socket->setSocketDescriptor(fd);
-        if (!m_Healthy || busy()) { socket->abort(); socket->deleteLater(); return; }
+        // TLS/control traffic must not occupy the interactive binding slot.
+        // Bound all accepted sockets, including slow unclassified handshakes.
+        if (!m_Healthy || m_IncomingLinks.size() >= 64) { socket->abort(); socket->deleteLater(); return; }
         auto link = new Link(this); link->socket = socket; socket->setParent(link);
-        link->incoming = true; m_Link = link;
+        link->incoming = true;
+        m_IncomingLinks.insert(link);
+        connect(link, &QObject::destroyed, this, [this, link] { m_IncomingLinks.remove(link); });
         attach(link);
         qInfo() << "Binding: incoming TCP connection";
         socket->startServerEncryption();
@@ -255,7 +259,11 @@ bool PeerManager::setConnectionPort(int value) {
     m_Status = tr("Connection port saved. Existing connections and previous entry ports remain available.");
     emit changed(); return true;
 }
-PeerManager::~PeerManager() { m_Server->close(); }
+PeerManager::~PeerManager() {
+    m_Server->close();
+    // QObject destroys children after derived members have gone away.
+    for (auto link : m_IncomingLinks) disconnect(link, &QObject::destroyed, this, nullptr);
+}
 bool PeerManager::busy() const { return m_Link || m_TrustInFlight || !m_Revoking.isEmpty(); }
 QString PeerManager::requestId() const {
     return m_Link && m_Link->incoming && m_Link->requested && !m_Link->accepted ? m_Link->transaction : QString();
@@ -355,6 +363,9 @@ void PeerManager::attach(Link* link) {
     });
     connect(socket, &QSslSocket::disconnected, link, [this, link] {
         if (!link->ended) transportLost(link);
+        // One-shot path/endpoint probes should release their budget promptly.
+        // Recovering admitted sessions deliberately retain their lease instead.
+        if (link->ended) link->deleteLater();
     });
     connect(socket, &QSslSocket::errorOccurred, link, [this, link](QAbstractSocket::SocketError) {
         if (!link->ended) transportLost(link);
@@ -685,9 +696,11 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
         // mobile-client contract; do not claim host capabilities as a fallback.
         if (m_ClientOnly) send(link, {{"type", "request"}, {"tx", link->transaction}, {"meta", metadata()}});
     } else if (type == "request" && link->incoming && !link->requested) {
+        if (busy()) { fail(link, tr("Binding is busy")); return; }
         if (!acceptMetadata(link, message["meta"].toObject()) || QUuid(message["tx"].toString()).isNull()) {
             fail(link, tr("Unsupported binding request")); return;
         }
+        m_Link = link;
         link->transaction = message["tx"].toString(); link->requested = true;
         send(link, {{"type", "pending"}, {"tx", link->transaction}});
         m_Status = pendingClientOnly() ? tr("A client is requesting access to this computer") : tr("A computer is requesting mutual desktop access"); emit changed(); emit incomingRequest();
@@ -830,6 +843,8 @@ void PeerManager::transportLost(Link* link) {
 }
 void PeerManager::fail(Link* link, const QString& message) {
     if (link->ended) return;
+    const bool visible = m_Link == link || m_SessionLink == link ||
+                         m_DisplayLink == link || m_ClipboardLink == link;
     if (!link->endpointRefresh) qWarning() << "Binding:" << message;
     if (link->lifecycle && link->sessionAdmitted && !link->recovering &&
         link->socket->state() == QAbstractSocket::ConnectedState && link->socket->bytesToWrite() <= DeskPortClipboard::MaxFrame)
@@ -849,7 +864,8 @@ void PeerManager::fail(Link* link, const QString& message) {
     if (link->clipboardHelper) link->clipboardHelper->closeWriteChannel();
     if (m_DisplayLink == link) { m_DisplayLink = nullptr; ++m_SessionEpoch; m_Host->restoreDisplay(); }
     if (m_Link == link) m_Link = nullptr;
-    m_Status = message; connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);
+    if (visible) m_Status = message;
+    connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);
     link->socket->disconnectFromHost();
     QTimer::singleShot(2000, link, &QObject::deleteLater); emit changed();
 }

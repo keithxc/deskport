@@ -1,3 +1,24 @@
+## Stress regression fixes (2026-09-26)
+
+Repeated session startup exposed retained PipeWire dummy image allocations in
+our pinned Nix host. Own those buffers with RAII, including replacement and reset,
+without freeing borrowed capture pixels. The exact vendored owner/allocator
+regression rejects the original leak and exercises 5,000 patched lifetime cycles.
+
+Separate bounded incoming TLS candidates from the interactive binding slot.
+Keep an existing approval intact while endpoint and topology queries proceed;
+release completed probes promptly. Tests cover 512 concurrent path requests,
+a stalled original handshake plus a successful fresh endpoint query, competing
+bindings, the 64-connection limit and recovery after disconnect.
+
+Compile translations before resource generation on every platform and compare
+shipped binary catalogs with source text through QTranslator. Seven primary
+catalogs now include the cycle and unverifiable-path messages.
+
+Checkpoint: isolated macOS/Linux regression and package builds, private test
+release and mynix delivery. Physical reconnect memory stability and concurrent
+three-machine streaming remain activation-dependent acceptance gates.
+
 ## Acyclic session admission — 2026-09-26
 
 Reason: allow chained desktops without recursive control paths. Register outgoing
@@ -289,12 +310,12 @@ Delivered through mynix; the user confirmed all three desktop instances online.
 Log inspection found the open control-connection issue below; online status does
 not establish that every background endpoint refresh succeeds.
 
-### TODO: TLS fallback blocked by a pending inbound handshake (2026-09-17)
+### TLS fallback blocked by a pending inbound handshake (2026-09-17; fixed 2026-09-26)
 
-- [ ] Separate bounded, unauthenticated TLS handshake candidates from the global
+- [x] Separate bounded, unauthenticated TLS handshake candidates from the global
   binding busy state, while retaining certificate checks, authorization and
   authenticated-operation concurrency limits.
-- [ ] Add an integration regression where the original connection remains open
+- [x] Add an integration regression where the original connection remains open
   at the server while the client retries with smaller TCP segments. Verify the
   retry completes endpoint refresh without waiting for the original timeout.
 - [ ] Log connection direction, handshake stage and admission rejection reason

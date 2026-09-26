@@ -1,4 +1,5 @@
 #pragma once
+#include <QSet>
 #include <QObject>
 #include <QJsonObject>
 #include <QVariantList>
@@ -89,6 +90,7 @@ private:
     bool m_SessionOperation = false;
     quint64 m_SessionEpoch = 0;
     Link* m_ClipboardLink = nullptr;
+    QSet<Link*> m_IncomingLinks;
     bool m_Healthy = false;
     bool m_IdentityHealthy = false;
     bool m_TrustInFlight = false;

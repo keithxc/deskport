@@ -34,6 +34,7 @@
               python3 ${./scripts/patch-host-input-activity.py} .
               python3 ${./scripts/patch-host-sync-cadence.py} .
               python3 ${./scripts/patch-host-linux-cadence.py} .
+              python3 ${./scripts/patch-host-pipewire-memory.py} .
               cp ${./host/common/encoderpolicy.h} src/deskport/common/encoderpolicy.h
               python3 ${./scripts/patch-host-encoder-policy.py} .
             '';
@@ -57,7 +58,7 @@
             mkdir -p "$sourceRoot/shared/deskport-core"
             cp -R --no-preserve=mode ${deskport-core}/. "$sourceRoot/shared/deskport-core/"
           '';
-          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.python3 ];
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.python3 pkgs.qt6.qttools ];
           preBuild = (old.preBuild or "") + ''
             python3 shared/deskport-core/tests/test_workspace.py --qt-header app/backend/workspaceresolution.h
           '';
