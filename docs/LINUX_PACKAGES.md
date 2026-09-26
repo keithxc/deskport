@@ -154,7 +154,10 @@ AppImage. It still builds the viewer and bundled host and runs the package check
 The rootless Podman build uses a pinned Ubuntu 24.04 image and checksum-pinned
 packaging tools/Sunshine assets. The portable host is compiled from the exact
 Sunshine revision in `scripts/build-linux-host.sh`, with the same session-settings,
-authenticated takeover and Linux display patches used by the Nix package. Its
+authenticated takeover, Linux display and reconnect-lifetime patches used by
+the Nix package. The FFmpeg Vulkan backports rebuild four translation units
+against checksum-pinned matching binaries/source/headers; ABI header comparison
+rejects mismatched cached inputs. Its
 pinned upstream submodules and build dependencies are fetched during the build. Ubuntu package versions are recorded in the build
 output; apt repositories are not a historical snapshot. Qt 6 deployment includes
 Wayland and offscreen plugins. `qmake -r` refreshes nested version headers. The

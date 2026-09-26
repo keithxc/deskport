@@ -22,5 +22,17 @@
   "sunshine.AppImage": {
     "url": "https://github.com/LizardByte/Sunshine/releases/download/v2026.906.222525/Sunshine_2026.906.222525_x86_64.AppImage",
     "sha256": "a5db4ce988def0565a0da420185abbb9b3989f009ecbdafe78f223fe6f45e384"
+  },
+  "ffmpeg-pinned.tar.gz": {
+    "url": "https://github.com/LizardByte/build-deps/releases/download/v2026.516.30821/Linux-x86_64-ffmpeg.tar.gz",
+    "sha256": "c32319fcc2867befe8ff3ae26b4d3a58378c3a9c1bfef9029c9969321c3bc6ec"
+  },
+  "ffmpeg-source.tar.gz": {
+    "url": "https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/fb216b5facde2c97cb0ce2e75fb3228aa5ac21fa",
+    "sha256": "d19480a58f86ced6913c41f1f6fed69ef45383529d1f348541344f301ae67165"
+  },
+  "vulkan-headers.tar.gz": {
+    "url": "https://codeload.github.com/KhronosGroup/Vulkan-Headers/tar.gz/refs/tags/vulkan-sdk-1.4.341.0",
+    "sha256": "d73bc5036b6556b741f6985ff600ca720308c5f2850e4a43ceb498bd3de069e7"
   }
 }

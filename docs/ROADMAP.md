@@ -7,6 +7,11 @@ and record exact-package checks before publishing. Existing deployed-package
 acceptance does not establish acceptance of these new bytes. Service activation
 and final physical streaming/input checks remain separate manual steps.
 
+The portable Linux host now applies the same display/EGL/Vulkan ownership
+overlays and three FFmpeg Vulkan lifetime backports as the Nix package. It
+uses checksum-pinned FFmpeg binaries, matching source and Vulkan headers,
+checks ABI headers, and rebuilds only the four affected translation units.
+
 Keep build concurrency at four or fewer and use low-priority build sessions.
 The macOS packagers now accept DESKPORT_JOBS (default four). Nix daemon worker
 priority and affinity require separate verification from the client process.
