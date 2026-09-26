@@ -22,7 +22,6 @@ for patch in display-ownership egl-query-lifetime; do
     python3 "$repo/scripts/patch-host-$patch.py" "$source"
 done
 python3 "$repo/scripts/patch-host-vulkan-lifetime.py" "$source" "$repo/host/linux/vulkan-driver-lifetime.h"
-python3 "$repo/scripts/patch-host-memory-diagnostics.py" "$source" "$repo/host/common/memorydiagnostics.h"
 # Ubuntu 24.04's libstdc++ lacks ranges::to; only debug formatting changes.
 compatibility_patch="$repo/host/linux/patches/sunshine-gcc13-log.patch"
 if git -C "$source" apply --check "$compatibility_patch" 2>/dev/null; then
