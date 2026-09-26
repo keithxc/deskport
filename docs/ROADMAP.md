@@ -16,9 +16,12 @@ variable additionally enables recording at runtime. Diagnostic logs stop growing
 at approximately 4 MiB and report accounting errors without unsigned underflow.
 The Vulkan driver lifetime guard is a functional fix and remains enabled.
 
-Native macOS tests cover self/child/exited-process sampling and production versus
-diagnostic compilation, and the full desktop build passes. Linux and Windows
-validation results are recorded separately; compilation is not physical acceptance.
+Native macOS and Linux tests cover self/child/exited-process sampling and
+production versus diagnostic compilation; both full builds pass. The same native
+process sampler also passes on Windows. The Qt page suite passes 24 checks,
+including memory details and toolbar bounds at three widths. Seven language
+catalogs and 5,071 compiled translations pass. Compilation is not physical
+streaming acceptance.
 
 The old dev/pcui, docs/release-060-preparation and
 fix/windows-display-activation-057 branches were already ancestors of main. Their
