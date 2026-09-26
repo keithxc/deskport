@@ -3,7 +3,7 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/93108a538f079596c9a16c72cf03e9322782b6dd";
 
-  inputs.deskport-core = { url = "path:/nix/store/b7h79abhz8f0lgr03f9gbz0npbx7qgln-source"; flake = false; };
+  inputs.deskport-core = { url = "github:keithxc/deskport-core/e71b21808e15c8bcd55d4af3f7c0cbc769ef0bcb"; flake = false; };
 
   outputs = { self, nixpkgs, deskport-core }:
     let

@@ -1,3 +1,11 @@
+## Public CI core pin repair (2026-09-26)
+
+Publish the shared session admission commit before its desktop consumer. Replace
+its private, machine-local Nix snapshot with a public immutable GitHub revision,
+and synchronize the submodule and flake pins with the merged core main branch.
+The shared C/C++ contracts, portable catalog and Qt adapter vectors pass locally.
+GitHub CI remains the clean-checkout and Linux package-build acceptance gate.
+
 ## Stress regression fixes (2026-09-26)
 
 Repeated session startup exposed retained PipeWire dummy image allocations in

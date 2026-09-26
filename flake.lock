@@ -3,14 +3,18 @@
     "deskport-core": {
       "flake": false,
       "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-dKVqgmm14RoZTF1ZwKqAVYLFxUAP7BxTKSo6RaGFeZQ=",
-        "path": "/nix/store/b7h79abhz8f0lgr03f9gbz0npbx7qgln-source",
-        "type": "path"
+        "lastModified": 1790404992,
+        "narHash": "sha256-i0xnKNa1MxI2yGT9ISaIrwZuytDIiyIPUZ/2jxYbj18=",
+        "owner": "keithxc",
+        "repo": "deskport-core",
+        "rev": "e71b21808e15c8bcd55d4af3f7c0cbc769ef0bcb",
+        "type": "github"
       },
       "original": {
-        "path": "/nix/store/b7h79abhz8f0lgr03f9gbz0npbx7qgln-source",
-        "type": "path"
+        "owner": "keithxc",
+        "repo": "deskport-core",
+        "rev": "e71b21808e15c8bcd55d4af3f7c0cbc769ef0bcb",
+        "type": "github"
       }
     },
     "nixpkgs": {
