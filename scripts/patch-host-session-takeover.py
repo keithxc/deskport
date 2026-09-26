@@ -176,6 +176,105 @@ edit('confighttp.cpp', '  void closeApp(const resp_https_t &response, const req_
 edit('confighttp.cpp', '    server.resource["^/api/apps/close$"]["POST"] = closeApp;', '''    server.resource["^/api/apps/close$"]["POST"] = closeApp;
     server.resource["^/api/deskport/sessions$"]["GET"] = deskportSessions;
     server.resource["^/api/deskport/sessions$"]["POST"] = deskportSessions;''')
+# Adding a binding must not tear down the host or its current admission lease.
+# Newer Sunshine has an authorization mutex; backport synchronization to the
+# older Linux pin before exposing a live mutation from the management thread.
+new_auth = 'client_auth_mutex()' in (root / 'src/nvhttp.cpp').read_text()
+if not new_auth:
+    edit('nvhttp.cpp', '  crypto::cert_chain_t cert_chain;', '''  crypto::cert_chain_t cert_chain;
+  std::recursive_mutex& client_auth_mutex() {
+    static std::recursive_mutex mutex;
+    return mutex;
+  }''')
+    for signature in [
+        'void save_state()', 'void load_state()',
+        'void add_authorized_client(const std::string &name, std::string &&cert)',
+        'nlohmann::json get_all_clients()', 'void erase_all_clients()',
+        'bool unpair_client(const std::string_view uuid)',
+        'bool set_client_enabled(const std::string_view uuid, bool enabled)',
+        'bool is_client_enabled(const std::string_view cert_pem)',
+        'std::string get_cert_by_uuid(std::string_view uuid)',
+    ]:
+        anchor = '  ' + signature + ' {'
+        edit('nvhttp.cpp', anchor, anchor + '\n    std::lock_guard auth_lock {client_auth_mutex()};')
+    edit('nvhttp.cpp', '    https_server.verify = [add_cert](SSL *ssl) {',
+         '    https_server.verify = [add_cert](SSL *ssl) {\n      std::lock_guard auth_lock {client_auth_mutex()};')
+
+edit('nvhttp.h', '  nlohmann::json get_all_clients();', '''  nlohmann::json get_all_clients();
+  bool deskport_add_trust(const std::string& id, const std::string& name, const std::string& pem);''')
+rebuild = '    rebuild_client_cert_chain();' if new_auth else '''    cert_chain.clear();
+    for (const auto& item : client_root.named_devices) {
+      if (item.enabled) cert_chain.add(crypto::x509(item.cert));
+    }'''
+edit('nvhttp.cpp', '  nlohmann::json get_all_clients() {', '''  // Caller is authenticated local management. This only grants access; it
+  // does not acquire a session, change admission generation, or stop streams.
+  bool deskport_add_trust(const std::string& id, const std::string& name, const std::string& pem) {
+    if (id.empty() || id.size() > 128 || name.size() > 256 || pem.size() > 16384 ||
+        config::sunshine.flags[config::flag::FRESH_STATE]) return false;
+    auto certificate = crypto::x509(pem);
+    if (!certificate) return false;
+    const auto canonical = crypto::pem(certificate);
+    std::lock_guard auth_lock {client_auth_mutex()};
+    auto candidate = client_root;
+    auto& devices = candidate.named_devices;
+    devices.erase(std::remove_if(devices.begin(), devices.end(), [&](const auto& item) {
+      auto existing = crypto::x509(item.cert);
+      return item.uuid == id || (existing && X509_cmp(existing.get(), certificate.get()) == 0);
+    }), devices.end());
+    named_cert_t added;
+    added.uuid = id; added.name = name; added.cert = canonical; added.enabled = true;
+    devices.push_back(std::move(added));
+    // Persist before changing live authorization. An unreadable/corrupt state
+    // or failed write leaves both the old file and live authorization intact.
+    const auto temporary = config::nvhttp.file_state + ".deskport-" + uuid_util::uuid_t::generate().string();
+    auto cleanup = util::fail_guard([&] { std::error_code ec; fs::remove(temporary, ec); });
+    try {
+      pt::ptree state;
+      if (fs::exists(config::nvhttp.file_state)) pt::read_json(config::nvhttp.file_state, state);
+      state.put("root.uniqueid", http::unique_id);
+      pt::ptree records;
+      for (const auto& item : devices) {
+        pt::ptree record;
+        record.put("uuid", item.uuid); record.put("name", item.name);
+        record.put("cert", item.cert); record.put("enabled", item.enabled);
+        records.push_back(std::make_pair("", record));
+      }
+      state.put_child("root.named_devices", records);
+      // Create with private permissions before writing any certificate data.
+      { std::ofstream file(temporary); if (!file) return false; }
+      fs::permissions(temporary, fs::perms::owner_read | fs::perms::owner_write);
+      pt::write_json(temporary, state);
+      fs::rename(temporary, config::nvhttp.file_state);
+    } catch (const std::exception&) { return false; }
+    client_root = std::move(candidate);
+''' + rebuild + '''
+    return true;
+  }
+
+  nlohmann::json get_all_clients() {''')
+edit('confighttp.cpp', '  // Machine-only API: loopback, explicit Basic credentials, no browser origins.', '''  // Add authorization without acquiring or interrupting a session.
+  void deskportTrust(const resp_https_t &response, const req_https_t &request) {
+    auto authorization = request->header.find("Authorization");
+    if (!request->remote_endpoint().address().is_loopback() ||
+        authorization == request->header.end() || authorization->second.rfind("Basic ", 0) != 0 ||
+        request->header.find("Origin") != request->header.end() ||
+        request->header.find("Referer") != request->header.end() || !authenticate(response, request)) {
+      bad_request(response, request, "Authenticated local management only");
+      return;
+    }
+    nlohmann::json output {{"version", 1}, {"status", false}};
+    try {
+      const auto input = nlohmann::json::parse(request->content.string());
+      output["status"] = nvhttp::deskport_add_trust(input.at("uuid").get<std::string>(),
+          input.at("name").get<std::string>(), input.at("cert").get<std::string>());
+    } catch (const std::exception&) {}
+    send_response(response, output);
+  }
+
+  // Machine-only API: loopback, explicit Basic credentials, no browser origins.''')
+edit('confighttp.cpp', '    server.resource["^/api/deskport/sessions$"]["POST"] = deskportSessions;', '''    server.resource["^/api/deskport/sessions$"]["POST"] = deskportSessions;
+    server.resource["^/api/deskport/trust$"]["POST"] = deskportTrust;''')
+
 patch = ''.join(''.join(difflib.unified_diff(original[path].splitlines(True), updated.splitlines(True),
     fromfile='a/' + str(path.relative_to(root)), tofile='b/' + str(path.relative_to(root))))
     for path, updated in changes.items())

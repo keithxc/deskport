@@ -679,13 +679,18 @@ void HostManager::finishStop() {
 }
 void HostManager::sessionControl(const QJsonObject& body, QObject* context,
                                  std::function<void(QJsonObject)> completion) {
+    managementRequest(QStringLiteral("sessions"), body, context, std::move(completion));
+}
+
+void HostManager::managementRequest(const QString& path, const QJsonObject& body, QObject* context,
+                                    std::function<void(QJsonObject)> completion) {
     const auto certificates = QSslCertificate::fromPath(m_Directory + "/credentials/cert.pem");
     if (!running() || certificates.isEmpty()) {
         completion({{"status", false}, {"code", "unavailable"}}); return;
     }
     const auto generation = m_Generation;
     const auto expected = certificates.first();
-    QNetworkRequest request(QUrl(QString("https://127.0.0.1:%1/api/deskport/sessions").arg(m_BasePort + 1)));
+    QNetworkRequest request(QUrl(QString("https://127.0.0.1:%1/api/deskport/%2").arg(m_BasePort + 1).arg(path)));
     request.setTransferTimeout(10000);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -1024,6 +1029,16 @@ QJsonObject HostManager::identity() const {
 void HostManager::updatePeerTrust(const QString& id, const QString& name, const QSslCertificate& certificate, bool remove) {
     if (m_TrustBusy) { emit trustUpdated(false); return; }
     m_TrustBusy = true;
+    if (!remove && running()) {
+        // Binding grants permission only. Never stop an existing stream to add
+        // trust, including when an older/mismatched helper lacks this endpoint.
+        managementRequest(QStringLiteral("trust"), {{"uuid", id}, {"name", name},
+            {"cert", QString::fromUtf8(certificate.toPem())}}, this, [this](QJsonObject result) {
+            m_TrustBusy = false;
+            emit trustUpdated(result["status"].toBool());
+        });
+        return;
+    }
     const bool restart = running();
     stop();
     auto timer = new QTimer(this);

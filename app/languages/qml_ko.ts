@@ -2622,12 +2622,12 @@
         <translation>허용 및 연결 승인</translation>
     </message>
     <message>
-        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
-        <translation>이 기기와 서로 화면을 보고 제어하도록 허용할까요? 두 컴퓨터에서 DeskPort 공유가 시작되며 기존 세션이 잠시 끊길 수 있습니다. 예상한 요청만 승인하세요.</translation>
+        <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
+        <translation>이 장치와 컴퓨터가 서로 화면을 보고 제어하도록 허용할까요? 연결 등록은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 준비되면 연결을 선택하세요. 예상한 요청만 수락하세요.</translation>
     </message>
     <message>
-        <source>Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-        <translation>이 장치가 이 컴퓨터를 보고 제어하도록 허용할까요? 여기에서 공유가 시작되며 기존 DeskPort 세션이 잠시 끊길 수 있습니다. 요청한 장치에 대한 접근은 허용되지 않습니다. 예상한 요청만 수락하세요.</translation>
+        <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
+        <translation>이 장치에서 이 컴퓨터를 보고 제어하도록 허용할까요? 연결 등록은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 요청한 장치에 대한 접근 권한은 부여하지 않습니다. 예상한 요청만 수락하세요.</translation>
     </message>
 </context>
 <context>

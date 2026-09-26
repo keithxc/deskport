@@ -953,6 +953,39 @@ private slots:
             QCOMPARE(PeerStore::read(dir.path()+"/ah/state.json")["root"].toObject()["named_devices"].toArray().size(),0);
         }
     }
+    void bindingPreservesRunningHostAndLease_data() {
+        QTest::addColumn<bool>("reject");
+        QTest::newRow("live-grant") << false;
+        QTest::newRow("unsupported-helper-no-restart") << true;
+    }
+    void bindingPreservesRunningHostAndLease() {
+        QFETCH(bool, reject);
+        QTemporaryDir dir;
+        HostManager ah(nullptr, dir.path()+"/ah"), bh(nullptr, dir.path()+"/bh");
+        PeerManager a(&ah,credential("TEST_CERT_A"),credential("TEST_KEY_A"),dir.path()+"/ab",0,QHostAddress::LocalHost);
+        PeerManager b(&bh,credential("TEST_CERT_B"),credential("TEST_KEY_B"),dir.path()+"/bb",0,QHostAddress::LocalHost);
+        bh.start(2560,1440);
+        const auto statePath = dir.path()+"/bh/test-sessions.json";
+        QTRY_VERIFY_WITH_TIMEOUT(bh.canPair() && QFile::exists(statePath),5000);
+        const QJsonObject active{{"generation",17},{"sessions",1},{"lease","existing-controller"}};
+        QVERIFY(PeerStore::write(statePath, active));
+        if (reject) { QFile marker(dir.path()+"/bh/reject-live-trust"); QVERIFY(marker.open(QIODevice::WriteOnly)); }
+        bool interrupted = false;
+        connect(&bh, &HostManager::changed, &bh, [&] { if (!bh.canPair()) interrupted = true; });
+        QSignalSpy incoming(&b,&PeerManager::incomingRequest), bound(&b,&PeerManager::peerBound), trust(&bh,&HostManager::trustUpdated);
+        a.request(QString("127.0.0.1:%1").arg(b.port()));
+        QTRY_COMPARE_WITH_TIMEOUT(incoming.size(),1,5000);
+        b.approve(b.requestId());
+        QTRY_COMPARE_WITH_TIMEOUT(trust.size(),1,7000);
+        QCOMPARE(trust.first().first().toBool(), !reject);
+        if (!reject) QTRY_COMPARE_WITH_TIMEOUT(bound.size(),1,7000);
+        else QCOMPARE(bound.size(),0);
+        QVERIFY(!interrupted);
+        QVERIFY(bh.canPair());
+        QCOMPARE(PeerStore::read(statePath),active);
+        const auto records = PeerStore::read(dir.path()+"/bh/state.json")["root"].toObject()["named_devices"].toArray();
+        QCOMPARE(records.size(),reject ? 0 : 1);
+    }
     void invalidOversizedAndReplayedMessagesCannotGrant() {
         QTemporaryDir dir;
         HostManager ah(nullptr,dir.path()+"/ah"),bh(nullptr,dir.path()+"/bh");

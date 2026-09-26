@@ -1,3 +1,23 @@
+## Non-disruptive binding — 2026-09-26
+
+Reason: a new binding must save permission without automatically connecting or
+interrupting an existing controller. Desktop navigation already returns to Devices;
+add regression coverage for both idle and active outgoing sessions. Replace the
+running host's stop/edit/restart grant path with authenticated live trust addition.
+Unsupported helpers fail binding without a restart fallback. Update approval copy
+in all seven translated catalogs to describe the separate Connect action.
+
+Validation: 102 isolated binding checks and 24 UI checks passed on macOS, including
+preserved host readiness and admission lease on grant success/failure. Catalog
+coverage passed. Linux x86_64 Nix build and executable smoke passed; the macOS
+arm64 host compiled. The real Linux host passed disposable loopback TLS grant,
+existing-client/lease preservation, repeat grant, corrupt-state failure and API
+authorization checks. Deployed active-stream acceptance remains separate.
+
+Follow-up: allow acyclic chains and reject all active-session cycles, while keeping
+mutual device binding. Current per-host exclusivity does not enforce this proposed
+graph policy; see [session policy](SESSION_TAKEOVER.md#chained-sessions-and-cycles).
+
 ## Connection feedback localization — 2026-09-26
 
 Reason: desktop interoperation exposed English connection/cancel controls and

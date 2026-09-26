@@ -2622,12 +2622,12 @@
         <translation>Permitir y vincular</translation>
     </message>
     <message>
-        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
-        <translation>¿Permitir ver y controlar ambos equipos entre sí? Se iniciará el uso compartido en ambos; las sesiones DeskPort actuales pueden interrumpirse brevemente. Acepta solo solicitudes esperadas.</translation>
+        <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
+        <translation>¿Permitir que este dispositivo y este ordenador se vean y controlen mutuamente? La vinculación solo guarda el permiso, sin iniciar una conexión ni interrumpir las sesiones existentes. Elija Conectar cuando esté listo. Acepte solo las solicitudes que espere.</translation>
     </message>
     <message>
-        <source>Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-        <translation>¿Permitir que este dispositivo vea y controle este equipo? Se iniciará el uso compartido aquí; las sesiones de DeskPort pueden interrumpirse brevemente. No se concederá acceso al dispositivo solicitante. Acepta solo solicitudes que esperas.</translation>
+        <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
+        <translation>¿Permitir que este dispositivo vea y controle este ordenador? La vinculación solo guarda el permiso, sin iniciar una conexión ni interrumpir las sesiones existentes. No concede acceso al dispositivo solicitante. Acepte solo las solicitudes que espere.</translation>
     </message>
 </context>
 <context>

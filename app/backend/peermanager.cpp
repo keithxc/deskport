@@ -723,7 +723,7 @@ void PeerManager::grant(Link* link) {
         fail(link, message);
         return;
     }
-    m_Status = pendingClientOnly() ? tr("Saving client access and restarting the DeskPort host…") : tr("Saving mutual access and restarting the DeskPort host…");
+    m_Status = pendingClientOnly() ? tr("Saving client access…") : tr("Saving mutual access…");
     link->peer["ready"] = false;
     m_Peers[link->fingerprint] = link->peer;
     if (!save()) { fail(link, tr("Cannot save binding. No host access was added.")); return; }

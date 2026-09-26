@@ -122,6 +122,8 @@ signals:
     void caretChanged(const QJsonObject& caret);
     void displayResized(int sequence, int width, int height, const QString& error);
 private:
+    void managementRequest(const QString& path, const QJsonObject& body, QObject* context,
+                           std::function<void(QJsonObject)> completion);
     QString unattendedDirectory() const;
     bool unattendedMarker(const QString& name, bool present);
     QString m_UnattendedError;

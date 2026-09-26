@@ -2622,12 +2622,12 @@
         <translation>Autoriser et associer</translation>
     </message>
     <message>
-        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
-        <translation>Autoriser l’affichage et le contrôle réciproques ? Le partage démarre sur les deux ordinateurs ; les sessions DeskPort existantes peuvent être brièvement interrompues. N’acceptez qu’une demande attendue.</translation>
+        <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
+        <translation>Autoriser cet appareil et cet ordinateur à s’afficher et se contrôler mutuellement ? L’association enregistre uniquement l’autorisation, sans lancer de connexion ni interrompre les sessions en cours. Choisissez Connecter lorsque vous êtes prêt. Acceptez uniquement une demande attendue.</translation>
     </message>
     <message>
-        <source>Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-        <translation>Autoriser cet appareil à afficher et contrôler cet ordinateur ? Le partage démarrera ici ; les sessions DeskPort existantes pourront être brièvement interrompues. Aucun accès à l’appareil demandeur ne sera accordé. Acceptez uniquement une demande attendue.</translation>
+        <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
+        <translation>Autoriser cet appareil à afficher et contrôler cet ordinateur ? L’association enregistre uniquement l’autorisation, sans lancer de connexion ni interrompre les sessions en cours. Elle ne donne pas accès à l’appareil demandeur. Acceptez uniquement une demande attendue.</translation>
     </message>
 </context>
 <context>

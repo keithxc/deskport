@@ -767,8 +767,13 @@ ApplicationWindow {
         QVERIFY(QMetaObject::invokeMethod(&peers,"peerBound",Q_ARG(QVariantMap,newlyBound)));
         QTRY_COMPARE(root->property("testDepth").toInt(),1);
         QCOMPARE(root->property("testCurrentPage").value<QObject*>()->objectName(),QString("Devices"));
+        QCOMPARE(session.executions, 0); // Binding never starts a stream.
         QVERIFY(QMetaObject::invokeMethod(root.data(),"testStart"));
         QTRY_COMPARE(session.executions,1);
+        QCOMPARE(root->property("activeHostId").toString(),QString("device-a"));
+        QVERIFY(QMetaObject::invokeMethod(&peers,"peerBound",Q_ARG(QVariantMap,newlyBound)));
+        QTest::qWait(100);
+        QCOMPARE(session.executions, 1); // An incoming binding cannot replace it.
         QCOMPARE(root->property("activeHostId").toString(),QString("device-a"));
         // Hold transport/window creation pending: returning must keep progress
         // visible even after the connection callback (which is not window-ready).

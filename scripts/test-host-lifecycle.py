@@ -81,8 +81,21 @@ if (state / "credentials/cert.pem").exists():
         def log_message(self, *args): pass
         def handle_session(self):
             expected = "Basic " + base64.b64encode(("deskport:" + (state / "control-secret").read_text().strip()).encode()).decode()
-            if self.path != "/api/deskport/sessions" or self.headers.get("Authorization") != expected:
+            if self.path not in ("/api/deskport/sessions", "/api/deskport/trust") or self.headers.get("Authorization") != expected:
                 self.send_error(403); return
+            if self.path == "/api/deskport/trust":
+                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                output = dict(status=not (state / "reject-live-trust").exists(), version=1)
+                if output["status"]:
+                    stored = json.loads((state / "state.json").read_text())
+                    devices = stored["root"].get("named_devices", []) or []
+                    devices = [item for item in devices if item["uuid"] != body["uuid"] and item.get("cert") != body["cert"]]
+                    devices.append(dict(body, enabled="true"))
+                    stored["root"]["named_devices"] = devices
+                    (state / "state.json").write_text(json.dumps(stored))
+                data = json.dumps(output).encode()
+                self.send_response(200); self.send_header("Content-Length", str(len(data))); self.end_headers(); self.wfile.write(data)
+                return
             current = json.loads(session_file.read_text())
             def snapshot(): return str(current["generation"]) + ":" + str(current["sessions"])
             output = dict(status=True, version=1)

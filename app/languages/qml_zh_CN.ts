@@ -2624,12 +2624,12 @@
         <translation>允许并绑定</translation>
     </message>
     <message>
-        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
-        <translation>允许此设备与这台电脑互相查看和控制吗？两台电脑都会开启 DeskPort 共享，现有 DeskPort 会话可能短暂断开。只接受你正在等待的请求。</translation>
+        <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
+        <translation>允许此设备与此电脑相互查看和控制吗？绑定仅保存权限，不会发起连接或中断已有会话。准备好后再选择连接。请仅接受您预期的请求。</translation>
     </message>
     <message>
-        <source>Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-        <translation>允许此设备查看和控制这台电脑？本机将启动共享，现有 DeskPort 会话可能短暂断开。这不会授予访问请求设备的权限。请仅接受你预期的请求。</translation>
+        <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
+        <translation>允许此设备查看和控制此电脑吗？绑定仅保存权限，不会发起连接或中断已有会话。这不会授予访问请求设备的权限。请仅接受您预期的请求。</translation>
     </message>
 </context>
 <context>

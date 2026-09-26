@@ -22,7 +22,7 @@ Dialog {
     onRejected: manager.reject(transaction)
     contentItem: Label {
         textFormat: Text.PlainText
-        text: bindingApproval.peerText + "\n\n" + (clientOnly ? qsTr("Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.") : qsTr("Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting."))
+        text: bindingApproval.peerText + "\n\n" + (clientOnly ? qsTr("Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.") : qsTr("Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting."))
         wrapMode: Text.WordWrap
     }
     Connections {

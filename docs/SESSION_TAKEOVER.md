@@ -45,8 +45,9 @@ settings. The test window requires explicit binding approval and shows the ports
 The full TCP/UDP group is checked on all IPv4 interfaces and a non-default private
 port bucket is preferred. The binding listener moves to video base port + 2, so
 normal clients can discover it from the video address. A temporary random binding
-listener remains an alias. Bind both test clients before starting the old stream:
-initial trust approval restarts only the temporary host.
+listener remains an alias. New bindings update the running host's authorization
+without restarting it or acquiring a session. Also test binding a second client
+while the first has an active stream; failure must preserve that stream.
 
 The test display has a separate product/serial identity. **This parallel test mode
 always uses its own extended workspace**, regardless of the client's topology
@@ -60,6 +61,45 @@ Check idle admission, cancel preserving old video/input, confirmed takeover endi
 the old actual video, old held-key release, two concurrent contenders, repeat
 resize/rotation, 0.5/1.0/1.5 adjustment and reloaded per-device settings. Compilation,
 signing and fake-host tests do not establish these physical-device outcomes.
+
+## Binding without session acquisition — 2026-09-26
+
+Completing a binding returns the requesting desktop to Devices. Only an explicit
+Connect action starts a stream. Incoming binding completion must not navigate
+away from or replace an existing outgoing session.
+
+The bundled host adapter adds `POST /api/deskport/trust`, protected by loopback,
+Basic authentication, pinned host TLS, and rejection of browser Origin/Referer
+headers. It atomically persists an approved certificate and updates live TLS
+authorization under the host's authorization mutex. It does not call session
+acquisition, change the admission generation/lease, terminate streams, or restart
+the display/host. An unavailable endpoint fails binding without a restart fallback.
+An initially stopped host can still be initialized normally. Explicit revocation
+retains its existing restart behavior and is separate from granting a binding.
+This is a bundled local adapter API; peer binding/session wire messages do not
+change and no new shared-core negotiation is introduced.
+
+On Linux, run `scripts/test-host-live-trust.py /absolute/path/to/built/sunshine` for disposable
+loopback TLS, admission-lease preservation, persistence and authorization checks.
+The test never launches video and does not establish active-stream acceptance.
+
+## Chained sessions and cycles
+
+Current admission is exclusive per host, not a distributed connection graph.
+An incoming controller and an outgoing viewer can coexist on one desktop.
+Consequently, a chain and a cycle can both pass the current per-host checks.
+Chains add another encode/decode/network hop, and nested input depends on focus
+and local shortcut handling. A cycle may recursively capture a viewer or feed
+input back, depending on display layout and focus; it is not necessarily a
+recursive image when separate virtual displays are used.
+
+Recommended policy: preserve mutual binding permissions, allow acyclic active
+session chains, and reject a new session that closes any cycle, including cycles
+longer than two machines. This policy is **not yet enforced**. Correct enforcement
+needs a shared-core identity/path contract, admission-time revalidation (including
+simultaneous connection attempts), stale-session cleanup, and explicit behavior
+for peers lacking the capability. A two-host-only block would leave longer cycles
+and simultaneous races unresolved.
 
 ## Automated evidence
 

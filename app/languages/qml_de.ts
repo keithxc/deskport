@@ -2622,12 +2622,12 @@
         <translation>Erlauben und koppeln</translation>
     </message>
     <message>
-        <source>Allow this device and this computer to view and control each other? DeskPort sharing will start on both computers; existing DeskPort sessions may briefly disconnect. Accept only a request you are expecting.</source>
-        <translation>Beidseitiges Anzeigen und Steuern erlauben? DeskPort startet die Freigabe auf beiden Computern; bestehende Sitzungen können kurz getrennt werden. Nur erwartete Anfragen annehmen.</translation>
+        <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
+        <translation>Diesem Gerät und diesem Computer erlauben, sich gegenseitig anzuzeigen und zu steuern? Die Kopplung speichert nur die Berechtigung, ohne eine Verbindung zu starten oder bestehende Sitzungen zu unterbrechen. Wählen Sie Verbinden, wenn Sie bereit sind. Akzeptieren Sie nur erwartete Anfragen.</translation>
     </message>
     <message>
-        <source>Allow this device to view and control this computer? Sharing will start here; existing DeskPort sessions may briefly disconnect. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-        <translation>Diesem Gerät erlauben, diesen Computer anzuzeigen und zu steuern? Die Freigabe startet hier; bestehende DeskPort-Sitzungen können kurz unterbrochen werden. Dies gewährt keinen Zugriff auf das anfragende Gerät. Nur erwartete Anfragen annehmen.</translation>
+        <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
+        <translation>Diesem Gerät erlauben, diesen Computer anzuzeigen und zu steuern? Die Kopplung speichert nur die Berechtigung, ohne eine Verbindung zu starten oder bestehende Sitzungen zu unterbrechen. Sie gewährt keinen Zugriff auf das anfragende Gerät. Akzeptieren Sie nur erwartete Anfragen.</translation>
     </message>
 </context>
 <context>
