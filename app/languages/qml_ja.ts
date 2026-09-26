@@ -1431,6 +1431,14 @@
 </context>
 <context>
     <name>main</name>
+    <message><source>Memory %1</source><translation>メモリ %1</translation></message>
+    <message><source>Local memory usage</source><translation>この端末のメモリ使用量</translation></message>
+    <message><source>Unavailable</source><translation>取得できません</translation></message>
+    <message><source>Client: %1</source><translation>クライアント: %1</translation></message>
+    <message><source>Sharing host: %1</source><translation>共有ホスト: %1</translation></message>
+    <message><source>Helpers: %1</source><translation>補助プロセス: %1</translation></message>
+    <message><source>Some processes could not be sampled.</source><translation>一部のプロセスを測定できませんでした。</translation></message>
+    <message><source>Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak.</source><translation>このクライアントと直接の子プロセスの常駐メモリです。ウィンドウの表示中は3秒ごとに更新します。共有ページは重複して計上される場合があります。リモート端末と一部のGPUメモリは含みません。使用量の増加だけではメモリリークとは判断できません。</translation></message>
     <message>
         <location filename="../gui/main.qml" line="415"/>
         <source>Settings</source>

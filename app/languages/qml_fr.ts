@@ -1428,6 +1428,14 @@
 </context>
 <context>
     <name>main</name>
+    <message><source>Memory %1</source><translation>Mémoire %1</translation></message>
+    <message><source>Local memory usage</source><translation>Utilisation de la mémoire locale</translation></message>
+    <message><source>Unavailable</source><translation>Indisponible</translation></message>
+    <message><source>Client: %1</source><translation>Client : %1</translation></message>
+    <message><source>Sharing host: %1</source><translation>Hôte de partage : %1</translation></message>
+    <message><source>Helpers: %1</source><translation>Processus auxiliaires : %1</translation></message>
+    <message><source>Some processes could not be sampled.</source><translation>Certains processus n’ont pas pu être mesurés.</translation></message>
+    <message><source>Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak.</source><translation>Mémoire résidente de ce client et de ses processus enfants directs, actualisée toutes les 3 secondes lorsque la fenêtre est visible. Les pages partagées peuvent être comptées plusieurs fois. Les machines distantes et une partie de la mémoire GPU sont exclues. Une augmentation seule ne signifie pas une fuite de mémoire.</translation></message>
     <message>
         <location filename="../gui/main.qml" line="415"/>
         <source>Settings</source>

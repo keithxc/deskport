@@ -1428,6 +1428,14 @@
 </context>
 <context>
     <name>main</name>
+    <message><source>Memory %1</source><translation>메모리 %1</translation></message>
+    <message><source>Local memory usage</source><translation>로컬 메모리 사용량</translation></message>
+    <message><source>Unavailable</source><translation>사용 불가</translation></message>
+    <message><source>Client: %1</source><translation>클라이언트: %1</translation></message>
+    <message><source>Sharing host: %1</source><translation>공유 호스트: %1</translation></message>
+    <message><source>Helpers: %1</source><translation>보조 프로세스: %1</translation></message>
+    <message><source>Some processes could not be sampled.</source><translation>일부 프로세스를 측정할 수 없습니다.</translation></message>
+    <message><source>Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak.</source><translation>이 클라이언트와 직접 하위 프로세스의 상주 메모리입니다. 창이 표시되는 동안 3초마다 갱신됩니다. 공유 페이지는 중복 집계될 수 있습니다. 원격 컴퓨터와 일부 GPU 메모리는 제외됩니다. 사용량 증가만으로 메모리 누수를 의미하지는 않습니다.</translation></message>
     <message>
         <location filename="../gui/main.qml" line="415"/>
         <source>Settings</source>
