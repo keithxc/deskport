@@ -13,8 +13,25 @@ using the original configuration; fail on a version/header mismatch. See
 `host/linux/FFMPEG_BACKPORT.md` for provenance and the dependency upgrade guard.
 
 The original three-session heap profile retained 111.95 MB on exit; the CBS-only
-control retained 276 KB, with no outstanding CBS-clone allocation stacks. Full
-candidate hardware stress and deployed GUI acceptance remain separate gates.
+control retained 276 KB, with no outstanding CBS-clone allocation stacks. The
+complete FFmpeg backport received encoded frames in 30 isolated Vulkan sessions
+on each of two Linux machines. All host counters balanced; allocated memory
+increased by 0.47–0.59 MB across the subsequent 29 sessions, rather than roughly
+30 MB per session. These receivers do not replace deployed GUI acceptance.
+
+The longer profile also identified smaller capture-owned leaks. Store DMA-BUF
+modifier lists in vectors, initialize the format count, and own the Wayland
+registry, output and interface proxies. Detach monitor metadata from proxies
+before returning it past the local connection's lifetime. An extracted-code
+regression rejects the original leak and checks 1,000 success, missing-interface,
+failed-connect and registry cycles, including metadata lifetime after disconnect.
+It passes under Linux ASan/UBSan and macOS UBSan and runs in Linux CI.
+
+The final overlay passes 10 further unprofiled and 30 profiled hardware sessions.
+The latter retains 338 KB on exit, dominated by driver/runtime paths; filtered
+profiles contain no CBS-clone, monitor-enumeration or modifier-copy leaks from
+the identified host paths. This is not a whole-process zero-leak claim, and the
+new candidate still requires private delivery and user activation for GUI checks.
 
 ## Session memory lifetime diagnostics (2026-09-26)
 
