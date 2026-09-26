@@ -1,3 +1,12 @@
+## Windows first-launch sharing (2026-09-26)
+
+Default the interactive installer's Run DeskPort checkbox to enabled. A fresh
+Windows profile starts sharing when the application opens, without waiting for
+setup completion or login-start registration. Preserve saved sharing-off choices,
+isolated test behavior and `--no-host-autostart`. Silent installation remains
+noninteractive. Native installation and live streaming acceptance remain separate
+from compilation and isolated lifecycle checks.
+
 ## Linux residual allocation investigation (2026-09-26)
 
 Upstream PipeWire 1.6.8 fixes a client-node mix cleanup error in

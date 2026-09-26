@@ -338,7 +338,14 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
 #endif
     if (directory.isEmpty() && setupComplete() && !QSettings().contains("host/startAtLogin")) setLoginStart(true);
     if (directory.isEmpty() && loginStart()) setLoginStart(true); // Refresh installed paths and older startup entries.
-    if (directory.isEmpty() && available() && ((loginStart() && !QSettings().value("host/sharingDisabled", false).toBool()) || QSettings().value("host/shareOnLaunch", false).toBool()) &&
+#ifdef Q_OS_WIN
+    // A fresh Windows profile shares on first launch, before setup is completed.
+    // Keep an explicit stop authoritative, including profiles without the newer key.
+    const bool defaultShareOnLaunch = !QSettings().value("host/sharingDisabled", false).toBool();
+#else
+    const bool defaultShareOnLaunch = false;
+#endif
+    if (directory.isEmpty() && available() && ((loginStart() && !QSettings().value("host/sharingDisabled", false).toBool()) || QSettings().value("host/shareOnLaunch", defaultShareOnLaunch).toBool()) &&
             !QCoreApplication::arguments().contains("--no-host-autostart")) {
         QTimer::singleShot(0, this, [this] {
             QSettings settings;
