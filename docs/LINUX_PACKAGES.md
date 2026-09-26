@@ -161,7 +161,8 @@ rejects mismatched cached inputs. Its
 pinned upstream submodules and build dependencies are fetched during the build. Ubuntu package versions are recorded in the build
 output; apt repositories are not a historical snapshot. Qt 6 deployment includes
 Wayland and offscreen plugins. `qmake -r` refreshes nested version headers. The
-pipeline checks the internal version, CLI, packaged QML startup, host state
+pipeline copies the read-only checkout into a writable build snapshot for
+translation generation. It checks the internal version, CLI, packaged QML startup, host state
 isolation and authenticated session API before producing packages. The API check
 also rejects unpaired admission and browser-origin/unauthenticated requests. nFPM creates the DEB/RPM/pacman metadata;
 the payload is shared, rather than rebuilding against each distribution's Qt.

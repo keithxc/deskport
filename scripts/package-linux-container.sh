@@ -22,6 +22,15 @@ apt-get install -y --no-install-recommends \
     libxcb-shm0-dev libxcb-xfixes0-dev libxfixes-dev libxrandr-dev libxtst-dev \
     libvulkan-dev glslang-tools nodejs npm python3-jinja2
 mkdir -p "$work/build" "$work/cache" "$work/output"
+# qmake compiles embedded translations into the source tree. Keep the caller's
+# checkout read-only and use a disposable writable source snapshot instead.
+input_repo=$repo
+repo=$(mktemp -d "$work/source.XXXXXX")
+tar -C "$input_repo" --exclude-vcs --exclude='./winbuild' \
+    --exclude='./build*' --exclude='./dist*' --exclude='./result*' \
+    --exclude='*.noindex' -cf - . | tar -xf - -C "$repo"
+chmod -R u+w "$repo"
+export DESKPORT_SOURCE="$repo"
 python3 - "$repo/scripts/linux-tools.json" "$work/cache" <<'PY'
 import hashlib,json,pathlib,subprocess,sys
 for name,item in json.load(open(sys.argv[1])).items():
@@ -36,7 +45,7 @@ bash "$repo/scripts/build-linux-host.sh"
 cd "$work/build"
 qmake6 -r "$repo/moonlight-qt.pro" CONFIG+=release CONFIG+=disable-cuda \
     CONFIG+=disable-libplacebo PREFIX=/usr
-make -j"${DESKPORT_JOBS:-6}"
+make -j"${DESKPORT_JOBS:-4}"
 appdir="$work/DeskPort.AppDir"
 rm -rf "$appdir"
 mkdir -p "$appdir"
