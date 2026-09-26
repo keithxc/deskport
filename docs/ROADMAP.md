@@ -1914,3 +1914,21 @@ that it fixes the issue on Bazzite; see [confirmation](https://github.com/keithx
 This confirmation validates the reported sharing-startup problem, not a separate
 full input, GPU or long-session acceptance matrix. Merge the fix into main and
 restore its development version to 0.6.1; retain the tested prerelease and tag.
+
+## Cross-platform text-caret delivery — 2026-09-26
+
+Reason: mobile keyboard avoidance needs the remote insertion region; a local
+click anchor alone cannot follow typing in a Linux or Windows editor.
+
+- [x] Add bounded, isolated Windows UIA/Win32 and Linux AT-SPI geometry readers,
+  reusing the existing opt-in lease-scoped `text-caret` protocol.
+- [x] Invalidate readers on display transitions and shutdown; keep provider hangs
+  independent of video and topology recovery.
+- [x] Compile the Linux display helper and pass isolated AT-SPI/reader lifecycle
+  checks using the locked Nix Linux builder. Existing peer binding suite: 112 pass.
+- [ ] Complete full-package Nix build: Sunshine's `nvhttp.cpp` compilation was
+  killed by the builder during validation. The focused helper build passed.
+- [ ] Windows native compilation and live Windows/KDE/GNOME editor, terminal,
+  browser, IME and mixed-DPI validation. User will package and activate separately.
+
+See `docs/ADAPTIVE_DISPLAY.md` for provider limitations and fallback behavior.

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // A connection-owned KWin primary output with temporary physical-screen mirroring.
 #include "gnome-display.h"
+#include "text-caret.h"
 #include "kwin-permission.h"
 #include <QCoreApplication>
 #include <QDateTime>
@@ -480,6 +481,7 @@ private:
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
     const auto args = app.arguments();
+    if (args.value(1)=="--text-caret") return runTextCaretProbe(args);
     if (args.size() == 3 && args[1] == "--restore-kwin") {
         Display restore;
         if (!restore.connectSession()) return 1;

@@ -14,6 +14,8 @@
 #include <QMenu>
 #include <QTimer>
 
+class HostCaretMonitor;
+
 class HostManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(QVariantList permissions READ permissions NOTIFY permissionsChanged)
@@ -142,6 +144,7 @@ private:
     QString serverPath() const;
     QString m_Directory, m_Password, m_Status, m_StopStatus, m_DisplayWarning;
     QProcess m_Display, m_Server, m_Credentials;
+    HostCaretMonitor* m_CaretMonitor = nullptr;
     HostPortReservation m_Ports;
     std::unique_ptr<QLockFile> m_HostLock;
     int m_BasePort = DeskPortNetwork::DefaultBasePort;

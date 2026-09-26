@@ -23,6 +23,7 @@
 #include <vector>
 #include <algorithm>
 #include "display-request.h"
+#include "text-caret.h"
 
 namespace {
 void send(const QJsonObject& value) {
@@ -351,6 +352,7 @@ bool restore() {
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if (app.arguments().value(1)=="--text-caret") return runTextCaretProbe(app.arguments());
     DisplayLease recovery;
     const auto directory = qEnvironmentVariable("DESKPORT_DISPLAY_STATE_DIR");
     if (directory.isEmpty() || !QDir().mkpath(directory)) {

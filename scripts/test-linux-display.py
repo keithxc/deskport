@@ -26,6 +26,7 @@ if '--inside' not in sys.argv:
             # size/scale, while keeping the helper's requested target unchanged.
             fixture = Path(tmp) / 'initial-mode-fixture'
             shutil.copytree(source.parent.parent / 'host/linux', fixture)
+            shutil.copytree(source.parent.parent / 'host/common', fixture.parent / 'common')
             cpp = fixture / 'display-helper.cpp'
             text = cpp.read_text()
             anchor = 'name.toUtf8().constData(), width, height, wl_fixed_from_int(1),'

@@ -136,3 +136,46 @@ scanout while the iPad receives the live virtual screen. CoreGraphics reports th
 expected main/mirror topology, but this does not establish correct console scanout
 or physical-monitor mirroring. Window refresh attempts did not resolve it. Treat
 that visual acceptance as open rather than equating topology ACKs with pixel proof.
+
+### Windows and Linux caret readers — 2026-09-26
+
+Windows and Linux now supply the same optional `text-caret` geometry used by
+Apple clients. A successful session display request starts sampling at 5 Hz;
+resize, restore, disconnect and host shutdown invalidate and stop the reader.
+PeerManager continues to forward updates only to the authenticated, opted-in
+exclusive display lease. There is no new public wire message or core pin.
+
+The reader runs as `deskport-display --text-caret` in a separate, short-lived
+process, before the display-owner/driver initialization path. A 400 ms deadline
+kills an unresponsive reader; Windows also has a 350 ms in-process watchdog for
+provider RPCs. Accessibility errors cannot stop capture or display restoration.
+Only geometry is emitted; no text, selected content or accessible names are read,
+and raw provider output is not copied into diagnostics.
+
+- Windows uses a DPI-aware UI Automation caret range, with a collapsed selection
+  fallback for older text providers. Providers without empty-range rectangles may
+  supply the enclosing character's geometry. Native Win32 caret rectangles are
+  the final fallback. Normalize physical coordinates against the verified capture
+  output, including mirrored-output selection and negative desktop origins.
+- Linux uses the AT-SPI D-Bus interfaces already supported by QtDBus, without a new
+  package dependency. It discovers a focused element under an active, showing
+  window, then revalidates a cached element on subsequent samples. It queries the
+  insertion range or nearby character geometry (including the preceding glyph
+  when an end-of-document insertion rectangle is unavailable) and normalizes it
+  against the matching capture output's Qt logical geometry. Tree size, depth,
+  per-call latency and total query time are bounded.
+- Linux requires an enabled accessibility bridge in the desktop/application. The
+  reader does not change global accessibility settings. Unsupported providers,
+  undiscoverable focus, empty-line/end-of-document geometry that the provider
+  cannot describe, unavailable output mappings and out-of-display coordinates
+  report invalid. Mixed XWayland/Wayland scaling needs real application checks.
+  A client's last local pointer/touch position remains the fallback; it must not
+  be presented as a verified insertion point.
+
+Run `python3 scripts/test-text-caret.py` in the Linux devShell for an isolated
+D-Bus fixture (no desktop session or personal content). It checks discovery,
+movement, cached focus, inactive/hidden focus, normalized coordinates, timeout,
+output bounds and stop/restart behavior. `scripts/test-host-lifecycle.py --binding`
+checks the existing opt-in lease forwarding contract. Actual Windows UIA/Win32,
+KDE/GNOME applications, IME candidates and mixed-DPI screens remain live acceptance
+checks. A successful helper build is not that acceptance.

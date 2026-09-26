@@ -4,6 +4,8 @@
 #include <windows.h>
 #endif
 #include "hostmanager.h"
+#include "hostcaretmonitor.h"
+#include <QScreen>
 #ifdef Q_OS_MACOS
 #include <CoreGraphics/CoreGraphics.h>
 #endif
@@ -51,6 +53,10 @@
 #endif
 
 HostManager::HostManager(QObject *parent, const QString &directory) : QObject(parent) {
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
+    m_CaretMonitor=new HostCaretMonitor(this,[this](const QJsonObject& caret){emit caretChanged(caret);});
+    connect(&m_Display,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,[this]{m_CaretMonitor->stop();});
+#endif
     m_Isolated = !directory.isEmpty();
 #ifdef Q_OS_WIN
     // Own only our QProcess children. Never look up or terminate hosts by name.
@@ -168,6 +174,26 @@ HostManager::HostManager(QObject *parent, const QString &directory) : QObject(pa
 #endif
                         if (!saveLinuxDisplayState()) object["error"] = tr("Cannot save virtual display capture state");
                     }
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
+                    if(sequence>0 && !object.contains("error")) {
+                        m_CaretMonitor->start(helperPath(),[this]() -> QStringList {
+#ifdef Q_OS_WIN
+                            QFile capture(m_Directory+"/windows-capture-output");
+                            if(!capture.open(QIODevice::ReadOnly)) return {};
+                            const auto name=QString::fromUtf8(capture.read(512)).trimmed();
+                            return name.isEmpty() ? QStringList{} : QStringList{name};
+#else
+                            // Qt and AT-SPI use desktop logical coordinates on
+                            // Wayland. Never substitute the primary/physical screen.
+                            for(auto* screen:QGuiApplication::screens()) if(screen->name()==m_LinuxOutputName) {
+                                const auto r=screen->geometry();
+                                return {QString::number(r.x()),QString::number(r.y()),QString::number(r.width()),QString::number(r.height())};
+                            }
+                            return {};
+#endif
+                        });
+                    }
+#endif
                     emit displayResized(sequence, m_DisplayWidth, m_DisplayHeight, object["error"].toString());
                     emit changed();
                 }
@@ -631,6 +657,7 @@ void HostManager::stop() {
     beginStop(available() ? tr("Sharing is off") : tr("The bundled DeskPort host is missing. Repair the installation to enable sharing."));
 }
 void HostManager::beginStop(const QString &status) {
+    if(m_CaretMonitor) m_CaretMonitor->stop();
     m_DisplaySequence = 0; m_QueuedDisplayRequest = {}; ++m_DisplayGeneration;
     if (m_Stopping) return;
     m_Stopping = true;
@@ -1107,6 +1134,7 @@ bool HostManager::resizeDisplay(int width, int height, int scale, int sequence, 
                                   {"seq", sequence}, {"policy", policy}};
         return true;
     }
+    if(m_CaretMonitor) m_CaretMonitor->stop();
     m_DisplaySequence = sequence;
     m_DisplayWireSequence = m_DisplayWireSequence == std::numeric_limits<int>::max() ? 1 : m_DisplayWireSequence + 1;
     const auto generation = ++m_DisplayGeneration;
