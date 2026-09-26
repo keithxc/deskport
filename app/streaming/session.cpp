@@ -72,6 +72,29 @@
 #include <QWindow>
 #include <QScreen>
 
+static void setDeskPortWindowIcon(SDL_Window* window)
+{
+#ifndef Q_OS_DARWIN
+    // macOS has no per-window icon; SDL would replace the Dock icon instead.
+    QSvgRenderer renderer(QString(":/res/deskport.svg"));
+    QImage image(ICON_SIZE, ICON_SIZE, QImage::Format_RGBA8888);
+    image.fill(0);
+    QPainter painter(&image);
+    renderer.render(&painter);
+    painter.end();
+    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom((void*)image.constBits(),
+                                                              image.width(), image.height(), 32,
+                                                              4 * image.width(), SDL_PIXELFORMAT_RGBA32);
+    if (surface != nullptr) {
+        // SDL copies the pixels, so the surface can be released immediately.
+        SDL_SetWindowIcon(window, surface);
+        SDL_FreeSurface(surface);
+    }
+#else
+    Q_UNUSED(window);
+#endif
+}
+
 #define CONN_TEST_SERVER "qt.conntest.moonlight-stream.org"
 
 CONNECTION_LISTENER_CALLBACKS Session::k_ConnCallbacks = {
@@ -981,6 +1004,7 @@ bool Session::initialize()
                                        flags | StreamUtils::getPlatformWindowFlags());
         if (!viewer) viewer = SDL_CreateWindow(title.constData(), x, y, width, height, flags);
         if (!viewer) { SDL_QuitSubSystem(SDL_INIT_VIDEO); return false; }
+        setDeskPortWindowIcon(viewer);
         if (m_IsFullScreen) SDL_SetWindowFullscreen(viewer, m_FullScreenFlag);
         m_TransitionWindow = std::make_shared<TransitionWindow>(viewer, tr("Connecting to desktop…"));
         if (!m_TransitionWindow->rendering()) {
@@ -2416,26 +2440,9 @@ void Session::execInternal()
 
     m_InputHandler->setWindow(m_Window);
 
-    QSvgRenderer svgIconRenderer(QString(":/res/moonlight.svg"));
-    QImage svgImage(ICON_SIZE, ICON_SIZE, QImage::Format_RGBA8888);
-    svgImage.fill(0);
-
-    QPainter svgPainter(&svgImage);
-    svgIconRenderer.render(&svgPainter);
-    SDL_Surface* iconSurface = SDL_CreateRGBSurfaceWithFormatFrom((void*)svgImage.constBits(),
-                                                                  svgImage.width(),
-                                                                  svgImage.height(),
-                                                                  32,
-                                                                  4 * svgImage.width(),
-                                                                  SDL_PIXELFORMAT_RGBA32);
-#ifndef Q_OS_DARWIN
-    // Other platforms seem to preserve our Qt icon when creating a new window.
-    if (iconSurface != nullptr) {
-        // This must be called before entering full-screen mode on Windows
-        // or our icon will not persist when toggling to windowed mode
-        SDL_SetWindowIcon(m_Window, iconSurface);
-    }
-#endif
+    // This must be called before entering full-screen mode on Windows
+    // or our icon will not persist when toggling to windowed mode
+    setDeskPortWindowIcon(m_Window);
 
     // Update the window display mode based on our current monitor
     // for if/when we enter full-screen mode.
@@ -2974,10 +2981,6 @@ DispatchDeferredCleanup:
     }
     else SDL_DestroyWindow(m_Window);
     m_Window = nullptr;
-
-    if (iconSurface != nullptr) {
-        SDL_FreeSurface(iconSurface);
-    }
 
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
