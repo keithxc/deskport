@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QRect>
 #include <QColor>
+#include <QVariantMap>
 
 class SystemProperties : public QObject
 {
@@ -35,6 +36,7 @@ public:
     Q_PROPERTY(bool usesMaterial3Theme MEMBER usesMaterial3Theme CONSTANT)
 
     Q_INVOKABLE void refreshDisplays();
+    Q_INVOKABLE QVariantMap memoryUsage(qint64 hostPid) const;
     Q_INVOKABLE QRect getNativeResolution(int displayIndex);
     Q_INVOKABLE QRect getSafeAreaResolution(int displayIndex);
     Q_INVOKABLE int getRefreshRate(int displayIndex);
@@ -66,4 +68,3 @@ private:
     bool supportsHdr;
     bool usesMaterial3Theme;
 };
-

@@ -1,5 +1,6 @@
 #pragma once
-// Opt-in lifetime counters. No pointers, device names or media data are logged.
+// Diagnostic builds opt in explicitly. Production builds contain only no-ops.
+#if defined(DESKPORT_ENABLE_MEMORY_DIAGNOSTICS) && DESKPORT_ENABLE_MEMORY_DIAGNOSTICS
 #include <array>
 #include <cstdint>
 #include <cstdlib>
@@ -8,6 +9,7 @@
 #include <utility>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #ifdef __GLIBC__
 #include <malloc.h>
 #endif
@@ -16,6 +18,7 @@ namespace deskport_memory {
 enum class kind { session, encoder, capture, pipewire_stream, image, dummy_pixels, video_frame, egl_context, count };
 struct totals { std::uint64_t created{}, destroyed{}, live{}, bytes{}, peak_bytes{}; };
 inline std::array<totals, static_cast<unsigned>(kind::count)> counters{};
+inline std::uint64_t accounting_errors{};
 inline std::mutex mutex;
 inline std::mutex snapshot_mutex;
 inline const char* output() {
@@ -33,7 +36,10 @@ inline void release(kind k, std::uint64_t bytes = 0) {
   if (!output()) return;
   std::lock_guard lock(mutex);
   auto& t = counters[static_cast<unsigned>(k)];
-  ++t.destroyed; --t.live; t.bytes -= bytes;
+  ++t.destroyed;
+  if (!t.live || bytes > t.bytes) ++accounting_errors;
+  if (t.live > 0) --t.live;
+  t.bytes = bytes <= t.bytes ? t.bytes - bytes : 0;
 }
 struct lifetime {
   kind category;
@@ -48,9 +54,12 @@ inline void snapshot(const char* phase) {
   if (!output()) return;
   std::lock_guard serialize(snapshot_mutex);
   std::array<totals, static_cast<unsigned>(kind::count)> copy;
-  { std::lock_guard lock(mutex); copy = counters; }
+  std::uint64_t errors;
+  { std::lock_guard lock(mutex); copy = counters; errors = accounting_errors; }
   const int fd = open(output(), O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC | O_NOFOLLOW, 0600);
   if (fd < 0) return;
+  struct stat info {};
+  if (fstat(fd, &info) != 0 || !S_ISREG(info.st_mode) || info.st_size >= 4 * 1024 * 1024) { close(fd); return; }
   FILE* file = fdopen(fd, "a");
   if (!file) { close(fd); return; }
   static constexpr const char* names[] = {"session", "encoder", "capture", "pipewire_stream", "image", "dummy_pixels", "video_frame", "egl_context"};
@@ -67,7 +76,7 @@ inline void snapshot(const char* phase) {
   std::fprintf(file, ",\"allocator\":{\"arena_bytes\":%zu,\"allocated_bytes\":%zu,\"free_bytes\":%zu,\"mapped_bytes\":%zu}",
     heap.arena, heap.uordblks, heap.fordblks, heap.hblkhd);
 #endif
-  std::fprintf(file, "}\n");
+  std::fprintf(file, ",\"accounting_errors\":%llu}\n", static_cast<unsigned long long>(errors));
   std::fclose(file);
 }
 struct session_lifetime {
@@ -79,3 +88,16 @@ struct session_lifetime {
   }
 };
 }
+
+#else
+#include <cstdint>
+namespace deskport_memory {
+enum class kind { session, encoder, capture, pipewire_stream, image, dummy_pixels, video_frame, egl_context, count };
+inline void acquire(kind, std::uint64_t = 0) {}
+inline void release(kind, std::uint64_t = 0) {}
+struct lifetime { explicit lifetime(kind) {} };
+template<class T> T* allocated_frame(T* p) { return p; }
+inline void snapshot(const char*) {}
+struct session_lifetime {};
+}
+#endif

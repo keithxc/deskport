@@ -438,8 +438,10 @@ config_SL {
         streaming/audio/renderers/slaud.h
 }
 win32 {
+    LIBS += -lpsapi
     HEADERS += streaming/video/ffmpeg-renderers/dxutil.h
 }
+HEADERS += backend/processmemory.h
 win32:!winrt {
     message(DXVA2 and D3D11VA renderers selected)
 

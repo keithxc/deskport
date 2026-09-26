@@ -9,7 +9,7 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
-      packageFor = system:
+      packageFor = system: memoryDiagnostics:
         let
           pkgs = import nixpkgs { inherit system; };
           sessionHost = pkgs.sunshine.overrideAttrs (old: let
@@ -22,6 +22,8 @@
               prebuilt = ffmpegPrebuilt;
             };
           in {
+            NIX_CFLAGS_COMPILE = (old.NIX_CFLAGS_COMPILE or "") +
+              pkgs.lib.optionalString memoryDiagnostics " -DDESKPORT_ENABLE_MEMORY_DIAGNOSTICS=1";
             cmakeFlags = map (flag:
               if pkgs.lib.hasPrefix ffmpegFlag flag
               then "${ffmpegFlag}${fixedFFmpeg}" else flag
@@ -115,7 +117,8 @@
         });
     in {
       packages = forAllSystems (system: {
-        default = packageFor system;
+        default = packageFor system false;
+        diagnostics = packageFor system true;
         deskport = self.packages.${system}.default;
       });
       apps = forAllSystems (system: {

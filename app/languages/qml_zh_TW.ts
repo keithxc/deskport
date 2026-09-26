@@ -1440,6 +1440,14 @@
 </context>
 <context>
     <name>main</name>
+    <message><source>Memory %1</source><translation>記憶體 %1</translation></message>
+    <message><source>Local memory usage</source><translation>本機記憶體用量</translation></message>
+    <message><source>Unavailable</source><translation>無法取得</translation></message>
+    <message><source>Client: %1</source><translation>用戶端：%1</translation></message>
+    <message><source>Sharing host: %1</source><translation>共享服務：%1</translation></message>
+    <message><source>Helpers: %1</source><translation>輔助程序：%1</translation></message>
+    <message><source>Some processes could not be sampled.</source><translation>部分程序無法取樣。</translation></message>
+    <message><source>Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak.</source><translation>本機用戶端及其直接子程序的常駐記憶體，視窗顯示時每 3 秒更新。共享記憶體頁可能重複計算，不包含遠端電腦及部分 GPU 記憶體。用量增加不一定代表洩漏。</translation></message>
     <message><source>Update available</source><translation>有更新</translation></message>
     <message><source>DeskPort updates</source><translation>DeskPort 更新</translation></message>
     <message><source>Checking for updates…</source><translation>正在檢查更新…</translation></message>

@@ -64,6 +64,7 @@ public:
     int sharingHeight() const;
     bool changing() const { return m_Starting || m_Stopping || m_TrustBusy; }
     Q_INVOKABLE void refreshPermissions();
+    Q_INVOKABLE qint64 hostProcessId() const { return m_Server.processId(); }
     Q_INVOKABLE void completeSetup();
     Q_INVOKABLE void revealApplication();
     bool prepareIdentity(const QByteArray& certificate, const QByteArray& key);

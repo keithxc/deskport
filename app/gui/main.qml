@@ -372,6 +372,23 @@ ApplicationWindow {
                 onClicked: if (connected) trafficDetails.open()
                 Timer { interval: 1000; repeat: true; running: trafficSummary.counting && window.visible; onTriggered: trafficSummary.sample() }
             }
+            UiButton {
+                id: memorySummary; objectName: "memorySummary"
+                visible: !topBar.narrow
+                flat: true; font.pixelSize: ui.small
+                property var usage: ({available: false, complete: false, total: 0, client: -1, host: 0, helpers: 0})
+                function amount(bytes) { return bytes < 0 ? qsTr("Unavailable") : (bytes / 1048576).toFixed(0) + " MiB" }
+                function sample() { usage = SystemProperties.memoryUsage(hostManager.hostProcessId()) }
+                text: qsTr("Memory %1").arg(usage.available ? (usage.complete ? "" : "≈ ") + amount(usage.total) : "—")
+                Accessible.name: qsTr("Local memory usage") + " · " + text
+                onClicked: { sample(); memoryDetails.open() }
+                Timer {
+                    interval: 3000; repeat: true
+                    running: window.visible && (memorySummary.visible || memoryDetails.visible)
+                    onRunningChanged: if (running) memorySummary.sample()
+                    onTriggered: memorySummary.sample()
+                }
+            }
             Label {
                 visible: stackView.depth > 1 && topBar.devicesPage === null && !topBar.compact
                 text: stackView.currentItem ? stackView.currentItem.objectName : ""
@@ -576,6 +593,19 @@ ApplicationWindow {
             Label { text: qsTr("Received: %1").arg(trafficSummary.amount(trafficSummary.received)); color: ui.text }
             Label { text: qsTr("Sent: %1").arg(trafficSummary.amount(trafficSummary.sent)); color: ui.text }
             Label { text: qsTr("Counts media, control and clipboard transfer bytes for this session, including temporary reconnects. Excludes IP/VPN overhead, TLS overhead for clipboard, discovery and host-side sharing traffic. This is not your carrier's bill."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+        }
+    }
+    Dialog {
+        id: memoryDetails; title: qsTr("Local memory usage"); modal: true
+        width: Math.min(window.width - 40, 460); anchors.centerIn: parent
+        standardButtons: Dialog.Ok
+        contentItem: ColumnLayout {
+            spacing: 12
+            Label { text: qsTr("Client: %1").arg(memorySummary.amount(memorySummary.usage.client)); color: ui.text }
+            Label { text: qsTr("Sharing host: %1").arg(memorySummary.amount(memorySummary.usage.host)); color: ui.text }
+            Label { text: qsTr("Helpers: %1").arg(memorySummary.amount(memorySummary.usage.helpers)); color: ui.text }
+            Label { visible: !memorySummary.usage.complete; text: qsTr("Some processes could not be sampled."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: qsTr("Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak."); color: ui.muted; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
     Shortcut { enabled: navigationVisible; sequences: [StandardKey.New]; onActivated: navigateTo("qrc:/gui/BindView.qml", "BindView") }

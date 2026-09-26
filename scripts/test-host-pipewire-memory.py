@@ -78,7 +78,7 @@ int main() {
   snapshot("test-complete");''')
                 unit.write_text(contents)
             binary=target/'memory-test'
-            subprocess.run([os.environ.get('CXX','c++'),'-std=c++17','-O1','-g','-fsanitize=' + ('undefined' if sys.platform == 'darwin' else 'address,undefined'),str(unit),'-o',str(binary)],check=True)
+            subprocess.run([os.environ.get('CXX','c++'),'-DDESKPORT_ENABLE_MEMORY_DIAGNOSTICS=1','-std=c++17','-O1','-g','-fsanitize=' + ('undefined' if sys.platform == 'darwin' else 'address,undefined'),str(unit),'-o',str(binary)],check=True)
             result=subprocess.run([str(binary)],env=dict(os.environ, DESKPORT_MEMORY_DIAGNOSTICS=str(target/'counters.jsonl')),stdout=subprocess.PIPE,stderr=subprocess.PIPE, timeout=60)
             if patched and result.returncode: raise SystemExit(result.stderr.decode())
             if not patched:

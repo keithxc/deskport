@@ -3,6 +3,7 @@
 #include <QPalette>
 #include <QEvent>
 #include "systemproperties.h"
+#include "processmemory.h"
 #include "utils.h"
 #include "version.h"
 
@@ -16,6 +17,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #endif
+
+QVariantMap SystemProperties::memoryUsage(qint64 hostPid) const
+{
+    return ProcessMemory::sample(hostPid);
+}
 
 SystemProperties::SystemProperties()
 {

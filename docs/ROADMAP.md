@@ -1,3 +1,29 @@
+## Desktop memory display and production diagnostics (2026-09-26)
+
+Show local resident memory after the traffic indicator and refresh every three
+seconds while the window is visible. Detail rows separate the client, the managed
+sharing host and immediate child helpers. No remote memory is queried. Use native
+RSS/working-set queries on Linux/macOS/Windows; show unavailable or partial samples
+instead of inventing zero readings for failed process queries. Child PID sets are
+deduplicated, so the managed host is not counted twice. Shared pages can be counted
+more than once and some GPU allocations are excluded. This is an operational
+indicator, not a leak detector. Narrow windows omit the chip.
+
+Production host builds compile lifetime diagnostics to no-ops. Dedicated Nix
+`packages.<system>.diagnostics` builds explicitly define
+`DESKPORT_ENABLE_MEMORY_DIAGNOSTICS=1`; the existing absolute-path environment
+variable additionally enables recording at runtime. Diagnostic logs stop growing
+at approximately 4 MiB and report accounting errors without unsigned underflow.
+The Vulkan driver lifetime guard is a functional fix and remains enabled.
+
+Native macOS tests cover self/child/exited-process sampling and production versus
+diagnostic compilation, and the full desktop build passes. Linux and Windows
+validation results are recorded separately; compilation is not physical acceptance.
+
+The old dev/pcui, docs/release-060-preparation and
+fix/windows-display-activation-057 branches were already ancestors of main. Their
+branch references were retired without deleting checkout files or test artifacts.
+
 ## Vulkan driver lifetime across reconnects (2026-09-26)
 
 The remaining repeatable Vulkan growth comes from Mesa CPU topology tables
@@ -58,7 +84,8 @@ new candidate still requires private delivery and user activation for GUI checks
 ## Session memory lifetime diagnostics (2026-09-26)
 
 Add opt-in counters to the pinned Linux host's session, encoder, capture,
-PipeWire stream, image, dummy-pixel, AVFrame and EGL-context owners. Set
+PipeWire stream, image, dummy-pixel, AVFrame and EGL-context owners. Build the
+explicit `diagnostics` package first, then set
 `DESKPORT_MEMORY_DIAGNOSTICS` to an absolute private JSONL path before launching
 an isolated diagnostic host. Snapshots after thread joins and after full session
 member destruction distinguish outstanding resources from glibc free arena
