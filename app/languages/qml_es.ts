@@ -816,6 +816,8 @@
         <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
         <translation>El anfitrión no reanudó el escritorio con el nuevo tamaño. Vuelva a conectarse para continuar su trabajo.</translation>
     </message>
+
+    <message><source>Connecting to desktop…</source><translation>Conectando al escritorio…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1412,6 +1414,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>Pulsa %1 para salir de pantalla completa; pulsa de nuevo para desconectar</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>Esperando la imagen del escritorio…</translation></message>
+    <message><source>Cancel connection</source><translation>Cancelar conexión</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3114,5 +3119,16 @@
         <source>Report a problem</source>
         <translation>Informar de un problema</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — Teclado remoto · Ctrl+Alt+Shift+Z para liberarlo</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — Escritura remota · Atajos del sistema locales</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — Teclado local · Haz clic en la imagen para controlar</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>Se detuvo el uso compartido del portapapeles. Vuelve a conectarte para reintentarlo.</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>El portapapeles compartido no está disponible. Vuelve a conectarte para reintentarlo; el control del escritorio no se ve afectado.</translation></message>
 </context>
 </TS>

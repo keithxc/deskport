@@ -848,6 +848,8 @@
         <source>Connection cancelled or session access was not granted. Reconnect to try again.</source>
         <translation>连接已取消或未获得会话使用权，请重新连接后重试。</translation>
     </message>
+
+    <message><source>Connecting to desktop…</source><translation>正在连接桌面…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1444,6 +1446,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>按 %1 退出全屏，再按一次断开连接</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>正在等待桌面画面…</translation></message>
+    <message><source>Cancel connection</source><translation>取消连接</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3174,5 +3179,16 @@
         <source>Saved diagnostics cleared.</source>
         <translation>已清除保存的诊断资料。</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — 远端键盘 · Ctrl+Alt+Shift+Z 释放</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — 远端输入 · 系统快捷键留在本机</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — 本机键盘 · 点击画面以控制远端</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>剪贴板共享已停止，请重新连接后重试。</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>剪贴板共享不可用，请重新连接后重试；桌面控制不受影响。</translation></message>
 </context>
 </TS>

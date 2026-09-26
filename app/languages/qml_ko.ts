@@ -816,6 +816,8 @@
         <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
         <translation>호스트가 새 크기로 데스크톱을 다시 시작하지 못했습니다. 다시 연결하여 작업을 계속하세요.</translation>
     </message>
+
+    <message><source>Connecting to desktop…</source><translation>데스크톱에 연결 중…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1412,6 +1414,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>%1 키로 전체 화면 해제, 다시 누르면 연결 끊기</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>데스크톱 영상을 기다리는 중…</translation></message>
+    <message><source>Cancel connection</source><translation>연결 취소</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3114,5 +3119,16 @@
         <source>Report a problem</source>
         <translation>문제 신고</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — 원격 키보드 · Ctrl+Alt+Shift+Z로 해제</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — 원격 입력 · 시스템 단축키는 로컬에서 사용</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — 로컬 키보드 · 화면을 클릭하여 원격 제어</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>클립보드 공유가 중지되었습니다. 다시 연결해 보세요.</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>클립보드 공유를 사용할 수 없습니다. 다시 연결해 보세요. 데스크톱 제어에는 영향이 없습니다.</translation></message>
 </context>
 </TS>

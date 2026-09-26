@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QTimer>
+#include <QCoreApplication>
 
 ClipboardChannel::ClipboardChannel(QString address, quint16 port, QSslCertificate peer, QByteArray cert, QByteArray key, bool nativeSharing)
     : m_Address(address), m_Port(port), m_Peer(peer), m_Cert(cert), m_Key(key) { m_NativeRequested = nativeSharing; start(); }
@@ -121,7 +122,7 @@ void ClipboardChannel::run() {
         helper.closeWriteChannel();
         socket.abort();
         QMutexLocker lock(&m_Mutex); m_Ready = false;
-        if (!isInterruptionRequested()) m_Error = QStringLiteral("Native clipboard sharing stopped; reconnect to resume.");
+        if (!isInterruptionRequested()) m_Error = QCoreApplication::translate("ClipboardChannel", "Clipboard sharing stopped. Reconnect to try again.");
         return;
     }
     if (ok) {
@@ -146,5 +147,7 @@ void ClipboardChannel::run() {
     socket.abort();
     QMutexLocker lock(&m_Mutex);
     m_Ready = false;
-    if (!isInterruptionRequested()) m_Error = QStringLiteral("Clipboard sharing unavailable. Enable it on both paired devices and reconnect.");
+    // Transport, negotiation and peer admission can all fail here. Do not
+    // diagnose a disabled preference when the failure did not establish one.
+    if (!isInterruptionRequested()) m_Error = QCoreApplication::translate("ClipboardChannel", "Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.");
 }

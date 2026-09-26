@@ -816,6 +816,8 @@
         <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
         <translation>Der Host hat den Desktop nicht mit der neuen Größe fortgesetzt. Verbinden Sie sich erneut, um weiterzuarbeiten.</translation>
     </message>
+
+    <message><source>Connecting to desktop…</source><translation>Verbindung zum Desktop…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1412,6 +1414,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>%1 verlässt das Vollbild; erneut drücken zum Trennen</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>Warte auf das Desktopbild…</translation></message>
+    <message><source>Cancel connection</source><translation>Verbindung abbrechen</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3114,5 +3119,16 @@
         <source>Report a problem</source>
         <translation>Problem melden</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — Remote-Tastatur · Ctrl+Alt+Shift+Z gibt sie frei</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — Remote-Eingabe · Systemtastenkürzel bleiben lokal</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — Lokale Tastatur · Zum Steuern ins Bild klicken</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>Die Zwischenablagefreigabe wurde beendet. Verbinden Sie sich erneut.</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>Die Zwischenablagefreigabe ist nicht verfügbar. Verbinden Sie sich erneut; die Desktopsteuerung ist nicht betroffen.</translation></message>
 </context>
 </TS>

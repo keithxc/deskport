@@ -350,8 +350,8 @@ void SdlInputHandler::updateKeyboardGrabState()
 
     if (m_AbsoluteMouseMode) {
         const QString title = keyboardRoutingActive()
-            ? (shouldGrab ? QStringLiteral("DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases") : QStringLiteral("DeskPort — Remote typing · system shortcuts local"))
-            : QStringLiteral("DeskPort — Local keyboard · click inside to focus");
+            ? (shouldGrab ? QCoreApplication::translate("SdlInputHandler", "DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases") : QCoreApplication::translate("SdlInputHandler", "DeskPort — Remote typing · system shortcuts local"))
+            : QCoreApplication::translate("SdlInputHandler", "DeskPort — Local keyboard · click inside to focus");
         if (QString::fromUtf8(SDL_GetWindowTitle(m_Window)) != title)
             SDL_SetWindowTitle(m_Window, title.toUtf8().constData());
     }

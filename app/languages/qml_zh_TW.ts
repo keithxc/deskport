@@ -828,6 +828,8 @@
 
 <message><source>The selected virtual screen mode is unavailable. Update the host or choose another mode.</source><translation>所選虛擬螢幕模式無法使用，請更新主機或選擇其他模式。</translation></message>
 <message><source>Virtual screen control ended. Reconnect to apply the selected mode.</source><translation>虛擬螢幕控制已中斷，請重新連線以套用所選模式。</translation></message>
+
+    <message><source>Connecting to desktop…</source><translation>正在連線至桌面…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1424,6 +1426,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>按 %1 退出全螢幕，再按一次中斷連線</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>正在等待桌面畫面…</translation></message>
+    <message><source>Cancel connection</source><translation>取消連線</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3145,5 +3150,16 @@
         <source>Saved diagnostics cleared.</source>
         <translation>已清除儲存的診斷資料。</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — 遠端鍵盤 · Ctrl+Alt+Shift+Z 釋放</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — 遠端輸入 · 系統快捷鍵保留在本機</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — 本機鍵盤 · 點選畫面以控制遠端</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>剪貼簿共享已停止，請重新連線後重試。</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>剪貼簿共享無法使用，請重新連線後重試；桌面控制不受影響。</translation></message>
 </context>
 </TS>

@@ -816,6 +816,8 @@
         <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
         <translation>L’hôte n’a pas repris le bureau à la nouvelle taille. Reconnectez-vous pour continuer votre travail.</translation>
     </message>
+
+    <message><source>Connecting to desktop…</source><translation>Connexion au bureau…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1412,6 +1414,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>Appuyez sur %1 pour quitter le plein écran, puis à nouveau pour déconnecter</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>En attente de l’image du bureau…</translation></message>
+    <message><source>Cancel connection</source><translation>Annuler la connexion</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3114,5 +3119,16 @@
         <source>Report a problem</source>
         <translation>Signaler un problème</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — Clavier distant · Ctrl+Alt+Shift+Z pour le libérer</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — Saisie distante · Raccourcis système locaux</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — Clavier local · Cliquez dans l’image pour contrôler</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>Le partage du presse-papiers s’est arrêté. Reconnectez-vous pour réessayer.</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>Le partage du presse-papiers est indisponible. Reconnectez-vous pour réessayer ; le contrôle du bureau n’est pas affecté.</translation></message>
 </context>
 </TS>

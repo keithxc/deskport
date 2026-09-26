@@ -1,3 +1,21 @@
+## Connection feedback localization — 2026-09-26
+
+Reason: desktop interoperation exposed English connection/cancel controls and
+keyboard-routing titles inside localized interfaces. Cover StreamSegue and the
+native Session, input and clipboard contexts in all seven translated catalogs.
+Clipboard transport failures no longer claim that sharing was disabled without
+evidence; the message identifies the affected feature and suggests reconnecting.
+
+Validation: catalog coverage and compiled QTranslator lookups passed for all
+seven locales; isolated SDL navigation passed on macOS; the Linux x86_64 Nix
+package built and passed the isolated executable/desktop identity smoke check.
+These changes improve feedback, not transport latency. Candidate deployment and
+live verification of translated native overlays remain pending.
+
+Follow-up: complete the directed three-machine streaming/input/reconnect matrix
+after occupied sessions are available. Investigate intermittent clipboard
+negotiation separately; do not infer its cause from the old generic message.
+
 ## Desktop 0.6.0 release — 2026-09-24
 
 Reason: user-authorized macOS/Linux/Windows formal release. macOS notarization,

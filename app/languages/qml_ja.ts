@@ -819,6 +819,8 @@
 
 <message><source>The selected virtual screen mode is unavailable. Update the host or choose another mode.</source><translation>選択した仮想ディスプレイモードは使用できません。ホストを更新するか、別のモードを選んでください。</translation></message>
 <message><source>Virtual screen control ended. Reconnect to apply the selected mode.</source><translation>仮想ディスプレイの制御が終了しました。再接続して選択したモードを適用してください。</translation></message>
+
+    <message><source>Connecting to desktop…</source><translation>デスクトップに接続中…</translation></message>
 </context>
 <context>
     <name>SettingsView</name>
@@ -1415,6 +1417,9 @@
         <source>Press %1 to leave fullscreen; press again to disconnect</source>
         <translation>%1 で全画面表示を解除、もう一度押すと切断</translation>
     </message>
+
+    <message><source>Waiting for desktop video…</source><translation>デスクトップ映像を待機中…</translation></message>
+    <message><source>Cancel connection</source><translation>接続をキャンセル</translation></message>
 </context>
 <context>
     <name>main</name>
@@ -3122,5 +3127,16 @@
         <source>Report a problem</source>
         <translation>問題を報告</translation>
     </message>
+</context>
+<context>
+    <name>SdlInputHandler</name>
+    <message><source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source><translation>DeskPort — リモートキーボード · Ctrl+Alt+Shift+Z で解放</translation></message>
+    <message><source>DeskPort — Remote typing · system shortcuts local</source><translation>DeskPort — リモート入力 · システムショートカットはローカル</translation></message>
+    <message><source>DeskPort — Local keyboard · click inside to focus</source><translation>DeskPort — ローカルキーボード · 画面内をクリックして操作</translation></message>
+</context>
+<context>
+    <name>ClipboardChannel</name>
+    <message><source>Clipboard sharing stopped. Reconnect to try again.</source><translation>クリップボード共有が停止しました。再接続してお試しください。</translation></message>
+    <message><source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source><translation>クリップボード共有を利用できません。再接続してお試しください。デスクトップ操作には影響しません。</translation></message>
 </context>
 </TS>
