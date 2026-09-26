@@ -1,8 +1,9 @@
 # Windows development checkpoint
 
-This branch preserves the Windows x64 host and client integration on top of
-the current DeskPort 0.5.6 desktop baseline. It is not a release candidate
-approved for distribution. The main release branch is unchanged.
+The main branch contains the Windows x64 host and client integration.
+The 0.6.3 release is being packaged from the current shared desktop baseline.
+Dated checkpoints below describe their original samples, not blanket approval
+or current blockers for later binaries.
 
 The deliverable is a self-contained x64 installer (plus an optional portable
 ZIP). End users do not need Nix, Qt, MinGW, npm, or a compiler. The maintained
@@ -36,7 +37,7 @@ runtime version. The package label was taken from source while the cached qmake
 subproject still used the old generated version header. `build-app.sh` now runs
 recursive qmake generation, and both packaging paths and the extracted installer
 audit reject mismatched PE file/product versions. Run `tests/windows-cli.ps1`
-with the final executable and `-Version 0.6.1` to check redirected runtime output
+with the final executable and `-Version 0.6.3` to check redirected runtime output
 as well as PE metadata.
 
 On the affected Windows machine, display startup failed after the recovery guard
@@ -95,9 +96,11 @@ runtime detection. These results remain sample-specific.
 Final exact-package upgrade/uninstall/reinstall and state retention, abnormal
 disconnect/reconnect, revocation/rebinding, complete current-UI streaming and
 display stability, and cross-platform regression remain to be completed.
-An earlier Windows Defender detection remains unresolved; testing while
-protection was disabled does not establish safety or a false positive.
-Normal-protection retesting is required before release.
+The historical detected sample received the sample-specific Microsoft result
+recorded above. Testing with protection disabled or an exclusion does not
+qualify a new release. Scan the exact final installer and extracted payload
+with normal protection enabled; record native CLI results separately from
+installation and live-stream acceptance.
 
 VM testing was stopped after the user reported a VM crash and host stalls.
 The cause has not been established. Do not restart heavy VM tests merely to
@@ -180,8 +183,9 @@ binary; its bundled host reported `2026.906.222525` on Windows. Static Defender
 scans of the extracted payload and installer completed with protection enabled
 and no detection records returned, and the included driver catalog reported a
 valid signature. A later installed/portable helper was nevertheless quarantined
-by Defender as `Trojan:Win32/Bearfoos.A!ml`; this remains a release blocker and
-must be investigated with normal protection enabled. Exact-package installation,
+by Defender as `Trojan:Win32/Bearfoos.A!ml`; that was a release blocker at
+this checkpoint. See the later antivirus notice above for the submitted
+sample determination and protected 0.6.0 retesting. Exact-package installation,
 two-way real streaming/input and recovery remain pending; the Windows virtual
 display is still sharing-scoped.
 

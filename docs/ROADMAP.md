@@ -1,3 +1,16 @@
+## Desktop 0.6.3 release preparation — 2026-09-26
+
+Prepare the integrated main branch for a formal PC release: Linux x86_64
+Nix/portable/native/AppImage and client-only Flatpak, Windows x64 offline Setup,
+and Developer ID signed/notarized macOS arm64. Rebuild final versioned binaries
+and record exact-package checks before publishing. Existing deployed-package
+acceptance does not establish acceptance of these new bytes. Service activation
+and final physical streaming/input checks remain separate manual steps.
+
+Keep build concurrency at four or fewer and use low-priority build sessions.
+The macOS packagers now accept DESKPORT_JOBS (default four). Nix daemon worker
+priority and affinity require separate verification from the client process.
+
 ## Windows first-launch sharing (2026-09-26)
 
 Default the interactive installer's Run DeskPort checkbox to enabled. A fresh

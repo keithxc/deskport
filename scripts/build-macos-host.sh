@@ -96,4 +96,4 @@ cmake -S "$source_dir" -B "$build_dir" \
     -DOpus_ROOT_DIR="${DESKPORT_OPUS_ROOT:-/opt/homebrew/opt/opus}" \
     -DICU_ROOT="${DESKPORT_ICU_ROOT:-/opt/homebrew/opt/icu4c@78}" -DSUNSHINE_PUBLISHER_NAME=DeskPort \
     -DSUNSHINE_PUBLISHER_ISSUE_URL=https://github.com/keithxc/deskport/issues "${extra[@]}"
-cmake --build "$build_dir" --target sunshine -j6
+cmake --build "$build_dir" --target sunshine -j"${DESKPORT_JOBS:-4}"

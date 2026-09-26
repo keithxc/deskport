@@ -85,3 +85,10 @@ The delivery preparation tool restores both source snapshots after GC or on a
 new machine. Core/source commits remain local; a later public integration must
 publish the reviewed core and restore a reachable public input before publishing
 its consumer. This private pin must not be merged into the public release branch.
+
+## Public release pin — 2026-09-26
+
+The public main branch now uses the reachable GitHub revision
+`e71b21808e15c8bcd55d4af3f7c0cbc769ef0bcb` in both the Git submodule
+and flake.lock. The private snapshot instructions above are historical;
+public releases must retain the matching public pins.

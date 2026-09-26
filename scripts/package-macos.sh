@@ -59,7 +59,7 @@ done
         QMAKE_APPLE_DEVICE_ARCHS=arm64 QMAKE_MACOSX_DEPLOYMENT_TARGET=26.0 \
         QMAKE_CC=/usr/bin/clang QMAKE_CXX=/usr/bin/clang++ \
         "QMAKE_XCODE_DEVELOPER_PATH=$DEVELOPER_DIR" "${qml_args[@]}"
-    make -j6
+    make -j"${DESKPORT_JOBS:-4}"
 )
 bash scripts/build-macos-host.sh
 xcrun clang -mmacosx-version-min=26.0 -fobjc-arc -framework Foundation -framework CoreGraphics -framework ApplicationServices -framework AppKit \
