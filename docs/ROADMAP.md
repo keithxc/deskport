@@ -1,3 +1,25 @@
+## Vulkan driver lifetime across reconnects (2026-09-26)
+
+The remaining repeatable Vulkan growth comes from Mesa CPU topology tables
+retained when driver libraries unload. A matched 30-versus-3 session heap profile
+attributes 3 KiB per additional session to those tables across encoder probes.
+A standalone 100-cycle instance test reproduces 25,600 bytes in these stacks.
+
+Keep one Vulkan instance alive for the Linux host process, initialized lazily
+before the first Vulkan encoder probe and destroyed before unloading its loader.
+It owns no logical device, queue, surface or encoder; normal device selection and
+session teardown remain unchanged. The same 100-cycle driver test retains only
+256 bytes in the topology stacks with this guard. This is a bounded-lifetime
+workaround for the pinned driver, not a claim that Mesa frees its original table.
+The guard is optional on initialization failure and serializes concurrent first
+use. Mock-loader ASan/UBSan checks cover concurrency, failure, missing symbols and
+instance-before-loader destruction.
+
+Smaller EGL process-lifetime mappings and an intermittent 32 KiB PipeWire buffer
+remain separate investigation items. Do not present them as fixed by this change
+or interpret balanced host counters as whole-process zero-leak evidence. Private
+delivery still requires native media regression and user activation for GUI tests.
+
 ## Vulkan encoder teardown backport (2026-09-26)
 
 Real reconnect stress exposed roughly 30 MB of retained allocations per session

@@ -32,6 +32,7 @@
               mkdir -p "$out"
               tar -xzf ${./host/vendor/sunshine-nix.tar.gz} --strip-components=1 -C "$out"
             '';
+            buildInputs = (old.buildInputs or []) ++ [ pkgs.vulkan-headers ];
             nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.python3 pkgs.git ];
             postPatch = (old.postPatch or "") + ''
               python3 ${./scripts/patch-host-diagnostics.py} .
@@ -49,6 +50,7 @@
               python3 ${./scripts/patch-host-linux-cadence.py} .
               python3 ${./scripts/patch-host-pipewire-memory.py} .
               python3 ${./scripts/patch-host-display-ownership.py} .
+              python3 ${./scripts/patch-host-vulkan-lifetime.py} . ${./host/linux/vulkan-driver-lifetime.h}
               python3 ${./scripts/patch-host-memory-diagnostics.py} . ${./host/common/memorydiagnostics.h}
               cp ${./host/common/encoderpolicy.h} src/deskport/common/encoderpolicy.h
               python3 ${./scripts/patch-host-encoder-policy.py} .
