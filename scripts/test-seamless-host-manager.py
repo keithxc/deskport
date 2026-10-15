@@ -31,6 +31,6 @@ INCLUDEPATH += "{root}/app/backend"
     if not binary.exists():
         binary = work / "seamless-host-manager-test.app/Contents/MacOS/seamless-host-manager-test"
     environment = dict(os.environ, TMPDIR=str(work))
-    subprocess.run([str(binary)], cwd=work, env=environment, check=True, timeout=30)
+    subprocess.run([str(binary)], cwd=work, env=environment, check=True, timeout=90)
 
 print("PASS: Seamless host supervisor validates bounded JSON and tears down its exact child")

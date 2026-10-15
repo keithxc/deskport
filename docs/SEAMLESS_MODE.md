@@ -1,7 +1,8 @@
 # Experimental Seamless Mode
 
-Status: experimental server-side M1/M2 skeleton; native Linux verification and
-the remote client/media path remain incomplete, 2026-10-05.
+Status: experimental server-side M1/M2 skeleton. Local supervisor hardening is
+covered by isolated regressions as of 2026-10-11; the remote client/media path
+and stricter native compatibility gates remain incomplete.
 
 Seamless Mode is a second Linux hosting mode in which each remote Wayland
 top-level surface is represented by a real top-level window on a Linux Wayland
@@ -167,10 +168,11 @@ The shared protocol version starts at:
 
 The detailed wire contract and bounds live in
 `shared/deskport-core/protocol/SEAMLESS_MODE.md`. Its version 1 constants and
-fixtures are implemented in the current shared-core working tree, but that core
-revision is not yet published or pinned by the desktop flake. Most reserved
-lifecycle messages are intentionally disabled until admission and media
-milestones land.
+fixtures are included in published core revision `108ca7d`, pinned identically
+by the Git submodule and desktop flake. Most reserved lifecycle messages are
+intentionally disabled until admission and media milestones land. The local
+sidecar event validator is an internal process boundary, not a second remote
+wire protocol or an admission mechanism.
 
 ### Control channel
 
@@ -394,9 +396,8 @@ That probe passed from the Nix package on native x86_64 Linux (`wmn`) on
 2026-10-05. The known-pixel hash proves only local `wl_shm` lifecycle/capture and
 cleanup; it sends no pixels over a DeskPort connection.
 
-The sidecar target is wired into the qmake/Nix path. Until the changed shared-core
-revision is published and pinned, validate the complete working tree with an
-explicit local input override:
+The sidecar target is wired into the qmake/Nix path. For shared-core development,
+validate an unpublished working-tree change with an explicit local input override:
 
 ```sh
 nix build --no-write-lock-file \
@@ -404,9 +405,40 @@ nix build --no-write-lock-file \
   .#packages.x86_64-linux.default
 ```
 
-That override build passed on `wmn` on 2026-10-05. The normal locked build is not
-a release gate until the core commit is published and both the submodule and
-`flake.lock` are advanced together.
+That override build passed on `wmn` on 2026-10-05. The current published core pin
+no longer requires that override. New changes still require the normal locked
+`nix build` and relevant native checks before release.
+
+### Local supervisor regression coverage — 2026-10-11
+
+The isolated fake-sidecar suite now covers the production supervisor's startup,
+shutdown, event validation, and restart boundaries:
+
+- A helper has ten seconds to report a valid `ready`; timeout stops only the
+  owned child. Cancellation during process startup, failed exec, repeated stop,
+  and synchronous signal-handler restarts each have explicit terminal behavior.
+- Shutdown immediately withdraws readiness. Late or partially received `ready`
+  and window events cannot reactivate the host or enter a newer run. Valid
+  cleanup errors are still retained, and an unsolicited nonzero helper exit
+  is not reported as a normal stop.
+- The first failure remains visible after cleanup until a new start. Each run
+  emits one `stopped` notification; an unresponsive helper is forcibly terminated
+  after the existing five-second grace period.
+- Parsing copies at most one 32 KiB record at a time, including its newline.
+  Fragmented/coalesced input, oversized records, truncated EOF, strict integer
+  fields, UTF-8 metadata limits, socket syntax, and unknown event types are tested.
+- Window IDs increase within a run and cannot be reused after destruction.
+  Metadata/frame events must reference a live window. Damage, optional capture
+  file errors, and frame completion share one pending sequence; duplicate,
+  stale, mismatched, and out-of-bounds frame events are rejected.
+
+These tests use a fake process, not a remote session or a live compositor. The
+2026-10-11 cloud check compiled the real sidecar with Qt 6.8.2, but its Wayland
+self-test could not create an AF_UNIX socket in that sandbox (`EPERM`). The core
+fixtures and Qt workspace adapter passed with ASan/UBSan and leak detection
+explicitly disabled because LeakSanitizer cannot operate in that environment.
+The locked Nix build, full host-binding regression, native no-GPU compositor,
+and physical client checks remain separate verification gates.
 
 Remaining targeted coverage for M1/M2 includes:
 
@@ -464,6 +496,31 @@ remote application launch command. Its syntax is intentionally not documented as
 working yet. Do not present `deskport connect`, `deskport run`, per-window input,
 or remote frame delivery as implemented until their actual parser, protocol, and
 integration tests exist.
+
+## Local window diagnostics — 2026-10-12
+
+While an experimental Linux Seamless host is running, `deskport status --json`
+includes `windows` and a `windowStates` array in ascending session window-ID order.
+Each detached snapshot contains bounded title/app ID, `initialWidth`/`initialHeight`
+(the create-time configure proposal), `lastSequence`, `pendingSequence`, and
+`lastFrame` with the most recent successful capture's sequence, dimensions and
+SHA-256. It contains no pixels or capture file paths.
+
+`captureError` describes the latest failed capture and clears after a successful
+capture. That failure advances `lastSequence` but preserves `lastFrame` with its
+own older sequence. `captureFileError` describes the most recent local PNG-save
+failure; a new damage attempt clears it. A save failure does not invalidate
+successfully captured frame metadata. Snapshot capture/save diagnostics
+retain at most 512 UTF-16 code units each, keeping all 64 windows within the local
+management response budget even with JSON-escaped text; forwarded events retain
+their validated original messages. A destroyed window disappears from the array; final teardown and a new run clear the registry. During stopping,
+the remaining snapshots are diagnostic state, not evidence of readiness.
+
+The manager updates these snapshots before forwarding each accepted event. Queries
+use the existing local management socket; this adds no remote wire message or
+shared-core contract. Isolated macOS fake-sidecar and local-socket tests verify
+snapshot ordering, capture failure/recovery, destruction and restart. Native Linux
+daemon/compositor integration remains a separate acceptance gate.
 
 ## Known risks and limitations
 

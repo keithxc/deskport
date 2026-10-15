@@ -3178,3 +3178,39 @@ others were still hiding.
 The connection wait now pumps through the session, which reports focus and
 presentation, and the tray treats the wanted viewer as in front when its own
 focus report says so.
+
+### Experimental Seamless supervisor hardening — 2026-10-11
+
+Reason: a helper could wait forever for readiness, accept late readiness during
+shutdown, lose its original failure diagnostic, or forward unchecked window and
+frame events. These gaps need fixing before remote admission or media is added.
+
+The local supervisor now has a bounded startup deadline, restart-safe terminal
+notifications, strict window/frame lifecycle validation, and bounded record
+parsing. Shutdown withdraws readiness while preserving validated cleanup errors;
+destroyed window IDs and stale frame sequences cannot re-enter the session.
+Fake-sidecar regressions cover fragmented input, invalid events, failed exec,
+timeout, cancellation, reentrant restart, and exact-child termination.
+
+This changes only the local experimental process boundary. Desktop transport,
+remote Seamless admission, native client windows, pixel transport, and input are
+unchanged. Qt unit/core checks and sidecar compilation have been exercised;
+locked Nix and native compositor/client acceptance remain required. See
+[Seamless Mode](SEAMLESS_MODE.md) for verification limits and remaining milestones.
+
+### Seamless local window diagnostics — 2026-10-12
+
+Reason: the experimental host status exposed only a window count, leaving SSH
+operators unable to inspect a window's metadata or distinguish a fresh capture
+failure from an older successful frame.
+
+The existing local `deskport status --json` route now includes bounded, sorted
+`windowStates`: title/app ID, initial configure size, capture sequences, last
+successful frame dimensions/hash and capture/save errors. Failed capture retains
+the older frame with its original sequence; destruction, teardown and restart
+remove stale state. No pixels, files or remote wire messages are added.
+
+Validation: isolated macOS supervisor and local management-socket regressions.
+This remains M1/M2 server work. Native Linux daemon/Wayland integration, external
+terminal/no-GPU VPS compatibility, exclusive Seamless admission, remote transport,
+client rendering, keyboard/pointer, resize and close remain acceptance work.
