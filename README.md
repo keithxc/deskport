@@ -81,6 +81,8 @@ checksums before reinstalling.
 DeskPort **0.7.6** running on macOS, captured on 2026-10-27 with the
 Simplified Chinese interface. Click a panel for the full-size image.
 
+[![DeskPort 0.7.6 device list on macOS](docs/media/devices-macos-076.jpg)](docs/media/devices-macos-076.jpg)
+
 | Appearance and keyboard shortcuts | Built-in manual |
 | --- | --- |
 | [![DeskPort 0.7.6 settings on macOS](docs/media/settings-macos-076.jpg)](docs/media/settings-macos-076.jpg) | [![DeskPort 0.7.6 built-in manual on macOS](docs/media/manual-macos-076.jpg)](docs/media/manual-macos-076.jpg) |
