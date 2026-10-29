@@ -59,6 +59,8 @@ codesign --verify --deep --strict "$app"
 stamp=$(date +%Y%m%d-%H%M%S)
 revision=$(git rev-parse --short HEAD)
 zip="$dist/SeamlessLab-$stamp-$revision-macos-arm64.zip"
+# A run keeps only its latest debug archive; reuse the run ID across rebuilds.
+rm -f "$dist"/SeamlessLab-*-macos-arm64.zip "$dist"/SeamlessLab-*-macos-arm64.zip.sha256
 ditto -c -k --keepParent "$app" "$zip"
 rm -rf "$dist/SeamlessLab.app"
 mv "$app" "$dist/SeamlessLab.app"

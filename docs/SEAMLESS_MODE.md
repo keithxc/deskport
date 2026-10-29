@@ -593,11 +593,26 @@ self-contained, ad-hoc signed bundle under the build root with:
 nix develop -c bash scripts/package-seamless-lab-macos.sh
 ```
 
-The Linux side builds without the full DeskPort client:
+The Linux side builds without the full DeskPort client, natively on the Linux
+host:
 
 ```sh
 nix build --out-link <build-root>/seamless-lab/server .#seamless-lab-server
 ```
+
+or on a macOS host through its nix-darwin linux-builder, then copied to the
+Linux host (the sidecar alone; full DeskPort and Sunshine Linux builds stay on
+native Linux build hosts):
+
+```sh
+bash scripts/deploy-seamless-lab-server.sh <ssh-host> aarch64-linux
+```
+
+The script keeps one local `--out-link` per system under the checkout build
+root and one remote GC root at `~/mygit/build/deskport/seamless-lab/server`, so
+repeated deploys reuse the cached dependency closure and release the previous
+build to the remote garbage collector. The remote nix-daemon must trust the
+SSH user, because locally built paths are unsigned.
 
 `seamless-lab-server` is the sidecar with a launcher catalog of `wl_shm`
 applications (`terminal` = weston-terminal, `editor` = mousepad, `calculator` =
