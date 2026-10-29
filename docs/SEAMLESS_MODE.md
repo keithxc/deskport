@@ -522,6 +522,125 @@ shared-core contract. Isolated macOS fake-sidecar and local-socket tests verify
 snapshot ordering, capture failure/recovery, destruction and restart. Native Linux
 daemon/compositor integration remains a separate acceptance gate.
 
+## Experimental SSH debug stream and Seamless Lab — 2026-10-16
+
+To exercise the M3-M5 client/server path before the admitted DeskPort media
+channel exists, the sidecar has an opt-in `--stream` mode. It is meant only to
+be started by an already-authenticated SSH login and never opens a listener:
+
+```text
+SeamlessLab (local)  --ssh -T-->  deskport-seamless-host --stream --scale N -- app
+        stdin  : ClientHello, ClientInput (JSON), ClientFrameAck
+        stdout : ServerHello, ServerEvent (sidecar JSON schema), Frame (binary)
+```
+
+The record framing lives in `app/seamless/seamlessstream.h` and is
+transport-agnostic, so a future admitted media channel can reuse it. Each
+record has a 16-byte little-endian header (magic, version, type, window ID,
+bounded length). Frames carry damaged rectangles of premultiplied ARGB32
+pixels, zlib-compressed per rectangle; the first frame after a size change
+is a full frame. The server keeps at most two unacknowledged frames and
+withholds Wayland frame callbacks while the client is behind, so a fast
+application slows down instead of growing a queue.
+
+Stream mode additionally provides:
+
+- up to 16 concurrent XDG top-levels and popups, each with its own session ID;
+- `xdg-decoration` with server-side preference, so the local native frame is
+  the only title bar;
+- integer output scale (`--scale`) for HiDPI clients; damage is converted from
+  surface to buffer coordinates;
+- window-scoped pointer motion/buttons/axis, keyboard (Linux evdev codes from
+  physical keys, Qt key fallback), focus with release of held keys/buttons on
+  focus loss or window destruction, close requests, and local resize to XDG
+  configure; and
+- `window-unmap` events when an application removes a surface's buffer; and
+- `window-geometry` events carrying the `xdg_surface` window geometry in
+  surface-local logical coordinates. XDG configure sizes refer to this
+  rectangle, so the client sizes its native window to it, crops client-side
+  shadows outside it and offsets pointer coordinates by its origin. Sizing to
+  the buffer instead let each configure round trip grow a CSD client such as
+  `weston-terminal` by its shadow margins until capture hit the size limit;
+- `xdg_popup` windows (menus, combo lists, tooltips). A popup is announced
+  with `window-create` carrying `popup: true` and its `parent` ID, followed by
+  `popup-position` with the offset from the parent's window geometry. The
+  client shows it as a frameless, non-focusable tool window at that offset.
+  Because each popup is a separate local window, there is no output edge to
+  constrain against and the unconstrained position is configured as final. A
+  press on a root top-level while it has popups, or that top-level losing
+  focus, sends `popup_done` to its popups (innermost first) and consumes the
+  press, approximating an xdg_popup grab; and
+- a launcher. `--app ID=PROGRAM` (repeatable, stream mode only) defines an
+  allowlist that the server hello advertises as `apps`. The client sends a
+  session-scoped (window ID 0) `{"type":"launch","app":ID}` request and can
+  never supply a command. Each launched application runs in its own owned
+  process group, reported with `app-start`/`app-exit` or `launch-rejected`;
+  shutdown terminates every owned group. With a catalog, the session no
+  longer ends when the optional initial application exits; it ends when the
+  client closes the stream.
+
+The client side is `SeamlessClientSession`, `SeamlessWindowRegistry` and one
+`SeamlessWindow : QWindow` per remote top-level, as planned above, rendered
+with `QBackingStore`. On macOS, physical key positions are translated from
+`kVK_*` codes; Control stays Control and Command becomes Super.
+
+`tools/seamless-lab/` wraps these in a standalone debug application,
+SeamlessLab, with its own bundle identifier and settings domain. It does not
+touch DeskPort/Moonlight settings, pairing data or services. Build the
+self-contained, ad-hoc signed bundle under the build root with:
+
+```sh
+nix develop -c bash scripts/package-seamless-lab-macos.sh
+```
+
+The Linux side builds without the full DeskPort client:
+
+```sh
+nix build --out-link <build-root>/seamless-lab/server .#seamless-lab-server
+```
+
+`seamless-lab-server` is the sidecar with a launcher catalog of `wl_shm`
+applications (`terminal` = weston-terminal, `editor` = mousepad, `calculator` =
+galculator); the catalog is added only for `--stream`, so `--self-test` runs as
+before. Run the lab client once with `--host <ssh-destination> --server <remote
+path>` (both are remembered). The launcher window, the global Apps menu and the
+Dock menu start catalog applications; `--launch ID` (repeatable) starts them
+on connect for scripted checks, and an application argv after `--` remains
+available. Every remote window is a separate native window, so switching uses
+the local window manager. The client log is
+`~/Library/Logs/SeamlessLab/seamless-lab.log`.
+
+Popup limitations in this harness: keyboard focus stays with the root
+top-level, so keyboard navigation inside menus does not reach the popup;
+popups without a grab (tooltips) are treated like menus, so a press while a
+tooltip is open only dismisses it; press-drag-release menu selection is not
+mapped across native windows (click, then click an item); and an open popup
+does not follow a moved parent.
+
+QtWaylandCompositor 6.11 advertises `wl_seat` version 4 (hard-coded in
+`QWaylandSeat::initialize()`), and its data-device manager is not bound in
+stream mode. Clients that require `wl_seat` v5, such as `foot`, therefore exit
+at startup. Advertising v5 without emitting `wl_pointer.frame` would violate
+the protocol, so this needs a compositor-side change, not a version bump.
+`weston-terminal` always draws client-side decorations (it does not bind
+`xdg-decoration`), so its frame appears inside the native macOS frame.
+
+On 2026-10-29 the SSH lab path rendered `weston-terminal` from the aarch64
+NixOS host (a headless Raspberry Pi 4, software `wl_shm`) into one native macOS window.
+The same day, one session on that host ran weston-terminal, mousepad and
+galculator as separate native macOS windows; opened, dismissed and selected
+GTK 3 menu popups; created a second mousepad top-level from its menu; typed
+into it; launched an application from the launcher list; and closed a window,
+ending only that application. Every run ended with no remaining sidecar,
+application process or Wayland socket on the host, and the non-stream M2
+self-test still passed. These are debugging-harness results only; they are
+not M3/M7 product acceptance.
+
+This route is a debugging harness, not the product transport: it relies on
+SSH for authentication, has no cross-mode lease, and does not interact with a
+running Desktop Mode host. Moving the same records onto the admitted
+DeskPort channel remains the M3 product gate.
+
 ## Known risks and limitations
 
 - **Buffer compatibility:** the first proof is `wl_shm` only. Modern browsers and

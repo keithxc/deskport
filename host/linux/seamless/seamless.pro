@@ -12,9 +12,10 @@ TARGET = deskport-seamless-host
 
 SOURCES += \
     main.cpp \
-    seamlesshost.cpp
+    seamlesshost.cpp \
+    streamchannel.cpp
 
-HEADERS += seamlesshost.h
+HEADERS += seamlesshost.h streamchannel.h ../../../app/seamless/seamlessstream.h
 
 target.path = $$PREFIX/libexec
 INSTALLS += target

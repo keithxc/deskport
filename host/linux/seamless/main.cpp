@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "seamlesshost.h"
+#include "streamchannel.h"
 
 #include <QCoreApplication>
 #include <QDir>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
+#include <QRegularExpression>
 #include <QSocketNotifier>
 #include <QTimer>
 
@@ -13,6 +17,7 @@
 #include <cstdio>
 #include <cstring>
 #include <functional>
+#include <memory>
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -166,6 +171,7 @@ ParseResult parseArguments(const QStringList& arguments, SidecarOptions* options
     bool sawWidth = false;
     bool sawHeight = false;
     bool sawCaptureDir = false;
+    bool sawScale = false;
     for (int index = 1; index < arguments.size(); ++index) {
         const QString argument = arguments.at(index);
         if (argument == QStringLiteral("--")) {
@@ -186,6 +192,21 @@ ParseResult parseArguments(const QStringList& arguments, SidecarOptions* options
                 return ParseResult::Error;
             }
             options->selfTest = true;
+            continue;
+        }
+        if (argument == QStringLiteral("--app") || argument.startsWith(QStringLiteral("--app="))) {
+            QString value;
+            if (!takeOptionValue(arguments, &index, QStringLiteral("--app"), &value, error))
+                return ParseResult::Error;
+            options->apps.append(value);
+            continue;
+        }
+        if (argument == QStringLiteral("--stream")) {
+            if (options->stream) {
+                *error = QStringLiteral("--stream was specified more than once");
+                return ParseResult::Error;
+            }
+            options->stream = true;
             continue;
         }
         if (argument == QStringLiteral("--test-client")) {
@@ -231,6 +252,17 @@ ParseResult parseArguments(const QStringList& arguments, SidecarOptions* options
             sawHeight = true;
             continue;
         }
+        if (argument == QStringLiteral("--scale") || argument.startsWith(QStringLiteral("--scale="))) {
+            if (sawScale || !takeOptionValue(arguments, &index, QStringLiteral("--scale"),
+                                             &value, error) ||
+                !parseDimension(value, QStringLiteral("--scale"), &options->scale, error)) {
+                if (error->isEmpty())
+                    *error = QStringLiteral("--scale was specified more than once");
+                return ParseResult::Error;
+            }
+            sawScale = true;
+            continue;
+        }
         if (argument == QStringLiteral("--capture-dir") ||
             argument.startsWith(QStringLiteral("--capture-dir="))) {
             if (sawCaptureDir ||
@@ -271,6 +303,11 @@ void printHelp()
         "  --width PIXELS      Output width, 64..7680 (default: 1280)\n"
         "  --height PIXELS     Output height, 64..4320 (default: 720)\n"
         "  --capture-dir PATH  Existing owner-controlled directory for local PNG captures\n"
+        "  --stream            Experimental: binary frame/input stream on stdin/stdout,\n"
+        "                      for use through an authenticated SSH session only\n"
+        "  --scale N           Output scale factor for HiDPI clients, 1..4 (default: 1)\n"
+        "  --app ID=PROGRAM    Stream mode: allow the client to launch PROGRAM by ID\n"
+        "                      (repeatable; the client never supplies a command)\n"
         "  --self-test         Run one known-pixel wl_shm lifecycle test\n"
         "  --test-client       Internal known-pixel Wayland client mode\n"
         "  --help              Show this help\n"
@@ -329,7 +366,54 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    std::unique_ptr<StreamChannel> stream;
+    if (options.stream) {
+        stream = std::make_unique<StreamChannel>(STDIN_FILENO, STDOUT_FILENO);
+        if (!stream->open(&error)) {
+            std::fprintf(stderr, "deskport-seamless-host: %s\n", qPrintable(error));
+            return 1;
+        }
+        emitter.setStream(stream.get());
+        QJsonArray appIds;
+        for (const QString& entry : options.apps)
+            appIds.append(entry.left(entry.indexOf(QLatin1Char('='))));
+        stream->sendJson(SeamlessStream::ServerHello, 0, QJsonObject{
+            {QStringLiteral("protocol"), QStringLiteral("deskport-seamless-stream")},
+            {QStringLiteral("version"), SeamlessStream::Version},
+            {QStringLiteral("scale"), options.scale},
+            {QStringLiteral("encoding"), QStringLiteral("zlib")},
+            {QStringLiteral("maxWindows"), options.maxWindows},
+            {QStringLiteral("apps"), appIds},
+        });
+    }
+
     SidecarHost host(options, emitter);
+    if (stream) {
+        host.setStream(stream.get());
+        SeamlessCompositor* compositor = host.compositor();
+        stream->recordReceived = [compositor, &host](const SeamlessStream::RecordReader::Record& record) {
+            if (record.type == SeamlessStream::ClientFrameAck) {
+                compositor->handleFrameAck();
+                return;
+            }
+            if (record.type != SeamlessStream::ClientInput &&
+                record.type != SeamlessStream::ClientHello) {
+                return;
+            }
+            if (record.payload.size() > static_cast<qsizetype>(SeamlessStream::MaxJsonPayload))
+                return;
+            const QJsonDocument document = QJsonDocument::fromJson(record.payload);
+            if (!document.isObject() || record.type == SeamlessStream::ClientHello)
+                return;
+            if (record.windowId == 0)
+                host.handleSessionInput(document.object());
+            else
+                compositor->handleClientInput(record.windowId, document.object());
+        };
+        stream->closed = [&host](const QString& reason) {
+            host.beginShutdown(reason, 0);
+        };
+    }
     SignalWatcher signalWatcher([&host](int signalNumber) {
         host.beginShutdown(signalNumber == SIGTERM ? QStringLiteral("sigterm")
                                                    : QStringLiteral("sigint"),

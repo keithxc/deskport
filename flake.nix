@@ -122,11 +122,59 @@
           };
           passthru = { };
         });
+      # Experimental Seamless sidecar on its own, for native Linux debugging
+      # without building the Moonlight client or the patched session host.
+      seamlessHostFor = system:
+        let pkgs = import nixpkgs { inherit system; };
+        in pkgs.stdenv.mkDerivation {
+          pname = "deskport-seamless-host";
+          version = "0.0.0-m3";
+          src = pkgs.lib.fileset.toSource {
+            root = ./.;
+            fileset = pkgs.lib.fileset.unions [ ./host/linux/seamless ./app/seamless ];
+          };
+          nativeBuildInputs = [ pkgs.qt6.qtbase pkgs.qt6.wrapQtAppsHook ];
+          buildInputs = [ pkgs.qt6.qtbase pkgs.qt6.qtwayland pkgs.wayland ];
+          configurePhase = ''
+            runHook preConfigure
+            qmake PREFIX=$out host/linux/seamless/seamless.pro
+            runHook postConfigure
+          '';
+          meta.platforms = systems;
+        };
+      # Debug server bundle: the sidecar plus a small launcher catalog of
+      # software-rendered (wl_shm) applications. weston-terminal binds lower
+      # wl_seat versions; foot requires wl_seat v5, which QtWaylandCompositor
+      # (hard-coded v4) does not provide. The GTK 3 apps exercise xdg_popup.
+      seamlessLabServerFor = system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          host = seamlessHostFor system;
+          apps = {
+            terminal = "${pkgs.weston}/bin/weston-terminal";
+            editor = "${pkgs.mousepad}/bin/mousepad";
+            calculator = "${pkgs.galculator}/bin/galculator";
+          };
+          appArgs = pkgs.lib.concatStringsSep " "
+            (pkgs.lib.mapAttrsToList (id: program: "--app ${id}=${program}") apps);
+        in pkgs.writeShellScriptBin "seamless-lab-server" ''
+          export PATH=${pkgs.lib.makeBinPath [ pkgs.weston ]}:$PATH
+          # The launcher catalog is stream-only; --self-test runs without it.
+          for argument in "$@"; do
+            [ "$argument" = -- ] && break
+            if [ "$argument" = --stream ]; then
+              exec ${host}/libexec/deskport-seamless-host ${appArgs} "$@"
+            fi
+          done
+          exec ${host}/libexec/deskport-seamless-host "$@"
+        '';
     in {
       packages = forAllSystems (system: {
         default = packageFor system false;
         diagnostics = packageFor system true;
         deskport = self.packages.${system}.default;
+        seamless-host = seamlessHostFor system;
+        seamless-lab-server = seamlessLabServerFor system;
       });
       apps = forAllSystems (system: {
         default = {
