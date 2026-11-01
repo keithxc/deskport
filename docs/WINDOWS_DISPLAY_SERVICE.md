@@ -113,9 +113,10 @@ recovery retains its journal.
 Windows' per-source DPI packets use private CCD request types -3/-4, outside the
 documented SDK enum. Their layouts/ranges are checked and unsupported requests
 fail with an error; there is no global/custom-DPI or registry-writing fallback.
-The shared scale contract remains unchanged. New desktop clients use the shared
-Windows 800x600 effective desktop floor after tuning (without swapping its axes
-in portrait). Older clients can request a workspace too small for 200% Windows
+The shared scale contract remains unchanged. New clients use the shared host
+800x600 desktop floor after tuning; it swaps its axes in portrait (since
+2026-11-01), so portrait workspaces may fall below Windows' unswapped 200%
+threshold and receive the verified 1x downgrade below. Older clients can request a workspace too small for 200% Windows
 UI DPI. The native adapter then applies and acknowledges 100% with the existing
 optional warning field, rather than breaking the session or claiming 200%.
 Windows can report the requested CCD step while clamping effective UI DPI; every

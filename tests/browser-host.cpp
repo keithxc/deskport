@@ -135,11 +135,7 @@ private slots:
         body["viewport"] = QJsonObject{{"width", 1440}, {"height", 820}, {"ratio", 2}};
         body["zoom"] = 1.2; body["displayPolicy"] = 2;
         send(browser, body, result); QVERIFY(host.complete("reserve"));
-        QString os = QSysInfo::productType();
-#ifdef Q_OS_MACOS
-        os = "macos";
-#endif
-        const auto expected = DeskPortDisplay::adjusted(DeskPortDisplay::forClient(QSize(2880, 1640), 2), 1.2, os);
+        const auto expected = DeskPortDisplay::adjusted(DeskPortDisplay::forClient(QSize(2880, 1640), 2), 1.2);
         QVERIFY(!expected.pixels.isEmpty());
         QCOMPARE(host.lastSize, expected.pixels); QCOMPARE(host.lastScale, expected.scale); QCOMPARE(host.lastPolicy, 2);
         host.resized();

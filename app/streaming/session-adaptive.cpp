@@ -105,7 +105,7 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
             scale = systemScale; // Native output pixels, not an oversampled window buffer.
         }
     }
-    const auto workspace = DeskPortDisplay::adjusted(DeskPortDisplay::forClient(pixels, scale), m_Preferences->desktopAdjustment, m_Computer->operatingSystem);
+    const auto workspace = DeskPortDisplay::adjusted(DeskPortDisplay::forClient(pixels, scale), m_Preferences->desktopAdjustment);
     if (m_Preferences->adaptiveResolution) m_DesktopTuningLimited = workspace.limited;
     if (initialFullscreen || window != m_Window)
         qInfo() << "Client display pixels:" << pixels << "system scale:" << scale << "workspace backing:" << workspace.pixels << "host scale:" << workspace.scale;
@@ -128,8 +128,7 @@ bool Session::applyPendingDesktopAdjustment() {
         m_ResizeSettler.reset();
         return false;
     }
-    const auto fixed = DeskPortDisplay::adjusted({AdaptiveDisplay::boundedSize(QSize(m_Preferences->width, m_Preferences->height)), 1},
-                                                 value, m_Computer->operatingSystem);
+    const auto fixed = DeskPortDisplay::adjusted({AdaptiveDisplay::boundedSize(QSize(m_Preferences->width, m_Preferences->height)), 1}, value);
     m_DesktopTuningLimited = fixed.limited;
     if (fixed.pixels == QSize(m_StreamConfig.width, m_StreamConfig.height)) return false;
     rememberAdaptiveWindow();
@@ -221,7 +220,7 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
     const auto workspace = workspaceForWindow(window, m_IsFullScreen && !m_AdaptiveResume);
     if (!m_AdaptiveResume) m_AdaptiveScale = m_Preferences->adaptiveResolution ? workspace.scale : 1;
     // Restore window geometry, not a stream size negotiated by an older policy.
-    const auto fixed = DeskPortDisplay::adjusted({AdaptiveDisplay::boundedSize(QSize(m_Preferences->width,m_Preferences->height)), 1}, m_Preferences->desktopAdjustment, m_Computer->operatingSystem);
+    const auto fixed = DeskPortDisplay::adjusted({AdaptiveDisplay::boundedSize(QSize(m_Preferences->width,m_Preferences->height)), 1}, m_Preferences->desktopAdjustment);
     if (!m_Preferences->adaptiveResolution) m_DesktopTuningLimited = fixed.limited;
     const QSize target = !m_Preferences->adaptiveResolution ? fixed.pixels : m_AdaptiveResume ? m_AdaptiveNextSize : workspace.pixels;
     m_AdaptiveNextSize = {};

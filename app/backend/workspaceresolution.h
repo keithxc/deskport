@@ -1,6 +1,5 @@
 #pragma once
 #include <QSize>
-#include <QString>
 #include "../../shared/deskport-core/include/deskport/workspace.h"
 #include <QtGlobal>
 #include <cmath>
@@ -31,13 +30,10 @@ inline Workspace forClient(QSize drawablePixels, double clientScale) {
     const auto size = dp_workspace_from_pixels(drawablePixels.width(), drawablePixels.height(), clientScale);
     return {QSize(size.width, size.height), size.scale};
 }
-inline Workspace adjusted(Workspace workspace, double factor, const QString& operatingSystem = {}) {
+inline Workspace adjusted(Workspace workspace, double factor) {
     const DPWorkspace base{workspace.pixels.width(), workspace.pixels.height(), workspace.scale};
-    auto result = dp_workspace_adjust(base, factor);
-    const auto tuned = result;
-    const auto os = operatingSystem.toLower();
-    if (os.contains("mac") || os.contains("darwin") || os.contains("osx")) result = dp_workspace_for_macos(result);
-    else if (os.contains("windows")) result = dp_workspace_for_windows(result);
+    const auto tuned = dp_workspace_adjust(base, factor);
+    const auto result = dp_workspace_for_host(tuned);
     const bool limited = factor > 1.0 && result.width > tuned.width;
     return {QSize(result.width, result.height), result.scale, limited};
 }

@@ -1,3 +1,16 @@
+## One host desktop floor for every OS — 2026-11-01
+
+Core `1d02ba187769da7443d8c8833e43f8f5b3b6111c` adds `dp_workspace_for_host`: one 800x600 logical floor applied after
+tuning, with the axes swapped for portrait workspaces, for macOS, Windows,
+Linux and unknown hosts alike. Linux previously had no floor, so an iPhone's
+2x viewport produced a ~390-point-wide Plasma/GNOME desktop. The macOS results
+are unchanged. Windows portrait workspaces now use the swapped 600x800 floor;
+its native adapter still downgrades to verified 1x with the existing warning
+when 200% UI DPI is unavailable. `dp_workspace_for_macos`/`_for_windows` remain
+as compatibility aliases. The desktop adapter no longer inspects the host OS.
+Mobile clients apply the same floor for every host through the alias until
+their pins advance. No wire message or scale value changes.
+
 ## Fallback address editor hint — 2026-10-30
 
 Core `f54beef6f2f9007aa8a4092d1864fc08bb8f7698` adds one BindView-only string

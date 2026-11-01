@@ -1,3 +1,11 @@
+## One desktop floor for every host — 2026-11-01
+
+Reason: Linux hosts had no minimum desktop, so an iPhone produced a ~390-point
+wide Plasma/GNOME desktop that could not be used. Desktop, browser and mobile
+clients now apply the shared orientation-aware 800x600 floor to every host OS
+(core `dp_workspace_for_host`). Windows portrait workspaces may report the
+existing verified 1x downgrade. Live acceptance on pk4 from an iPhone is pending.
+
 ## Ordered fallback addresses and live edits — 2026-10-30
 
 A saved device may list up to eight domain names or IP addresses, one per line.

@@ -8,7 +8,6 @@
 #include <QPointer>
 #include <QSettings>
 #include <QStandardPaths>
-#include <QSysInfo>
 #include <algorithm>
 
 namespace {
@@ -16,15 +15,8 @@ QJsonObject failure(const QString& code) {
     return {{"version", 1}, {"status", false}, {"code", code}};
 }
 QJsonObject success() { return {{"version", 1}, {"status", true}}; }
-QString hostOperatingSystem() {
-#ifdef Q_OS_MACOS
-    return QStringLiteral("macos");
-#else
-    return QSysInfo::productType();
-#endif
-}
 // The browser reports its CSS viewport, devicePixelRatio and content zoom; the
-// desktop size, backing scale and host floors come from the shared core policy.
+// desktop size, backing scale and host floor come from the shared core policy.
 DeskPortDisplay::Workspace browserWorkspace(const QJsonObject& body) {
     const auto view = body.value("viewport").toObject();
     if (view.isEmpty()) {
@@ -39,7 +31,7 @@ DeskPortDisplay::Workspace browserWorkspace(const QJsonObject& body) {
     const double zoom = body.value("zoom").toDouble(1.0);
     const auto base = DeskPortDisplay::forClient(QSize(qRound(width * ratio), qRound(height * ratio)), ratio);
     if (base.pixels.isEmpty()) return {};
-    return DeskPortDisplay::adjusted(base, zoom, hostOperatingSystem());
+    return DeskPortDisplay::adjusted(base, zoom);
 }
 BrowserGateway::Options options(const QString& directory) {
     BrowserGateway::Options result;
