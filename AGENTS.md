@@ -45,6 +45,11 @@
   `shared/deskport-core`, not a second local implementation. Read
   `docs/SHARED_CORE.md` before changing policy or wire behavior; update the Git and
   Nix pins together and run `tests/test-core.py` plus the affected adapter tests.
+  Every core pin change must also advance `baseline_source_sha`/`baseline_core_sha`
+  and `review_date` in `docs/pc-support-evidence.json` and the matching header of
+  `docs/PC_SUPPORT_MATRIX.md` in the same commit, then pass
+  `python3 .github/scripts/check-pc-support.py`; otherwise CI "Linux build" fails
+  with "Core pin changed: review the PC source/core snapshot".
 - Prefer the locked project devShell for macOS build dependencies; run packaging
   through `nix develop`. See `docs/MACOS_PACKAGE.md` for commands and validation.
   Keep Apple's SDK/compiler/signing and pinned upstream media prebuilts in place.
