@@ -1,15 +1,15 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-10-30 against source `2f142a5476267c43ed72f8d099e622ece2aee57e` and pinned core
-`f54beef6f2f9007aa8a4092d1864fc08bb8f7698`. This is a source snapshot, not an installed version.
+Reviewed 2026-11-01 against source `ed88f62d1e613e1ed4a67f1c618d29824cdeb11d` and pinned core
+`1d02ba187769da7443d8c8833e43f8f5b3b6111c`. This is a source snapshot, not an installed version.
 Seven tested task branches are integrated with their scoped acceptance records;
 the remaining ten tasks retain explicit gates in [the integration ledger](PC_TASK_INTEGRATION.md).
 Historical package and hardware results retain their exact source identities.
 
-This snapshot adds ordered fallback addresses for saved hosts and lets their
-addresses be edited without closing sessions. The core follow-up adds one UI
-catalog string; display arithmetic and wire contracts are unchanged. See the
-[fallback address checkpoint](ROADMAP.md#ordered-fallback-addresses-and-live-edits--2026-10-30).
+This snapshot applies one orientation-aware 800x600 desktop floor to every host
+OS, so Linux hosts no longer receive a phone-width desktop. The core follow-up
+replaces the per-OS floors; wire contracts are unchanged. See the
+[desktop floor checkpoint](ROADMAP.md#one-desktop-floor-for-every-host--2026-11-01).
 This review updates the source inventory, without advancing historical package,
 hardware or hosted-CI evidence to the newer revision.
 
