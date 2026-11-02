@@ -1,3 +1,27 @@
+## Resolution-aware data saver — 2026-11-02
+
+Reason: a captured stream showed the saver's fixed 1 Mbps applied to a 4080x2456
+(2x HiDPI) desktop, about ten million pixels. Below that budget large changes
+must turn to blocks, so squeezing the bitrate without lowering the resolution
+sacrificed text quality for no real saving. The goal is now office coding
+within about 300 MB per hour without blocky text, with one switch and no
+additional settings.
+
+- Core `dp_workspace_for_saver` keeps the logical desktop and renders it at 1x
+  while the saver is on; desktop clients apply it before tuning and the host
+  floor. Toggling the saver restarts the stream through the existing adaptive
+  size check.
+- The video ceiling is the automatic per-frame budget at the 8 fps content
+  cadence (0.5–4 Mbps): per-picture quality matches normal streaming while the
+  1x desktop, smaller windows and cadence reduce the rate. An already lower
+  manual bitrate is kept.
+- After a change, refinement is skipped when the picture encodes within about
+  1 KB: a captured office desktop sent 86% of its frames as such single-packet
+  updates, whose refinement cost as much on the wire as the change.
+- Validation: shared core/Qt workspace vectors, bitrate and cadence unit tests,
+  both pinned host overlays and a macOS host compile. Measured MB/hour and text
+  quality in a live session remain pending.
+
 ## One desktop floor for every host — 2026-11-01
 
 Reason: Linux hosts had no minimum desktop, so an iPhone produced a ~390-point

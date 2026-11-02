@@ -105,7 +105,11 @@ DeskPortDisplay::Workspace Session::workspaceForWindow(SDL_Window* window, bool 
             scale = systemScale; // Native output pixels, not an oversampled window buffer.
         }
     }
-    const auto workspace = DeskPortDisplay::adjusted(DeskPortDisplay::forClient(pixels, scale), m_Preferences->desktopAdjustment);
+    auto client = DeskPortDisplay::forClient(pixels, scale);
+    // Data saver keeps the logical desktop at 1x; toggling it restarts the
+    // stream through the normal adaptive size check.
+    if (m_Preferences->dataSaver) client = DeskPortDisplay::forDataSaver(client);
+    const auto workspace = DeskPortDisplay::adjusted(client, m_Preferences->desktopAdjustment);
     if (m_Preferences->adaptiveResolution) m_DesktopTuningLimited = workspace.limited;
     if (initialFullscreen || window != m_Window)
         qInfo() << "Client display pixels:" << pixels << "system scale:" << scale << "workspace backing:" << workspace.pixels << "host scale:" << workspace.scale;

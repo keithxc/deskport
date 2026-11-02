@@ -10,9 +10,15 @@ inline int automaticBitrate(int width, int height, int fps, bool yuv444) {
     const auto budget = pixels * std::min(120, std::max(1, fps)) * 15000 / (2560LL * 1440 * 60);
     return int(std::clamp<std::int64_t>(budget * (yuv444 ? 2 : 1), 5000, 80000));
 }
-// Office data saver keeps the desktop resolution and limits video to 1 Mbps.
-// This is a video ceiling, not a total transport-byte or hourly-data guarantee.
-inline int dataSaverBitrate(int) { return 1000; }
+// Data saver spends the automatic per-frame budget at its 8 fps content cadence,
+// so each picture keeps normal quality while the 1x desktop and cadence cut the
+// rate (about 1.4 Mbps for 2040x1228, 0.56 Mbps for 1280x800). It aims at office
+// work within about 300 MB/hour; this is a video ceiling, not a byte guarantee.
+constexpr int kDataSaverFps = 8;
+inline int dataSaverBitrate(int width, int height) {
+    const auto pixels = std::int64_t(std::max(1, width)) * std::max(1, height);
+    return int(std::clamp<std::int64_t>(pixels * kDataSaverFps * 15000 / (2560LL * 1440 * 60), 500, 4000));
+}
 
 struct SessionMediaSettings {
     bool remoteAudio;
@@ -43,6 +49,6 @@ inline bool dataSaverNeedsReconnect(const SessionMediaSettings& negotiated,
 inline int sessionBitrate(bool automatic, bool dataSaver, int manualKbps, int width, int height, int fps, bool yuv444) {
     const int budget = automaticBitrate(width, height, fps, yuv444);
     const int chosen = automatic ? budget : std::max(1, manualKbps);
-    return dataSaver ? std::min(chosen, dataSaverBitrate(budget)) : chosen;
+    return dataSaver ? std::min(chosen, dataSaverBitrate(width, height)) : chosen;
 }
 }

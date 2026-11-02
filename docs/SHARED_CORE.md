@@ -1,3 +1,11 @@
+## Data saver 1x workspace — 2026-11-02
+
+Core `0b19bbb7841f23e3d27b746a02d6c7459ab5582f` adds `dp_workspace_for_saver`: with data saver on, a
+2x workspace becomes the same logical desktop at 1x (a quarter of the pixels),
+rounded to the protocol's multiple of 4 and its 640x360 minimum; 1x workspaces
+are unchanged. Desktop clients apply it before tuning and the shared host floor.
+Mobile pins, scale values on the wire and wire messages are unchanged.
+
 ## One host desktop floor for every OS — 2026-11-01
 
 Core `1d02ba187769da7443d8c8833e43f8f5b3b6111c` adds `dp_workspace_for_host`: one 800x600 logical floor applied after

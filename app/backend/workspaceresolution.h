@@ -30,6 +30,11 @@ inline Workspace forClient(QSize drawablePixels, double clientScale) {
     const auto size = dp_workspace_from_pixels(drawablePixels.width(), drawablePixels.height(), clientScale);
     return {QSize(size.width, size.height), size.scale};
 }
+// Data saver streams the same logical desktop at a 1x backing store.
+inline Workspace forDataSaver(Workspace workspace) {
+    const auto size = dp_workspace_for_saver({workspace.pixels.width(), workspace.pixels.height(), workspace.scale});
+    return {QSize(size.width, size.height), size.scale};
+}
 inline Workspace adjusted(Workspace workspace, double factor) {
     const DPWorkspace base{workspace.pixels.width(), workspace.pixels.height(), workspace.scale};
     const auto tuned = dp_workspace_adjust(base, factor);

@@ -50,14 +50,15 @@ int main() {
     assert(sessionBitrate(true,false,25000,5104,2720,60,false)==56489);
     // Manual keeps the saved value.
     assert(sessionBitrate(false,false,25000,5104,2720,60,false)==25000);
-    // Office saver keeps high-resolution desktops at the same video ceiling,
-    // while preserving an already lower manual choice.
-    assert(dataSaverBitrate(56489)==1000 && dataSaverBitrate(15000)==1000 && dataSaverBitrate(5000)==1000);
-    assert(sessionBitrate(true,true,25000,5104,2720,60,false)==1000);
-    assert(sessionBitrate(true,true,25000,2560,1440,60,false)==1000);
-    assert(sessionBitrate(true,true,25000,1920,1080,60,false)==1000);
-    assert(sessionBitrate(false,true,60000,5104,2720,60,false)==1000);
-    assert(sessionBitrate(false,true,500,5104,2720,60,false)==500);
+    // Data saver: the automatic per-frame budget at 8 fps, 0.5-4 Mbps, and an
+    // already lower manual choice is preserved.
+    assert(dataSaverBitrate(2040,1228)==1359 && dataSaverBitrate(1280,800)==555);
+    assert(dataSaverBitrate(2560,1440)==2000 && dataSaverBitrate(640,360)==500 && dataSaverBitrate(5104,2720)==4000);
+    assert(sessionBitrate(true,true,25000,5104,2720,60,false)==4000);
+    assert(sessionBitrate(true,true,25000,2560,1440,60,false)==2000);
+    assert(sessionBitrate(true,true,25000,1920,1080,60,false)==1125);
+    assert(sessionBitrate(false,true,60000,2040,1228,60,false)==1359);
+    assert(sessionBitrate(false,true,500,2040,1228,60,false)==500);
     for (bool saver : {false, true}) for (bool audio : {false, true}) for (bool smart : {false, true}) {
         const auto media = sessionMediaSettings(saver, audio, smart);
         assert(media.remoteAudio == (audio && !saver));

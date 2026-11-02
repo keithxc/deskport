@@ -21,16 +21,21 @@ Done buttons; secondary content opens as a floating panel or expands in place.
 - **Data saver** (leaf icon beside the session traffic): one switch for every
   device. Off, automatic picture mode sets the bitrate from the negotiated
   resolution and frame rate (15 Mbps for 2560×1440 at 60 fps, up to 80 Mbps) and
-  the host lowers it live on a congested remote path. On, office data saver caps
-  video at 1 Mbps (or an already lower manual setting), limits continuous changes
-  to 8 fps on compatible hosts, and disables remote audio capture for the session.
-  It keeps the desktop resolution, uses brief 2 fps refinement after changes
-  that encode larger than about 1 KB (a clock tick or caret is already sharp),
-  and refreshes a still picture once every 5 seconds. These are video-policy
-  limits, not a total-byte or hourly-data guarantee; recovery frames bypass the
-  cadence gate. Saved audio and automatic/manual preferences are preserved and
-  restored when data saver is turned off. A switch reconnects if audio or capture
-  cadence must be renegotiated; compatible video-only switches apply live.
+  the host lowers it live on a congested remote path. On, data saver targets
+  office work (code, terminals, documents) within about 300 MB per hour without
+  blocky text: a HiDPI client receives the same logical desktop at 1x instead of
+  2x (a quarter of the pixels; text is upscaled, not blocky), and video is capped
+  at the automatic per-frame budget for 8 fps — about 1.4 Mbps for a 2040×1228
+  desktop, 0.56 Mbps for 1280×800, 0.5–4 Mbps overall, or an already lower manual
+  setting. A smaller window therefore costs less. Continuous changes are limited
+  to 8 fps on compatible hosts and remote audio capture is off for the session.
+  Brief 2 fps refinement follows changes that encode larger than about 1 KB (a
+  clock tick or caret is already sharp), and a still picture is refreshed once
+  every 5 seconds. These are video-policy limits, not a total-byte guarantee;
+  recovery frames bypass the cadence gate. Saved audio and automatic/manual
+  preferences are preserved and restored when data saver is turned off. Turning
+  it on or off restarts the stream when the backing scale, audio or capture
+  cadence changes; compatible video-only switches apply live.
 - **Daily data budget** (in the panel opened from the traffic chip): a daily limit
   for every session on this computer, reset at local midnight or with Reset. The
   chip shows today's percentage and turns amber at 70% and red at 85%; at 100%

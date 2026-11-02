@@ -552,7 +552,7 @@ ApplicationWindow {
                 }
                 Accessible.name: qsTr("Data saver")
                 ToolTip.visible: hovered
-                ToolTip.text: qsTr("Data saver") + (checked ? " · ≤1 Mbps · ≤8 fps" : "")
+                ToolTip.text: qsTr("Data saver") + (checked ? " · 1x · ≤8 fps" : "")
                 onToggled: window.setDataSaver(checked)
             }
             UiButton {

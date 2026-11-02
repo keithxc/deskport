@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "review_date": "2026-11-01",
-  "baseline_source_sha": "ed88f62d1e613e1ed4a67f1c618d29824cdeb11d",
-  "baseline_core_sha": "1d02ba187769da7443d8c8833e43f8f5b3b6111c",
+  "review_date": "2026-11-02",
+  "baseline_source_sha": "fc5144e51e744b77f2bda7e63d22ac3a88087286",
+  "baseline_core_sha": "0b19bbb7841f23e3d27b746a02d6c7459ab5582f",
   "evidence": [
     {
       "id": "windows-dpi",

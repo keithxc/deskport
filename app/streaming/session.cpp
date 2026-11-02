@@ -827,7 +827,7 @@ bool Session::initialize()
                                                             m_Preferences->enableYUV444);
     m_RateCapKbps = 0;
     if (m_LiveRateNegotiated && m_Preferences->dataSaver) {
-        const int cap = std::min(m_StreamConfig.bitrate, DeskPortStream::dataSaverBitrate(m_AutomaticKbps));
+        const int cap = std::min(m_StreamConfig.bitrate, DeskPortStream::dataSaverBitrate(m_StreamConfig.width, m_StreamConfig.height));
         if (cap < m_StreamConfig.bitrate) m_RateCapKbps = cap;
     }
 
