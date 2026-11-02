@@ -14,8 +14,9 @@ second key-frame request.
   and the lenient QP ceiling once.
 - Reference invalidation adds an explicit key-frame request only with data
   saver; otherwise the encoder's own key frame answers it, as before.
-- Overlay tests cover the non-saver writes and invalidation path. Whether held
-  keys still repeat needs a live check after activation.
+- Overlay tests cover the non-saver writes and invalidation path. Live check
+  with test build `test-20261102-222502-ec9a476` (pk4 client, mm4 host,
+  5104x2776 at 2x, data saver off): no stutter and no repeated keys.
 
 ## Data saver native clock and text recovery regression — 2026-11-02
 
