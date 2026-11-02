@@ -7,7 +7,7 @@
 namespace deskport::vt {
 inline thread_local bool completeSubmittedFrame = false;
 inline thread_local OSStatus completionError = noErr;
-// Only the host's smart/saver encode call opts in; restore an outer scope on
+// Only the host's data-saver encode call opts in; restore an outer scope on
 // every return path. Other native VideoToolbox submissions forward unchanged.
 class ScopedFrameCompletion {
 public:

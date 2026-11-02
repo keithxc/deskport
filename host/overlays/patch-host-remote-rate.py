@@ -49,18 +49,28 @@ patch('src/video.cpp', '    deskport::KeyframeRequests deskport_keys;', '''    d
     std::int64_t deskport_last_pts = -1;
     std::int64_t deskport_pts_shift = 0;
     deskport::PictureQuality deskport_quality;
+    bool deskport_saver_configured = false;
 
     bool deskport_set_bitrate(int kbps, bool constrained, bool saver) override {
 #ifdef __APPLE__
       auto *vt = deskport::vt::session(avcodec_ctx.get());
       // QP 32 measurably shrinks content-change frames on a congested link.
-      // Data saver keeps large changes sharp with a 3x one-second burst.
+      // Without data saver keep the original rate and QP-floor writes only.
+      if (!saver && !deskport_saver_configured) {
+        return deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000) &&
+               deskport::vt::applyQualityFloor(vt, constrained ? 32 : 0);
+      }
+      // Data saver keeps large changes sharp with a 3x one-second burst. Leaving
+      // it restores the negotiated cadence hint and the lenient QP ceiling once.
       const bool applied = deskport::vt::applyExpectedFrameRate(vt, saver ? 8.0 : av_q2d(avcodec_ctx->framerate)) &&
           deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000, saver ? 3 : 1) &&
           deskport::vt::applyQualityRange(vt, deskport::encoderMinQp(saver, constrained),
                                          deskport::encoderMaxQp(saver, constrained));
-      if (applied) deskport_quality.configured(saver && !constrained &&
-          deskport::sharpPictureBudget(kbps, avcodec_ctx->width, avcodec_ctx->height));
+      if (applied) {
+        deskport_saver_configured = saver;
+        deskport_quality.configured(saver && !constrained &&
+            deskport::sharpPictureBudget(kbps, avcodec_ctx->width, avcodec_ctx->height));
+      }
       return applied;
 #else
       return false;
@@ -262,9 +272,10 @@ patch('src/video.cpp', '''      while (invalidate_ref_frames_events->peek()) {
         if (auto frames = invalidate_ref_frames_events->pop(0ms)) {
           if (!smart || !deskport_idr_only || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) {
             session->invalidate_ref_frames(frames->first, frames->second);
-            // FFmpeg answers invalidation with an IDR too: bypass the idle
-            // wait and run the same refinement as an explicit recovery request.
-            if (deskport_idr_only) requested_idr_frame = true;
+            // FFmpeg answers invalidation with an IDR too. With data saver,
+            // bypass the idle wait and refine as for an explicit request;
+            // otherwise keep the original single encoder-driven IDR.
+            if (deskport_idr_only && deskport::liveSaver.load() == 1) requested_idr_frame = true;
           }
         }
       }

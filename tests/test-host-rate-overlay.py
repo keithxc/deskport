@@ -176,6 +176,14 @@ __RECOVERY_BLOCK__
   }
 };
 int main() {
+  // Without data saver an accepted invalidation keeps the original path: only
+  // the encoder's own IDR answers it, with no extra request or refinement.
+  deskport::liveSaver = 0;
+  Runner plain;
+  plain.invalidation.raise({10, 11}); plain.step();
+  assert(!plain.requested && plain.session->invalidations == 1 && plain.session->idrs == 1);
+  assert(!plain.refining() && plain.deskport_change_candidate_ms == -1);
+  deskport::liveSaver = 1;
   Runner ref;
   ref.invalidation.raise({10, 11}); ref.step();
   assert(ref.requested && ref.session->invalidations == 1 && ref.session->idrs > 0);

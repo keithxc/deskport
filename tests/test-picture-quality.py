@@ -59,7 +59,7 @@ OSStatus VTSessionSetProperty(Context* ctx, int, CFNumberRef value) {
 }
 __EXPECTED__
 Context* session(Context* ctx) { return ctx; }
-bool applyRate(Context* ctx, std::int64_t, int) { ++ctx->rateCalls; ctx->operations.push_back('R'); return true; }
+bool applyRate(Context* ctx, std::int64_t, int = 1) { ++ctx->rateCalls; ctx->operations.push_back('R'); return true; }
 bool applyQualityFloor(Context* ctx, int minimum) {
     ctx->writes.push_back({'m', minimum});
     if (minimum > ctx->max) return false;
@@ -79,6 +79,7 @@ struct Base {
 struct avcodec_encode_session_t : Base {
     std::unique_ptr<Context> avcodec_ctx = std::make_unique<Context>();
     deskport::PictureQuality deskport_quality;
+    bool deskport_saver_configured = false;
     deskport::vt::FrameClock deskport_clock;
 __SETTER__
 };
@@ -172,7 +173,17 @@ int main() {
     Call ordinary {10}; assert(before(*ptr, ordinary) == 0 && ctx.min == 0 && ctx.max == 51);
     assert(finish(*ptr, ordinary) == 0);
 
+    // Without data saver only the original rate and QP-floor writes occur:
+    // no cadence hint and no QP ceiling.
+    const auto plainOps = ctx.operations.size(); const auto plainWrites = ctx.writes.size();
+    assert(ptr->deskport_set_bitrate(499, false, false));
+    assert(ctx.operations.size() == plainOps + 1 && ctx.operations.back() == 'R');
+    assert(ctx.writes.size() == plainWrites + 1 && ctx.writes.back() == std::make_pair('m', 0));
+    assert(ptr->deskport_set_bitrate(499, true, false) && ctx.min == 32 && ctx.max == 51);
+    assert(ptr->deskport_set_bitrate(499, false, false) && ctx.min == 0);
+
     ctx.framerate = {60000, 1001};
+    assert(ptr->deskport_set_bitrate(992, false, true));
     assert(ptr->deskport_set_bitrate(499, false, false));
     assert(std::abs(ctx.expected - 60000.0 / 1001) < 1e-9); // restore the negotiated rational, not rounded 60
     const auto rateCalls = ctx.rateCalls;

@@ -28,7 +28,7 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert video.count('#include "deskport/macos/vtlatency.h"') == 1
         assert video.count('deskport::vt::ScopedFrameCompletion deskport_completion(session.deskport_complete_vt_frames);') == 1
         assert video.count('if (deskport_completion.status() != noErr)') == 2
-        assert video.count('session->deskport_complete_vt_frames = config.deskport_smart || config.deskport_saver;') == 1
+        assert video.count('session->deskport_complete_vt_frames = config.deskport_saver;') == 1
         assert video.count('#include "deskport/macos/vtclock.h"') == 1
         assert video.count('deskport::vt::FrameClock deskport_clock;') == 1
         submit = video.index('session.deskport_clock.submit(')

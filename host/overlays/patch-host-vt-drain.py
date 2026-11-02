@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Complete smart-stream VideoToolbox callbacks before FFmpeg checks its queue.
+"""Complete data-saver VideoToolbox callbacks before FFmpeg checks its queue.
 
 The host links its pinned FFmpeg statically. vtlatency.h forwards the public
 native encode API and completes the submitted PTS only inside the scoped host
@@ -100,10 +100,12 @@ patch('src/video.cpp', '''
           }
           frame_timestamp = img->frame_timestamp;''')
 # The two pinned revisions spell this cast differently; match only the unique
-# avcodec factory, leaving its format/injection expression untouched.
+# avcodec factory, leaving its format/injection expression untouched. Only a
+# data-saver session completes frames, rewrites PTS or bounds QP: normal and
+# smart streaming keep FFmpeg's original asynchronous VideoToolbox path.
 p = root / 'src/video.cpp'
 source = p.read_text()
-assignment = '    session->deskport_complete_vt_frames = config.deskport_smart || config.deskport_saver;'
+assignment = '    session->deskport_complete_vt_frames = config.deskport_saver;'
 if assignment not in source:
     start = source.index('    auto session = std::make_unique<avcodec_encode_session_t>(')
     end = source.index('\n    );', start) + len('\n    );')

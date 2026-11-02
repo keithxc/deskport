@@ -1,3 +1,22 @@
+## Normal streaming keeps the pre-saver encoder path — 2026-11-02
+
+Reason: with data saver off, streaming stuttered and held keys repeated on the
+host, which the previous test build did not do. The saver work had also
+changed normal and smart (automatic) streams: every VideoToolbox frame was
+completed synchronously with rewritten timestamps, each rate change also wrote
+a cadence hint and a QP ceiling, and an accepted reference invalidation added a
+second key-frame request.
+
+- Frame completion, the encoder clock and the fresh-picture QP ceiling apply
+  only to sessions launched with data saver.
+- Without data saver the live rate writes only the bitrate and the existing
+  congestion QP floor. Leaving data saver restores the negotiated cadence hint
+  and the lenient QP ceiling once.
+- Reference invalidation adds an explicit key-frame request only with data
+  saver; otherwise the encoder's own key frame answers it, as before.
+- Overlay tests cover the non-saver writes and invalidation path. Whether held
+  keys still repeat needs a live check after activation.
+
 ## Data saver native clock and text recovery regression — 2026-11-02
 
 Reason: the previous candidate still left text blurry for about three seconds
@@ -36,7 +55,7 @@ EAGAIN does not enter that encoder callback and cannot fix the queue delay.
 
 - The macOS host forwards VideoToolbox's public frame-submission API and
   completes the submitted PTS before the statically linked, pinned FFmpeg
-  encoder checks its callback queue. A scoped flag enables this for smart/saver
+  encoder checks its callback queue. A scoped flag enables this for data-saver
   streams; other submissions keep their previous behavior. No extra picture,
   end-of-stream flush, FFmpeg rebuild or wire change is required. A native
   completion failure is reported as an encode failure.
