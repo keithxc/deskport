@@ -25,7 +25,7 @@ for name in ('video.cpp', 'stream.cpp'):
 # Live bitrate hook. The default reports "unsupported" so the policy can log it.
 patch('src/video.h', '    virtual void request_normal_frame() = 0;', '''    virtual void request_normal_frame() = 0;
 
-    virtual bool deskport_set_bitrate(int kbps, bool constrained) {
+    virtual bool deskport_set_bitrate(int kbps, bool constrained, bool saver) {
       return false;
     }''')
 
@@ -48,11 +48,12 @@ patch('src/video.cpp', '    deskport::KeyframeRequests deskport_keys;', '''    d
     std::int64_t deskport_last_pts = -1;
     std::int64_t deskport_pts_shift = 0;
 
-    bool deskport_set_bitrate(int kbps, bool constrained) override {
+    bool deskport_set_bitrate(int kbps, bool constrained, bool saver) override {
 #ifdef __APPLE__
       auto *vt = deskport::vt::session(avcodec_ctx.get());
       // QP 32 measurably shrinks content-change frames on a congested link.
-      return deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000) &&
+      // Data saver keeps large changes sharp with a 3x one-second burst.
+      return deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000, saver ? 3 : 1) &&
              deskport::vt::applyQualityFloor(vt, constrained ? 32 : 0);
 #else
       return false;
@@ -91,14 +92,11 @@ patch('src/video.cpp', '      if (smart && congestion->pop(0ms)) policy.loss(now
             std::lock_guard lock {deskport_rate_memory_mutex};
             resume = deskport_rate_memory.resumeFor(deskport_ceiling_kbps, deskport_wall_ms());
           }
-          deskport_live = session->deskport_set_bitrate(deskport_rate->ceilingKbps(), false);
           if (deskport_live && resume) deskport_rate->resume(resume);
           BOOST_LOG(info) << "DeskPort remote rate control: ceiling_kbps=" << deskport_ceiling_kbps
                           << ", floor_kbps=" << deskport_rate->floorKbps()
                           << ", resume_kbps=" << resume
                           << ", live_encoder=" << (deskport_live ? "yes" : "no");
-          deskport_applied_kbps = deskport_rate->ceilingKbps();
-          mail->event<int>("deskport_rate_kbps")->raise(deskport_applied_kbps);
         }
         deskport_rate->rtt(now_us / 1000, *rtt);
         deskport_last_rtt = *rtt;
@@ -111,28 +109,34 @@ patch('src/video.cpp', '      if (smart && congestion->pop(0ms)) policy.loss(now
           const int capped = deskport::applyPermille(deskport_ceiling_kbps, permille);
           if (deskport_rate) {
             deskport_rate->setCeiling(capped);
-          } else if (deskport::liveEncoder.load() == 1 && session->deskport_set_bitrate(capped, false)) {
-            deskport_applied_kbps = capped;
           }
           BOOST_LOG(info) << "DeskPort live ceiling: kbps=" << capped << ", permille=" << permille;
         }
       }
       if (auto sent = deskport_sent->pop(0ms); deskport_rate && sent) deskport_rate->sent(*sent);
-      if (deskport_rate) {
-        if (deskport_lost) deskport_rate->loss(now_us / 1000);
-        const int kbps = deskport_rate->targetKbps(now_us / 1000);
-        if (deskport_live && kbps != deskport_applied_kbps) {
-          if (!session->deskport_set_bitrate(kbps, deskport_rate->constrained())) {
-            BOOST_LOG(warning) << "DeskPort remote rate control: encoder rejected " << kbps << " kbps";
+      if (deskport_rate && deskport_lost) deskport_rate->loss(now_us / 1000);
+      // Apply the complete encoder policy on LAN and remote paths. A saver
+      // toggle or a new congestion floor can change VT properties at equal kbps.
+      if (smart && deskport_live) {
+        const int kbps = deskport_rate ? deskport_rate->targetKbps(now_us / 1000)
+          : deskport::applyPermille(deskport_ceiling_kbps, deskport_permille);
+        const bool constrained = deskport_rate && deskport_rate->constrained();
+        const bool saver = deskport::liveSaver.load() == 1;
+        if (!deskport_applied_rate.matches(kbps, constrained, saver)) {
+          if (!session->deskport_set_bitrate(kbps, constrained, saver)) {
+            BOOST_LOG(warning) << "DeskPort live rate control: encoder rejected " << kbps << " kbps";
             deskport_live = false;
+            deskport::liveEncoder = 0;
           } else {
-            BOOST_LOG(info) << "DeskPort remote rate: target_kbps=" << kbps << ", rtt_ms=" << deskport_last_rtt
-                            << ", baseline_ms=" << deskport_rate->baselineMs()
-                            << ", quality_floor=" << (deskport_rate->constrained() ? "on" : "off");
-            deskport_applied_kbps = kbps;
+            deskport_applied_rate.applied(kbps, constrained, saver);
+            BOOST_LOG(info) << "DeskPort live rate: target_kbps=" << kbps << ", rtt_ms=" << deskport_last_rtt
+                            << ", quality_floor=" << (constrained ? "on" : "off")
+                            << ", saver=" << (saver ? "on" : "off");
             mail->event<int>("deskport_rate_kbps")->raise(kbps);
-            std::lock_guard lock {deskport_rate_memory_mutex};
-            deskport_rate_memory.store(deskport_ceiling_kbps, kbps, deskport_wall_ms());
+            if (deskport_rate) {
+              std::lock_guard lock {deskport_rate_memory_mutex};
+              deskport_rate_memory.store(deskport_ceiling_kbps, kbps, deskport_wall_ms());
+            }
           }
         }
       }''')
@@ -144,7 +148,7 @@ patch('src/video.cpp', '''    deskport::StreamPolicy policy(config.framerate);
     auto deskport_sent = mail->event<int>("deskport_sent_kbps");
     std::optional<deskport::BitrateController> deskport_rate;
     const int deskport_ceiling_kbps = config::video.max_bitrate > 0 ? std::min(config.bitrate, config::video.max_bitrate) : config.bitrate;
-    int deskport_applied_kbps = deskport_ceiling_kbps;
+    deskport::EncoderRateState deskport_applied_rate;
     int deskport_last_rtt = 0;
     bool deskport_live = false;
     std::int64_t deskport_last_change_ms = -1;''')
@@ -249,14 +253,19 @@ patch('src/video.cpp', '''      while (invalidate_ref_frames_events->peek()) {
         if (auto frames = invalidate_ref_frames_events->pop(0ms)) {
           if (!smart || !deskport_idr_only || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) {
             session->invalidate_ref_frames(frames->first, frames->second);
+            // FFmpeg answers invalidation with an IDR too: bypass the idle
+            // wait and run the same refinement as an explicit recovery request.
+            if (deskport_idr_only) requested_idr_frame = true;
           }
         }
       }
 
-      if (idr_events->peek()) {
-        requested_idr_frame = true;
-        idr_events->pop();
-        if (smart && !deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) requested_idr_frame = false;
+      if (idr_events->peek() || requested_idr_frame) {
+        if (idr_events->peek()) {
+          idr_events->pop();
+          // A coalesced explicit request cannot cancel accepted invalidation.
+          if (!smart || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) requested_idr_frame = true;
+        }
         // Follow a recovery key frame with the short full-rate refinement: a
         // still picture otherwise sends nothing for up to 5 s (data saver), so
         // a lost key frame could not be noticed and requested again sooner.
@@ -274,8 +283,13 @@ patch('src/video.cpp', '''    std::int64_t deskport_last_change_ms = -1;''', '''
     int deskport_permille = deskport::liveCeilingPermille.load();
     if (smart) {
       const int start = deskport::applyPermille(deskport_ceiling_kbps, deskport_permille);
-      deskport::liveEncoder = session->deskport_set_bitrate(start, false) ? 1 : 0;
-      if (deskport::liveEncoder.load() == 1) deskport_applied_kbps = start;
+      const bool saver = deskport::liveSaver.load() == 1;
+      deskport_live = session->deskport_set_bitrate(start, false, saver);
+      deskport::liveEncoder = deskport_live ? 1 : 0;
+      if (deskport_live) {
+        deskport_applied_rate.applied(start, false, saver);
+        mail->event<int>("deskport_rate_kbps")->raise(start);
+      }
     }
     deskport::KeyframeGate deskport_key_gate;
     std::uint64_t deskport_coalesced_logged = 0;

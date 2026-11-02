@@ -60,6 +60,7 @@ all            copy    host/common/framecadence.h   src/deskport/common/
 all            copy    host/common/encoderpolicy.h  src/deskport/common/
 macos,windows  script  patch-host-encoder-policy.py  {src}
 macos          script  patch-host-macos-lifecycle.py  {src}
+macos          script  patch-host-vt-drain.py        {src}
 all            script  patch-host-input-activity.py  {src}
 all            script  patch-host-sync-cadence.py    {src}
 
@@ -77,6 +78,7 @@ linux          script  patch-host-encoder-policy.py       {src}
 # Rate control, data saver and video pause (after the input/cadence overlays).
 macos,linux    copy    host/common/ratecontrol.h  src/deskport/common/
 macos          copy    host/macos/vtbitrate.h     src/deskport/macos/
+macos          copy    host/macos/vtlatency.h     src/deskport/macos/
 macos,linux    script  patch-host-remote-rate.py  {src}
 macos,linux    script  patch-host-data-saver.py   {src}
 macos,linux    script  patch-host-video-pause.py  {src}

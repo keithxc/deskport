@@ -49,7 +49,8 @@ patch('src/video.cpp', '''      auto status = disp->capture(push_captured_image_
 patch('src/video.cpp', '''    deskport::KeyframeGate deskport_key_gate;''', '''    deskport::KeyframeGate deskport_key_gate;
     deskport::SaverGate deskport_saver_gate;
     bool deskport_saver_pending = false;
-    std::int64_t deskport_change_candidate_ms = -1;''')
+    std::int64_t deskport_change_candidate_ms = -1;
+    deskport::SaverRefinement deskport_refinement;''')
 
 # Encoded picture size for the saver's refinement decision (both encoder paths).
 patch('src/video.cpp', '''      if (av_packet && av_packet->pts == frame_nr) {
@@ -61,6 +62,7 @@ patch('src/video.cpp', '''    auto packet = std::make_unique<packet_raw_generic>
 
 # A saver change starts refinement only once its picture encodes larger than a
 # small update; the decision waits for the encode, including a gated picture.
+# Refreshes then continue until consecutive duplicates meet the size heuristic.
 patch('src/video.cpp', '''          deskport_last_change_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::steady_clock::now().time_since_epoch()).count();
           if (session->convert(*img)) {''', '''          const auto deskport_captured_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -75,17 +77,24 @@ patch('src/video.cpp', '''      if (encode(frame_nr++, *session, packets, channe
         return;
       }
       if (deskport_change_candidate_ms >= 0) {
-        if (deskport::saverRefines(deskport::encodedBytes(frame_nr - 1), deskport_change_candidate_ms, deskport_last_change_ms))
-          deskport_last_change_ms = deskport_change_candidate_ms;
+        deskport_refinement.changed(deskport_change_candidate_ms, deskport::encodedBytes(frame_nr - 1));
         deskport_change_candidate_ms = -1;
+      } else {
+        deskport_refinement.refreshed(deskport::encodedBytes(frame_nr - 1));
       }''')
+# A recovery key frame refines like a large change.
+patch('src/video.cpp', '''        if (requested_idr_frame) deskport_last_change_ms = deskport_key_ms;''', '''        if (requested_idr_frame) {
+          deskport_last_change_ms = deskport_key_ms;
+          deskport_refinement.changed(deskport_key_ms);
+          deskport_change_candidate_ms = deskport_key_ms;
+        }''')
 patch('src/video.cpp', '''      if (smart) {
         if (auto event = activity->pop(0ms)) boost = *event;''', '''      const bool deskport_saving = smart && deskport::liveSaver.load() == 1;
       if (smart) {
         if (auto event = activity->pop(0ms)) boost = *event;''')
 patch('src/video.cpp', '''        const int fps = std::max(deskport::activityFrameRate(boost, absolute_ms, policy.frameRate(now_us / 1000)),
                                  deskport::refineFrameRate(absolute_ms, deskport_last_change_ms, policy.frameRate(now_us / 1000)));''', '''        const int fps = deskport_saving
-            ? deskport::saverFrameRate(absolute_ms, deskport_last_change_ms, boost, policy.frameRate(now_us / 1000))
+            ? deskport::saverFrameRate(absolute_ms, deskport_refinement.active(absolute_ms), boost, policy.frameRate(now_us / 1000))
             : std::max(deskport::activityFrameRate(boost, absolute_ms, policy.frameRate(now_us / 1000)),
                        deskport::refineFrameRate(absolute_ms, deskport_last_change_ms, policy.frameRate(now_us / 1000)));''')
 patch('src/video.cpp', '''        if (config.deskport_saver && fps <= 1) max_frametime = std::chrono::duration<double, std::milli>(5000.0);''', '''        if (deskport_saving && fps <= 1) max_frametime = std::chrono::duration<double, std::milli>(double(deskport::kSaverIdleMs));''')

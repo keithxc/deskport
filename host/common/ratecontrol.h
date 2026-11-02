@@ -103,6 +103,19 @@ private:
     std::array<std::int64_t, 6> bucketTime {-1, -1, -1, -1, -1, -1};
 };
 
+// Encoder properties must be refreshed when saver or quality policy changes,
+// even if the numeric bitrate remains equal (for example a 500 kbps cap).
+struct EncoderRateState {
+    int kbps = 0;
+    bool constrained = false, saver = false;
+    bool matches(int nextKbps, bool nextConstrained, bool nextSaver) const {
+        return kbps == nextKbps && constrained == nextConstrained && saver == nextSaver;
+    }
+    void applied(int nextKbps, bool nextConstrained, bool nextSaver) {
+        kbps = nextKbps; constrained = nextConstrained; saver = nextSaver;
+    }
+};
+
 // Host-wide memory of the last remote rate. A reconnect within five minutes
 // with the same negotiated ceiling resumes from it.
 struct RateMemory {

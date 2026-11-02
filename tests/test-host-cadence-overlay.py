@@ -10,16 +10,20 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
             f.extractall(target, filter='data')
         if not (target / 'src').exists():
             target = next(p for p in target.iterdir() if (p / 'src').exists())
-        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'encoder-policy', 'remote-rate'):
+        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'vt-drain', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'encoder-policy', 'remote-rate'):
             subprocess.run(['python3', str(root / f'host/overlays/patch-host-{name}.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-encoder-policy.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-remote-rate.py'), str(target)], check=True)
+        subprocess.run(['python3', str(root / 'host/overlays/patch-host-vt-drain.py'), str(target)], check=True)
         for _ in range(2):
             subprocess.run(['python3', str(root / 'host/overlays/patch-host-data-saver.py'), str(target)], check=True)
         stream = (target / 'src/stream.cpp').read_text()
         assert stream.count('deskport::remotePacketsPerMs(') == 1
         assert stream.count('event<int>("deskport_rtt")->raise(') == 1
         video = (target / 'src/video.cpp').read_text()
+        assert video.count('#include "deskport/macos/vtlatency.h"') == 1
+        assert video.count('deskport::vt::ScopedFrameCompletion deskport_completion(session.deskport_complete_vt_frames);') == 1
+        assert video.count('session->deskport_complete_vt_frames = config.deskport_smart || config.deskport_saver;') == 1
         assert 'const bool smart = config.deskport_smart || config.deskport_saver;' in video
         assert 'if (ctx->config.deskport_smart || deskport::liveSaver.load() == 1)' in video
         assert 'deskport_cadence.emplace(ctx.config.framerate,' in video
@@ -29,11 +33,13 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert video.count('deskport::refineFrameRate(absolute_ms, deskport_last_change_ms,') == 1
         assert video.count('(deskport_saving ? deskport_change_candidate_ms : deskport_last_change_ms) = deskport_captured_ms;') == 1
         assert video.count('deskport::lastEncodedFrame = {') == 2
-        assert video.count('deskport::saverRefines(deskport::encodedBytes(frame_nr - 1),') == 1
+        assert video.count('deskport_refinement.changed(deskport_change_candidate_ms, deskport::encodedBytes(frame_nr - 1));') == 1
+        assert video.count('deskport_refinement.refreshed(deskport::encodedBytes(frame_nr - 1));') == 1
+        assert video.count('deskport_change_candidate_ms = deskport_key_ms;') == 1
         assert video.count('pos->deskport_cadence->encoded(deskport::encodedBytes(ctx->frame_nr - 1));') == 1
         assert video.count('deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)') == 2
         assert video.count('if (deskport_saving && fps <= 1)') == 1
-        assert video.count('deskport::saverFrameRate(absolute_ms, deskport_last_change_ms, boost,') == 1
+        assert video.count('deskport::saverFrameRate(absolute_ms, deskport_refinement.active(absolute_ms), boost,') == 1
         assert video.count('deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame)') == 1
         assert video.count('deskport_saver_pending = true;') == 1
         assert video.count('cadence.saver = deskport::liveSaver.load() == 1;') == 1

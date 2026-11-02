@@ -27,11 +27,12 @@ patch('src/confighttp.cpp', '''        if (action == "video") {''', '''        i
               ceiling < 500 || ceiling > 200000 || !saver_valid || rtsp_stream::session_count() > 1) {
             output["status"] = false; output["code"] = "unauthorized";
           } else {
-            deskport::liveCeilingPermille = deskport::ceilingPermille(ceiling, deskport::requestedKbps.load());
+            // Saver first: the encoder applies the ceiling with the saver's burst.
             if (input.contains("saver")) {
               deskport::liveSaver = input["saver"].get<bool>() ? 1 : 0;
               output["saver"] = input["saver"].get<bool>();
             }
+            deskport::liveCeilingPermille = deskport::ceilingPermille(ceiling, deskport::requestedKbps.load());
             output["status"] = true;
             output["ceilingKbps"] = ceiling;
             output["live"] = deskport::liveEncoder.load() == 1;

@@ -1,3 +1,38 @@
+## Data saver final-picture delivery and refinement — 2026-11-02
+
+Reason: a popup could leave the desktop blurry for seconds. Sparse hardware
+VideoToolbox submissions can leave the last compressed picture in FFmpeg's
+native callback queue until another frame arrives. Polling receive_packet after
+EAGAIN does not enter that encoder callback and cannot fix the queue delay.
+
+- The macOS host forwards VideoToolbox's public frame-submission API and
+  completes the submitted PTS before the statically linked, pinned FFmpeg
+  encoder checks its callback queue. A scoped flag enables this for smart/saver
+  streams; other submissions keep their previous behavior. No extra picture,
+  end-of-stream flush, FFmpeg rebuild or wire change is required. A native
+  completion failure is reported as an encode failure.
+- Large changes and recovery key frames start 4 fps refinement for at most
+  3 seconds. Two consecutive duplicate outputs within 512 bytes stop the tail;
+  unknown or larger outputs keep it running until the deadline. Small changes
+  preserve the pending deadline and interrupt the consecutive-small run.
+  This size heuristic does not establish decoded text quality. The 8 fps content
+  gate, 5-second idle refresh and recovery bypass remain in place.
+- Data saver allows a 3x one-second VideoToolbox burst while retaining the same
+  average-rate target. Equal-bitrate saver and quality-floor transitions now
+  update the native properties too. The average is a target, not a byte budget
+  or a promise to repay a burst. Unsupported encoders retain their existing
+  capability fallback. The shared core and wire contract are unchanged.
+- Validation includes cadence/deadline and actual patched rate-loop regressions
+  on both upstream host pins, plus synthetic H.264/HEVC hardware-buffer delivery
+  and native bitrate-property checks. No personal screen or input is used.
+  Full builds and live acceptance are recorded separately; this candidate still
+  needs a post-activation check of popup clarity, frame timing and total traffic.
+
+The preceding 1x candidate's 600-second coding sample averaged about 177 kbps
+of video plus 1.3 kbps of control traffic, projecting about 80 MB/hour of UDP
+payload. That sample excludes IP/tunnel overhead and does not validate this
+candidate or guarantee the 300 MB/hour office-work target.
+
 ## Resolution-aware data saver — 2026-11-02
 
 Reason: a captured stream showed the saver's fixed 1 Mbps applied to a 4080x2456

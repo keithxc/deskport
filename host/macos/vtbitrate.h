@@ -4,6 +4,7 @@
 #include <VideoToolbox/VideoToolbox.h>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -33,9 +34,12 @@ inline VTCompressionSessionRef session(AVCodecContext* ctx) {
 
 // Average bitrate with FFmpeg's original one-second hard limit. Shorter
 // DataRateLimits windows were measured not to bound scene-change frames.
-inline bool applyRate(VTCompressionSessionRef s, std::int64_t bps) {
-    if (!s || bps <= 0) return false;
-    const std::int64_t perSecond = bps / 8;
+// A burst factor above 1 lets one second carry that multiple of the average,
+// giving a large change more room without changing the average-rate target.
+// AverageBitRate is an encoder target, not a strict traffic/debt guarantee.
+inline bool applyRate(VTCompressionSessionRef s, std::int64_t bps, int burst = 1) {
+    if (!s || bps <= 0 || burst < 1 || bps > std::numeric_limits<std::int64_t>::max() / burst) return false;
+    const std::int64_t perSecond = bps * burst / 8;
     const double one = 1.0;
     CFNumberRef average = CFNumberCreate(nullptr, kCFNumberSInt64Type, &bps);
     CFNumberRef values[] = {

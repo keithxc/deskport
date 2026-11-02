@@ -70,6 +70,8 @@ jobs:
       - name: Smart streaming policy and translations
         run: |
           nix develop -c python3 tests/test-smart-stream.py
+          nix develop -c python3 tests/test-host-cadence-overlay.py
+          nix develop -c python3 tests/test-host-rate-overlay.py
           nix develop -c python3 tests/test-video-resume.py
           nix develop -c python3 tests/test-host-video-pause.py
           python3 tests/test-translations.py

@@ -341,10 +341,30 @@ int main() {
     deskport::FrameCadence other(30);
     assert(other.floor(12068000)==1); // no cross-session input state
     // Office saver: a change goes out at once, continuous change at most 8 fps,
-    // two duplicates per second for 750 ms after a change or input, then a
-    // 5 s refresh; recovery is never delayed.
-    assert(deskport::saverFrameRate(1749,1000,{},60)==2 && deskport::saverFrameRate(1750,1000,{},60)==1);
-    assert(deskport::saverFrameRate(1500,-1,{1600,60},60)==2 && deskport::saverFrameRate(1500,1000,{},1)==1);
+    // 4 fps duplicates until two small outputs or a 3 s timeout, then a 5 s
+    // refresh; recovery is never delayed. Packet size is a quality heuristic.
+    assert(deskport::saverFrameRate(1500,true,{},60)==4 && deskport::saverFrameRate(1500,false,{},60)==1);
+    assert(deskport::saverFrameRate(1500,false,{1600,60},60)==4 && deskport::saverFrameRate(1500,true,{},1)==1);
+    deskport::SaverRefinement refinement;
+    refinement.changed(1000);
+    assert(refinement.active(3999) && !refinement.active(4000));
+    refinement.refreshed(512);
+    assert(refinement.active(1500));
+    refinement.refreshed(-1); // missing output is not evidence of convergence
+    refinement.refreshed(0);
+    assert(refinement.active(1750));
+    refinement.refreshed(513); // a larger duplicate restarts the small run
+    refinement.refreshed(512);
+    assert(refinement.active(2000));
+    refinement.refreshed(512);
+    assert(!refinement.active(2250));
+    refinement.changed(5000, 20000);
+    refinement.refreshed(450);
+    refinement.changed(5300, 450); // caret preserves the deadline, breaks the run
+    refinement.refreshed(450);
+    assert(refinement.active(5550) && !refinement.active(8000));
+    refinement.refreshed(450);
+    assert(!refinement.active(5800));
     deskport::SaverGate saverGate;
     assert(saverGate.admit(1000000,false) && !saverGate.admit(1124999,false) && saverGate.admit(1125000,false));
     assert(saverGate.admit(1130000,true) && !saverGate.admit(1254999,false) && saverGate.admit(1255000,false));
@@ -357,20 +377,29 @@ int main() {
     assert(saving.admit(20125000,false,false)); // and still sends the final picture
     saving.encoded(-1);                         // unknown size refines
     assert(!saving.admit(20200000,false,false));
-    assert(saving.admit(20625000,false,false)); // one refinement at 2 fps
-    assert(!saving.admit(20780000,false,false)); // refinement over: 5 s refresh
-    assert(!saving.admit(25624999,false,false));
-    assert(saving.admit(25625000,false,false));
-    assert(saving.admit(25625001,false,true)); // recovery does not wait
+    assert(!saving.admit(20374999,false,false));
+    assert(saving.admit(20375000,false,false)); // first duplicate at 4 fps
+    saving.encoded(2000);                     // keep improving the picture
+    assert(saving.admit(20625000,false,false));
+    saving.encoded(512);                      // one small duplicate is insufficient
+    assert(saving.admit(20875000,false,false));
+    saving.encoded(512);                      // two small duplicates stop the tail
+    assert(!saving.admit(25874999,false,false));
+    assert(saving.admit(25875000,false,false));
+    saving.encoded(200);
+    assert(saving.admit(25875001,false,true)); // recovery does not wait
+    saving.encoded(200);                       // tiny recovery is not a duplicate
+    assert(saving.admit(26125001,false,false));
+    saving.encoded(0);
+    assert(saving.admit(26375001,false,false));
+    saving.encoded(0);
     assert(saving.admit(40000000,true,false)); // first change after idle is immediate
     // Continuous changes use the content cadence, not the duplicate-frame floor.
     assert(saving.admit(40125000,true,false));
     assert(saving.admit(40250000,true,false));
-    // A small change (clock tick, caret) is sharp already: no refinement, so the
-    // next frame is the 5 s refresh. Inside a pending refinement it keeps it.
-    assert(!deskport::saverRefines(450,10000,-1) && deskport::saverRefines(1025,10000,-1));
-    assert(deskport::saverRefines(-1,10000,-1) && deskport::saverRefines(450,10300,10000));
-    assert(!deskport::saverRefines(450,10750,10000));
+    // Small updates skip extra duplicates; they preserve a pending large update.
+    assert(!deskport::saverRefines(450) && !deskport::saverRefines(1024));
+    assert(deskport::saverRefines(1025) && deskport::saverRefines(-1));
     deskport::FrameCadence tick(60);
     tick.saver = true;
     assert(tick.admit(50000000,true,false));
@@ -382,6 +411,23 @@ int main() {
     assert(tick.admit(60300000,true,false));
     tick.encoded(450);                          // caret right after the scroll
     assert(tick.admit(60800000,false,false));   // the scroll still refines
+    tick.encoded(512);
+    assert(tick.admit(61050000,false,false));
+    tick.encoded(512);
+    assert(!tick.admit(66049999,false,false));
+    assert(tick.admit(66050000,false,false));
+    // Missing/large output cannot keep an unchanged picture refining forever.
+    deskport::FrameCadence bounded(60);
+    bounded.saver = true;
+    assert(bounded.admit(70000000,true,false));
+    bounded.encoded(-1);
+    for (int i = 1; i < 12; ++i) {
+        assert(bounded.admit(70000000 + i * 250000,false,false));
+        bounded.encoded(i % 2 ? -1 : 5000);
+    }
+    assert(!bounded.admit(73000000,false,false));
+    assert(!bounded.admit(77749999,false,false));
+    assert(bounded.admit(77750000,false,false));
     deskport::lastEncodedFrame = {7, 450};
     assert(deskport::encodedBytes(7)==450 && deskport::encodedBytes(8)==-1);
     // Data saver FEC: one parity shard on a clean link, the viewer's minimum

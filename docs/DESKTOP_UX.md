@@ -29,9 +29,14 @@ Done buttons; secondary content opens as a floating panel or expands in place.
   desktop, 0.56 Mbps for 1280×800, 0.5–4 Mbps overall, or an already lower manual
   setting. A smaller window therefore costs less. Continuous changes are limited
   to 8 fps on compatible hosts and remote audio capture is off for the session.
-  Brief 2 fps refinement follows changes that encode larger than about 1 KB (a
-  clock tick or caret is already sharp), and a still picture is refreshed once
-  every 5 seconds. These are video-policy limits, not a total-byte guarantee;
+  Changes larger than about 1 KB start 4 fps refinement, stopping after two
+  consecutive duplicate pictures encode within 512 bytes, or after 3 seconds.
+  Small changes preserve an existing refinement window. Encoded size is a
+  heuristic, not a decoded-quality measurement. A still picture is refreshed
+  every 5 seconds. The macOS host completes each smart-stream VideoToolbox
+  submission before FFmpeg checks its callback queue, so the final picture does
+  not wait for the next refresh. Data saver permits a 3x one-second video burst
+  while keeping the average-rate target. These are video-policy limits, not a total-byte guarantee;
   recovery frames bypass the cadence gate. Saved audio and automatic/manual
   preferences are preserved and restored when data saver is turned off. Turning
   it on or off restarts the stream when the backing scale, audio or capture
