@@ -81,10 +81,13 @@ macos,linux    copy    host/common/picturequality.h  src/deskport/common/
 macos          copy    host/macos/vtbitrate.h     src/deskport/macos/
 macos          copy    host/macos/vtlatency.h     src/deskport/macos/
 macos          copy    host/macos/vtclock.h       src/deskport/macos/
+macos          copy    host/common/inputprocess.h  src/deskport/common/
+macos          copy    host/macos/inputprocess-host.h  src/deskport/macos/
 macos,linux    script  patch-host-remote-rate.py  {src}
 macos,linux    script  patch-host-data-saver.py   {src}
 macos,linux    script  patch-host-video-pause.py  {src}
 macos,linux    script  patch-host-rate-api.py     {src}
+macos          script  patch-host-input-process.py  {src}
 
 # Browser access: WebRTC transport over the existing capture and encoders.
 all            script  patch-host-browser.py  {src}  {repo}/host/browser

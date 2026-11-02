@@ -1,3 +1,25 @@
+## Separate macOS desktop-input process — 2026-11-03
+
+Reason: with data saver on, keys typed from an iPhone on the same LAN (2 ms
+RTT) repeated on the mm4 host. Sunshine repeats a key when its release has not
+been processed 500 ms after the press. The input module was unchanged since
+0.7.7, and disabling synchronous VideoToolbox completion did not help, so the
+macOS host now keeps desktop input out of the streaming process.
+
+- Sunshine keeps connection, decryption, activity tracking and encoding.
+  Keyboard, text, mouse and scroll packets go to `Sunshine <config>
+  --deskport-input <fd>`, the same signed executable running Sunshine's own
+  input module, including key repeat, modifiers and cursor mapping from the
+  forwarded touch port. Gamepads, touch and pen stay in Sunshine.
+- A failed write or exited helper is restarted at most once per second;
+  meanwhile packets are injected in-process. Session end releases held input in
+  both processes. `DESKPORT_INPUT_PROCESS=0` disables the split for comparison.
+  Client protocols are unchanged.
+- Validation: routing and framing unit tests, overlay wiring on the macOS
+  series, a macOS host compile and a helper lifecycle smoke test without input
+  injection. Whether this removes the repeats needs a live check; a late release
+  that is already late on the network would not be fixed by it.
+
 ## Normal streaming keeps the pre-saver encoder path — 2026-11-02
 
 Reason: with data saver off, streaming stuttered and held keys repeated on the
