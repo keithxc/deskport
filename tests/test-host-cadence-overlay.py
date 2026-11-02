@@ -27,7 +27,10 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert video.count('av_packet->pts -= session.deskport_pts_shift;') == 1
         assert video.count('deskport_rate->rtt(now_us / 1000, *rtt);') == 1
         assert video.count('deskport::refineFrameRate(absolute_ms, deskport_last_change_ms,') == 1
-        assert video.count('deskport_last_change_ms = std::chrono::duration_cast') == 1
+        assert video.count('(deskport_saving ? deskport_change_candidate_ms : deskport_last_change_ms) = deskport_captured_ms;') == 1
+        assert video.count('deskport::lastEncodedFrame = {') == 2
+        assert video.count('deskport::saverRefines(deskport::encodedBytes(frame_nr - 1),') == 1
+        assert video.count('pos->deskport_cadence->encoded(deskport::encodedBytes(ctx->frame_nr - 1));') == 1
         assert video.count('deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)') == 2
         assert video.count('if (deskport_saving && fps <= 1)') == 1
         assert video.count('deskport::saverFrameRate(absolute_ms, deskport_last_change_ms, boost,') == 1

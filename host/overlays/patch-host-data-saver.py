@@ -48,7 +48,37 @@ patch('src/video.cpp', '''      auto status = disp->capture(push_captured_image_
 
 patch('src/video.cpp', '''    deskport::KeyframeGate deskport_key_gate;''', '''    deskport::KeyframeGate deskport_key_gate;
     deskport::SaverGate deskport_saver_gate;
-    bool deskport_saver_pending = false;''')
+    bool deskport_saver_pending = false;
+    std::int64_t deskport_change_candidate_ms = -1;''')
+
+# Encoded picture size for the saver's refinement decision (both encoder paths).
+patch('src/video.cpp', '''      if (av_packet && av_packet->pts == frame_nr) {
+        packet->frame_timestamp = frame_timestamp;''', '''      if (av_packet && av_packet->pts == frame_nr) {
+        deskport::lastEncodedFrame = {frame_nr, av_packet->size};
+        packet->frame_timestamp = frame_timestamp;''')
+patch('src/video.cpp', '''    auto packet = std::make_unique<packet_raw_generic>(std::move(encoded_frame.data), encoded_frame.frame_index, encoded_frame.idr);''', '''    deskport::lastEncodedFrame = {std::int64_t(encoded_frame.frame_index), int(encoded_frame.data.size())};
+    auto packet = std::make_unique<packet_raw_generic>(std::move(encoded_frame.data), encoded_frame.frame_index, encoded_frame.idr);''')
+
+# A saver change starts refinement only once its picture encodes larger than a
+# small update; the decision waits for the encode, including a gated picture.
+patch('src/video.cpp', '''          deskport_last_change_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now().time_since_epoch()).count();
+          if (session->convert(*img)) {''', '''          const auto deskport_captured_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now().time_since_epoch()).count();
+          (deskport_saving ? deskport_change_candidate_ms : deskport_last_change_ms) = deskport_captured_ms;
+          if (session->convert(*img)) {''')
+patch('src/video.cpp', '''      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
+        BOOST_LOG(error) << "Could not encode video packet"sv;
+        return;
+      }''', '''      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
+        BOOST_LOG(error) << "Could not encode video packet"sv;
+        return;
+      }
+      if (deskport_change_candidate_ms >= 0) {
+        if (deskport::saverRefines(deskport::encodedBytes(frame_nr - 1), deskport_change_candidate_ms, deskport_last_change_ms))
+          deskport_last_change_ms = deskport_change_candidate_ms;
+        deskport_change_candidate_ms = -1;
+      }''')
 patch('src/video.cpp', '''      if (smart) {
         if (auto event = activity->pop(0ms)) boost = *event;''', '''      const bool deskport_saving = smart && deskport::liveSaver.load() == 1;
       if (smart) {
@@ -91,6 +121,18 @@ patch('src/video.cpp', '''          if (session->convert(*img)) {
 patch('src/video.cpp', '''          if (ctx->config.deskport_smart) {''', '''          if (ctx->config.deskport_smart || deskport::liveSaver.load() == 1) {''')
 patch('src/video.cpp', '''            const int floor = cadence.floor(now_us);''', '''            cadence.saver = deskport::liveSaver.load() == 1;
             const int floor = cadence.floor(now_us);''')
+patch('src/video.cpp', '''          if (encode(ctx->frame_nr++, *pos->session, ctx->packets, ctx->channel_data, frame_timestamp)) {
+            BOOST_LOG(error) << "Could not encode video packet"sv;
+            ctx->shutdown_event->raise(true);
+
+            continue;
+          }''', '''          if (encode(ctx->frame_nr++, *pos->session, ctx->packets, ctx->channel_data, frame_timestamp)) {
+            BOOST_LOG(error) << "Could not encode video packet"sv;
+            ctx->shutdown_event->raise(true);
+
+            continue;
+          }
+          if (pos->deskport_cadence) pos->deskport_cadence->encoded(deskport::encodedBytes(ctx->frame_nr - 1));''')
 
 # FEC: remember the last unrecoverable block and relax the parity minimum.
 patch('src/stream.cpp', '''    std::atomic<int> deskport_remote {-1};''', '''    std::atomic<int> deskport_remote {-1};

@@ -350,9 +350,11 @@ int main() {
     deskport::FrameCadence saving(60);
     saving.saver = true;
     assert(saving.admit(20000000,true,false));  // a single change is not delayed
+    saving.encoded(5000);                       // large enough to refine
     assert(!saving.admit(20030000,true,false)); // continuous change waits for the gate
     assert(!saving.admit(20124999,false,false));
     assert(saving.admit(20125000,false,false)); // and still sends the final picture
+    saving.encoded(-1);                         // unknown size refines
     assert(!saving.admit(20200000,false,false));
     assert(saving.admit(20625000,false,false)); // one refinement at 2 fps
     assert(!saving.admit(20780000,false,false)); // refinement over: 5 s refresh
@@ -363,6 +365,24 @@ int main() {
     // Continuous changes use the content cadence, not the duplicate-frame floor.
     assert(saving.admit(40125000,true,false));
     assert(saving.admit(40250000,true,false));
+    // A small change (clock tick, caret) is sharp already: no refinement, so the
+    // next frame is the 5 s refresh. Inside a pending refinement it keeps it.
+    assert(!deskport::saverRefines(450,10000,-1) && deskport::saverRefines(1025,10000,-1));
+    assert(deskport::saverRefines(-1,10000,-1) && deskport::saverRefines(450,10300,10000));
+    assert(!deskport::saverRefines(450,10750,10000));
+    deskport::FrameCadence tick(60);
+    tick.saver = true;
+    assert(tick.admit(50000000,true,false));
+    tick.encoded(450);
+    assert(!tick.admit(50500000,false,false) && !tick.admit(54999999,false,false));
+    assert(tick.admit(55000000,false,false));
+    assert(tick.admit(60000000,true,false));
+    tick.encoded(20000);                        // scrolled text
+    assert(tick.admit(60300000,true,false));
+    tick.encoded(450);                          // caret right after the scroll
+    assert(tick.admit(60800000,false,false));   // the scroll still refines
+    deskport::lastEncodedFrame = {7, 450};
+    assert(deskport::encodedBytes(7)==450 && deskport::encodedBytes(8)==-1);
     // Data saver FEC: one parity shard on a clean link, the viewer's minimum
     // for a minute after an unrecoverable block.
     assert(deskport::saverMinParity(true,2,100000,0)==1 && deskport::saverMinParity(true,2,100000,50000)==2);

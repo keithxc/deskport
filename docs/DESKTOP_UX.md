@@ -24,7 +24,8 @@ Done buttons; secondary content opens as a floating panel or expands in place.
   the host lowers it live on a congested remote path. On, office data saver caps
   video at 1 Mbps (or an already lower manual setting), limits continuous changes
   to 8 fps on compatible hosts, and disables remote audio capture for the session.
-  It keeps the desktop resolution, uses brief 2 fps refinement after changes,
+  It keeps the desktop resolution, uses brief 2 fps refinement after changes
+  that encode larger than about 1 KB (a clock tick or caret is already sharp),
   and refreshes a still picture once every 5 seconds. These are video-policy
   limits, not a total-byte or hourly-data guarantee; recovery frames bypass the
   cadence gate. Saved audio and automatic/manual preferences are preserved and

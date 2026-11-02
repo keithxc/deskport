@@ -28,6 +28,19 @@ inline int saverFrameRate(std::int64_t nowMs, std::int64_t lastChangeMs, Activit
     const bool active = (lastChangeMs >= 0 && nowMs - lastChangeMs < kSaverRefineMs) || nowMs < boost.untilMs;
     return active ? std::max(1, std::min(ceiling, kSaverRefineFps)) : 1;
 }
+// A change that encodes this small (a clock tick, a caret) is already sharp, and
+// its refinement would cost as much on the wire as the change: each frame pads
+// to a full packet plus parity. Larger changes and unknown sizes still refine,
+// and a small change inside a pending refinement keeps that refinement.
+constexpr int kSaverSmallChangeBytes = 1024;
+inline bool saverRefines(int encodedBytes, std::int64_t changeMs, std::int64_t lastChangeMs) {
+    return encodedBytes < 0 || encodedBytes > kSaverSmallChangeBytes ||
+           (lastChangeMs >= 0 && changeMs - lastChangeMs < kSaverRefineMs);
+}
+// Encoded size of the latest picture on this encoder thread, by frame number.
+struct EncodedFrame { std::int64_t frame = -1; int bytes = -1; };
+inline thread_local EncodedFrame lastEncodedFrame;
+inline int encodedBytes(std::int64_t frame) { return lastEncodedFrame.frame == frame ? lastEncodedFrame.bytes : -1; }
 // Spaces captured content frames; recovery frames always pass.
 class SaverGate {
 public:
@@ -55,7 +68,8 @@ public:
                         refineFrameRate(nowUs / 1000, lastChange / 1000, ceiling));
     }
     bool admit(std::int64_t nowUs, bool changed, bool recovery) {
-        if (changed) lastChange = nowUs;
+        // Saver decides whether a change refines once its encoded size is known.
+        if (changed) (saver ? candidate : lastChange) = nowUs;
         pending = pending || changed;
         const int fps = floor(nowUs);
         if (recovery || pending) {
@@ -69,9 +83,15 @@ public:
         sent = true;
         return true;
     }
+    // Reports the size of the frame encoded after admit(); -1 when unknown.
+    void encoded(int bytes) {
+        if (candidate < 0) return;
+        if (saverRefines(bytes, candidate / 1000, lastChange / 1000)) lastChange = candidate;
+        candidate = -1;
+    }
 private:
     SaverGate gate;
     bool pending = false, sent = false;
-    std::int64_t lastEncoded = 0, lastChange = -1000000000;
+    std::int64_t lastEncoded = 0, lastChange = -1000000000, candidate = -1;
 };
 }
