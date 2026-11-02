@@ -32,6 +32,16 @@ patch('src/video.cpp', '''    // send the frame to the encoder
 #endif
     // send the frame to the encoder
     auto ret = avcodec_send_frame(ctx.get(), frame);''')
+for call in ('    auto ret = avcodec_send_frame(ctx.get(), frame);',
+             '      ret = avcodec_receive_packet(ctx.get(), av_packet);'):
+    indent = call[:len(call) - len(call.lstrip())]
+    patch('src/video.cpp', call, call + '''
+#ifdef __APPLE__
+''' + indent + '''if (deskport_completion.status() != noErr) {
+''' + indent + '''  BOOST_LOG(error) << "VideoToolbox frame completion failed: " << deskport_completion.status();
+''' + indent + '''  return -1;
+''' + indent + '''}
+#endif''')
 # The two pinned revisions spell this cast differently; match only the unique
 # avcodec factory, leaving its format/injection expression untouched.
 p = root / 'src/video.cpp'

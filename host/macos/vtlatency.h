@@ -6,18 +6,22 @@
 
 namespace deskport::vt {
 inline thread_local bool completeSubmittedFrame = false;
+inline thread_local OSStatus completionError = noErr;
 // Only the host's smart/saver encode call opts in; restore an outer scope on
 // every return path. Other native VideoToolbox submissions forward unchanged.
 class ScopedFrameCompletion {
 public:
-    explicit ScopedFrameCompletion(bool enabled) : previous(completeSubmittedFrame) {
+    explicit ScopedFrameCompletion(bool enabled) : previous(completeSubmittedFrame), previousError(completionError) {
         completeSubmittedFrame = enabled;
+        completionError = noErr;
     }
-    ~ScopedFrameCompletion() { completeSubmittedFrame = previous; }
+    ~ScopedFrameCompletion() { completeSubmittedFrame = previous; completionError = previousError; }
+    OSStatus status() const { return completionError; }
     ScopedFrameCompletion(const ScopedFrameCompletion&) = delete;
     ScopedFrameCompletion& operator=(const ScopedFrameCompletion&) = delete;
 private:
     bool previous;
+    OSStatus previousError;
 };
 }
 
@@ -40,6 +44,9 @@ extern "C" OSStatus VTCompressionSessionEncodeFrame(
                                frameProperties, sourceFrameRefcon, infoFlagsOut);
     if (status != noErr || !deskport::vt::completeSubmittedFrame) return status;
     const auto completion = VTCompressionSessionCompleteFrames(session, presentationTimeStamp);
-    if (completion != noErr) std::fprintf(stderr, "DeskPort: VideoToolbox frame completion failed: %d\n", int(completion));
-    return completion;
+    if (completion != noErr) deskport::vt::completionError = completion;
+    // A successful submission transfers sourceFrameRefcon to the callback.
+    // Reporting a later completion error as submission failure makes FFmpeg
+    // free callback-owned state. The host checks scoped status outside FFmpeg.
+    return status;
 }

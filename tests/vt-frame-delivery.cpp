@@ -15,9 +15,28 @@ extern "C" {
 }
 
 namespace {
+thread_local bool forceCompletionFailure = false;
+constexpr OSStatus ForcedCompletionError = kVTVideoEncoderMalfunctionErr;
+}
+
+// Report one failure after the native callback has really completed. Returning
+// this as EncodeFrame failure used to free FFmpeg's callback-owned node twice.
+extern "C" OSStatus VTCompressionSessionCompleteFrames(VTCompressionSessionRef session, CMTime until) {
+    using Complete = decltype(&VTCompressionSessionCompleteFrames);
+    static const Complete complete = reinterpret_cast<Complete>(dlsym(RTLD_NEXT, "VTCompressionSessionCompleteFrames"));
+    if (!complete) return kVTInvalidSessionErr;
+    const auto status = complete(session, until);
+    if (status == noErr && forceCompletionFailure) {
+        forceCompletionFailure = false;
+        return ForcedCompletionError;
+    }
+    return status;
+}
+
+namespace {
 constexpr int Width = 2560, Height = 1440, Frames = 12;
 
-bool run(const char* name, bool noDelay, bool lowLatency = false, bool sparse = false) {
+bool run(const char* name, bool noDelay, bool lowLatency = false, bool sparse = false, bool injectFailure = false) {
     const AVCodec* codec = avcodec_find_encoder_by_name(name);
     AVCodecContext* ctx = avcodec_alloc_context3(codec);
     if (!codec || !ctx) return false;
@@ -68,6 +87,8 @@ bool run(const char* name, bool noDelay, bool lowLatency = false, bool sparse = 
         frame->flags = i == 0 || i == 8 ? AV_FRAME_FLAG_KEY : 0;
         const auto start = std::chrono::steady_clock::now();
         deskport::vt::ScopedFrameCompletion completion(noDelay);
+        const bool failThisFrame = injectFailure && i == 4;
+        forceCompletionFailure = failThisFrame;
         ok = avcodec_send_frame(ctx, frame) >= 0;
         bool current = false;
         int ret = 0;
@@ -76,6 +97,10 @@ bool run(const char* name, bool noDelay, bool lowLatency = false, bool sparse = 
             av_packet_unref(packet);
         }
         ok = ok && ret == AVERROR(EAGAIN);
+        // A late completion failure must leave native submission successful,
+        // the packet owned by FFmpeg, and an explicit error for the host caller.
+        ok = ok && completion.status() == (failThisFrame ? ForcedCompletionError : noErr);
+        ok = ok && !forceCompletionFailure;
         if (current) ++currentPictures;
         const auto us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
         maxUs = std::max(maxUs, static_cast<long long>(us));
@@ -88,23 +113,45 @@ bool run(const char* name, bool noDelay, bool lowLatency = false, bool sparse = 
         // pauses also exercise callback completion across separate submissions.
         if (sparse) std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
-    std::printf("%s mode=%s low_latency=%d sparse=%d current=%d/%d max_encode_us=%lld\n", name,
-                noDelay ? "scoped-completion" : "baseline", lowLatency, sparse, currentPictures, Frames, maxUs);
+    std::printf("%s mode=%s low_latency=%d sparse=%d injected_failure=%d current=%d/%d max_encode_us=%lld\n", name,
+                noDelay ? "scoped-completion" : "baseline", lowLatency, sparse, injectFailure, currentPictures, Frames, maxUs);
     av_packet_free(&packet); av_frame_free(&frame); avcodec_free_context(&ctx); av_buffer_unref(&frames); av_buffer_unref(&device);
     return ok;
+}
+
+bool nativeFailureIsUnchanged() {
+    VTCompressionSessionRef session = nullptr;
+    CVPixelBufferRef image = nullptr;
+    if (VTCompressionSessionCreate(nullptr, 640, 360, kCMVideoCodecType_H264,
+                                   nullptr, nullptr, nullptr, nullptr, nullptr, &session) != noErr) return false;
+    if (CVPixelBufferCreate(nullptr, 640, 360, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                            nullptr, &image) != kCVReturnSuccess) {
+        CFRelease(session); return false;
+    }
+    VTCompressionSessionInvalidate(session);
+    using Encode = decltype(&VTCompressionSessionEncodeFrame);
+    const auto encode = reinterpret_cast<Encode>(dlsym(RTLD_NEXT, "VTCompressionSessionEncodeFrame"));
+    const auto original = encode(session, image, kCMTimeZero, kCMTimeInvalid, nullptr, nullptr, nullptr);
+    deskport::vt::ScopedFrameCompletion completion(true);
+    const auto wrapped = VTCompressionSessionEncodeFrame(session, image, kCMTimeZero, kCMTimeInvalid, nullptr, nullptr, nullptr);
+    CFRelease(image); CFRelease(session);
+    return original != noErr && wrapped == original && completion.status() == noErr;
 }
 }
 
 int main() {
-    if (deskport::vt::completeSubmittedFrame) return 1;
+    if (deskport::vt::completeSubmittedFrame || deskport::vt::completionError != noErr) return 1;
     {
         deskport::vt::ScopedFrameCompletion outer(true);
+        deskport::vt::completionError = ForcedCompletionError;
         { deskport::vt::ScopedFrameCompletion inner(false); if (deskport::vt::completeSubmittedFrame) return 1; }
-        if (!deskport::vt::completeSubmittedFrame) return 1;
+        if (!deskport::vt::completeSubmittedFrame || outer.status() != ForcedCompletionError) return 1;
     }
-    if (deskport::vt::completeSubmittedFrame) return 1;
+    if (deskport::vt::completeSubmittedFrame || deskport::vt::completionError != noErr) return 1;
+    if (!nativeFailureIsUnchanged()) return 1;
     for (const char* name : {"h264_videotoolbox", "hevc_videotoolbox"}) {
-        if (!run(name, false) || !run(name, true) || !run(name, true, true) || !run(name, true, true, true)) return 1;
+        if (!run(name, false) || !run(name, true) || !run(name, true, true) ||
+            !run(name, true, true, true) || !run(name, true, false, false, true)) return 1;
     }
     return 0;
 }
