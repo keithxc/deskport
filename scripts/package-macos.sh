@@ -98,8 +98,8 @@ find "$host_app/Contents/Frameworks" -type f -name '*.dylib' -exec codesign --fo
 cp host/macos/patches/libvirtualhid-target-display.patch host/macos/patches/libvirtualhid-smooth-drag.patch host/macos/patches/libvirtualhid-paced-scroll.patch host/macos/patches/sunshine-capture-timeout.patch host/macos/patches/sunshine-pkgconfig-link.patch "$host_app/Contents/Resources/"
 cp host/macos/patches/sunshine-smart-streaming.patch host/macos/patches/sunshine-screen-capture-kit.patch "$host_app/Contents/Resources/"
 mkdir -p "$host_app/Contents/Resources/deskport-smart-source/common" "$host_app/Contents/Resources/deskport-smart-source/macos"
-cp host/common/smartstream.h host/common/inputactivity.h host/common/framecadence.h host/common/encoderpolicy.h host/common/ratecontrol.h "$host_app/Contents/Resources/deskport-smart-source/common/"
-cp host/macos/admitted-display.h host/macos/pixelmatch.h host/macos/screen-video.h host/macos/screen-video.m host/macos/vtbitrate.h host/macos/vtlatency.h host/macos/scroll-pacer.h "$host_app/Contents/Resources/deskport-smart-source/macos/"
+cp host/common/smartstream.h host/common/inputactivity.h host/common/framecadence.h host/common/encoderpolicy.h host/common/ratecontrol.h host/common/picturequality.h "$host_app/Contents/Resources/deskport-smart-source/common/"
+cp host/macos/admitted-display.h host/macos/pixelmatch.h host/macos/screen-video.h host/macos/screen-video.m host/macos/vtbitrate.h host/macos/vtlatency.h host/macos/vtclock.h host/macos/scroll-pacer.h "$host_app/Contents/Resources/deskport-smart-source/macos/"
 cp scripts/build-macos-host.sh scripts/build-paths.sh scripts/apply-host-patches.py host/series host/overlays/patch-host-smart-stream.py host/overlays/patch-host-sync-cadence.py host/overlays/patch-host-input-activity.py host/overlays/patch-host-encoder-policy.py host/overlays/patch-host-vt-drain.py host/overlays/patch-host-remote-rate.py host/overlays/patch-host-data-saver.py host/overlays/patch-host-rate-api.py "$host_app/Contents/Resources/"
 codesign --force --sign "$DESKPORT_SIGN_IDENTITY" --timestamp=none --options runtime \
     --entitlements host/macos/entitlements.plist "$host_app"

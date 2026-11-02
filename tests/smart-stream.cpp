@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 #include <vector>
 int main() {
     deskport::KeyframeRequests keys;
@@ -163,6 +164,26 @@ int main() {
     assert(deskport::ceilingPermille(56000, 56000) == 0 && deskport::ceilingPermille(90000, 56000) == 0);
     assert(deskport::ceilingPermille(0, 56000) == 0 && deskport::ceilingPermille(5000, 0) == 0);
     assert(deskport::applyPermille(44179, 214) == 9454 && deskport::applyPermille(44179, 0) == 44179);
+    // At equal kbps, saver/congestion transitions still update the encoder.
+    // Leaving saver during congestion keeps QP 32; clearing congestion restores
+    // the unconstrained normal policy. Repeated state does not reapply settings.
+    deskport::EncoderRateState qpState;
+    std::vector<int> appliedQp;
+    std::vector<int> appliedMaxQp;
+    const std::vector<std::pair<bool, bool>> qpTransitions {
+        {false, false}, {true, false}, {true, true}, {false, true},
+        {false, false}, {false, false}, {true, false}, {false, false}
+    };
+    for (const auto& state : qpTransitions) {
+        if (!qpState.matches(992, state.second, state.first)) {
+            appliedQp.push_back(deskport::encoderMinQp(state.first, state.second));
+            appliedMaxQp.push_back(deskport::encoderMaxQp(state.first, state.second));
+            qpState.applied(992, state.second, state.first);
+        }
+        assert(qpState.matches(992, state.second, state.first));
+    }
+    assert((appliedQp == std::vector<int> {0, 22, 32, 32, 0, 22, 0}));
+    assert((appliedMaxQp == std::vector<int> {51, 51, 51, 51, 51, 51, 51}));
     deskport::BitrateController capped(40000, 0);
     capped.setCeiling(9000);
     assert(capped.ceilingKbps() == 9000 && capped.targetKbps(0) == 9000 && capped.floorKbps() == 5000);

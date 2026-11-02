@@ -30,6 +30,7 @@ patch('src/video.h', '    virtual void request_normal_frame() = 0;', '''    virt
     }''')
 
 patch('src/video.cpp', '#include "deskport/common/ratecontrol.h"', '''#include "deskport/common/ratecontrol.h"
+#include "deskport/common/picturequality.h"
 #ifdef __APPLE__
   #include "deskport/macos/vtbitrate.h"
 #endif
@@ -47,14 +48,20 @@ namespace {
 patch('src/video.cpp', '    deskport::KeyframeRequests deskport_keys;', '''    deskport::KeyframeRequests deskport_keys;
     std::int64_t deskport_last_pts = -1;
     std::int64_t deskport_pts_shift = 0;
+    deskport::PictureQuality deskport_quality;
 
     bool deskport_set_bitrate(int kbps, bool constrained, bool saver) override {
 #ifdef __APPLE__
       auto *vt = deskport::vt::session(avcodec_ctx.get());
       // QP 32 measurably shrinks content-change frames on a congested link.
       // Data saver keeps large changes sharp with a 3x one-second burst.
-      return deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000, saver ? 3 : 1) &&
-             deskport::vt::applyQualityFloor(vt, constrained ? 32 : 0);
+      const bool applied = deskport::vt::applyExpectedFrameRate(vt, saver ? 8.0 : av_q2d(avcodec_ctx->framerate)) &&
+          deskport::vt::applyRate(vt, std::int64_t(kbps) * 1000, saver ? 3 : 1) &&
+          deskport::vt::applyQualityRange(vt, deskport::encoderMinQp(saver, constrained),
+                                         deskport::encoderMaxQp(saver, constrained));
+      if (applied) deskport_quality.configured(saver && !constrained &&
+          deskport::sharpPictureBudget(kbps, avcodec_ctx->width, avcodec_ctx->height));
+      return applied;
 #else
       return false;
 #endif
@@ -131,7 +138,9 @@ patch('src/video.cpp', '      if (smart && congestion->pop(0ms)) policy.loss(now
             deskport_applied_rate.applied(kbps, constrained, saver);
             BOOST_LOG(info) << "DeskPort live rate: target_kbps=" << kbps << ", rtt_ms=" << deskport_last_rtt
                             << ", quality_floor=" << (constrained ? "on" : "off")
-                            << ", saver=" << (saver ? "on" : "off");
+                            << ", saver=" << (saver ? "on" : "off")
+                            << ", min_qp=" << deskport::encoderMinQp(saver, constrained)
+                            << ", max_qp=" << deskport::encoderMaxQp(saver, constrained);
             mail->event<int>("deskport_rate_kbps")->raise(kbps);
             if (deskport_rate) {
               std::lock_guard lock {deskport_rate_memory_mutex};
@@ -289,6 +298,10 @@ patch('src/video.cpp', '''    std::int64_t deskport_last_change_ms = -1;''', '''
       if (deskport_live) {
         deskport_applied_rate.applied(start, false, saver);
         mail->event<int>("deskport_rate_kbps")->raise(start);
+        BOOST_LOG(info) << "DeskPort live rate: target_kbps=" << start << ", rtt_ms=0"
+                        << ", quality_floor=off, saver=" << (saver ? "on" : "off")
+                        << ", min_qp=" << deskport::encoderMinQp(saver, false)
+                        << ", max_qp=" << deskport::encoderMaxQp(saver, false);
       }
     }
     deskport::KeyframeGate deskport_key_gate;

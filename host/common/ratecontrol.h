@@ -7,6 +7,18 @@
 #include <cstdint>
 
 namespace deskport {
+// Saver avoids spending its small budget on near-lossless frames/backgrounds
+// before the next application switch. Congestion retains the existing stronger
+// quantization; the qualified native adapter applies these values.
+inline int encoderMinQp(bool saver, bool constrained) {
+    return constrained ? 32 : saver ? 22 : 0;
+}
+inline int encoderMaxQp(bool, bool) {
+    // The native adapter may try Max26 for one fresh non-key picture. Every
+    // other submission and the initial/live rate configuration remain lenient.
+    return 51;
+}
+
 // Remote paths get live rate control and pacing. On-link private addresses keep
 // the inherited LAN behavior. Tailscale's 100.64/10 and fd7a:115c:a1e0::/48 are
 // overlay routes that may be relayed, so they count as remote.

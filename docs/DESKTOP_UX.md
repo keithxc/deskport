@@ -36,7 +36,13 @@ Done buttons; secondary content opens as a floating panel or expands in place.
   every 5 seconds. The macOS host completes each smart-stream VideoToolbox
   submission before FFmpeg checks its callback queue, so the final picture does
   not wait for the next refresh. Data saver permits a 3x one-second video burst
-  while keeping the average-rate target. These are video-policy limits, not a total-byte guarantee;
+  while keeping the average-rate target. Its native encoder clock preserves
+  real spacing between sparse pictures; uncongested saver QP bounds balance
+  background detail with newly exposed text. If a new picture cannot fit that
+  quality bound, it is temporarily relaxed to keep picture delivery moving.
+  The synthetic window-switch
+  regression is described in [the test procedure](DATA_SAVER_REGRESSION.md).
+  These are video-policy limits, not a total-byte guarantee;
   recovery frames bypass the cadence gate. Saved audio and automatic/manual
   preferences are preserved and restored when data saver is turned off. Turning
   it on or off restarts the stream when the backing scale, audio or capture

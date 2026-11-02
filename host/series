@@ -77,8 +77,10 @@ linux          script  patch-host-encoder-policy.py       {src}
 
 # Rate control, data saver and video pause (after the input/cadence overlays).
 macos,linux    copy    host/common/ratecontrol.h  src/deskport/common/
+macos,linux    copy    host/common/picturequality.h  src/deskport/common/
 macos          copy    host/macos/vtbitrate.h     src/deskport/macos/
 macos          copy    host/macos/vtlatency.h     src/deskport/macos/
+macos          copy    host/macos/vtclock.h       src/deskport/macos/
 macos,linux    script  patch-host-remote-rate.py  {src}
 macos,linux    script  patch-host-data-saver.py   {src}
 macos,linux    script  patch-host-video-pause.py  {src}

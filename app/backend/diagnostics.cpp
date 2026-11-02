@@ -14,6 +14,7 @@
 #include <QRegularExpression>
 #include <QDataStream>
 #include <QTimer>
+#include <Limelight.h>
 
 namespace {
 const QStringList sources {"client", "host", "display"};
@@ -27,6 +28,24 @@ const QStringList events {"failure","runtime","navigation","started", "stopped",
 const QStringList networkKeys {"rtt_ms", "rtt_var_ms", "received_fps", "rendered_fps", "network_drop_permille", "pacer_drop_permille", "received_kbps"};
 const QStringList rateKeys {"target_kbps", "rtt_ms", "baseline_ms", "ceiling_kbps", "floor_kbps", "resume_kbps"};
 const QStringList encodedKeys {"encoded_kbps", "frames", "keyframes", "max_frame_bytes"};
+bool qualityStrictRange(int minimum, int maximum, bool strict) {
+    return minimum == 22 && maximum == (strict ? 26 : 51);
+}
+QString codecName(int format) {
+    switch (format) {
+    case VIDEO_FORMAT_H264:
+    case VIDEO_FORMAT_H264_HIGH8_444: return "h264";
+    case VIDEO_FORMAT_H265:
+    case VIDEO_FORMAT_H265_MAIN10:
+    case VIDEO_FORMAT_H265_REXT8_444:
+    case VIDEO_FORMAT_H265_REXT10_444: return "hevc";
+    case VIDEO_FORMAT_AV1_MAIN8:
+    case VIDEO_FORMAT_AV1_MAIN10:
+    case VIDEO_FORMAT_AV1_HIGH8_444:
+    case VIDEO_FORMAT_AV1_HIGH10_444: return "av1";
+    default: return {};
+    }
+}
 QStringList names() {
     QStringList result;
     for (const auto& source : sources) for (int i = 0; i < 3; ++i)
@@ -138,8 +157,22 @@ QJsonObject Diagnostics::project(const QString& message) {
         return {{"event", "failure"}, {"stage", "capture"}, {"code", "capture-permission"}};
     if (message.contains("Video failed to find working encoder"))
         return {{"event", "failure"}, {"stage", "encoder"}, {"code", "encoder-unavailable"}};
+    // This callback reports the selected stream, unlike decoder probing or
+    // saved preferences. Preserve only known codec IDs and bounded integers.
+    static const QRegularExpression decoder("Video stream is ([0-9]{1,5})x([0-9]{1,5})x([0-9]{1,4}) \\(format 0x([0-9a-fA-F]{1,8})\\)\\s*$");
+    auto match = decoder.match(message);
+    if (match.hasMatch()) {
+        bool validFormat = false;
+        const auto format = match.captured(4).toInt(&validFormat, 16);
+        const auto codec = validFormat ? codecName(format) : QString();
+        const int width = match.captured(1).toInt(), height = match.captured(2).toInt(), fps = match.captured(3).toInt();
+        if (!codec.isEmpty() && width > 0 && width <= 65535 && height > 0 && height <= 65535 && fps > 0 && fps <= 1000)
+            return {{"event", "decoder"}, {"codec", codec}, {"video_format", format},
+                    {"width", width}, {"height", height}, {"fps", fps}};
+        return {};
+    }
     static const QRegularExpression resize("DeskPort resize stage=([a-z-]+) tick_ms=([0-9]{1,10}) width=([0-9]{1,5}) height=([0-9]{1,5})\\s*$");
-    auto match=resize.match(message);
+    match=resize.match(message);
     if (match.hasMatch() && stages.contains(match.captured(1))) {
         return {{"event","resize"},{"stage",match.captured(1)}, {"tick_ms",match.captured(2).toDouble()},
             {"width",match.captured(3).toInt()},{"height",match.captured(4).toInt()}};
@@ -158,12 +191,36 @@ QJsonObject Diagnostics::project(const QString& message) {
     static const QRegularExpression path("DeskPort network path: (remote|local)\\s*$");
     match = path.match(message);
     if (match.hasMatch()) return {{"event", "network"}, {"path", match.captured(1)}};
+    static const QRegularExpression liveQuality("DeskPort live quality: min_qp=([0-9]{1,2}), max_qp=([0-9]{1,2}), strict=(on|off)\\s*$");
+    match = liveQuality.match(message);
+    if (match.hasMatch()) {
+        const int minimum = match.captured(1).toInt(), maximum = match.captured(2).toInt();
+        const bool strict = match.captured(3) == "on";
+        if (!qualityStrictRange(minimum, maximum, strict)) return {};
+        return {{"event", "rate"}, {"min_qp", minimum}, {"max_qp", maximum}, {"quality_strict", strict}};
+    }
+    static const QRegularExpression liveRate("DeskPort live rate: target_kbps=([0-9]{1,8}), rtt_ms=([0-9]{1,6}), quality_floor=(on|off), saver=(on|off)(?:, min_qp=([0-9]{1,2})(?:, max_qp=([0-9]{1,2}))?)?\\s*$");
+    match = liveRate.match(message);
+    if (match.hasMatch()) {
+        QJsonObject record {{"event", "rate"}, {"target_kbps", match.captured(1).toDouble()}, {"rtt_ms", match.captured(2).toDouble()},
+                            {"quality_floor", match.captured(3)}, {"saver", match.captured(4) == "on"}};
+        if (!match.captured(5).isEmpty()) {
+            const int qp = match.captured(5).toInt();
+            if (qp > 51) return {};
+            record["min_qp"] = qp;
+        }
+        if (!match.captured(6).isEmpty()) {
+            const int qp = match.captured(6).toInt();
+            if (qp > 51 || qp < record.value("min_qp").toInt()) return {};
+            record["max_qp"] = qp;
+        }
+        return record;
+    }
     static const QRegularExpression rate("DeskPort remote rate: target_kbps=([0-9]{1,8}), rtt_ms=([0-9]{1,6}), baseline_ms=([0-9]{1,6}), quality_floor=(on|off)\\s*$");
     match = rate.match(message);
     if (match.hasMatch()) {
-        QJsonObject record {{"event", "rate"}, {"quality_floor", match.captured(4)}};
-        for (int i = 0; i < rateKeys.size(); ++i) record[rateKeys[i]] = match.captured(i + 1).toDouble();
-        return record;
+        return {{"event", "rate"}, {"target_kbps", match.captured(1).toDouble()}, {"rtt_ms", match.captured(2).toDouble()},
+                {"baseline_ms", match.captured(3).toDouble()}, {"quality_floor", match.captured(4)}};
     }
     static const QRegularExpression rateStart("DeskPort remote rate control: ceiling_kbps=([0-9]{1,8}), floor_kbps=([0-9]{1,8}), resume_kbps=([0-9]{1,8}), live_encoder=(yes|no)\\s*$");
     match = rateStart.match(message);
@@ -212,7 +269,33 @@ QJsonObject Diagnostics::validate(const QJsonObject& o) {
     }
     if (event == "network" && QStringList{"remote","local"}.contains(o.value("path").toString())) result["path"]=o.value("path");
     if (event == "rate" && QStringList{"on","off"}.contains(o.value("quality_floor").toString())) result["quality_floor"]=o.value("quality_floor");
+    if (event == "rate" && o.value("saver").isBool()) result["saver"]=o.value("saver");
+    if (event == "rate") {
+        for (const auto& key : {"min_qp", "max_qp"}) if (o.contains(key)) {
+            const auto qp = o.value(key);
+            if (!qp.isDouble() || qp.toDouble() < 0 || qp.toDouble() > 51 || qp.toDouble() != qp.toInt()) return {};
+            result[key] = qp;
+        }
+        if (result.contains("min_qp") && result.contains("max_qp") &&
+            result.value("min_qp").toInt() > result.value("max_qp").toInt()) return {};
+        if (o.contains("quality_strict")) {
+            const auto strict = o.value("quality_strict");
+            if (!strict.isBool() || !result.contains("min_qp") || !result.contains("max_qp") ||
+                !qualityStrictRange(result.value("min_qp").toInt(), result.value("max_qp").toInt(), strict.toBool())) return {};
+            result["quality_strict"] = strict;
+        }
+    }
     if (event == "rate" && QStringList{"yes","no"}.contains(o.value("live_encoder").toString())) result["live_encoder"]=o.value("live_encoder");
+    if (event == "decoder" && (o.contains("codec") || o.contains("video_format") || o.contains("fps"))) {
+        const auto format = o.value("video_format"), fps = o.value("fps");
+        if (!format.isDouble() || format.toDouble() < 1 || format.toDouble() > 65535 ||
+            format.toDouble() != format.toInt() || codecName(format.toInt()).isEmpty() ||
+            o.value("codec").toString() != codecName(format.toInt()) ||
+            !fps.isDouble() || fps.toDouble() < 1 || fps.toDouble() > 1000 || fps.toDouble() != fps.toInt() ||
+            result.value("width").toDouble() < 1 || result.value("width").toDouble() > 65535 ||
+            result.value("height").toDouble() < 1 || result.value("height").toDouble() > 65535) return {};
+        result["codec"] = o.value("codec"); result["video_format"] = format; result["fps"] = fps;
+    }
     if (!result.contains("elapsed_ms")) return {};
     if (stages.contains(o.value("stage").toString()) ||
         (o.value("event") == "navigation" && navigationStages.contains(o.value("stage").toString()))) result["stage"]=o.value("stage");

@@ -142,6 +142,7 @@ private slots:
         QCOMPARE(rate.value("event").toString(), QString("rate"));
         QCOMPARE(rate.value("target_kbps").toInt(), 5600);
         QCOMPARE(rate.value("quality_floor").toString(), QString("off"));
+        QVERIFY(!rate.contains("ceiling_kbps") && !rate.contains("floor_kbps") && !rate.contains("resume_kbps"));
         rate["source"] = "host"; rate["run"] = QString(32, 'b'); rate["elapsed_ms"] = 5;
         QCOMPARE(Diagnostics::validate(rate).value("baseline_ms").toInt(), 330);
         auto start = Diagnostics::project("[2026-10-14 16:00:00.000]: Info: DeskPort remote rate control: ceiling_kbps=14268, floor_kbps=1783, resume_kbps=0, live_encoder=yes");
@@ -158,9 +159,180 @@ private slots:
         encoded["source"] = "host"; encoded["run"] = QString(32, 'b'); encoded["elapsed_ms"] = 5;
         QCOMPARE(Diagnostics::validate(encoded).value("frames").toInt(), 168);
     }
+    void liveRatePreservesPolicyWithoutPrivateText() {
+        for (bool saver : {false, true}) for (const auto& quality : {"off", "on"}) {
+            const auto line = QString("[2026-11-02 18:31:00.000]: Info: DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=%1, saver=%2")
+                .arg(quality).arg(saver ? "on" : "off");
+            auto record = Diagnostics::project(line);
+            QCOMPARE(record.value("event").toString(), QString("rate"));
+            QCOMPARE(record.value("target_kbps").toInt(), 992);
+            QCOMPARE(record.value("rtt_ms").toInt(), 27);
+            QCOMPARE(record.value("quality_floor").toString(), QString(quality));
+            QCOMPARE(record.value("saver").toBool(), saver);
+            QVERIFY(record.value("saver").isBool());
+            QVERIFY(!record.contains("baseline_ms") && !record.contains("ceiling_kbps"));
+            record["source"] = "host"; record["run"] = QString(32, 'b'); record["elapsed_ms"] = 5;
+            record["address"] = "192.0.2.1"; record["codec"] = "private.example";
+            const auto safe = Diagnostics::validate(record);
+            QCOMPARE(safe.value("target_kbps").toInt(), 992);
+            QCOMPARE(safe.value("rtt_ms").toInt(), 27);
+            QCOMPARE(safe.value("quality_floor").toString(), QString(quality));
+            QCOMPARE(safe.value("saver").toBool(), saver);
+            QVERIFY(!safe.contains("address") && !safe.contains("codec"));
+            for (const auto& invalid : {QJsonValue("private.example"), QJsonValue("on"), QJsonValue(1)}) {
+                record["saver"] = invalid;
+                QVERIFY(!Diagnostics::validate(record).contains("saver"));
+            }
+            QVERIFY(Diagnostics::project(line + " address=192.0.2.1").isEmpty());
+            QVERIFY(Diagnostics::project(line + " clipboard=private sentence").isEmpty());
+        }
+        QVERIFY(Diagnostics::project("DeskPort live rate: target_kbps=-1, rtt_ms=27, quality_floor=off, saver=on").isEmpty());
+        QVERIFY(Diagnostics::project("DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=private, saver=on").isEmpty());
+        QVERIFY(Diagnostics::project("DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=off, saver=private").isEmpty());
+    }
+    void liveRateKeepsNumericQpSeparateFromCongestion() {
+        for (int qp : {0, 22, 24, 32, 51}) {
+            auto record = Diagnostics::project(QString("DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=off, saver=on, min_qp=%1").arg(qp));
+            QCOMPARE(record.value("event").toString(), QString("rate"));
+            QCOMPARE(record.value("quality_floor").toString(), QString("off"));
+            QCOMPARE(record.value("min_qp").toInt(-1), qp);
+            record["source"] = "host"; record["run"] = QString(32, 'b'); record["elapsed_ms"] = 5;
+            QCOMPARE(Diagnostics::validate(record).value("min_qp").toInt(-1), qp);
+            for (const auto& invalid : {QJsonValue(-1), QJsonValue(52), QJsonValue(22.5), QJsonValue("22"), QJsonValue(true), QJsonValue()}) {
+                auto altered = record; altered["min_qp"] = invalid;
+                QVERIFY(Diagnostics::validate(altered).isEmpty());
+            }
+        }
+        auto congested = Diagnostics::project("DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=on, saver=off, min_qp=32");
+        QCOMPARE(congested.value("quality_floor").toString(), QString("on"));
+        QCOMPARE(congested.value("min_qp").toInt(), 32);
+        for (const auto& qp : {"-1", "52", "22.5", "private.example", "22 host=192.0.2.1", "22 clipboard=private sentence"})
+            QVERIFY(Diagnostics::project(QString("DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=off, saver=on, min_qp=%1").arg(qp)).isEmpty());
+    }
+    void liveRateQualityRangeRejectsInconsistentBounds() {
+        for (const auto& range : {QPair<int,int>{0, 51}, {22, 26}, {32, 51}, {0, 0}, {51, 51}}) {
+            auto record = Diagnostics::project(QString("DeskPort live rate: target_kbps=992, rtt_ms=0, quality_floor=off, saver=on, min_qp=%1, max_qp=%2")
+                .arg(range.first).arg(range.second));
+            QCOMPARE(record.value("event").toString(), QString("rate"));
+            QCOMPARE(record.value("min_qp").toInt(-1), range.first);
+            QCOMPARE(record.value("max_qp").toInt(-1), range.second);
+            record["source"] = "host"; record["run"] = QString(32, 'b'); record["elapsed_ms"] = 5;
+            QCOMPARE(Diagnostics::validate(record).value("max_qp").toInt(-1), range.second);
+            for (const auto& invalid : {QJsonValue(-1), QJsonValue(52), QJsonValue(26.5), QJsonValue("26"), QJsonValue(true), QJsonValue()}) {
+                auto altered = record; altered["max_qp"] = invalid;
+                QVERIFY(Diagnostics::validate(altered).isEmpty());
+            }
+            auto altered = record; altered["min_qp"] = 32; altered["max_qp"] = 26;
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+        }
+        for (const auto& suffix : {"max_qp=-1", "max_qp=52", "max_qp=26.5", "max_qp=private.example", "max_qp=21", "max_qp=26 host=192.0.2.1"})
+            QVERIFY(Diagnostics::project(QString("DeskPort live rate: target_kbps=992, rtt_ms=0, quality_floor=off, saver=on, min_qp=22, %1").arg(suffix)).isEmpty());
+    }
+    void pictureQualityStrictKeepsActualRange() {
+        for (const bool strict : {false, true}) {
+            const int minimum = 22;
+            const int maximum = strict ? 26 : 51;
+            const auto line = QString("[2026-11-02 18:31:00.000]: Info: DeskPort live quality: min_qp=%1, max_qp=%2, strict=%3")
+                .arg(minimum).arg(maximum).arg(strict ? "on" : "off");
+            auto record = Diagnostics::project(line);
+            QCOMPARE(record.size(), 4);
+            QCOMPARE(record.value("event").toString(), QString("rate"));
+            QCOMPARE(record.value("min_qp").toInt(-1), minimum);
+            QCOMPARE(record.value("max_qp").toInt(-1), maximum);
+            QVERIFY(record.value("quality_strict").isBool());
+            QCOMPARE(record.value("quality_strict").toBool(), strict);
+            QVERIFY(!record.contains("target_kbps") && !record.contains("rtt_ms") &&
+                    !record.contains("quality_floor") && !record.contains("saver"));
+            record["source"] = "host"; record["run"] = QString(32, 'b'); record["elapsed_ms"] = 5;
+            record["address"] = "192.0.2.1";
+            const auto safe = Diagnostics::validate(record);
+            QCOMPARE(safe.value("quality_strict").toBool(), strict);
+            QCOMPARE(safe.value("min_qp").toInt(-1), minimum);
+            QCOMPARE(safe.value("max_qp").toInt(-1), maximum);
+            QVERIFY(!safe.contains("address"));
+            for (const auto& invalid : {QJsonValue("on"), QJsonValue(1), QJsonValue()}) {
+                auto altered = record; altered["quality_strict"] = invalid;
+                QVERIFY(Diagnostics::validate(altered).isEmpty());
+            }
+            auto altered = record; altered["quality_strict"] = !strict;
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+            altered = record; altered["min_qp"] = 32;
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+            altered = record; altered.remove("min_qp");
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+            altered = record; altered.remove("max_qp");
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+            altered = record; altered["event"] = "network";
+            QVERIFY(!Diagnostics::validate(altered).contains("quality_strict"));
+            QVERIFY(Diagnostics::project(line + " host=private.example").isEmpty());
+            QVERIFY(Diagnostics::project(line + " clipboard=private sentence").isEmpty());
+        }
+        for (const auto& suffix : {"min_qp=22, max_qp=26, strict=off", "min_qp=32, max_qp=51, strict=off",
+                 "min_qp=22, max_qp=51, strict=on", "min_qp=32, max_qp=52, strict=on",
+                 "min_qp=-1, max_qp=51, strict=on", "min_qp=22, max_qp=51, strict=true",
+                 "min_qp=22, max_qp=51, strict=private.example"})
+            QVERIFY(Diagnostics::project(QString("DeskPort live quality: %1").arg(suffix)).isEmpty());
+    }
+    void selectedDecoderMetadata_data() {
+        QTest::addColumn<int>("format"); QTest::addColumn<QString>("codec");
+        for (int format : {0x0001, 0x0004})
+            QTest::newRow(qPrintable(QString::number(format, 16))) << format << QString("h264");
+        for (int format : {0x0100, 0x0200, 0x0400, 0x0800})
+            QTest::newRow(qPrintable(QString::number(format, 16))) << format << QString("hevc");
+        for (int format : {0x1000, 0x2000, 0x4000, 0x8000})
+            QTest::newRow(qPrintable(QString::number(format, 16))) << format << QString("av1");
+    }
+    void selectedDecoderMetadata() {
+        QFETCH(int, format); QFETCH(QString, codec);
+        const auto line = QString("00:00:28 - SDL Info: Video stream is 2040x1228x60 (format 0x%1)").arg(format, 0, 16);
+        auto record = Diagnostics::project(line);
+        QCOMPARE(record.value("event").toString(), QString("decoder"));
+        QCOMPARE(record.value("codec").toString(), codec);
+        QCOMPARE(record.value("video_format").toInt(), format);
+        QCOMPARE(record.value("fps").toInt(), 60);
+        QCOMPARE(record.value("width").toInt(), 2040);
+        QCOMPARE(record.value("height").toInt(), 1228);
+        record["source"] = "client"; record["run"] = QString(32, 'a'); record["elapsed_ms"] = 10;
+        record["address"] = "192.0.2.1"; record["saver"] = true; record["min_qp"] = 22; record["max_qp"] = 26;
+        const auto safe = Diagnostics::validate(record);
+        QCOMPARE(safe.value("codec").toString(), codec);
+        QCOMPARE(safe.value("video_format").toInt(), format);
+        QCOMPARE(safe.value("fps").toInt(), 60);
+        QVERIFY(!safe.contains("address") && !safe.contains("saver") && !safe.contains("min_qp") && !safe.contains("max_qp"));
+        QVERIFY(Diagnostics::project(line + " host=private.example").isEmpty());
+        for (const auto& invalid : {QJsonValue(-1), QJsonValue(0), QJsonValue(1001), QJsonValue(59.5), QJsonValue("60")}) {
+            auto altered = record; altered["fps"] = invalid;
+            QVERIFY(Diagnostics::validate(altered).isEmpty());
+        }
+        auto altered = record; altered["codec"] = "private.example";
+        QVERIFY(Diagnostics::validate(altered).isEmpty());
+        altered = record; altered["video_format"] = 0x0101;
+        QVERIFY(Diagnostics::validate(altered).isEmpty());
+        altered = record; altered["video_format"] = format + 0.5;
+        QVERIFY(Diagnostics::validate(altered).isEmpty());
+        altered = record; altered["height"] = 0;
+        QVERIFY(Diagnostics::validate(altered).isEmpty());
+    }
+    void selectedDecoderRejectsUnknownFormatsAndBounds() {
+        for (const auto& line : {
+                 "Video stream is 2040x1228x60 (format 0x101)",
+                 "Video stream is 2040x1228x60 (format 0xffffffff)",
+                 "Video stream is 2040x1228x0 (format 0x100)",
+                 "Video stream is 2040x1228x1001 (format 0x100)",
+                 "Video stream is 0x1228x60 (format 0x100)",
+                 "Video stream is 2040x65536x60 (format 0x100)",
+                 "Video stream is 2040x1228x60 (format 0x100) clipboard=private sentence"})
+            QVERIFY(Diagnostics::project(line).isEmpty());
+        // Probing a decoder must not masquerade as the selected stream.
+        QVERIFY(!Diagnostics::project("Found HEVC decoder: available").contains("codec"));
+    }
     void rotationRetentionAndExportAllowlist() {
         QTemporaryDir dir; Diagnostics logs(nullptr,dir.path()); logs.setEnabled(true);
         for (int i=0;i<28000;++i) logs.record("host","Connection failed");
+        logs.ingest("host", "DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=off, saver=on, min_qp=22, max_qp=26\n");
+        logs.ingest("host", "DeskPort live quality: min_qp=22, max_qp=26, strict=on\n");
+        logs.ingest("host", "DeskPort live quality: min_qp=22, max_qp=51, strict=off\n");
+        logs.record("client", "Video stream is 2040x1228x60 (format 0x100)");
         QVERIFY(QFile::exists(dir.filePath("host-2.jsonl")));
         for (auto name:QDir(dir.path()).entryList({"*.jsonl"})) QVERIFY(QFileInfo(dir.filePath(name)).size()<=Diagnostics::FileLimit);
         QFile secret(dir.filePath("state.json")); QVERIFY(secret.open(QIODevice::WriteOnly)); secret.write("PAIRING_SECRET"); secret.close();

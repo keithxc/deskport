@@ -1,0 +1,504 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Test adapters around verbatim extracted Sunshine encoder definitions.
+#include "host/common/framecadence.h"
+#include "host/common/encoderpolicy.h"
+#include "host/common/ratecontrol.h"
+#include "host/macos/vtbitrate.h"
+#include "host/macos/vtlatency.h"
+#if __has_include("host/macos/vtclock.h")
+#include "host/macos/vtclock.h"
+#define DESKPORT_REPLAY_HAS_VT_CLOCK 1
+#endif
+#if __has_include("host/common/picturequality.h")
+#include "host/common/picturequality.h"
+#define DESKPORT_REPLAY_HAS_PICTURE_QUALITY 1
+#endif
+#include <CoreVideo/CoreVideo.h>
+#include <any>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <thread>
+#include <vector>
+extern "C" {
+#include <libavutil/hwcontext.h>
+#include <libavutil/opt.h>
+}
+using namespace std::chrono_literals;
+using namespace std::literals;
+using Clock = std::chrono::steady_clock;
+inline std::atomic<bool> replayError {false};
+struct NullLog {
+    bool error;
+    explicit NullLog(const char* level) : error(std::strcmp(level, "error") == 0 || std::strcmp(level, "fatal") == 0) { if (error) replayError = true; }
+    ~NullLog() { if (error) std::cerr << '\n'; }
+    template<typename T> NullLog& operator<<(const T& value) { if (error) std::cerr << value; return *this; }
+};
+#define BOOST_LOG(level) NullLog{#level}
+
+namespace replay {
+struct Scene { std::string id; std::vector<unsigned char> pixels; };
+struct Event { long long atUs; int scene; bool activity, recovery; };
+struct Provenance { int event = 0, scene = 0; long long captureUs = 0, submitUs = 0; int64_t input = -1; };
+inline Clock::time_point start;
+inline thread_local Provenance current;
+inline thread_local int64_t inputIndex = -1;
+inline thread_local OSStatus averageSetStatus = kVTPropertyNotSupportedErr;
+inline thread_local OSStatus limitsSetStatus = kVTPropertyNotSupportedErr;
+inline thread_local OSStatus minQpSetStatus = kVTPropertyNotSupportedErr;
+inline thread_local OSStatus maxQpSetStatus = kVTPropertyNotSupportedErr;
+inline thread_local std::int64_t averageRequestedBps = 0, limitsRequestedBytes = 0;
+inline thread_local int minQpRequested = 0;
+inline thread_local int maxQpRequested = 51;
+inline thread_local double limitsRequestedSeconds = 0;
+inline std::map<int64_t, Provenance> submitted;
+inline int64_t receivedPts = -1;
+inline int64_t lastWirePts = -1;
+inline unsigned long long packetCount = 0;
+inline std::ofstream output, packets, admissions, properties, propertyEvents;
+inline std::mutex propertyEventsMutex;
+inline std::vector<Scene> scenes;
+inline int width, height, fps, kbps, negotiatedKbps, burst;
+inline std::atomic<bool> failed {false};
+inline std::atomic<bool> stopRequested {false};
+inline std::mutex stopMutex;
+inline std::condition_variable stopCondition;
+inline void stop() { stopRequested = true; stopCondition.notify_all(); }
+inline bool waitUntil(Clock::time_point deadline) {
+    std::unique_lock lock(stopMutex);
+    stopCondition.wait_until(lock, deadline, [] { return stopRequested.load(); });
+    return !stopRequested;
+}
+inline long long nowUs() { return std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() - start).count(); }
+inline void propertyJson(CFTypeRef value, std::ostream& stream = properties) {
+    if (!value) { stream << "null"; return; }
+    if (CFGetTypeID(value) == CFBooleanGetTypeID()) { stream << (CFBooleanGetValue(static_cast<CFBooleanRef>(value)) ? "true" : "false"); return; }
+    if (CFGetTypeID(value) == CFNumberGetTypeID()) {
+        double number = 0; CFNumberGetValue(static_cast<CFNumberRef>(value), kCFNumberDoubleType, &number);
+        stream << number; return;
+    }
+    if (CFGetTypeID(value) == CFArrayGetTypeID()) {
+        auto array = static_cast<CFArrayRef>(value); stream << '[';
+        for (CFIndex i = 0; i < CFArrayGetCount(array); ++i) { if (i) stream << ','; propertyJson(CFArrayGetValueAtIndex(array, i), stream); }
+        stream << ']'; return;
+    }
+    stream << "null";
+}
+inline void recordProperties(VTCompressionSessionRef session, int rate, bool constrained, bool saver, bool accepted) {
+    properties << "{\"at_us\":" << nowUs() << ",\"requested_kbps\":" << rate << ",\"constrained\":" << constrained
+               << ",\"saver\":" << saver << ",\"accepted\":" << accepted
+               << ",\"requested_average_bps\":" << averageRequestedBps
+               << ",\"requested_burst\":" << (averageRequestedBps && limitsRequestedSeconds ? limitsRequestedBytes * 8.0 / limitsRequestedSeconds / averageRequestedBps : 0)
+               << ",\"requested_limit_bytes\":" << limitsRequestedBytes
+               << ",\"requested_limit_seconds\":" << limitsRequestedSeconds << ",\"set_AverageBitRate_status\":" << averageSetStatus
+               << ",\"set_DataRateLimits_status\":" << limitsSetStatus
+               << ",\"requested_min_qp\":" << minQpRequested << ",\"set_MinAllowedFrameQP_status\":" << minQpSetStatus
+               << ",\"requested_max_qp\":" << maxQpRequested << ",\"set_MaxAllowedFrameQP_status\":" << maxQpSetStatus;
+    for (const auto& [name, key] : std::initializer_list<std::pair<const char*, CFStringRef>>{
+            {"AverageBitRate", kVTCompressionPropertyKey_AverageBitRate}, {"DataRateLimits", kVTCompressionPropertyKey_DataRateLimits},
+            {"ExpectedFrameRate", kVTCompressionPropertyKey_ExpectedFrameRate}, {"RealTime", kVTCompressionPropertyKey_RealTime},
+            {"AllowFrameReordering", kVTCompressionPropertyKey_AllowFrameReordering}, {"MaxFrameDelayCount", kVTCompressionPropertyKey_MaxFrameDelayCount},
+            {"MinAllowedFrameQP", kVTCompressionPropertyKey_MinAllowedFrameQP}, {"MaxAllowedFrameQP", kVTCompressionPropertyKey_MaxAllowedFrameQP}}) {
+        CFTypeRef value = nullptr; const auto status = VTSessionCopyProperty(session, key, nullptr, &value);
+        properties << ",\"" << name << "\":{\"status\":" << status << ",\"value\":"; propertyJson(value); properties << '}';
+        if (value) CFRelease(value);
+    }
+    properties << "}\n";
+}
+inline int send(AVCodecContext* ctx, const AVFrame* frame) {
+    auto meta = current;
+    meta.submitUs = nowUs();
+    meta.input = inputIndex;
+    submitted[frame->pts] = meta;
+    const auto began = Clock::now();
+    const int result = avcodec_send_frame(ctx, frame);
+    admissions << meta.input << ',' << meta.submitUs << ',' << meta.event << ',' << scenes.at(meta.scene).id
+               << ',' << meta.captureUs << ',' << result << ','
+               << std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() - began).count() << ',' << frame->pts << '\n';
+    return result;
+}
+inline int receive(AVCodecContext* ctx, AVPacket* packet) {
+    const int result = avcodec_receive_packet(ctx, packet);
+    if (result >= 0) receivedPts = packet->pts;
+    return result;
+}
+}
+
+// Observe setter return values without replacing the production rate adapter
+// or interpreting an unsupported getter as proof that a requested limit exists.
+extern "C" OSStatus VTSessionSetProperty(VTSessionRef session, CFStringRef key, CFTypeRef value) {
+    using Setter = decltype(&VTSessionSetProperty);
+    static const Setter setter = reinterpret_cast<Setter>(dlsym(RTLD_NEXT, "VTSessionSetProperty"));
+    const auto status = setter ? setter(session, key, value) : kVTInvalidSessionErr;
+    if (CFEqual(key, kVTCompressionPropertyKey_AverageBitRate)) {
+        replay::averageSetStatus = status;
+        if (value && CFGetTypeID(value) == CFNumberGetTypeID())
+            CFNumberGetValue(static_cast<CFNumberRef>(value), kCFNumberSInt64Type, &replay::averageRequestedBps);
+    }
+    if (CFEqual(key, kVTCompressionPropertyKey_DataRateLimits)) {
+        replay::limitsSetStatus = status;
+        if (value && CFGetTypeID(value) == CFArrayGetTypeID() && CFArrayGetCount(static_cast<CFArrayRef>(value)) == 2) {
+            auto values = static_cast<CFArrayRef>(value);
+            CFNumberGetValue(static_cast<CFNumberRef>(CFArrayGetValueAtIndex(values, 0)), kCFNumberSInt64Type, &replay::limitsRequestedBytes);
+            CFNumberGetValue(static_cast<CFNumberRef>(CFArrayGetValueAtIndex(values, 1)), kCFNumberDoubleType, &replay::limitsRequestedSeconds);
+        }
+    }
+    if (CFEqual(key, kVTCompressionPropertyKey_MinAllowedFrameQP)) {
+        replay::minQpSetStatus = status;
+        if (value && CFGetTypeID(value) == CFNumberGetTypeID())
+            CFNumberGetValue(static_cast<CFNumberRef>(value), kCFNumberIntType, &replay::minQpRequested);
+    }
+    if (CFEqual(key, kVTCompressionPropertyKey_MaxAllowedFrameQP)) {
+        replay::maxQpSetStatus = status;
+        if (value && CFGetTypeID(value) == CFNumberGetTypeID())
+            CFNumberGetValue(static_cast<CFNumberRef>(value), kCFNumberIntType, &replay::maxQpRequested);
+    }
+    for (const auto& [name, observed] : std::initializer_list<std::pair<const char*, CFStringRef>>{
+            {"AverageBitRate", kVTCompressionPropertyKey_AverageBitRate}, {"DataRateLimits", kVTCompressionPropertyKey_DataRateLimits},
+            {"MinAllowedFrameQP", kVTCompressionPropertyKey_MinAllowedFrameQP}, {"MaxAllowedFrameQP", kVTCompressionPropertyKey_MaxAllowedFrameQP}}) {
+        if (CFEqual(key, observed)) {
+            std::lock_guard lock(replay::propertyEventsMutex);
+            replay::propertyEvents << "{\"at_us\":" << replay::nowUs() << ",\"property\":\"" << name << "\",\"status\":" << status << ",\"requested\":";
+            replay::propertyJson(value, replay::propertyEvents);
+            replay::propertyEvents << "}\n";
+            break;
+        }
+    }
+    return status;
+}
+
+namespace platf {
+struct img_t {
+    virtual ~img_t() = default;
+    std::optional<Clock::time_point> frame_timestamp;
+    replay::Provenance provenance;
+};
+struct pixel_buffer_t {
+    CVPixelBufferRef buf = nullptr;
+    explicit pixel_buffer_t(CVPixelBufferRef value) : buf(value) {}
+    ~pixel_buffer_t() { if (buf) CVPixelBufferRelease(buf); }
+};
+struct av_img_t : img_t { std::shared_ptr<pixel_buffer_t> pixel_buffer; };
+struct encode_device_t {
+    virtual ~encode_device_t() = default;
+    virtual int convert(img_t&) = 0;
+};
+inline void free_frame(AVFrame* value) { av_frame_free(&value); }
+inline void free_buffer(void*, uint8_t* data) { CVPixelBufferRelease(reinterpret_cast<CVPixelBufferRef>(data)); }
+class nv12_zero_device : public encode_device_t {
+public:
+    std::unique_ptr<AVFrame, decltype(&free_frame)> av_frame {av_frame_alloc(), free_frame};
+    AVFrame* frame = av_frame.get();
+    int convert(img_t& img) override;
+};
+/* PRODUCTION_NATIVE_CONVERSION */
+
+inline std::shared_ptr<img_t> image(int scene, int event, long long captureUs) {
+    CVPixelBufferRef buffer = nullptr;
+    if (CVPixelBufferCreate(nullptr, replay::width, replay::height, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                            nullptr, &buffer) != kCVReturnSuccess) throw std::runtime_error("CVPixelBufferCreate failed");
+    auto result = std::make_shared<av_img_t>();
+    result->pixel_buffer = std::make_shared<pixel_buffer_t>(buffer);
+    CVBufferSetAttachment(buffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(buffer, kCVImageBufferColorPrimariesKey, kCVImageBufferColorPrimaries_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(buffer, kCVImageBufferTransferFunctionKey, kCVImageBufferTransferFunction_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate);
+    CVPixelBufferLockBaseAddress(buffer, 0);
+    auto& pixels = replay::scenes.at(scene).pixels;
+    for (int plane = 0; plane < 2; ++plane) {
+        auto* dest = static_cast<unsigned char*>(CVPixelBufferGetBaseAddressOfPlane(buffer, plane));
+        const auto stride = CVPixelBufferGetBytesPerRowOfPlane(buffer, plane);
+        const auto* source = pixels.data() + (plane ? replay::width * replay::height : 0);
+        for (int y = 0; y < replay::height / (plane ? 2 : 1); ++y)
+            std::memcpy(dest + y * stride, source + y * replay::width, replay::width);
+    }
+    CVPixelBufferUnlockBaseAddress(buffer, 0);
+    result->provenance = {event, scene, captureUs, 0};
+    result->frame_timestamp = replay::start + std::chrono::microseconds(captureUs);
+    return result;
+}
+struct display_t {
+    int width = replay::width, height = replay::height;
+    std::shared_ptr<img_t> alloc_img() { return image(0, 0, 0); }
+    int dummy_img(img_t*) { return 0; }
+};
+inline void enable_mouse_keys() {}
+}
+
+template<typename T> struct EventMailbox {
+    mutable std::mutex mutex;
+    std::condition_variable condition;
+    std::optional<T> value;
+    bool alive = true;
+    void raise(T next) { { std::lock_guard lock(mutex); value = std::move(next); } condition.notify_one(); }
+    template<typename Rep, typename Period> std::optional<T> pop(std::chrono::duration<Rep, Period> wait) {
+        std::unique_lock lock(mutex);
+        condition.wait_for(lock, wait, [&] { return value.has_value() || !alive; });
+        auto result = std::move(value); value.reset(); return result;
+    }
+    std::optional<T> pop() { return pop(0ms); }
+    bool peek() const { std::lock_guard lock(mutex); return value.has_value(); }
+    bool running() const { std::lock_guard lock(mutex); return alive; }
+    void stop() { { std::lock_guard lock(mutex); alive = false; } condition.notify_all(); }
+};
+struct ImageMailbox {
+    EventMailbox<std::shared_ptr<platf::img_t>> mailbox;
+    void raise(std::shared_ptr<platf::img_t> img) { mailbox.raise(std::move(img)); }
+    bool peek() const { return mailbox.peek(); }
+    bool running() const { return mailbox.running(); }
+    void stop() { mailbox.stop(); }
+    template<typename Rep, typename Period> std::shared_ptr<platf::img_t> pop(std::chrono::duration<Rep, Period> wait) {
+        auto item = mailbox.pop(wait); return item ? *item : nullptr;
+    }
+};
+struct packet_raw_avcodec {
+    using replace_t = std::pair<std::string_view, std::string_view>;
+    AVPacket* av_packet = av_packet_alloc();
+    std::optional<Clock::time_point> frame_timestamp;
+    std::vector<replace_t>* replacements = nullptr;
+    void* channel_data = nullptr;
+    ~packet_raw_avcodec() { av_packet_free(&av_packet); }
+};
+using packet_t = std::unique_ptr<packet_raw_avcodec>;
+struct PacketSink {
+    void raise(packet_t packet) {
+        auto it = replay::submitted.find(replay::receivedPts);
+        if (it == replay::submitted.end()) throw std::runtime_error("Packet PTS has no input provenance");
+        const auto& meta = it->second;
+        const auto* p = packet->av_packet;
+        if (replay::lastWirePts >= 0 && p->pts != replay::lastWirePts + 1)
+            throw std::runtime_error("Production output frame sequence is not contiguous");
+        replay::lastWirePts = p->pts;
+        replay::output.write(reinterpret_cast<const char*>(p->data), p->size);
+        replay::packets << replay::packetCount++ << ',' << meta.input << ',' << meta.submitUs << ',' << meta.event << ','
+                        << replay::scenes.at(meta.scene).id << ',' << replay::receivedPts << ',' << replay::receivedPts << ','
+                        << p->size << ',' << bool(p->flags & AV_PKT_FLAG_KEY) << ',' << replay::nowUs() << ',' << meta.captureUs << ',' << p->pts << ',' << meta.event << '\n';
+    }
+};
+namespace safe {
+struct Mail {
+    std::map<std::string, std::any> events;
+    template<typename T> std::shared_ptr<EventMailbox<T>> event(std::string_view name) {
+        const std::string key(name);
+        auto& slot = events[key];
+        if (!slot.has_value()) slot = std::make_shared<EventMailbox<T>>();
+        return std::any_cast<std::shared_ptr<EventMailbox<T>>>(slot);
+    }
+};
+using mail_t = std::shared_ptr<Mail>;
+using signal_t = EventMailbox<bool>;
+struct mail_raw_t { template<typename T> using queue_t = std::shared_ptr<PacketSink>; };
+}
+namespace mail { inline constexpr auto shutdown = "shutdown", idr = "idr", invalidate_ref_frames = "invalidate_ref_frames"; }
+namespace deskport::browser {
+inline std::shared_ptr<PacketSink> video_queue(void*) { return std::make_shared<PacketSink>(); }
+inline void publish_video(std::shared_ptr<PacketSink>& sink, packet_t packet) { sink->raise(std::move(packet)); }
+}
+namespace deskport_admission { inline std::atomic<bool> video_encode_paused {false}; }
+namespace util {
+template<typename Fn> struct Guard { Fn fn; ~Guard() { fn(); } };
+template<typename Fn> auto fail_guard(Fn fn) { return Guard<Fn>{std::move(fn)}; }
+}
+namespace config { inline struct { int max_bitrate = 0; double minimum_fps_target = 0; } video; }
+namespace cbs {
+struct Buffer : std::vector<unsigned char> {
+    unsigned char* begin() { return data(); }
+    const unsigned char* begin() const { return data(); }
+};
+struct nal_t { Buffer old, _new; };
+struct Sets { nal_t sps, vps; };
+inline Sets make_sps_h264(AVCodecContext*, AVPacket*) { throw std::runtime_error("SPS rewriting is outside this fixture"); }
+inline Sets make_sps_hevc(AVCodecContext*, AVPacket*) { throw std::runtime_error("SPS rewriting is outside this fixture"); }
+}
+namespace video {
+std::mutex deskport_rate_memory_mutex;
+deskport::RateMemory deskport_rate_memory;
+std::int64_t deskport_wall_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count(); }
+using img_event_t = std::shared_ptr<ImageMailbox>;
+struct config_t { int framerate = replay::fps, bitrate = replay::negotiatedKbps; bool deskport_smart = true, deskport_saver = true; };
+inline constexpr int ASYNC_TEARDOWN = 1;
+struct encoder_t { int flags = 0; };
+struct CodecDeleter { void operator()(AVCodecContext* ctx) const { avcodec_free_context(&ctx); } };
+struct encode_session_t {
+    virtual ~encode_session_t() = default;
+    virtual int convert(platf::img_t&) = 0;
+    virtual void request_idr_frame() = 0;
+    virtual void request_normal_frame() = 0;
+    virtual void invalidate_ref_frames(int64_t, int64_t) = 0;
+    virtual bool deskport_set_bitrate(int, bool, bool) = 0;
+    virtual bool deskport_record_bitrate(int, bool, bool) = 0;
+};
+struct avcodec_encode_session_t : encode_session_t {
+    std::unique_ptr<AVCodecContext, CodecDeleter> avcodec_ctx;
+    std::unique_ptr<platf::nv12_zero_device> device;
+    bool deskport_complete_vt_frames = true;
+    deskport::KeyframeRequests deskport_keys;
+#ifdef DESKPORT_REPLAY_HAS_PICTURE_QUALITY
+    deskport::PictureQuality deskport_quality;
+#endif
+#ifdef DESKPORT_REPLAY_HAS_VT_CLOCK
+    deskport::vt::FrameClock deskport_clock;
+#endif
+    int64_t deskport_last_pts = -1, deskport_pts_shift = 0;
+    int inject = 0;
+    cbs::nal_t sps, vps;
+    std::vector<packet_raw_avcodec::replace_t> replacements;
+    AVBufferRef *frames = nullptr, *hardware = nullptr;
+    ~avcodec_encode_session_t() override { avcodec_ctx.reset(); device.reset(); av_buffer_unref(&frames); av_buffer_unref(&hardware); }
+    int convert(platf::img_t& img) override { const int ret = device->convert(img); if (!ret) replay::current = img.provenance; return ret; }
+    void request_idr_frame() override { device->frame->pict_type = AV_PICTURE_TYPE_I; device->frame->flags |= AV_FRAME_FLAG_KEY; }
+    void request_normal_frame() override { device->frame->pict_type = AV_PICTURE_TYPE_NONE; device->frame->flags &= ~AV_FRAME_FLAG_KEY; }
+    void invalidate_ref_frames(int64_t, int64_t) override { request_idr_frame(); }
+/* PRODUCTION_RATE_SETTER */
+    bool deskport_record_bitrate(int rate, bool constrained, bool saver) override {
+        const bool accepted = deskport_set_bitrate(rate, constrained, saver);
+        replay::recordProperties(deskport::vt::session(avcodec_ctx.get()), rate, constrained, saver, accepted);
+        if (!accepted) { replay::failed = true; replay::stop(); throw std::runtime_error("Production encoder rejected rate/quality setup; replay stopped"); }
+        return accepted;
+    }
+};
+// Factory is the explicit adapter boundary; the encoder loop and submission
+// functions below remain the exact generated production definitions.
+inline std::unique_ptr<encode_session_t> make_encode_session(platf::display_t*, const encoder_t&, const config_t& config,
+                                                          int width, int height, std::unique_ptr<platf::encode_device_t>) {
+    auto result = std::make_unique<avcodec_encode_session_t>();
+    const auto* codec = avcodec_find_encoder_by_name("hevc_videotoolbox");
+    result->avcodec_ctx.reset(avcodec_alloc_context3(codec));
+    auto* ctx = result->avcodec_ctx.get();
+    if (!codec || !ctx) throw std::runtime_error("VideoToolbox encoder unavailable");
+    ctx->width = width; ctx->height = height; ctx->pix_fmt = AV_PIX_FMT_VIDEOTOOLBOX; ctx->sw_pix_fmt = AV_PIX_FMT_NV12;
+    ctx->time_base = {1, config.framerate}; ctx->framerate = {config.framerate, 1};
+    ctx->flags = AV_CODEC_FLAG_CLOSED_GOP | AV_CODEC_FLAG_LOW_DELAY; ctx->flags2 = AV_CODEC_FLAG2_FAST;
+    ctx->gop_size = 32767; ctx->max_b_frames = 0; ctx->refs = 1;
+    ctx->color_range = AVCOL_RANGE_MPEG; ctx->colorspace = AVCOL_SPC_BT709;
+    ctx->color_primaries = AVCOL_PRI_BT709; ctx->color_trc = AVCOL_TRC_BT709;
+    ctx->bit_rate = ctx->rc_max_rate = ctx->rc_min_rate = std::int64_t(config.bitrate) * 1000;
+    ctx->rc_buffer_size = int(ctx->bit_rate / config.framerate);
+    if (av_hwdevice_ctx_create(&result->hardware, AV_HWDEVICE_TYPE_VIDEOTOOLBOX, nullptr, nullptr, 0) < 0) throw std::runtime_error("VT hardware context failed");
+    result->frames = av_hwframe_ctx_alloc(result->hardware);
+    auto* fctx = reinterpret_cast<AVHWFramesContext*>(result->frames->data);
+    fctx->format = AV_PIX_FMT_VIDEOTOOLBOX; fctx->sw_format = AV_PIX_FMT_NV12;
+    fctx->width = width; fctx->height = height;
+    if (av_hwframe_ctx_init(result->frames) < 0) throw std::runtime_error("VT frame context failed");
+    ctx->hw_frames_ctx = av_buffer_ref(result->frames);
+    AVDictionary* options = nullptr;
+    av_dict_set(&options, "realtime", "1", 0); av_dict_set(&options, "prio_speed", "1", 0); av_dict_set(&options, "max_ref_frames", "1", 0);
+    const int ret = avcodec_open2(ctx, codec, &options); av_dict_free(&options);
+    if (ret < 0) throw std::runtime_error("VT encoder creation failed");
+    result->device = std::make_unique<platf::nv12_zero_device>();
+    auto* frame = result->device->frame;
+    frame->format = ctx->pix_fmt; frame->width = width; frame->height = height;
+    frame->color_range = ctx->color_range; frame->colorspace = ctx->colorspace;
+    frame->color_primaries = ctx->color_primaries; frame->color_trc = ctx->color_trc;
+    return result;
+}
+#define avcodec_send_frame replay::send
+#define avcodec_receive_packet replay::receive
+/* PRODUCTION_AVCODEC_ENCODER */
+#undef avcodec_send_frame
+#undef avcodec_receive_packet
+inline int encode(int64_t number, encode_session_t& session, safe::mail_raw_t::queue_t<packet_t>& packets,
+                  void* channel, std::optional<Clock::time_point> timestamp) {
+    replay::inputIndex = number;
+    return encode_avcodec(number, dynamic_cast<avcodec_encode_session_t&>(session), packets, channel, timestamp);
+}
+#define deskport_set_bitrate deskport_record_bitrate
+/* PRODUCTION_ASYNC_ENCODER */
+#undef deskport_set_bitrate
+}
+
+int main(int argc, char** argv) {
+    try {
+        if (argc < 10 || argc > 12) throw std::runtime_error("usage: replay width height fps kbps burst durationMs scenes.list events.tsv prefix [negotiatedKbps [ceilingPermille]]");
+        replay::width = std::stoi(argv[1]); replay::height = std::stoi(argv[2]); replay::fps = std::stoi(argv[3]);
+        replay::kbps = std::stoi(argv[4]); replay::burst = std::stoi(argv[5]); const int duration = std::stoi(argv[6]);
+        replay::negotiatedKbps = argc >= 11 ? std::stoi(argv[10]) : replay::kbps;
+        const int ceilingPermille = argc == 12 ? std::stoi(argv[11]) : deskport::ceilingPermille(replay::kbps, replay::negotiatedKbps);
+        if (replay::width <= 0 || replay::height <= 0 || replay::width % 2 || replay::height % 2 || replay::fps <= 0 || replay::kbps <= 0 || replay::negotiatedKbps < replay::kbps || replay::burst <= 0 || duration <= 0 || ceilingPermille < 0 || ceilingPermille > 1000)
+            throw std::runtime_error("invalid replay dimensions/rate/duration");
+        std::ifstream list(argv[7]); std::string line;
+        while (std::getline(list, line)) {
+            const auto tab = line.find('\t');
+            if (tab == std::string::npos) throw std::runtime_error("invalid scenes.list");
+            std::ifstream input(line.substr(tab + 1), std::ios::binary);
+            replay::Scene scene {line.substr(0, tab), std::vector<unsigned char>(std::istreambuf_iterator<char>(input), {})};
+            if (scene.pixels.size() != std::size_t(replay::width) * replay::height * 3 / 2) throw std::runtime_error("invalid NV12 file length");
+            replay::scenes.push_back(std::move(scene));
+        }
+        if (replay::scenes.empty()) throw std::runtime_error("no scenes");
+        std::vector<replay::Event> events;
+        std::ifstream timeline(argv[8]);
+        while (std::getline(timeline, line)) {
+            std::istringstream row(line); replay::Event event {};
+            if (!(row >> event.atUs >> event.scene >> event.activity >> event.recovery) || event.scene < 0 ||
+                event.scene >= int(replay::scenes.size()) || (events.empty() ? event.atUs != 0 : event.atUs <= events.back().atUs))
+                throw std::runtime_error("invalid timeline");
+            events.push_back(event);
+        }
+        if (events.empty() || events.back().atUs >= duration * 1000LL) throw std::runtime_error("invalid timeline duration");
+        const std::string prefix(argv[9]);
+        std::filesystem::create_directories(std::filesystem::path(prefix).parent_path());
+        for (const auto* suffix : {".hevc", ".packets.csv", ".admissions.csv", ".runtime.json", ".properties.jsonl", ".property-events.jsonl"})
+            if (std::filesystem::exists(prefix + suffix)) throw std::runtime_error("Replay output already exists; choose a new prefix");
+        replay::output.open(prefix + ".hevc", std::ios::binary);
+        replay::packets.open(prefix + ".packets.csv");
+        replay::admissions.open(prefix + ".admissions.csv");
+        replay::properties.open(prefix + ".properties.jsonl");
+        replay::propertyEvents.open(prefix + ".property-events.jsonl");
+        if (!replay::output || !replay::packets || !replay::admissions || !replay::properties || !replay::propertyEvents) throw std::runtime_error("could not open output files");
+        replay::packets << "wire_index,input,sim_us,event,scene,native_pts,packet_pts,bytes,key,output_us,capture_us,wire_pts,content_seq\n";
+        replay::admissions << "input,submit_us,event,scene,capture_us,status,submit_duration_us,native_pts\n";
+        auto mailbox = std::make_shared<safe::Mail>();
+        auto images = std::make_shared<ImageMailbox>();
+        safe::signal_t reinit;
+        auto shutdown = mailbox->event<bool>(mail::shutdown);
+        auto idr = mailbox->event<bool>(mail::idr);
+        auto activity = mailbox->event<deskport::ActivityBoost>("deskport_activity");
+        // Precreate all typed mailboxes before the producer and encoder run.
+        mailbox->event<int>("deskport_congestion"); mailbox->event<int>("deskport_rtt");
+        mailbox->event<int>("deskport_sent_kbps"); mailbox->event<int>("deskport_rate_kbps");
+        mailbox->event<std::pair<int64_t, int64_t>>(mail::invalidate_ref_frames);
+        deskport::liveSaver = 1;
+        deskport::liveCeilingPermille = ceilingPermille;
+        std::ofstream runtime(prefix + ".runtime.json");
+        runtime << "{\"negotiatedKbps\":" << replay::negotiatedKbps << ",\"requestedCapKbps\":" << replay::kbps
+                << ",\"ceilingPermille\":" << deskport::liveCeilingPermille.load()
+                << ",\"effectiveCapKbps\":" << deskport::applyPermille(replay::negotiatedKbps, deskport::liveCeilingPermille.load())
+                << ",\"requestedBurstHint\":" << replay::burst
+                << ",\"codec\":\"hevc_videotoolbox\",\"factory\":\"test adapter\"}\n";
+        replay::start = Clock::now();
+        auto display = std::make_shared<platf::display_t>();
+        int frame = 1;
+        std::jthread producer([&] {
+            try {
+                for (int i = 0; i < int(events.size()); ++i) {
+                    const auto& event = events[i];
+                    if (!replay::waitUntil(replay::start + std::chrono::microseconds(event.atUs))) break;
+                    images->raise(platf::image(event.scene, i, replay::nowUs()));
+                    if (event.activity) activity->raise({std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count() + 350, 60});
+                    if (event.recovery) idr->raise(true);
+                }
+                replay::waitUntil(replay::start + std::chrono::milliseconds(duration));
+            } catch (const std::exception& error) { std::cerr << error.what() << '\n'; replay::failed = true; }
+            shutdown->raise(true); images->stop();
+        });
+        auto stopOnExit = util::fail_guard([] { replay::stop(); });
+        video::encode_run(frame, mailbox, images, {}, display, nullptr, reinit, {}, nullptr);
+        replay::stop();
+        producer.join();
+        std::cout << "production asynchronous replay finished; submissions=" << frame - 1 << '\n';
+        return replay::failed || replayError || frame <= 1 || replay::packetCount == 0 ? 1 : 0;
+    } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
+}

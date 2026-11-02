@@ -10,13 +10,17 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
             f.extractall(target, filter='data')
         if not (target / 'src').exists():
             target = next(p for p in target.iterdir() if (p / 'src').exists())
-        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'vt-drain', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'encoder-policy', 'remote-rate'):
+        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'encoder-policy', 'vt-drain', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'remote-rate'):
             subprocess.run(['python3', str(root / f'host/overlays/patch-host-{name}.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-encoder-policy.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-remote-rate.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-vt-drain.py'), str(target)], check=True)
         for _ in range(2):
             subprocess.run(['python3', str(root / 'host/overlays/patch-host-data-saver.py'), str(target)], check=True)
+        # The native capture marker must compose with the saver conversion gate
+        # in both orders, including reapplication after all replacements.
+        subprocess.run(['python3', str(root / 'host/overlays/patch-host-vt-drain.py'), str(target)], check=True)
+        subprocess.run(['python3', str(root / 'host/overlays/patch-host-data-saver.py'), str(target)], check=True)
         stream = (target / 'src/stream.cpp').read_text()
         assert stream.count('deskport::remotePacketsPerMs(') == 1
         assert stream.count('event<int>("deskport_rtt")->raise(') == 1
@@ -25,6 +29,15 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert video.count('deskport::vt::ScopedFrameCompletion deskport_completion(session.deskport_complete_vt_frames);') == 1
         assert video.count('if (deskport_completion.status() != noErr)') == 2
         assert video.count('session->deskport_complete_vt_frames = config.deskport_smart || config.deskport_saver;') == 1
+        assert video.count('#include "deskport/macos/vtclock.h"') == 1
+        assert video.count('deskport::vt::FrameClock deskport_clock;') == 1
+        submit = video.index('session.deskport_clock.submit(')
+        assert submit < video.index('avcodec_send_frame(ctx.get(), frame)', submit)
+        native_key = video.index('session.deskport_keys.take(av_packet->pts)')
+        restore_identity = video.index('session.deskport_clock.take(av_packet->pts)')
+        compact_wire = video.index('av_packet->pts -= session.deskport_pts_shift;')
+        assert native_key < restore_identity < compact_wire
+        assert video.index('av_packet->pts = *identity;', restore_identity) < compact_wire
         assert 'const bool smart = config.deskport_smart || config.deskport_saver;' in video
         assert 'if (ctx->config.deskport_smart || deskport::liveSaver.load() == 1)' in video
         assert 'deskport_cadence.emplace(ctx.config.framerate,' in video

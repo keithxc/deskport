@@ -2,6 +2,7 @@
 #pragma once
 #include <CoreFoundation/CoreFoundation.h>
 #include <VideoToolbox/VideoToolbox.h>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <limits>
@@ -30,6 +31,18 @@ inline VTCompressionSessionRef session(AVCodecContext* ctx) {
     if (prefix->codec_id != ctx->codec_id || !prefix->session) return nullptr;
     if (CFGetTypeID(prefix->session) != VTCompressionSessionGetTypeID()) return nullptr;
     return prefix->session;
+}
+
+// Expected cadence guides the native encoder's rate allocation for sparse
+// desktop input. Actual media time still comes from each submitted PTS; this
+// hint changes neither AVCodecContext's negotiated rate nor its time base.
+inline bool applyExpectedFrameRate(VTCompressionSessionRef s, double fps) {
+    if (!s || !std::isfinite(fps) || fps <= 0 || fps > 1000) return false;
+    CFNumberRef value = CFNumberCreate(nullptr, kCFNumberDoubleType, &fps);
+    if (!value) return false;
+    const OSStatus status = VTSessionSetProperty(s, kVTCompressionPropertyKey_ExpectedFrameRate, value);
+    CFRelease(value);
+    return status == noErr;
 }
 
 // Average bitrate with FFmpeg's original one-second hard limit. Shorter
@@ -64,5 +77,23 @@ inline bool applyQualityFloor(VTCompressionSessionRef s, int minQp) {
     const OSStatus status = VTSessionSetProperty(s, kVTCompressionPropertyKey_MinAllowedFrameQP, value);
     CFRelease(value);
     return status == noErr;
+}
+
+inline bool applyQualityCeiling(VTCompressionSessionRef s, int maxQp) {
+    if (!s || maxQp < 0 || maxQp > 51) return false;
+    CFNumberRef value = CFNumberCreate(nullptr, kCFNumberIntType, &maxQp);
+    const OSStatus status = VTSessionSetProperty(s, kVTCompressionPropertyKey_MaxAllowedFrameQP, value);
+    CFRelease(value);
+    return status == noErr;
+}
+
+// Relax the previous maximum first: a congestion transition can raise the
+// minimum above the saver's former maximum. All writes occur on the encoder
+// thread before the next submission. Native rate limits remain in force;
+// an unaffordable quality bound may make the encoder drop a picture.
+inline bool applyQualityRange(VTCompressionSessionRef s, int minQp, int maxQp) {
+    if (!s || minQp < 0 || maxQp > 51 || minQp > maxQp) return false;
+    return applyQualityCeiling(s, 51) && applyQualityFloor(s, minQp) &&
+           (maxQp == 51 || applyQualityCeiling(s, maxQp));
 }
 }

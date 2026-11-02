@@ -1,3 +1,32 @@
+## Data saver native clock and text recovery regression — 2026-11-02
+
+Reason: the previous candidate still left text blurry for about three seconds
+after a window switch. A resource-driven replay of the real asynchronous encode
+loop reproduced the failure at the same 992 kbps native cap; all 14 verified
+switches failed the fixed 30 dB text / 750 ms criterion.
+
+- VideoToolbox media PTS now follows real sparse submission spacing. The host
+  restores each original logical frame identity after matching native key-frame
+  output and before capture/size association and contiguous wire numbering.
+- Uncongested saver uses minimum QP 22 and protects each fresh picture's first
+  attempt with maximum 26. Refinement, idle, requested keyframes and the retry
+  after a skipped strict picture use maximum 51. Continuous capture cannot
+  starve that retry. Congestion and ordinary mode retain their own ranges;
+  same-bitrate mode changes apply on the encoder thread. The average target and
+  3x burst are unchanged. A native budget heuristic disables the hard first-frame
+  bound below 300 kbps per million pixels. The native frame-rate hint follows
+  the saver ceiling (8 fps), restoring the negotiated rate when saver is off.
+- The local replay extracts production encode, mailbox/refinement, conversion
+  and rate-setter code. Generated backgrounds, dark/light text, Chinese small
+  text and a persistent local edit are software-decoded against exact references.
+  Two 42-second cases passed 14/14 and 15/15 events, at most 20 ms sustained
+  recovery and about 226–227 MB/hour estimated IPv4 video traffic including FEC. This excludes
+  real transport/client presentation and carrier-total acceptance.
+- Diagnostics recognize actual stream metadata and native rate/QP transitions.
+  Portable clock and packetization regressions run in CI. See
+  [the local regression procedure](DATA_SAVER_REGRESSION.md) for one-command
+  reproduction, evidence and scope. Live acceptance follows manual activation.
+
 ## Data saver final-picture delivery and refinement — 2026-11-02
 
 Reason: a popup could leave the desktop blurry for seconds. Sparse hardware
