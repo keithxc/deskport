@@ -1795,8 +1795,11 @@ bool Session::startConnectionAsync()
                               !m_Preferences->multiController,
                               rtspSessionUrl,
                               m_RecoveryDeadline ? qBound(1, int(m_RecoveryDeadline - QDateTime::currentMSecsSinceEpoch()), ADAPTIVE_RESUME_TIMEOUT_MS) : m_AdaptiveResume ? ADAPTIVE_RESUME_TIMEOUT_MS : 0,
-                              m_NegotiatedMediaSettings.remoteAudio, m_Preferences->remoteInput, m_NegotiatedMediaSettings.smartStreaming,
-                              m_Preferences->dataSaver, m_RateCapKbps);
+                              m_Preferences->remoteAudio, m_Preferences->remoteInput, m_Preferences->smartStreaming,
+                              m_Preferences->dataSaver, m_RateCapKbps, &m_HostSessionSettings);
+                m_NegotiatedMediaSettings = DeskPortStream::sessionMediaSettings(
+                    m_Preferences->dataSaver, m_Preferences->remoteAudio, m_Preferences->smartStreaming,
+                    m_HostSessionSettings);
                 break;
             } catch (const GfeHttpResponseException& e) {
                 // A replacement supervisor has admitted this controller, but

@@ -197,7 +197,8 @@ NvHTTP::startApp(QString verb,
                  int gamepadMask,
                  bool persistGameControllersOnDisconnect,
                  QString& rtspSessionUrl,
-                 int timeoutMs, bool remoteAudio, bool remoteInput, bool smart, bool dataSaver, int rateCapKbps)
+                 int timeoutMs, bool remoteAudio, bool remoteInput, bool smart, bool dataSaver, int rateCapKbps,
+                 bool* hostSessionSettings)
 {
     if (httpsPort() == 0) getServerInfo(NVLL_NONE);
     // Capability decisions must come from the pinned endpoint, never the
@@ -208,10 +209,12 @@ NvHTTP::startApp(QString verb,
     if (!sessionSettings && (!remoteAudio || !remoteInput)) {
         throw GfeHttpResponseException(400, tr("This host does not support per-session audio capture or view-only control. Update the DeskPort host, then reconnect."));
     }
+    if (hostSessionSettings) *hostSessionSettings = sessionSettings;
+    const auto media = DeskPortStream::sessionMediaSettings(dataSaver, remoteAudio, smart, sessionSettings);
     const QString options = sessionSettings ?
-        "&deskportAudio=" + QString::number(remoteAudio ? 1 : 0) +
+        "&deskportAudio=" + QString::number(media.remoteAudio ? 1 : 0) +
         "&deskportInput=" + QString::number(remoteInput ? 1 : 0) +
-        "&deskportSmart=" + QString::number(smart ? 1 : 0) +
+        "&deskportSmart=" + QString::number(media.smartStreaming ? 1 : 0) +
         // Older hosts ignore it; newer ones refresh a still picture less often.
         "&deskportSaver=" + QString::number(dataSaver ? 1 : 0) +
         // Initial live ceiling (protocol/VIDEO_RATE.md); 0 when uncapped.

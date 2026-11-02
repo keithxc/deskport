@@ -25,7 +25,11 @@ struct SessionMediaSettings {
 
 // Data saver overrides the running session without changing saved preferences.
 // Audio capture and smart cadence are launch-time options on the current host.
-inline SessionMediaSettings sessionMediaSettings(bool dataSaver, bool remoteAudio, bool smartStreaming) {
+// A host without per-session settings cannot drop audio; saver then only caps
+// the bitrate, so enabling it never makes the launch request fail.
+inline SessionMediaSettings sessionMediaSettings(bool dataSaver, bool remoteAudio, bool smartStreaming,
+                                                 bool hostSessionSettings = true) {
+    if (!hostSessionSettings) return {remoteAudio, smartStreaming};
     return {remoteAudio && !dataSaver, smartStreaming || dataSaver};
 }
 

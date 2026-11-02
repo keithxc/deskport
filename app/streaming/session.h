@@ -219,6 +219,8 @@ private:
     bool m_LiveRateNegotiated = false;
     int m_AutomaticKbps = 0, m_RateCapKbps = 0;
     DeskPortStream::SessionMediaSettings m_NegotiatedMediaSettings{true, true};
+    // Whether the host accepted per-session audio/cadence at the last launch.
+    bool m_HostSessionSettings = true;
     void setViewerReady(bool ready) { if (m_ViewerReady.exchange(ready) != ready) emit viewerReadyChanged(); }
     ResizeSettler m_ResizeSettler;
     // Window state before a presentation hide. Wayland compositors can map a

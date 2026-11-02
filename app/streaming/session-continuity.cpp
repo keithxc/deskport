@@ -136,7 +136,7 @@ void Session::setDataSaver(bool on) {
     if (m_Preferences->dataSaver == on) return;
     m_Preferences->dataSaver = on;
     const auto settings = DeskPortStream::sessionMediaSettings(
-        on, m_Preferences->remoteAudio, m_Preferences->smartStreaming);
+        on, m_Preferences->remoteAudio, m_Preferences->smartStreaming, m_HostSessionSettings);
     const bool liveRateSupported = m_LiveRateNegotiated && m_AdaptiveDisplay && m_AdaptiveDisplay->liveRateSupported();
     if (DeskPortStream::dataSaverNeedsReconnect(m_NegotiatedMediaSettings, settings, liveRateSupported)) {
         // The current host cannot pause/resume audio or change smart cadence

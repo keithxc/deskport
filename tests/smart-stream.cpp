@@ -72,6 +72,13 @@ int main() {
         assert(dataSaverNeedsReconnect(restored, savingMedia, false));
         assert(dataSaverNeedsReconnect(savingMedia, restored, false));
     }
+    // Hosts without per-session settings reject audio-off launches: saver
+    // keeps the saved audio/cadence there and only caps the bitrate.
+    for (bool audio : {false, true}) for (bool smart : {false, true}) {
+        const auto legacy = sessionMediaSettings(true, audio, smart, false);
+        assert(legacy.remoteAudio == audio && legacy.smartStreaming == smart);
+        assert(legacy == sessionMediaSettings(false, audio, smart, false));
+    }
 
     // Remote classification: on-link/private paths keep LAN behavior.
     auto v4 = [](unsigned a, unsigned b, unsigned c, unsigned d) {

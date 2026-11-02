@@ -3,6 +3,7 @@
 #include "identitymanager.h"
 #include "nvapp.h"
 #include "nvaddress.h"
+#include "streambudget.h"
 
 #include <Limelight.h>
 
@@ -176,8 +177,11 @@ public:
              // Launching an app can take a host a long time. Resuming a desktop
              // that is already running for an adaptive resize cannot, and the
              // picture is gone while the client waits.
+             // remoteAudio/smart are saved preferences; data saver overrides
+             // them only on hosts with per-session settings, reported back
+             // through hostSessionSettings.
              int timeoutMs = 0, bool remoteAudio = true, bool remoteInput = true, bool smart = true,
-             bool dataSaver = false, int rateCapKbps = 0);
+             bool dataSaver = false, int rateCapKbps = 0, bool* hostSessionSettings = nullptr);
 
     QVector<NvApp>
     getAppList();
