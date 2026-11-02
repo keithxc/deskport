@@ -21,9 +21,15 @@ Done buttons; secondary content opens as a floating panel or expands in place.
 - **Data saver** (leaf icon beside the session traffic): one switch for every
   device. Off, automatic picture mode sets the bitrate from the negotiated
   resolution and frame rate (15 Mbps for 2560×1440 at 60 fps, up to 80 Mbps) and
-  the host lowers it live on a congested remote path. On, video is limited to a
-  quarter of that budget, 3–12 Mbps; manual bitrates are capped the same way.
-  Live sessions reconnect once to apply the change; resolution never changes.
+  the host lowers it live on a congested remote path. On, office data saver caps
+  video at 1 Mbps (or an already lower manual setting), limits continuous changes
+  to 8 fps on compatible hosts, and disables remote audio capture for the session.
+  It keeps the desktop resolution, uses brief 2 fps refinement after changes,
+  and refreshes a still picture once every 5 seconds. These are video-policy
+  limits, not a total-byte or hourly-data guarantee; recovery frames bypass the
+  cadence gate. Saved audio and automatic/manual preferences are preserved and
+  restored when data saver is turned off. A switch reconnects if audio or capture
+  cadence must be renegotiated; compatible video-only switches apply live.
 - **Daily data budget** (in the panel opened from the traffic chip): a daily limit
   for every session on this computer, reset at local midnight or with Reset. The
   chip shows today's percentage and turns amber at 70% and red at 85%; at 100%

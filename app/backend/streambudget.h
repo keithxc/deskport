@@ -10,8 +10,29 @@ inline int automaticBitrate(int width, int height, int fps, bool yuv444) {
     const auto budget = pixels * std::min(120, std::max(1, fps)) * 15000 / (2560LL * 1440 * 60);
     return int(std::clamp<std::int64_t>(budget * (yuv444 ? 2 : 1), 5000, 80000));
 }
-// Data saver: a quarter of the automatic budget, 3-12 Mbps. Resolution is unchanged.
-inline int dataSaverBitrate(int automatic) { return std::clamp(automatic / 4, 3000, 12000); }
+// Office data saver keeps the desktop resolution and limits video to 1 Mbps.
+// This is a video ceiling, not a total transport-byte or hourly-data guarantee.
+inline int dataSaverBitrate(int) { return 1000; }
+
+struct SessionMediaSettings {
+    bool remoteAudio;
+    bool smartStreaming;
+    bool operator==(const SessionMediaSettings& other) const {
+        return remoteAudio == other.remoteAudio && smartStreaming == other.smartStreaming;
+    }
+    bool operator!=(const SessionMediaSettings& other) const { return !(*this == other); }
+};
+
+// Data saver overrides the running session without changing saved preferences.
+// Audio capture and smart cadence are launch-time options on the current host.
+inline SessionMediaSettings sessionMediaSettings(bool dataSaver, bool remoteAudio, bool smartStreaming) {
+    return {remoteAudio && !dataSaver, smartStreaming || dataSaver};
+}
+
+inline bool dataSaverNeedsReconnect(const SessionMediaSettings& negotiated,
+                                   const SessionMediaSettings& requested, bool liveRateSupported) {
+    return negotiated != requested || !liveRateSupported;
+}
 
 // Automatic streaming ignores the saved manual bitrate; manual streaming keeps
 // it. Data saver caps either one.

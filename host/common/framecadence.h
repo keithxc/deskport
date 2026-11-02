@@ -13,14 +13,16 @@ inline int refineFrameRate(std::int64_t nowMs, std::int64_t lastChangeMs, int ce
 }
 
 // Data saver. On a remote desktop the per-frame cost dominates: even an empty
-// frame pads to a full packet plus FEC, about 3 KB on the wire. A change is still
+// frame pads to a full packet plus FEC. A change is still
 // sent at once, continuous change at most kSaverContentFps; after a change or
 // input only kSaverRefineFps duplicates refine the picture, and an unchanged
 // picture is refreshed every kSaverIdleMs. Resolution and the negotiated frame
 // rate are unchanged.
-constexpr int kSaverContentFps = 20;
-constexpr int kSaverRefineFps = 4;
-constexpr std::int64_t kSaverRefineMs = 1000;
+constexpr int kSaverContentFps = 8;
+constexpr int kSaverRefineFps = 2;
+// Leave enough time for one refinement encode at 500 ms. A 500 ms window with
+// the strict comparison below would expire before that encode could happen.
+constexpr std::int64_t kSaverRefineMs = 750;
 constexpr std::int64_t kSaverIdleMs = 5000;
 inline int saverFrameRate(std::int64_t nowMs, std::int64_t lastChangeMs, ActivityBoost boost, int ceiling) {
     const bool active = (lastChangeMs >= 0 && nowMs - lastChangeMs < kSaverRefineMs) || nowMs < boost.untilMs;

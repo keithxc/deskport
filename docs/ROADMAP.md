@@ -1394,6 +1394,34 @@ isolated official Bazzite container userspace and headless compositor on a
 NixOS kernel. Issue #5 remains open for the reporter's new-package retest;
 physical streaming, input and latency acceptance remain separate.
 
+## Office data saver on the existing switch — 2026-11-02
+
+Reason: code, terminals and documents need legible native-resolution text with
+much lower data use; reduced scrolling frame rate is acceptable. The existing
+global switch now selects this policy instead of adding another picture mode.
+
+- Cap video at 1 Mbps, preserving an already lower manual bitrate. This is not
+  a total transport-byte limit or a measured MB/hour guarantee.
+- Negotiate remote audio off and smart capture cadence on while saver is active,
+  without overwriting saved audio or automatic/manual settings. Compare the
+  running media configuration when toggling: audio/cadence changes reconnect;
+  compatible video-only changes retain the existing live ceiling contract.
+- Limit continuous changes to 8 fps, refine at 2 fps for 750 ms, and retain the
+  5-second still-picture fallback. Pending final changes and recovery frames
+  remain deliverable. Without final-picture acknowledgments, eliminating all
+  idle frames could leave a completely lost update undetected indefinitely.
+- ScreenCaptureKit lifecycle ticks no longer replay a cached sample as changed
+  content. Shared capture retains the last real image only to seed newly joined
+  encoders, and releases it before display reconfiguration.
+- The existing optional `saver` and launch options are reused. No shared wire
+  schema or core pin changes. Separate cursor transport, cached rectangles and
+  mixed image/video updates remain follow-up work rather than being implied by
+  this change.
+- Validation covers video/media policy, audio/cadence switch decisions, pending
+  final frames, recovery bypass, synthetic capture lifecycle and both pinned
+  host source overlays. Physical text quality, loss recovery and total network
+  bytes still require a live session after manual activation.
+
 ## Data saver that actually saves — 2026-10-15
 
 Reason: a 100-minute remote session with data saver on still averaged 1.4 Mbps of

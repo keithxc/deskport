@@ -70,19 +70,19 @@ int main(void) {
             [capture stream:unusedStream didOutputSampleBuffer:started ofType:SCStreamOutputTypeScreen];
             assert(frames == 3 && capture.latest == started);
             [capture startHeartbeat];
-            capture.delivered = CACurrentMediaTime() - 2.0;
         });
-        // A static stream publishes its retained surface, then lifecycle-only ticks.
+        // An idle heartbeat only services lifecycle. Replaying the retained surface
+        // would make the encoder treat every tick as content and restart refinement.
         dispatch_semaphore_t delay = dispatch_semaphore_create(0);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 450 * NSEC_PER_MSEC), queue, ^{dispatch_semaphore_signal(delay);});
         assert(dispatch_semaphore_wait(delay, dispatch_time(DISPATCH_TIME_NOW, 2*NSEC_PER_SEC)) == 0);
         dispatch_sync(queue, ^{
-            assert(frames == 4 && ticks >= 1);
+            assert(frames == 3 && ticks >= 1 && capture.latest == started);
             [capture finish];
             assert(capture.latest == NULL && capture.callback == nil && capture.timer == nil);
             [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
             [capture deliver:complete];
-            assert(frames == 4);
+            assert(frames == 3);
             [capture finish]; // Signals exactly once, even after duplicate stop/error.
         });
         assert(dispatch_semaphore_wait(capture.signal, DISPATCH_TIME_NOW) == 0);
@@ -101,7 +101,7 @@ int main(void) {
         assert(dispatch_semaphore_wait(failure.signal, dispatch_time(DISPATCH_TIME_NOW, 2*NSEC_PER_SEC)) == 0);
         dispatch_sync(queue, ^{ assert(failure.failed && failure.finished); });
         CFRelease(complete); CFRelease(idle); CFRelease(blank); CFRelease(started);
-        puts("PASS: native frame status, static heartbeat, retained surface, stop, late callback, timeout");
+        puts("PASS: native frame status, lifecycle-only heartbeat, retained surface, stop, late callback, timeout");
     }
     return 0;
 }

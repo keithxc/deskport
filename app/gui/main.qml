@@ -536,8 +536,8 @@ ApplicationWindow {
                     }
                 }
             }
-            // One switch for every device: automatic bitrate, or a quarter of it
-            // (3-12 Mbps) to save data. Live sessions reconnect to apply it.
+            // One office data saver switch for every device. Launch-time media
+            // changes reconnect; compatible video-only changes apply live.
             ToolButton {
                 objectName: "dataSaverButton"
                 Layout.preferredWidth: 34; Layout.preferredHeight: 32
@@ -552,7 +552,7 @@ ApplicationWindow {
                 }
                 Accessible.name: qsTr("Data saver")
                 ToolTip.visible: hovered
-                ToolTip.text: checked ? qsTr("Data saver on: video limited to 3–12 Mbps") : qsTr("Data saver off: automatic bitrate")
+                ToolTip.text: qsTr("Data saver") + (checked ? " · ≤1 Mbps · ≤8 fps" : "")
                 onToggled: window.setDataSaver(checked)
             }
             UiButton {

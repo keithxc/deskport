@@ -25,6 +25,27 @@ patch('src/rtsp.cpp', '''      deskport::liveCeilingPermille = deskport::ceiling
       deskport::liveSaver = session.deskport_saver ? 1 : 0;''')
 
 # Asynchronous encoder (VideoToolbox and other FFmpeg encoders).
+# Saver is an explicit session policy even when automatic streaming is disabled.
+# A manual-mode toggle reconnects so disabling saver restores the original policy.
+patch('src/video.cpp', '''    const bool smart = config.deskport_smart;''', '''    const bool smart = config.deskport_smart || config.deskport_saver;''')
+
+# A capture lifecycle tick must not broadcast an old picture as new content.
+# Retain one real image for encoders joining an idle shared capture, and release it
+# immediately when capture exits so display reinitialization cannot wait on it.
+patch('src/video.cpp', '''      auto push_captured_image_callback = [&](std::shared_ptr<platf::img_t> &&img, bool frame_captured) -> bool {
+        KITTY_WHILE_LOOP''', '''      std::shared_ptr<platf::img_t> deskport_latest_image;
+      auto push_captured_image_callback = [&](std::shared_ptr<platf::img_t> &&img, bool frame_captured) -> bool {
+        if (frame_captured && img) deskport_latest_image = img;
+        KITTY_WHILE_LOOP''')
+patch('src/video.cpp', '''          capture_ctxs.emplace_back(std::move(*capture_ctx_queue->pop()));''', '''          capture_ctxs.emplace_back(std::move(*capture_ctx_queue->pop()));
+          if (deskport_latest_image) capture_ctxs.back().images->raise(deskport_latest_image);''')
+patch('src/video.cpp', '''      auto status = disp->capture(push_captured_image_callback, pull_free_image_callback, &display_cursor);
+
+      if (artificial_reinit''', '''      auto status = disp->capture(push_captured_image_callback, pull_free_image_callback, &display_cursor);
+      deskport_latest_image.reset();
+
+      if (artificial_reinit''')
+
 patch('src/video.cpp', '''    deskport::KeyframeGate deskport_key_gate;''', '''    deskport::KeyframeGate deskport_key_gate;
     deskport::SaverGate deskport_saver_gate;
     bool deskport_saver_pending = false;''')
@@ -67,6 +88,7 @@ patch('src/video.cpp', '''          if (session->convert(*img)) {
         } else if (smart && !requested_idr_frame''')
 
 # Synchronous encoder (VAAPI and other shared-capture encoders).
+patch('src/video.cpp', '''          if (ctx->config.deskport_smart) {''', '''          if (ctx->config.deskport_smart || deskport::liveSaver.load() == 1) {''')
 patch('src/video.cpp', '''            const int floor = cadence.floor(now_us);''', '''            cadence.saver = deskport::liveSaver.load() == 1;
             const int floor = cadence.floor(now_us);''')
 

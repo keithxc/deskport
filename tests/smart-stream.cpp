@@ -50,13 +50,28 @@ int main() {
     assert(sessionBitrate(true,false,25000,5104,2720,60,false)==56489);
     // Manual keeps the saved value.
     assert(sessionBitrate(false,false,25000,5104,2720,60,false)==25000);
-    // Data saver: a quarter of the automatic budget, 3-12 Mbps, caps either mode.
-    assert(dataSaverBitrate(56489)==12000 && dataSaverBitrate(15000)==3750 && dataSaverBitrate(5000)==3000);
-    assert(sessionBitrate(true,true,25000,5104,2720,60,false)==12000);
-    assert(sessionBitrate(true,true,25000,2560,1440,60,false)==3750);
-    assert(sessionBitrate(true,true,25000,1920,1080,60,false)==3000);
-    assert(sessionBitrate(false,true,60000,5104,2720,60,false)==12000);
-    assert(sessionBitrate(false,true,2000,5104,2720,60,false)==2000);
+    // Office saver keeps high-resolution desktops at the same video ceiling,
+    // while preserving an already lower manual choice.
+    assert(dataSaverBitrate(56489)==1000 && dataSaverBitrate(15000)==1000 && dataSaverBitrate(5000)==1000);
+    assert(sessionBitrate(true,true,25000,5104,2720,60,false)==1000);
+    assert(sessionBitrate(true,true,25000,2560,1440,60,false)==1000);
+    assert(sessionBitrate(true,true,25000,1920,1080,60,false)==1000);
+    assert(sessionBitrate(false,true,60000,5104,2720,60,false)==1000);
+    assert(sessionBitrate(false,true,500,5104,2720,60,false)==500);
+    for (bool saver : {false, true}) for (bool audio : {false, true}) for (bool smart : {false, true}) {
+        const auto media = sessionMediaSettings(saver, audio, smart);
+        assert(media.remoteAudio == (audio && !saver));
+        assert(media.smartStreaming == (smart || saver));
+        // Computing a session override never mutates the original preferences.
+        const auto restored = sessionMediaSettings(false, audio, smart);
+        assert(restored.remoteAudio == audio && restored.smartStreaming == smart);
+        const auto savingMedia = sessionMediaSettings(true, audio, smart);
+        // Audio/cadence are launch-time options in both switch directions.
+        assert(dataSaverNeedsReconnect(restored, savingMedia, true) == (audio || !smart));
+        assert(dataSaverNeedsReconnect(savingMedia, restored, true) == (audio || !smart));
+        assert(dataSaverNeedsReconnect(restored, savingMedia, false));
+        assert(dataSaverNeedsReconnect(savingMedia, restored, false));
+    }
 
     // Remote classification: on-link/private paths keep LAN behavior.
     auto v4 = [](unsigned a, unsigned b, unsigned c, unsigned d) {
@@ -317,26 +332,30 @@ int main() {
     assert(!pending.admit(12600000,false,false)); // then the idle floor
     deskport::FrameCadence other(30);
     assert(other.floor(12068000)==1); // no cross-session input state
-    // Data saver: a change goes out at once, continuous change at most 20 fps,
-    // four duplicates per second for a second after a change or input, then a
+    // Office saver: a change goes out at once, continuous change at most 8 fps,
+    // two duplicates per second for 750 ms after a change or input, then a
     // 5 s refresh; recovery is never delayed.
-    assert(deskport::saverFrameRate(1999,1000,{},60)==4 && deskport::saverFrameRate(2000,1000,{},60)==1);
-    assert(deskport::saverFrameRate(1500,-1,{1600,60},60)==4 && deskport::saverFrameRate(1500,1000,{},2)==2);
+    assert(deskport::saverFrameRate(1749,1000,{},60)==2 && deskport::saverFrameRate(1750,1000,{},60)==1);
+    assert(deskport::saverFrameRate(1500,-1,{1600,60},60)==2 && deskport::saverFrameRate(1500,1000,{},1)==1);
     deskport::SaverGate saverGate;
-    assert(saverGate.admit(1000000,false) && !saverGate.admit(1049999,false) && saverGate.admit(1050000,false));
-    assert(saverGate.admit(1060000,true) && !saverGate.admit(1100000,false) && saverGate.admit(1110000,false));
+    assert(saverGate.admit(1000000,false) && !saverGate.admit(1124999,false) && saverGate.admit(1125000,false));
+    assert(saverGate.admit(1130000,true) && !saverGate.admit(1254999,false) && saverGate.admit(1255000,false));
     deskport::FrameCadence saving(60);
     saving.saver = true;
     assert(saving.admit(20000000,true,false));  // a single change is not delayed
     assert(!saving.admit(20030000,true,false)); // continuous change waits for the gate
-    assert(saving.admit(20050000,false,false)); // and still sends the final picture
+    assert(!saving.admit(20124999,false,false));
+    assert(saving.admit(20125000,false,false)); // and still sends the final picture
     assert(!saving.admit(20200000,false,false));
-    assert(saving.admit(20300000,false,false)); // refinement at 4 fps
-    assert(saving.admit(21000000,false,false));
-    assert(!saving.admit(21100000,false,false)); // refinement over: 5 s refresh
-    assert(!saving.admit(25999999,false,false));
-    assert(saving.admit(26000000,false,false));
-    assert(saving.admit(26000001,false,true)); // recovery does not wait
+    assert(saving.admit(20625000,false,false)); // one refinement at 2 fps
+    assert(!saving.admit(20780000,false,false)); // refinement over: 5 s refresh
+    assert(!saving.admit(25624999,false,false));
+    assert(saving.admit(25625000,false,false));
+    assert(saving.admit(25625001,false,true)); // recovery does not wait
+    assert(saving.admit(40000000,true,false)); // first change after idle is immediate
+    // Continuous changes use the content cadence, not the duplicate-frame floor.
+    assert(saving.admit(40125000,true,false));
+    assert(saving.admit(40250000,true,false));
     // Data saver FEC: one parity shard on a clean link, the viewer's minimum
     // for a minute after an unrecoverable block.
     assert(deskport::saverMinParity(true,2,100000,0)==1 && deskport::saverMinParity(true,2,100000,50000)==2);

@@ -813,11 +813,13 @@ bool Session::initialize()
     m_VideoCallbacks.setup = drSetup;
 
     m_StreamConfig.fps = m_Preferences->fps;
+    m_NegotiatedMediaSettings = DeskPortStream::sessionMediaSettings(
+        m_Preferences->dataSaver, m_Preferences->remoteAudio, m_Preferences->smartStreaming);
     m_AutomaticKbps = DeskPortStream::automaticBitrate(m_StreamConfig.width, m_StreamConfig.height,
                                                        m_StreamConfig.fps, m_Preferences->enableYUV444);
     m_LiveRateNegotiated = m_AdaptiveDisplay && m_AdaptiveDisplay->liveRateSupported();
-    // A host with live ceilings negotiates the full budget once; data saver is a
-    // ceiling below it that can be lifted or applied without reconnecting.
+    // A host with live ceilings negotiates the full budget once. Only saver
+    // switches with unchanged audio/cadence options can change the ceiling live.
     m_StreamConfig.bitrate = DeskPortStream::sessionBitrate(m_Preferences->smartStreaming,
                                                             m_Preferences->dataSaver && !m_LiveRateNegotiated,
                                                             m_Preferences->bitrateKbps, m_StreamConfig.width,
@@ -1793,7 +1795,7 @@ bool Session::startConnectionAsync()
                               !m_Preferences->multiController,
                               rtspSessionUrl,
                               m_RecoveryDeadline ? qBound(1, int(m_RecoveryDeadline - QDateTime::currentMSecsSinceEpoch()), ADAPTIVE_RESUME_TIMEOUT_MS) : m_AdaptiveResume ? ADAPTIVE_RESUME_TIMEOUT_MS : 0,
-                              m_Preferences->remoteAudio, m_Preferences->remoteInput, m_Preferences->smartStreaming,
+                              m_NegotiatedMediaSettings.remoteAudio, m_Preferences->remoteInput, m_NegotiatedMediaSettings.smartStreaming,
                               m_Preferences->dataSaver, m_RateCapKbps);
                 break;
             } catch (const GfeHttpResponseException& e) {
@@ -2722,7 +2724,7 @@ void Session::execInternal()
                                    m_Window, m_ActiveVideoFormat, m_ActiveVideoWidth,
                                    m_ActiveVideoHeight, m_ActiveVideoFrameRate,
                                    enableVsync,
-                                   enableVsync && (m_Preferences->smartStreaming || m_Preferences->framePacing),
+                                   enableVsync && (m_NegotiatedMediaSettings.smartStreaming || m_Preferences->framePacing),
                                    false,
                                    s_ActiveSession->m_VideoDecoder)) {
                     SDL_AtomicUnlock(&m_DecoderLock);

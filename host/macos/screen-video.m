@@ -17,7 +17,6 @@
 @property(nonatomic, strong) SCStream *stream;
 @property(nonatomic, copy) FrameCallbackBlock callback;
 @property(nonatomic, assign) CMSampleBufferRef latest;
-@property(nonatomic) double delivered;
 @property(nonatomic) double started;
 @property(nonatomic) BOOL finished;
 @property(nonatomic) BOOL failed;
@@ -52,13 +51,13 @@
 }
 - (void)deliver:(CMSampleBufferRef)sample {
     if (self.finished) return;
-    if (sample) self.delivered = CACurrentMediaTime();
     if (!self.callback(sample)) [self finish];
 }
 - (void)startHeartbeat {
     self.started = CACurrentMediaTime();
-    // Idle capture must still observe shutdown/reconfiguration. Reuse one retained
-    // surface once a second so a newly joined encoder receives an initial image.
+    // Idle capture must still observe shutdown/reconfiguration. These are lifecycle
+    // ticks, never new pictures: the capture loop seeds a new encoder separately
+    // from its retained last real image, without rearming existing encoders.
     self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.queue);
     dispatch_source_set_timer(self.timer, dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
                               100 * NSEC_PER_MSEC, 10 * NSEC_PER_MSEC);
@@ -73,7 +72,7 @@
             [s finish];
             return;
         }
-        [s deliver:(s.latest && now - s.delivered >= 1.0) ? s.latest : NULL];
+        [s deliver:NULL];
     });
     dispatch_resume(self.timer);
 }

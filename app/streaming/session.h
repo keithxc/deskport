@@ -10,6 +10,7 @@
 #include <QMutex>
 #include <QWindow>
 #include "backend/adaptivedisplay.h"
+#include "backend/streambudget.h"
 #include "transitionwindow.h"
 #include <QTimer>
 #include "backend/workspaceresolution.h"
@@ -138,8 +139,8 @@ public:
     // The transport cannot survive client sleep; stop without quitting the host app.
     void endForSystemSleep();
     Q_INVOKABLE void requestReconnect();
-    // Applies the global data saver to this stream: live when the host accepts
-    // a bitrate ceiling (protocol/VIDEO_RATE.md), otherwise by reconnecting.
+    // Applies the global data saver live when only its video ceiling changes;
+    // audio capture or smart-cadence changes require launch/resume negotiation.
     Q_INVOKABLE void setDataSaver(bool on);
     bool leaveFullscreen();
     // Asks a multi-session shell to present its next connected desktop.
@@ -217,6 +218,7 @@ private:
     // Live ceiling state: negotiated at the full budget with a capped start.
     bool m_LiveRateNegotiated = false;
     int m_AutomaticKbps = 0, m_RateCapKbps = 0;
+    DeskPortStream::SessionMediaSettings m_NegotiatedMediaSettings{true, true};
     void setViewerReady(bool ready) { if (m_ViewerReady.exchange(ready) != ready) emit viewerReadyChanged(); }
     ResizeSettler m_ResizeSettler;
     // Window state before a presentation hide. Wayland compositors can map a

@@ -133,15 +133,21 @@ Session* Session::continuationSession() {
 }
 
 void Session::setDataSaver(bool on) {
+    if (m_Preferences->dataSaver == on) return;
     m_Preferences->dataSaver = on;
-    if (m_LiveRateNegotiated && m_AdaptiveDisplay && m_AdaptiveDisplay->liveRateSupported()) {
-        const int cap = std::min(m_StreamConfig.bitrate, DeskPortStream::dataSaverBitrate(m_AutomaticKbps));
-        m_RateCapKbps = on && cap < m_StreamConfig.bitrate ? cap : 0;
-        // Lifting the ceiling sends the negotiated bitrate, which removes it.
-        m_AdaptiveDisplay->setRateCeiling(m_RateCapKbps ? m_RateCapKbps : m_StreamConfig.bitrate, on);
+    const auto settings = DeskPortStream::sessionMediaSettings(
+        on, m_Preferences->remoteAudio, m_Preferences->smartStreaming);
+    const bool liveRateSupported = m_LiveRateNegotiated && m_AdaptiveDisplay && m_AdaptiveDisplay->liveRateSupported();
+    if (DeskPortStream::dataSaverNeedsReconnect(m_NegotiatedMediaSettings, settings, liveRateSupported)) {
+        // The current host cannot pause/resume audio or change smart cadence
+        // through video-rate. Older hosts also require a new bitrate negotiation.
+        requestReconnect();
         return;
     }
-    requestReconnect();
+    const int cap = std::min(m_StreamConfig.bitrate, DeskPortStream::dataSaverBitrate(m_AutomaticKbps));
+    m_RateCapKbps = on && cap < m_StreamConfig.bitrate ? cap : 0;
+    // Lifting the ceiling sends the negotiated bitrate, which removes it.
+    m_AdaptiveDisplay->setRateCeiling(m_RateCapKbps ? m_RateCapKbps : m_StreamConfig.bitrate, on);
 }
 
 void Session::requestReconnect() {
