@@ -46,6 +46,13 @@ switches failed the fixed 30 dB text / 750 ms criterion.
   Portable clock and packetization regressions run in CI. See
   [the local regression procedure](DATA_SAVER_REGRESSION.md) for one-command
   reproduction, evidence and scope. Live acceptance follows manual activation.
+- Live check with test build `test-20261102-222502-ec9a476` (pk4 client, mm4
+  host, data saver on, 2552x1388 at 1x): no large blurry regions after window
+  switches. A 118 s capture with frequent switches averaged 7.2 fps and 211 kbps
+  of video payload (about 95 MB/hour), with no key frames; after each large
+  change (up to 147 KB) refresh frames fell from a few KB to under 1 KB within
+  about 0.6-0.9 s. Refresh frames carry their source picture's capture
+  timestamp, so send-time minus RTP time does not measure encoder output lag.
 
 ## Data saver final-picture delivery and refinement — 2026-11-02
 
