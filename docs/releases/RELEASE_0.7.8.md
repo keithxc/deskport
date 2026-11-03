@@ -107,3 +107,25 @@ Existing compositor limitations remain documented in the
 virtual-display protocols and the historical Omarchy fullscreen-restore limit.
 Updating mynix prepares configuration builds; activation and live use remain
 manual.
+
+## Published artifacts
+
+The [formal v0.7.8 release](https://github.com/keithxc/deskport/releases/tag/v0.7.8)
+is published as Latest with 22 assets: macOS DMG/ZIP, Windows Setup/portable
+ZIP, six Linux packages, and 12 small checksum, build, provenance and
+verification records. Nix builds use the pinned public source. No separate
+source or relink archives were uploaded.
+
+The annotated tag selects `8862057a1b1fbf49993cb0993c5aa4375a774b85`.
+All desktop binaries were built from `ec4eb0861744dd04edea0ceda705c6ba9ece49b0`;
+the tag adds only the field measurement and Linux release documentation.
+The shared core remains `10307719a4b139d6674eb96ebd013a8eec175b6d`.
+All three required CI workflows passed at both revisions.
+
+Every asset's GitHub server-provided SHA-256 digest, byte size and uploaded
+state matched the explicit release manifest before and after publication.
+All 40 pre-existing Releases and their 437 assets retained their IDs, names,
+sizes and digests. Exact checksums are in
+[`SHA256SUMS.txt`](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt);
+the two provenance and two verification records describe the checks and their
+limits. No full-byte GitHub asset download was used for verification.

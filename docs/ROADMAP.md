@@ -1,3 +1,20 @@
+## Desktop 0.7.8 formal release — 2026-11-03
+
+Published [v0.7.8](https://github.com/keithxc/deskport/releases/tag/v0.7.8) as
+the formal Latest release with the full desktop matrix and 22 verified assets.
+Tag `8862057a` adds only release/package documentation after binary source
+`ec4eb086`; shared core stays at `10307719`. macOS Developer ID, app/DMG
+notarization, stapled tickets and extracted-ZIP Gatekeeper checks passed.
+Windows package/native checks and Linux container, AppImage, Flatpak and Nix
+checks passed within the limits in the [release notes](releases/RELEASE_0.7.8.md).
+All three required CI workflows passed at both source revisions.
+
+All 22 assets matched GitHub's server SHA-256, size and uploaded state before
+and after publication; the previous 40 Releases and 437 assets were preserved.
+The release notes and Release body include the measured data saver office
+session, with its attribution and single-scenario boundary. mynix delivery
+prepares configuration builds; activation and live acceptance remain manual.
+
 ## Desktop 0.7.8 release preparation — 2026-11-03
 
 Prepare the user-requested formal desktop release from `e8cf904b`, with macOS
