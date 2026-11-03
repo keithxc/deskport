@@ -1,3 +1,13 @@
+## Desktop 0.7.8 release preparation — 2026-11-03
+
+Prepare the user-requested formal desktop release from `e8cf904b`, with macOS
+arm64, Windows x64 and the full Linux x86_64 package matrix. Version declarations
+and download entries move to 0.7.8; the shared core stays at `10307719`.
+The [release notes](releases/RELEASE_0.7.8.md) distinguish the recorded live
+test-build checks from final-package verification and the remaining native
+acceptance gaps. Signing, notarization, CI, public asset verification and mynix
+delivery are separate release gates. Activation remains manual.
+
 ## Separate macOS desktop-input process — 2026-11-03
 
 Reason: with data saver on, keys typed from an iPhone on the same LAN (2 ms
