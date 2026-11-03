@@ -4,7 +4,7 @@ For full desktop VM install/upgrade/rollback/removal coverage and its limits,
 see [Linux desktop acceptance](LINUX_DESKTOP_ACCEPTANCE.md). Container package
 checks and AppImage GUI smoke do not establish that lifecycle matrix.
 
-DeskPort 0.7.7 provides x86_64 Linux downloads for users who do not build from
+DeskPort 0.7.8 provides x86_64 Linux downloads for users who do not build from
 source. The AppImage and native packages contain the viewer, a separate Sunshine
 host tree, Qt and media libraries. The Flatpak is a **client-only** package. Linux remote video uses libplacebo
 and requires a working Vulkan driver; the device list remains available when
@@ -19,9 +19,9 @@ their glibc 2.39 minimum. Hardware encoding, decoding and virtual displays still
 depend on the host kernel, GPU drivers and compositor.
 
 Verify downloads with `SHA256SUMS.txt` from the
-[release page](https://github.com/keithxc/deskport/releases/tag/v0.7.7).
-See [Linux verification](https://github.com/keithxc/deskport/releases/download/v0.7.7/VERIFICATION-linux.txt)
-and [Linux provenance](https://github.com/keithxc/deskport/releases/download/v0.7.7/PROVENANCE-linux.json)
+[release page](https://github.com/keithxc/deskport/releases/tag/v0.7.8).
+See [Linux verification](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt)
+and [Linux provenance](https://github.com/keithxc/deskport/releases/download/v0.7.8/PROVENANCE-linux.json)
 for the package identities, checks and limits.
 
 ## Upgrading
@@ -35,14 +35,13 @@ The historical 0.7.4 replacement used `r2` filenames while retaining version
 0.7.4. Its immutable release assets and verification records remain separate
 from 0.7.6.
 
-Release filenames contain the application version and target platform. The
-rebuilt Linux files retain version 0.7.7 and use the standard filenames. To
-replace an installed 0.7.7 package, request reinstall: for RPM use
-`sudo dnf reinstall ./PACKAGE.rpm`; for a fresh install or an older version use
-`sudo dnf install ./PACKAGE.rpm`. DEB and Flatpak examples below request reinstall.
-The Linux packages and Nix examples use source
-`1b559bf013d9dfbd8962af15dd63030293e858da`. The v0.7.7 tag and original
-macOS and Windows packages use `6bd3d80003b14df3f6a6fd0c5d287acb06ea5c58`.
+Release filenames contain the application version and target platform. To
+replace an installed package of the same version, request reinstall: for RPM
+use `sudo dnf reinstall ./PACKAGE.rpm`; for a fresh install or an older version
+use `sudo dnf install ./PACKAGE.rpm`. DEB and Flatpak examples below request
+reinstall. The 0.7.8 desktop binaries use source
+`ec4eb0861744dd04edea0ceda705c6ba9ece49b0`; Nix examples select the `v0.7.8`
+release tag, which adds release documentation to that binary source.
 
 Debian 13's KWin 6.3 lacks the 6.6+ virtual-display helper prerequisites.
 The 0.7.7 Omarchy isolated canvas test reached 11 stages before the same
@@ -53,13 +52,13 @@ establish physical input or live-streaming behavior.
 
 | Format | Target | Install |
 | --- | --- | --- |
-| portable `.tar.gz` | x86_64, glibc 2.39+ | Extract `DeskPort-0.7.7-linux-x86_64.tar.gz` and run `DeskPort.AppDir/AppRun` |
-| `.deb` | Ubuntu 24.04+, Debian 13+ | `sudo apt install --reinstall ./deskport_0.7.7_amd64.deb` |
-| `.rpm` | Fedora 44 | Existing 0.7.7: `sudo dnf reinstall ./deskport-0.7.7.x86_64.rpm`; fresh install or older version: use `dnf install` instead |
-| `.pkg.tar.zst` | Current Arch Linux | `sudo pacman -U ./deskport-0.7.7-x86_64.pkg.tar.zst` |
+| portable `.tar.gz` | x86_64, glibc 2.39+ | Extract `DeskPort-0.7.8-linux-x86_64.tar.gz` and run `DeskPort.AppDir/AppRun` |
+| `.deb` | Ubuntu 24.04+, Debian 13+ | `sudo apt install --reinstall ./deskport_0.7.8_amd64.deb` |
+| `.rpm` | Fedora 44 | Existing 0.7.8: `sudo dnf reinstall ./deskport-0.7.8.x86_64.rpm`; fresh install or older version: use `dnf install` instead |
+| `.pkg.tar.zst` | Current Arch Linux | `sudo pacman -U ./deskport-0.7.8-x86_64.pkg.tar.zst` |
 | `.AppImage` | x86_64 glibc desktops, private runtime included | Make executable, then open |
 | `.flatpak` | Distributions with Flatpak and Freedesktop Platform 25.08 | See below |
-| Nix | NixOS / Linux with Nix | `nix run --refresh github:keithxc/deskport/1b559bf013d9dfbd8962af15dd63030293e858da` |
+| Nix | NixOS / Linux with Nix | `nix run --refresh github:keithxc/deskport/v0.7.8` |
 
 Native packages install a private runtime in `/opt/deskport`, an application-menu
 entry and `/usr/bin/deskport`. Package managers install required system graphics,
@@ -72,8 +71,8 @@ supported source/Nix build rather than the native glibc 2.39 binaries.
 For AppImage:
 
 ```sh
-chmod +x DeskPort-0.7.7-x86_64.AppImage
-./DeskPort-0.7.7-x86_64.AppImage
+chmod +x DeskPort-0.7.8-x86_64.AppImage
+./DeskPort-0.7.8-x86_64.AppImage
 ```
 
 Keep the AppImage in a permanent location before enabling login startup. Moving
@@ -84,7 +83,7 @@ AppImage with an FHS environment. Desktop graphics drivers remain system-provide
 For Flatpak:
 
 ```sh
-flatpak install --user --reinstall ./DeskPort-0.7.7-client-x86_64.flatpak
+flatpak install --user --reinstall ./DeskPort-0.7.8-client-x86_64.flatpak
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -112,11 +111,11 @@ Do not use `yay -S deskport-bin` until this page confirms publication.
 For the existing release package:
 
 ```sh
-sudo pacman -U ./deskport-0.7.7-x86_64.pkg.tar.zst
+sudo pacman -U ./deskport-0.7.8-x86_64.pkg.tar.zst
 ```
 
 The retained AUR candidate recipe targets historical version 0.6.3, not the
-current 0.7.7 release. Use the release package above for the current version.
+current 0.7.8 release. Use the release package above for the current version.
 To build that historical candidate locally, from a checkout containing the recipe:
 
 ```sh
@@ -136,10 +135,10 @@ repositories. Future AUR publication will not enable `pacman -S deskport`.
 
 ## NixOS and Nix
 
-**Available now:** the upstream flake, pinned to the Linux package source revision:
+**Available now:** the upstream flake, pinned to the release tag:
 
 ```sh
-nix run --refresh github:keithxc/deskport/1b559bf013d9dfbd8962af15dd63030293e858da
+nix run --refresh github:keithxc/deskport/v0.7.8
 ```
 
 For a flake-based NixOS configuration, add the input and install its package in a
@@ -147,7 +146,7 @@ module that receives `inputs` through your existing `specialArgs` configuration:
 
 ```nix
 # flake.nix inputs
-inputs.deskport.url = "github:keithxc/deskport/1b559bf013d9dfbd8962af15dd63030293e858da";
+inputs.deskport.url = "github:keithxc/deskport/v0.7.8";
 
 # NixOS module
 { inputs, pkgs, ... }: {
