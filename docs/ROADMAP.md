@@ -17,8 +17,12 @@ macOS host now keeps desktop input out of the streaming process.
   Client protocols are unchanged.
 - Validation: routing and framing unit tests, overlay wiring on the macOS
   series, a macOS host compile and a helper lifecycle smoke test without input
-  injection. Whether this removes the repeats needs a live check; a late release
-  that is already late on the network would not be fixed by it.
+  injection.
+- Live check with test build `test-20261103-005858-0c52823` (iPhone client on
+  the LAN, mm4 host, data saver on): the helper ran as a child of Sunshine and
+  typed keys no longer repeated. The same input module, client and network
+  repeated keys when it ran inside Sunshine, so the delay was inside the
+  streaming process; the exact contended resource is not identified.
 
 ## Normal streaming keeps the pre-saver encoder path — 2026-11-02
 
