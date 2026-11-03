@@ -1,3 +1,12 @@
+## Fallback address manual step — 2026-11-03
+
+Core `10307719a4b139d6674eb96ebd013a8eec175b6d` adds one offline manual step under "Connect to a computer":
+several addresses per saved device, one per line on the paired port, the first
+reachable entry in list order, and editing while connected. English and both
+Chinese scripts are authored, with drafts in the other 19 primary locales that
+reuse each locale's Change address label. Desktop Git and Nix pin the same
+published tree. Mobile pins and wire contracts are unchanged.
+
 ## Data saver 1x workspace — 2026-11-02
 
 Core `0b19bbb7841f23e3d27b746a02d6c7459ab5582f` adds `dp_workspace_for_saver`: with data saver on, a

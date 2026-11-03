@@ -168,6 +168,8 @@ automatically. Per-address ports and moving a live session to another address
 are deferred. Validated by the binding and UI suites, the macOS build and the
 real-manager address-order/persistence regression; concurrent probing against
 live hosts and LAN/WAN switching on mm4 and pk4 have not been checked yet.
+On 2026-11-03 the offline manual's "Connect to a computer" chapter gained a
+step describing the address list, its order and editing while connected.
 
 ## Linux canvas exposure and isolated recall — 2026-10-30
 

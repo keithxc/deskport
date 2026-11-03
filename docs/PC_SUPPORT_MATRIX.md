@@ -1,16 +1,15 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-11-02 against source `fc5144e51e744b77f2bda7e63d22ac3a88087286` and pinned core
-`0b19bbb7841f23e3d27b746a02d6c7459ab5582f`. This is a source snapshot, not an installed version.
+Reviewed 2026-11-03 against source `3c945555f6f4c1b270178727df633059e826e32e` and pinned core
+`10307719a4b139d6674eb96ebd013a8eec175b6d`. This is a source snapshot, not an installed version.
 Seven tested task branches are integrated with their scoped acceptance records;
 the remaining ten tasks retain explicit gates in [the integration ledger](PC_TASK_INTEGRATION.md).
 Historical package and hardware results retain their exact source identities.
 
-This snapshot makes data saver resolution-aware: HiDPI clients receive the same
-logical desktop at 1x, the video ceiling follows the streamed pixels at 8 fps,
-and small changes skip refinement. The core follow-up adds the 1x workspace
-rule; wire contracts are unchanged. See the
-[resolution-aware data saver checkpoint](ROADMAP.md#resolution-aware-data-saver--2026-11-02).
+This snapshot keeps the previous application code. The core follow-up adds an
+offline manual step for ordered fallback addresses and editing them while
+connected; display arithmetic and wire contracts are unchanged. See the
+[fallback address checkpoint](ROADMAP.md#ordered-fallback-addresses-and-live-edits--2026-10-30).
 This review updates the source inventory, without advancing historical package,
 hardware or hosted-CI evidence to the newer revision.
 
