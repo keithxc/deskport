@@ -46,7 +46,7 @@ LANGUAGE_INFO = {
 }
 SITE_LANGUAGES = {directory: info[0] for directory, info in LANGUAGE_INFO.items()}
 RTL = {'ar'}
-PAGES = ('index.html', 'support.html', 'privacy.html', 'source.html')
+PAGES = ('index.html', 'support.html', 'privacy.html')
 SUPPORT_LINK = re.compile(r'<a href="support\.html"[^>]*>[^<]*</a>')
 
 

@@ -3,9 +3,8 @@
 Core `f75afe8da4d0f109330aa34b7aea1273565756fc` corrects the mobile desktop tuning footnote:
 `dp_workspace_adjust` enlarges remote content for larger factors, so the note now
 reads "Larger values enlarge text and controls. Smaller values show more
-desktop." in every locale. The old key is removed; the Apple and Android callers
-in `deskport-client` (`DPDeviceSettings`, `DPControls`) must switch to the new
-key when they advance their core pin. The core also drops two text-only
+desktop." in every locale. The old key is removed, so other consumers switch to
+the new key when they advance their core pin. The core also drops two text-only
 clipboard notes that the desktop no longer shows; clipboard sharing has carried
 images and files since 0.3.2. Desktop Git and Nix pin the same published tree.
 Wire contracts are unchanged.
