@@ -1,3 +1,11 @@
+## Polish UI review — 2026-11-04
+
+Core `10a84ac8382755f65f1b1b6e60cb94557e4377f9` corrects 575 of the 1,214 Polish strings: wrong
+senses (Sharing had been translated as "participating"), inconsistent terms for
+the same label, literal phrasing, agreement errors and button style. The Qt
+catalogs are regenerated from the same table. Desktop Git and Nix pin the same
+published tree. Mobile pins and wire contracts are unchanged.
+
 ## Binding terminology — 2026-11-04
 
 Core `4e65606c6c5115f641da5ed681b372b4f97cb8a8` replaces bookbinding and other inconsistent

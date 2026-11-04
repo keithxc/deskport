@@ -13,7 +13,7 @@
             <location filename="../gui/AppView.qml" line="173" />
             <location filename="../gui/AppView.qml" line="308" />
             <source>Quit Game</source>
-            <translation>Opuść grę</translation>
+            <translation>Zamknij grę</translation>
         </message>
         <message>
             <location filename="../gui/AppView.qml" line="303" />
@@ -28,7 +28,7 @@
         <message>
             <location filename="../gui/AppView.qml" line="320" />
             <source>Launch this app immediately when the host is selected, bypassing the app selection grid.</source>
-            <translation>Uruchom tę aplikację od razu po wybraniu komputera-gospodarza i pomiń listę wyboru aplikacji.</translation>
+            <translation>Uruchom tę aplikację od razu po wybraniu hosta, z pominięciem siatki wyboru aplikacji.</translation>
         </message>
         <message>
             <location filename="../gui/AppView.qml" line="329" />
@@ -38,7 +38,7 @@
         <message>
             <location filename="../gui/AppView.qml" line="333" />
             <source>Hide this game from the app grid. To access hidden games, right-click on the host and choose %1.</source>
-            <translation>Ukryj tę grę na liście aplikacji. Aby uzyskać dostęp do ukrytych gier, kliknij prawym przyciskiem myszy komputer-gospodarza i wybierz %1.</translation>
+            <translation>Ukryj tę grę w siatce aplikacji. Aby uzyskać dostęp do ukrytych gier, kliknij hosta prawym przyciskiem myszy i wybierz %1.</translation>
         </message>
         <message>
             <location filename="../gui/AppView.qml" line="333" />
@@ -48,7 +48,7 @@
         <message>
             <location filename="../gui/AppView.qml" line="348" />
             <source>Are you sure you want to quit %1? Any unsaved progress will be lost.</source>
-            <translation>Czy na pewno chcesz opuścić %1? Niezapisane zmiany zostaną utracone.</translation>
+            <translation>Czy na pewno zamknąć %1? Niezapisane postępy zostaną utracone.</translation>
         </message>
     </context>
     <context>
@@ -61,12 +61,12 @@
         <message>
             <location filename="../gui/CliPair.qml" line="13" />
             <source>Pairing... Please enter '%1' on %2.</source>
-            <translation>Łączenie... Wprowadź '%1' na %2.</translation>
+            <translation>Wiązanie... Wprowadź '%1' na %2.</translation>
         </message>
         <message>
             <location filename="../gui/CliPair.qml" line="85" />
             <source>Pairing completed successfully</source>
-            <translation>Parowanie zakończone pomyślnie</translation>
+            <translation>Powiązanie zakończone pomyślnie</translation>
         </message>
     </context>
     <context>
@@ -79,7 +79,7 @@
         <message>
             <location filename="../gui/CliQuitStreamSegue.qml" line="13" />
             <source>Quitting app...</source>
-            <translation>Opuszczanie aplikacji...</translation>
+            <translation>Zamykanie aplikacji...</translation>
         </message>
     </context>
     <context>
@@ -124,12 +124,12 @@
         <message>
             <location filename="../gui/computermodel.cpp" line="62" />
             <source>Paired</source>
-            <translation>Sparowane</translation>
+            <translation>Powiązane</translation>
         </message>
         <message>
             <location filename="../gui/computermodel.cpp" line="65" />
             <source>Unpaired</source>
-            <translation>Niesparowane</translation>
+            <translation>Niepowiązane</translation>
         </message>
         <message>
             <source>Alias: %1</source>
@@ -173,7 +173,7 @@
         <message>
             <location filename="../gui/computermodel.cpp" line="79" />
             <source>Manual Address: %1</source>
-            <translation>Adres manualny: %1</translation>
+            <translation>Adres podany ręcznie: %1</translation>
         </message>
         <message>
             <location filename="../gui/computermodel.cpp" line="80" />
@@ -183,7 +183,7 @@
         <message>
             <location filename="../gui/computermodel.cpp" line="81" />
             <source>Pair State: %1</source>
-            <translation>Stan sparowania: %1</translation>
+            <translation>Stan powiązania: %1</translation>
         </message>
         <message>
             <location filename="../gui/computermodel.cpp" line="82" />
@@ -217,18 +217,18 @@
         </message>
         <message>
             <source>This host does not support per-session audio capture or view-only control. Update the DeskPort host, then reconnect.</source>
-            <translation>Ten host nie obsługuje przechwytywania dźwięku w ramach sesji ani kontroli tylko do przeglądania. Zaktualizuj host DeskPort, a następnie podłącz ponownie.</translation>
+            <translation>Ten host nie obsługuje przechwytywania dźwięku dla poszczególnych sesji ani trybu tylko do podglądu. Zaktualizuj hosta DeskPort, a następnie połącz się ponownie.</translation>
         </message>
     </context>
     <context>
         <name>PcView</name>
         <message>
             <source>Removing device…</source>
-            <translation>Usuwam urządzenie…</translation>
+            <translation>Usuwanie urządzenia…</translation>
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>Usunąć „%1”, jego zapisane powiązania i ustawienia urządzenia z tego komputera?</translation>
+            <translation>Usunąć z tego komputera urządzenie „%1” wraz z zapisanym powiązaniem i ustawieniami?</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -237,7 +237,7 @@
         <message>
             <location filename="../gui/PcView.qml" line="21" />
             <source>Computers</source>
-            <translation>Lista komputerów</translation>
+            <translation>Komputery</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="68" />
@@ -272,7 +272,7 @@
         <message>
             <location filename="../gui/PcView.qml" line="194" />
             <source>Test Network</source>
-            <translation>Testuj połączenie</translation>
+            <translation>Testuj sieć</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="203" />
@@ -292,7 +292,7 @@
         <message>
             <location filename="../gui/PcView.qml" line="233" />
             <source>The version of GeForce Experience on %1 is not supported by this build of Moonlight. You must update Moonlight to stream from %1.</source>
-            <translation>Wersja GeForce Experience na %1 nie jest obsługiwana przez tę wersję Moonlight. Musisz zaktualizować Moonlight, aby móc strumieniować gry z %1.</translation>
+            <translation>Wersja GeForce Experience na %1 nie jest obsługiwana przez tę wersję Moonlight. Zaktualizuj Moonlight, aby korzystać z transmisji strumieniowej z %1.</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="336" />
@@ -307,7 +307,7 @@
         <message>
             <location filename="../gui/PcView.qml" line="347" />
             <source>If you are trying to stream over the Internet, install the Moonlight Internet Hosting Tool on your gaming PC and run the included Internet Streaming Tester to check your gaming PC's Internet connection.</source>
-            <translation>Jeśli próbujesz strumieniować przez Internet, zainstaluj Moonlight Internet Hosting Tool na swoim komputerze i uruchom załączony tester strumieniowania przez Internet, aby sprawdzić połączenie sieciowe twojego komputera.</translation>
+            <translation>Aby korzystać z transmisji strumieniowej przez Internet, zainstaluj Moonlight Internet Hosting Tool na komputerze do gier i uruchom dołączony Internet Streaming Tester, aby sprawdzić jego połączenie z Internetem.</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="351" />
@@ -347,12 +347,12 @@
         <message>
             <location filename="../gui/PcView.qml" line="309" />
             <source>Please enter %1 on your host PC. This dialog will close when pairing is completed.</source>
-            <translation>Wprowadź %1 na komputerze-hoście. To okno dialogowe zostanie zamknięte po zakończeniu łączenia.</translation>
+            <translation>Wprowadź %1 na hoście. To okno dialogowe zamknie się po zakończeniu wiązania.</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="310" />
             <source>If your host PC is running Sunshine, navigate to the Sunshine web UI to enter the PIN.</source>
-            <translation>Jeśli na komputerze-hoście działa Sunshine, przejdź do interfejsu użytkownika Sunshine, aby wprowadzić kod PIN.</translation>
+            <translation>Jeśli na hoście działa Sunshine, otwórz interfejs WWW Sunshine, aby wprowadzić kod PIN.</translation>
         </message>
         <message>
             <location filename="../gui/PcView.qml" line="322" />
@@ -375,11 +375,11 @@
         </message>
         <message>
             <source>Connect your first device.</source>
-            <translation>Podłącz swoje pierwsze urządzenie.</translation>
+            <translation>Połącz pierwsze urządzenie.</translation>
         </message>
         <message>
             <source>Add a device by IP address or name. Confirm once on the other computer, then connect in either direction.</source>
-            <translation>Dodaj urządzenie według adresu IP lub nazwy. Potwierdź raz na drugim komputerze, a następnie podłącz w dowolnym kierunku.</translation>
+            <translation>Dodaj urządzenie, podając adres IP lub nazwę. Potwierdź raz na drugim komputerze, aby później łączyć się w obu kierunkach.</translation>
         </message>
         <message>
             <source>Add a device</source>
@@ -391,7 +391,7 @@
         </message>
         <message>
             <source>Nearby discovery is off in Settings</source>
-            <translation>Funkcja wykrywania w pobliżu jest wyłączona w Ustawieniach</translation>
+            <translation>Wykrywanie pobliskich urządzeń jest wyłączone w sekcji „Ustawienia”</translation>
         </message>
         <message>
             <source>Applications</source>
@@ -399,7 +399,7 @@
         </message>
         <message>
             <source>Pair with a legacy PIN</source>
-            <translation>Sparuj ze starszym kodem PIN</translation>
+            <translation>Powiąż starszą metodą przez PIN</translation>
         </message>
         <message>
             <source>Set alias</source>
@@ -415,7 +415,7 @@
         </message>
         <message>
             <source>Connected · workspace stays open</source>
-            <translation>Połączony · obszar roboczy pozostaje otwarty</translation>
+            <translation>Połączono · obszar roboczy pozostaje otwarty</translation>
         </message>
         <message>
             <source>Return to desktop</source>
@@ -427,7 +427,7 @@
         </message>
         <message>
             <source>Card view</source>
-            <translation>Widok karty</translation>
+            <translation>Widok kart</translation>
         </message>
         <message>
             <source>List view</source>
@@ -435,7 +435,7 @@
         </message>
         <message>
             <source>Done</source>
-            <translation>Zrobione</translation>
+            <translation>Gotowe</translation>
         </message>
         <message>
             <source>Drag devices to change their order.</source>
@@ -443,11 +443,11 @@
         </message>
         <message>
             <source>Move to front</source>
-            <translation>Przejdź do przodu</translation>
+            <translation>Przenieś na początek</translation>
         </message>
         <message>
             <source>A session with %1 is open. Disconnect it from the tray menu before connecting to another computer.</source>
-            <translation>Sesja z %1 jest otwarta. Odłącz go od menu zasobnika przed podłączeniem do innego komputera.</translation>
+            <translation>Sesja z %1 jest otwarta. Rozłącz ją z menu w zasobniku systemowym przed połączeniem z innym komputerem.</translation>
         </message>
         <message>
             <source>Device settings</source>
@@ -455,7 +455,7 @@
         </message>
         <message>
             <source>Nearby discovery is off</source>
-            <translation>Funkcja wykrywania w pobliżu jest wyłączona</translation>
+            <translation>Wykrywanie pobliskich urządzeń jest wyłączone</translation>
         </message>
         <message>
             <source>Toggle fullscreen</source>
@@ -467,11 +467,11 @@
         </message>
         <message>
             <source>Reconnect</source>
-            <translation>Na nowo połączyć</translation>
+            <translation>Połącz ponownie</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation>Redagować</translation>
+            <translation>Edytuj</translation>
         </message>
         <message>
             <source>New group</source>
@@ -483,7 +483,7 @@
         </message>
         <message>
             <source>Group actions</source>
-            <translation>Działania grupowe</translation>
+            <translation>Działania dotyczące grupy</translation>
         </message>
         <message>
             <source>Rename group</source>
@@ -495,7 +495,7 @@
         </message>
         <message>
             <source>Move out of group</source>
-            <translation>Wyjdź z grupy</translation>
+            <translation>Przenieś poza grupę</translation>
         </message>
         <message>
             <source>This group is empty. In edit mode, drag devices onto the group to add them.</source>
@@ -507,7 +507,7 @@
         </message>
         <message>
             <source>A session with %1 is open. Disconnect it before connecting to another computer.</source>
-            <translation>Sesja z %1 jest otwarta. Odłącz go przed podłączeniem do innego komputera.</translation>
+            <translation>Sesja z %1 jest otwarta. Rozłącz ją przed połączeniem z innym komputerem.</translation>
         </message>
         <message>
             <source>Finish editing</source>
@@ -515,11 +515,11 @@
         </message>
         <message>
             <source>Drag devices to change their order, or out of this panel to leave the group.</source>
-            <translation>Przeciągnij urządzenia, aby zmienić ich kolejność, lub poza ten panel, aby opuścić grupę.</translation>
+            <translation>Przeciągnij urządzenia, aby zmienić ich kolejność, lub przeciągnij je poza ten panel, aby usunąć je z grupy.</translation>
         </message>
         <message>
             <source>Checking…</source>
-            <translation>Kontrola…</translation>
+            <translation>Sprawdzanie…</translation>
         </message>
         <message>
             <source>Computer</source>
@@ -535,15 +535,15 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation>Usunąć</translation>
+            <translation>Usuń</translation>
         </message>
         <message>
             <source>Deleting a group keeps its devices; they return to the device list.</source>
-            <translation>Usunięcie grupy powoduje zachowanie jej urządzeń; wracają do listy urządzeń.</translation>
+            <translation>Po usunięciu grupy jej urządzenia wracają do listy urządzeń.</translation>
         </message>
         <message>
             <source>Open group</source>
-            <translation>Grupa otwarta</translation>
+            <translation>Otwórz grupę</translation>
         </message>
         <message>
             <source>Shown only on this computer. Leave empty to use the original name.</source>
@@ -565,17 +565,17 @@
         <message>
             <location filename="../backend/computermanager.cpp" line="590" />
             <source>You cannot pair while a previous session is still running on the host PC. Quit any running games or reboot the host PC, then try pairing again.</source>
-            <translation>Nie można połączyć, gdy na komputerze-hoście nadal jest uruchomiona poprzednia sesja. Zamknij wszystkie uruchomione gry lub uruchom ponownie komputer hosta, a następnie spróbuj ponownie się połączyć.</translation>
+            <translation>Nie można powiązać urządzenia, gdy na hoście nadal trwa poprzednia sesja. Zamknij uruchomione gry lub uruchom hosta ponownie, a następnie ponów próbę powiązania.</translation>
         </message>
         <message>
             <location filename="../backend/computermanager.cpp" line="593" />
             <source>Pairing failed. Please try again.</source>
-            <translation>Połączenie nie powiodło się. Spróbuj ponownie.</translation>
+            <translation>Powiązanie nie powiodło się. Spróbuj ponownie.</translation>
         </message>
         <message>
             <location filename="../backend/computermanager.cpp" line="597" />
             <source>Another pairing attempt is already in progress.</source>
-            <translation>Już trwa próba połączenia.</translation>
+            <translation>Trwa już inna próba powiązania.</translation>
         </message>
         <message>
             <location filename="../backend/computermanager.cpp" line="607" />
@@ -588,7 +588,7 @@
         <message>
             <location filename="../backend/computermanager.cpp" line="657" />
             <source>The running game wasn't started by this PC. You must quit the game on the host PC manually or use the device that originally started the game.</source>
-            <translation>Gr, która jest obecnie uruchomiona, nie została rozpoczęta na tym komputerze. Musisz ręcznie zakończyć grę na komputerze-gospodarzu lub użyć komputera, na którym gra została pierwotnie uruchomiona.</translation>
+            <translation>Trwająca gra nie została uruchomiona z tego komputera. Zamknij ją ręcznie na hoście lub użyj urządzenia, z którego ją uruchomiono.</translation>
         </message>
     </context>
     <context>
@@ -596,7 +596,7 @@
         <message>
             <location filename="../cli/pair.cpp" line="80" />
             <source>%1 is already paired</source>
-            <translation>%1 jest już połączony</translation>
+            <translation>Urządzenie %1 jest już powiązane</translation>
         </message>
         <message>
             <location filename="../cli/pair.cpp" line="109" />
@@ -609,13 +609,13 @@
             <location filename="../cli/quitstream.cpp" line="88" />
             <location filename="../cli/startstream.cpp" line="89" />
             <source>Computer %1 has not been paired. Please open Moonlight to pair before streaming.</source>
-            <translation>Komputer %1 nie został sparowany. Przed rozpoczęciem strumieniowania otwórz Moonlight w celu dokonania parowania.</translation>
+            <translation>Komputer %1 nie został powiązany. Otwórz Moonlight, aby go powiązać przed rozpoczęciem transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../cli/quitstream.cpp" line="102" />
             <location filename="../cli/startstream.cpp" line="126" />
             <source>Quitting app failed, reason: %1</source>
-            <translation>Opuszczenie aplikacji nie powiodło się, powód: %1</translation>
+            <translation>Zamykanie aplikacji nie powiodło się. Przyczyna: %1</translation>
         </message>
         <message>
             <location filename="../cli/startstream.cpp" line="137" />
@@ -625,7 +625,7 @@
         <message>
             <location filename="../cli/listapps.cpp" line="99" />
             <source>Computer %1 has not been paired. Please open Moonlight to pair before retrieving games list.</source>
-            <translation>Brak połączenia z komputerem %1. Otwórz Moonlight, aby połączyć przed pobraniem listy gier.</translation>
+            <translation>Komputer %1 nie został powiązany. Otwórz Moonlight, aby go powiązać przed pobraniem listy gier.</translation>
         </message>
     </context>
     <context>
@@ -661,7 +661,7 @@
         <message>
             <location filename="../gui/QuitSegue.qml" line="13" />
             <source>Quitting %1...</source>
-            <translation>Opuszczanie %1...</translation>
+            <translation>Zamykanie %1...</translation>
         </message>
     </context>
     <context>
@@ -677,7 +677,7 @@
         <message>
             <location filename="../streaming/session.cpp" line="112" />
             <source>No video received from host.</source>
-            <translation>Nie otrzymano strumienia wideo z gospodarza.</translation>
+            <translation>Nie odebrano obrazu z hosta.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="113" />
@@ -687,32 +687,32 @@
         <message>
             <location filename="../streaming/session.cpp" line="118" />
             <source>Your network connection isn't performing well. Reduce your video bitrate setting or try a faster connection.</source>
-            <translation>Twoje połączenie sieciowe ma słabą wydajność. Zmniejsz bitrate wideo lub spróbuj użyć szybszego połączenia.</translation>
+            <translation>Połączenie sieciowe ma zbyt niską wydajność. Zmniejsz przepływność wideo lub użyj szybszego połączenia.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="124" />
             <source>Something went wrong on your host PC when starting the stream.</source>
-            <translation>Podczas uruchamiania strumieniowania coś poszło nie tak na komputerze-gospodarzu.</translation>
+            <translation>Na hoście wystąpił błąd podczas uruchamiania transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="125" />
             <source>Make sure you don't have any DRM-protected content open on your host PC. You can also try restarting your host PC.</source>
-            <translation>Upewnij się, że na komputerze-gospodarzu nie ma otwartej żadnej zawartości chronionej systemem DRM. Możesz także spróbować uruchomić ponownie komputer, który jest gospodarzem.</translation>
+            <translation>Upewnij się, że na hoście nie są otwarte żadne treści chronione przez DRM. Możesz też spróbować ponownie uruchomić hosta.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="130" />
             <source>The host PC reported a fatal video encoding error.</source>
-            <translation>Komputer-host zgłosił krytyczny błąd kodowania obrazu.</translation>
+            <translation>Host zgłosił krytyczny błąd kodowania wideo.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="131" />
             <source>Try disabling HDR mode, changing the streaming resolution, or changing your host PC's display resolution.</source>
-            <translation>Spróbuj wyłączyć tryb HDR, zmienić rozdzielczość przesyłania strumieniowego lub rozdzielczość wyświetlacza komputera-hosta.</translation>
+            <translation>Spróbuj wyłączyć tryb HDR, zmienić rozdzielczość transmisji strumieniowej lub rozdzielczość ekranu hosta.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="139" />
             <source>Connection terminated</source>
-            <translation>Połączenie przerwane</translation>
+            <translation>Połączenie zakończone</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="140" />
@@ -741,32 +741,32 @@
         <message>
             <location filename="../streaming/session.cpp" line="970" />
             <source>Your host PC doesn't support encoding HEVC.</source>
-            <translation>Komputer-host nie obsługuje kodowania HEVC.</translation>
+            <translation>Host nie obsługuje kodowania HEVC.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="987" />
             <source>Using software decoding due to your selection to force HEVC without GPU support. This may cause poor streaming performance.</source>
-            <translation>Wykorzystywanie dekodowania programowego spowodowane wymuszeniem HEVC bez obsługi przez procesor graficzny. Może to spowodować niską wydajność strumieniowania.</translation>
+            <translation>Używane jest dekodowanie programowe z powodu wymuszenia HEVC bez obsługi przez GPU. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="946" />
             <source>Your host software or GPU doesn't support encoding AV1.</source>
-            <translation>Oprogramowanie lub karta graficzna komputera-gospodarza nie wspiera kodowania z użyciem kodeka AV1.</translation>
+            <translation>Oprogramowanie lub układ graficzny hosta nie obsługuje kodowania AV1.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="963" />
             <source>Using software decoding due to your selection to force AV1 without GPU support. This may cause poor streaming performance.</source>
-            <translation>Wybrano wymuszenie dekodowania AV1 bez wsparcia ze strony układu graficznego, więc wykorzystywane jest dekodowanie programowe. Może to spowodować słabą wydajność strumieniowania.</translation>
+            <translation>Używane jest dekodowanie programowe z powodu wymuszenia AV1 bez obsługi przez GPU. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1029" />
             <source>Your host PC doesn't support HDR streaming.</source>
-            <translation>Twój komputer-host nie obsługuje przesyłania strumieniowego HDR.</translation>
+            <translation>Host nie obsługuje transmisji strumieniowej HDR.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1021" />
             <source>HDR is not supported using the H.264 codec.</source>
-            <translation>HDR nie jest wspierany z użyciem kodeka H.264.</translation>
+            <translation>HDR nie jest obsługiwany przy użyciu kodeka H.264.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1044" />
@@ -776,17 +776,17 @@
         <message>
             <location filename="../streaming/session.cpp" line="1025" />
             <source>This PC's GPU doesn't support 10-bit HEVC or AV1 decoding for HDR streaming.</source>
-            <translation>Karta graficzna tego komputera nie wspiera 10-bitowego dekodowania HEVC lub AV1 dla strumieniowania w trybie HDR.</translation>
+            <translation>Układ graficzny tego komputera nie obsługuje dekodowania 10-bitowego HEVC ani AV1 do transmisji strumieniowej HDR.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1077" />
             <source>Your host PC and client PC don't support the same HDR video codecs.</source>
-            <translation>Ten komputer oraz komputer-gospodarz nie wspierają tych samych kodeków wideo HDR.</translation>
+            <translation>Host i komputer kliencki nie obsługują tych samych kodeków wideo HDR.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1170" />
             <source>Video resolutions over 4K are not supported by the H.264 codec.</source>
-            <translation>Rozdzielczości wideo powyżej 4K nie są wspierane przez kodek H.264.</translation>
+            <translation>Kodek H.264 nie obsługuje rozdzielczości wideo powyżej 4K.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1554" />
@@ -796,12 +796,12 @@
         <message>
             <location filename="../streaming/session.cpp" line="1001" />
             <source>Using software decoding due to your selection to force H.264 without GPU support. This may cause poor streaming performance.</source>
-            <translation>Wykorzystywanie dekodowania programowego z powodu wymuszenia kodowania H.264 bez wsparcia ze strony układu graficznego (GPU).</translation>
+            <translation>Używane jest dekodowanie programowe z powodu wymuszenia H.264 bez obsługi przez GPU. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1011" />
             <source>Your host PC and client PC don't support the same video codecs. This may cause poor streaming performance.</source>
-            <translation>Komputer gospodarza oraz ten komputer nie wspierają tych samych kodeków wideo. To może spowodować niską wydajność strumieniowania.</translation>
+            <translation>Host i komputer kliencki nie obsługują tych samych kodeków wideo. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1014" />
@@ -812,27 +812,27 @@
             <location filename="../streaming/session.cpp" line="1050" />
             <location filename="../streaming/session.cpp" line="1068" />
             <source>Using software decoding due to your selection to force HDR without GPU support. This may cause poor streaming performance.</source>
-            <translation>Używanie dekodowania programowego zgodnie z dokonanym wyborem, aby wymusić HDR bez obsługi procesora graficznego. Może to powodować słabą wydajność przesyłania strumieniowego.</translation>
+            <translation>Używane jest dekodowanie programowe z powodu wymuszenia HDR bez obsługi przez GPU. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1062" />
             <source>This PC's GPU doesn't support HEVC Main10 decoding for HDR streaming.</source>
-            <translation>Układ graficzny (GPU) tego komputera nie wspiera dekodowania HDR w trybie HEVC Main10.</translation>
+            <translation>Układ graficzny tego komputera nie obsługuje dekodowania HEVC Main10 do transmisji strumieniowej HDR.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1084" />
             <source>Your host PC doesn't support YUV 4:4:4 streaming.</source>
-            <translation>Twój komputer-host nie obsługuje przesyłania strumieniowego YUV 4:4:4.</translation>
+            <translation>Host nie obsługuje transmisji strumieniowej YUV 4:4:4.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1092" />
             <source>Your host PC doesn't support YUV 4:4:4 streaming for selected video codec.</source>
-            <translation>Twój komputer-host nie obsługuje przesyłania strumieniowego YUV 4:4:4 dla wybranego kodeka wideo.</translation>
+            <translation>Host nie obsługuje transmisji strumieniowej YUV 4:4:4 z wybranym kodekiem wideo.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1107" />
             <source>Using software decoding due to your selection to force YUV 4:4:4 without GPU support. This may cause poor streaming performance.</source>
-            <translation>Używanie dekodowania programowego zgodnie z wyborem, aby wymusić YUV 4:4:4 bez obsługi GPU. Może to powodować słabą wydajność przesyłania strumieniowego.</translation>
+            <translation>Używane jest dekodowanie programowe z powodu wymuszenia YUV 4:4:4 bez obsługi przez GPU. Może to obniżyć wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1113" />
@@ -842,12 +842,12 @@
         <message>
             <location filename="../streaming/session.cpp" line="1122" />
             <source>GeForce Experience 3.0 or higher is required for 4K streaming.</source>
-            <translation>Strumieniowanie w trybie 4K jest dostępne w GeForce Expierence 3.0 i nowszych.</translation>
+            <translation>Do transmisji strumieniowej w rozdzielczości 4K wymagany jest GeForce Experience 3.0 lub nowszy.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1137" />
             <source>Your selected surround sound setting is not supported by the current audio device.</source>
-            <translation>Wybrane ustawienia dźwięku przestrzennego nie są obsługiwane przez wybrane urządzenie dźwięku.</translation>
+            <translation>Wybrane ustawienie dźwięku przestrzennego nie jest obsługiwane przez bieżące urządzenie audio.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1143" />
@@ -857,12 +857,12 @@
         <message>
             <location filename="../streaming/session.cpp" line="1148" />
             <source>An attached gamepad has no mapping and won't be usable. Visit the Moonlight help to resolve this.</source>
-            <translation>Podłączony kontroler nie posiada mapowania i nie jest zdatny do użytku. Odwiedź pomoc Moonlight w celu rozwiązania tego problemu.</translation>
+            <translation>Podłączony kontroler nie ma mapowania i nie będzie działać. Rozwiązanie można znaleźć w pomocy Moonlight.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1166" />
             <source>Your host PC's GPU doesn't support streaming video resolutions over 4K.</source>
-            <translation>Układ graficzny (GPU) komputera-gospodarza nie obsługuje strumieniowania w rozdzielczościach wyższych niż 4K.</translation>
+            <translation>Układ graficzny hosta nie obsługuje transmisji strumieniowej w rozdzielczościach wyższych niż 4K.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="1184" />
@@ -872,7 +872,7 @@
         <message>
             <location filename="../streaming/session.cpp" line="1187" />
             <source>Your codec selection and force hardware decoding setting are not compatible. This PC's GPU lacks support for decoding your chosen codec.</source>
-            <translation>Wybrany kodek i wymuszenie opcji dekodowania sprzętowego są niekompatybilne. Układ graficzny (GPU) tego komputera nie wspiera dekodowania sprzętowego wybranego kodeka.</translation>
+            <translation>Wybrany kodek jest niezgodny z wymuszeniem dekodowania sprzętowego. Układ graficzny tego komputera nie obsługuje sprzętowego dekodowania wybranego kodeka.</translation>
         </message>
         <message>
             <location filename="../streaming/session.cpp" line="2219" />
@@ -881,19 +881,19 @@
         </message>
         <message>
             <source>The host did not resume the desktop at the new size. Connect again to continue where you left off.</source>
-            <translation>Host nie wznowił pulpitu w nowym rozmiarze. Połącz się ponownie, aby kontynuować od miejsca, w którym przerwałeś.</translation>
+            <translation>Host nie wznowił pulpitu w nowym rozmiarze. Połącz się ponownie, aby kontynuować pracę.</translation>
         </message>
         <message>
             <source>Connecting to desktop…</source>
-            <translation>Łączę z komputerem…</translation>
+            <translation>Łączenie z pulpitem…</translation>
         </message>
         <message>
             <source>This connection would create a loop. Disconnect one of the existing links first.</source>
-            <translation>To połączenie utworzyłoby pętlę. Najpierw odłącz jedno z istniejących łączy.</translation>
+            <translation>To połączenie utworzyłoby pętlę. Najpierw rozłącz jedno z istniejących połączeń.</translation>
         </message>
         <message>
             <source>The connection path could not be verified. Update DeskPort on every desktop in the chain and try again.</source>
-            <translation>Nie można zweryfikować ścieżki połączenia. Zaktualizuj DeskPort na każdym komputerze stacjonarnym w sieci i spróbuj ponownie.</translation>
+            <translation>Nie można zweryfikować ścieżki połączenia. Zaktualizuj DeskPort na każdym komputerze w łańcuchu połączeń i spróbuj ponownie.</translation>
         </message>
     </context>
     <context>
@@ -941,12 +941,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="373" />
             <source>Custom resolutions are not officially supported by GeForce Experience, so it will not set your host display resolution. You will need to set it manually while in game.</source>
-            <translation>Rozdzielczości niestandardowe nie są oficjalnie wspierane przez GeForce Experience, więc wybrana rozdzielczość na komputerze-gospodarzu nie zostanie ustawiona. Musisz ręcznie wybrać tę rozdzielczość w opcjach gry.</translation>
+            <translation>Niestandardowe rozdzielczości nie są oficjalnie obsługiwane przez GeForce Experience, więc program nie ustawi rozdzielczości ekranu hosta. Należy ustawić ją ręcznie w grze.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="374" />
             <source>Resolutions that are not supported by your client or host PC may cause streaming errors.</source>
-            <translation>Rozdzielczości ekranu nieobsługiwane przez komputera-gospodarza lub ten komputer mogą spowodować problemy podczas strumieniowania.</translation>
+            <translation>Rozdzielczości nieobsługiwane przez klienta lub hosta mogą powodować błędy transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="380" />
@@ -957,12 +957,12 @@
             <location filename="../gui/SettingsView.qml" line="508" />
             <location filename="../gui/SettingsView.qml" line="618" />
             <source>Custom (%1 FPS)</source>
-            <translation>Własne (%1 FPS)</translation>
+            <translation>Niestandardowe (%1 FPS)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="523" />
             <source>Enter a custom frame rate:</source>
-            <translation>Wprowadź liczbę klatek na sekundę:</translation>
+            <translation>Wprowadź niestandardową liczbę klatek na sekundę:</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="600" />
@@ -972,17 +972,17 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="668" />
             <source>Video bitrate:</source>
-            <translation>Bitrate wideo:</translation>
+            <translation>Przepływność wideo:</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="676" />
             <source>Lower the bitrate on slower connections. Raise the bitrate to increase image quality.</source>
-            <translation>Obniż bitrate na wolniejszych połączeniach. Zwiększ bitrate by zwiększyć jakość obrazu.</translation>
+            <translation>Zmniejsz przepływność przy wolniejszych połączeniach. Zwiększ ją, aby poprawić jakość obrazu.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="694" />
             <source>Video bitrate: %1 Mbps</source>
-            <translation>Bitrate wideo: %1 Mbps</translation>
+            <translation>Przepływność wideo: %1 Mb/s</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="707" />
@@ -998,14 +998,14 @@
             <location filename="../gui/SettingsView.qml" line="718" />
             <location filename="../gui/SettingsView.qml" line="1181" />
             <source>Fullscreen</source>
-            <translation>W trybie pełnoekranowym</translation>
+            <translation>Pełny ekran</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="219" />
             <location filename="../gui/SettingsView.qml" line="228" />
             <location filename="../gui/SettingsView.qml" line="621" />
             <source>Custom</source>
-            <translation>Własne</translation>
+            <translation>Niestandardowe</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="639" />
@@ -1020,12 +1020,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="787" />
             <source>Fullscreen generally provides the best performance, but borderless windowed may work better with features like macOS Spaces, Alt+Tab, screenshot tools, on-screen overlays, etc.</source>
-            <translation>Wyświetlanie w trybie pełnoekranowym zazwyczaj zapewnia najlepszą wydajność, ale tryb w oknie bez ramek może zapewnić lepszą kompatybilność z funkcjami takimi jak macOS Spaces, Alt+Tab, narzędziami do zrzutów ekranu czy menu ekranowego, itd.</translation>
+            <translation>Pełny ekran zwykle zapewnia najlepszą wydajność, ale okno bez obramowania może lepiej współpracować z funkcjami takimi jak macOS Spaces, Alt+Tab, narzędzia do zrzutów ekranu czy nakładki ekranowe.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="723" />
             <source>Borderless windowed</source>
-            <translation>Tryb okna bez ramek</translation>
+            <translation>Okno bez obramowania</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="182" />
@@ -1035,13 +1035,13 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="183" />
             <source>Native (Excluding Notch)</source>
-            <translation>Natywny (wykluczając wycięcie)</translation>
+            <translation>Natywny (bez wycięcia w ekranie)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="728" />
             <location filename="../gui/SettingsView.qml" line="1173" />
             <source>Windowed</source>
-            <translation>Tryb w oknie</translation>
+            <translation>W oknie</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="794" />
@@ -1051,7 +1051,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="804" />
             <source>Disabling V-Sync allows sub-frame rendering latency, but it can display visible tearing</source>
-            <translation>Wyłączenie synchronizacji pionowej (V-Sync) pozwala zmniejszyć opóźnienia renderowania ramek pośrednich, ale może spowodować efekt rwania obrazu</translation>
+            <translation>Wyłączenie synchronizacji pionowej (V-Sync) pozwala uzyskać opóźnienie renderowania krótsze niż czas jednej klatki, ale może powodować rozrywanie obrazu</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="811" />
@@ -1061,7 +1061,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="821" />
             <source>Frame pacing reduces micro-stutter by delaying frames that come in too early</source>
-            <translation>Synchronizacja klatek redukuje minimalne zacinanie się obrazu poprzez opóźnianie klatek, które pojawiły się zbyt wcześnie</translation>
+            <translation>Synchronizacja klatek ogranicza drobne zacięcia obrazu, opóźniając klatki, które docierają zbyt wcześnie</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="831" />
@@ -1086,22 +1086,22 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="888" />
             <source>Mute host PC speakers while streaming</source>
-            <translation>Wycisz głośniki komputera-gospodarza w trakcie strumieniowania</translation>
+            <translation>Wycisz głośniki hosta podczas transmisji strumieniowej</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="898" />
             <source>You must restart any game currently in progress for this setting to take effect</source>
-            <translation>Aby ustawienia zostały zastosowane konieczne jest ponowne uruchomienie gry</translation>
+            <translation>Aby zastosować to ustawienie, uruchom ponownie trwającą grę</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="904" />
             <source>Mute audio stream when Moonlight is not the active window</source>
-            <translation>Wycisz dźwięk jeśli okno Moonlight nie jest aktywne</translation>
+            <translation>Wycisz dźwięk, gdy okno Moonlight jest nieaktywne</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="915" />
             <source>Mutes Moonlight's audio when you Alt+Tab out of the stream or click on a different window.</source>
-            <translation>Wycisza dźwięk z Moonlight po wyjściu z użyciem np. Alt+Tab ze strumieniowania lub kliknięcie w innym oknie.</translation>
+            <translation>Wycisza dźwięk Moonlight po przełączeniu się z transmisji za pomocą Alt+Tab lub kliknięciu innego okna.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="964" />
@@ -1116,12 +1116,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1000" />
             <source>Automatic</source>
-            <translation>Wybierz automatycznie</translation>
+            <translation>Automatycznie</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1123" />
             <source>You must restart Moonlight for this change to take effect</source>
-            <translation>Musisz uruchomić ponownie Moonlight, aby te zmiany weszły w życie</translation>
+            <translation>Uruchom ponownie Moonlight, aby zastosować tę zmianę</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1140" />
@@ -1141,22 +1141,22 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1232" />
             <source>Prevents the screensaver from starting or the display from going to sleep while streaming.</source>
-            <translation>Uniemożliwia uruchomienie wygaszacza ekranu lub przejście ekranu w stan uśpienia podczas gdy strumieniowanie jest aktywne.</translation>
+            <translation>Zapobiega uruchomieniu wygaszacza ekranu i uśpieniu ekranu podczas transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1250" />
             <source>Input Settings</source>
-            <translation>Ustawienia urządzeń wejściowych</translation>
+            <translation>Ustawienia sterowania</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1271" />
             <source>This enables seamless mouse control without capturing the client's mouse cursor. It is ideal for remote desktop usage but will not work in most games.</source>
-            <translation>Umożliwia to płynne sterowanie myszą bez przechwytywania kursora myszy klienta. Jest to idealne rozwiązanie dla użycia jako pulpitu zdalnego, ale nie będzie działać poprawnie w większości gier.</translation>
+            <translation>Umożliwia płynne sterowanie myszą bez przechwytywania kursora klienta. Nadaje się idealnie do pracy ze zdalnym pulpitem, ale nie działa w większości gier.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1273" />
             <source>NOTE: Due to a bug in GeForce Experience, this option may not work properly if your host PC has multiple monitors.</source>
-            <translation>UWAGA: Z powodu błędu w aplikacji GeForce Experience ta opcja może nie działać poprawnie, jeśli komputer-gospodarz posiada podłączone wiele monitorów.</translation>
+            <translation>UWAGA: Z powodu błędu w GeForce Experience ta opcja może nie działać poprawnie, jeśli do hosta podłączono wiele monitorów.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1292" />
@@ -1211,7 +1211,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1434" />
             <source>Forces a single gamepad to always stay connected to the host, even if no gamepads are actually connected to this PC.</source>
-            <translation>Wymusza, aby kontroler zawsze pozostawał połączony z komputerem-gospodarzem, nawet jeśli do komputera nie jest podłączony żaden kontroler.</translation>
+            <translation>Sprawia, że jeden kontroler zawsze pozostaje połączony z hostem, nawet jeśli do tego komputera nie jest podłączony żaden kontroler.</translation>
         </message>
         <message>
             <source>Enabling HDR overrides manual decoder selections.</source>
@@ -1220,7 +1220,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1573" />
             <source>AV1 (Experimental)</source>
-            <translation>AV1 (eksperymentalne)</translation>
+            <translation>AV1 (funkcja eksperymentalna)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1588" />
@@ -1230,7 +1230,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1603" />
             <source>The stream will be HDR-capable, but some games may require an HDR monitor on your host PC to enable HDR mode.</source>
-            <translation>Strumieniowanie będzie obsługiwać technologię HDR, ale niektóre gry mogą wymagać monitora HDR na komputerze-gospodarzu, aby tryb HDR był dostępny.</translation>
+            <translation>Transmisja będzie obsługiwać HDR, ale niektóre gry mogą wymagać monitora HDR podłączonego do hosta, aby włączyć ten tryb.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1605" />
@@ -1240,12 +1240,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1690" />
             <source>Show performance stats while streaming</source>
-            <translation>Wyświetlanie statystyk wydajności podczas przesyłania strumieniowego</translation>
+            <translation>Pokaż statystyki wydajności podczas transmisji strumieniowej</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1700" />
             <source>Display real-time stream performance information while streaming.</source>
-            <translation>Wyświetlanie informacji o wydajności strumienia w czasie rzeczywistym podczas przesyłania strumieniowego.</translation>
+            <translation>Wyświetla informacje o wydajności transmisji w czasie rzeczywistym.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1701" />
@@ -1255,7 +1255,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1702" />
             <source>The performance overlay is not supported on Steam Link or Raspberry Pi.</source>
-            <translation>Nakładka wydajności nie jest obsługiwana na Steam Link lub Raspberry Pi.</translation>
+            <translation>Nakładka statystyk nie jest obsługiwana na Steam Link ani Raspberry Pi.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1272" />
@@ -1265,7 +1265,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1283" />
             <source>Capture system keyboard shortcuts</source>
-            <translation>Przechwytuj systemowy skróty klawiaturowe</translation>
+            <translation>Przechwytuj systemowe skróty klawiszowe</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1291" />
@@ -1285,17 +1285,17 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1464" />
             <source>Allows Moonlight to capture gamepad inputs even if it's not the current window in focus</source>
-            <translation>Umożliwia Moonlight przechwytywanie danych wejściowych z kontrolera, nawet jeśli nie jest on aktualnie wybranym oknem</translation>
+            <translation>Umożliwia Moonlight przechwytywanie danych z kontrolera także wtedy, gdy jego okno jest nieaktywne</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="924" />
             <source>Host Settings</source>
-            <translation>Ustawienia gospodarza</translation>
+            <translation>Ustawienia hosta</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1473" />
             <source>Advanced Settings</source>
-            <translation>Zaawansowane ustawienia</translation>
+            <translation>Ustawienia zaawansowane</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="841" />
@@ -1320,7 +1320,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1435" />
             <source>Only enable this option when streaming a game that doesn't support gamepads being connected after startup.</source>
-            <translation>Włącz tę opcję tylko w przypadku strumieniowania gry, która, po jej uruchomieniu, nie obsługuje podłączania kontrolerów.</translation>
+            <translation>Włącz tę opcję tylko podczas transmisji gry, która nie obsługuje podłączania kontrolerów po uruchomieniu.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1261" />
@@ -1330,7 +1330,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1365" />
             <source>When checked, the touchscreen acts like a trackpad. When unchecked, the touchscreen will directly control the mouse pointer.</source>
-            <translation>Po wybraniu tej opcji ekran dotykowy działa jak gładzik. W innym wypadku, ekran dotykowy będzie bezpośrednio sterował wskaźnikiem myszy.</translation>
+            <translation>Po włączeniu tej opcji ekran dotykowy działa jak gładzik. Po jej wyłączeniu bezpośrednio steruje wskaźnikiem myszy.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="934" />
@@ -1340,7 +1340,7 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="945" />
             <source>Quit app on host PC after ending stream</source>
-            <translation>Zakończ aplikację na komputerze-gospodarzu po zakończeniu strumienia</translation>
+            <translation>Zamknij aplikację na hoście po zakończeniu transmisji</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="955" />
@@ -1356,7 +1356,7 @@
             <location filename="../gui/SettingsView.qml" line="1508" />
             <location filename="../gui/SettingsView.qml" line="1561" />
             <source>Automatic (Recommended)</source>
-            <translation>Automatyczny (zalecane)</translation>
+            <translation>Automatycznie (zalecane)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1512" />
@@ -1386,12 +1386,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1611" />
             <source>Enable YUV 4:4:4 (Experimental)</source>
-            <translation>Włącz YUV 4:4:4 (eksperymentalny)</translation>
+            <translation>Włącz YUV 4:4:4 (funkcja eksperymentalna)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1631" />
             <source>Good for streaming desktop and text-heavy games, but not recommended for fast-paced games.</source>
-            <translation>Dobry do strumieniowego przesyłania gier komputerowych i gier zawierających dużo tekstu, ale nie jest zalecany do gier o szybkim tempie.</translation>
+            <translation>Przydatne do transmisji pulpitu i gier zawierających dużo tekstu, ale niezalecane do dynamicznych gier.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1633" />
@@ -1401,12 +1401,12 @@
         <message>
             <location filename="../gui/SettingsView.qml" line="1639" />
             <source>Unlock bitrate limit (Experimental)</source>
-            <translation>Odblokuj limit przepływności (eksperymentalny)</translation>
+            <translation>Odblokuj limit przepływności (funkcja eksperymentalna)</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1652" />
             <source>This unlocks extremely high video bitrates for use with Sunshine hosts. It should only be used when streaming over an Ethernet LAN connection.</source>
-            <translation>Odblokowuje to niezwykle wysokie przepływności wideo do użytku z hostami Sunshine. Należy go używać wyłącznie podczas przesyłania strumieniowego przez połączenie Ethernet LAN.</translation>
+            <translation>Pozwala używać bardzo wysokiej przepływności wideo z hostami Sunshine. Z tej opcji należy korzystać wyłącznie podczas transmisji przez przewodowe połączenie Ethernet w sieci lokalnej.</translation>
         </message>
         <message>
             <location filename="../gui/SettingsView.qml" line="1658" />
@@ -1493,7 +1493,7 @@
         </message>
         <message>
             <source>Waiting for desktop video…</source>
-            <translation>Oczekiwanie na wideo na komputer…</translation>
+            <translation>Oczekiwanie na obraz pulpitu…</translation>
         </message>
         <message>
             <source>Cancel connection</source>
@@ -1508,11 +1508,11 @@
         </message>
         <message>
             <source>Data saver on: video limited to 3–12 Mbps</source>
-            <translation>Oszczędzanie danych włączone: wideo ograniczone do 3–12 Mb/s</translation>
+            <translation>Oszczędzanie danych włączone: przepływność wideo ograniczona do 3–12 Mb/s</translation>
         </message>
         <message>
             <source>Data saver off: automatic bitrate</source>
-            <translation>Oszczędzanie danych wyłączone: automatyczna szybkość transmisji</translation>
+            <translation>Oszczędzanie danych wyłączone: automatyczna przepływność</translation>
         </message>
         <message>
             <source>Today %1%</source>
@@ -1520,7 +1520,7 @@
         </message>
         <message>
             <source>Daily data budget</source>
-            <translation>Dzienny budżet danych</translation>
+            <translation>Dzienny limit transferu danych</translation>
         </message>
         <message>
             <source>Limit per day</source>
@@ -1532,11 +1532,11 @@
         </message>
         <message>
             <source>Counts every session on this computer and starts again at local midnight. At 100% data saver turns on once for the rest of the day.</source>
-            <translation>Zlicza każdą sesję na tym komputerze i rozpoczyna się ponownie o lokalnej północy. Przy 100% oszczędzanie danych włącza się raz na resztę dnia.</translation>
+            <translation>Zlicza dane ze wszystkich sesji na tym komputerze i zeruje licznik o północy czasu lokalnego. Po osiągnięciu 100% jednorazowo włącza oszczędzanie danych na resztę dnia.</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation>Nastawić</translation>
+            <translation>Resetuj</translation>
         </message>
         <message>
             <source>Could not save device removal. Please retry.</source>
@@ -1544,7 +1544,7 @@
         </message>
         <message>
             <source>Editing</source>
-            <translation>Redagowanie</translation>
+            <translation>Edycja</translation>
         </message>
         <message>
             <source>Memory %1</source>
@@ -1552,11 +1552,11 @@
         </message>
         <message>
             <source>Local memory usage</source>
-            <translation>Użycie pamięci lokalnej</translation>
+            <translation>Lokalne zużycie pamięci</translation>
         </message>
         <message>
             <source>Unavailable</source>
-            <translation>Nie płynny</translation>
+            <translation>Niedostępne</translation>
         </message>
         <message>
             <source>Client: %1</source>
@@ -1564,19 +1564,19 @@
         </message>
         <message>
             <source>Sharing host: %1</source>
-            <translation>Udostępnianie hosta: %1</translation>
+            <translation>Host udostępniający: %1</translation>
         </message>
         <message>
             <source>Helpers: %1</source>
-            <translation>Pomocnicy: %1</translation>
+            <translation>Procesy pomocnicze: %1</translation>
         </message>
         <message>
             <source>Some processes could not be sampled.</source>
-            <translation>Nie udało się pobrać próbki niektórych procesów.</translation>
+            <translation>Nie udało się odczytać danych niektórych procesów.</translation>
         </message>
         <message>
             <source>Resident memory of this client and its immediate child processes, refreshed every 3 seconds while visible. Shared pages may be counted more than once. Excludes remote machines and some GPU memory. An increase alone does not indicate a leak.</source>
-            <translation>Pamięć rezydentna tego klienta i jego bezpośrednich procesów podrzędnych, odświeżana co 3 sekundy, gdy jest widoczna. Udostępnione strony mogą być liczone więcej niż raz. Nie obejmuje komputerów zdalnych i części pamięci GPU. Sam wzrost nie oznacza wycieku.</translation>
+            <translation>Pamięć rezydentna tego klienta i jego bezpośrednich procesów potomnych. Dane są odświeżane co 3 sekundy, gdy panel jest widoczny. Współdzielone strony pamięci mogą być liczone wielokrotnie. Nie uwzględnia komputerów zdalnych ani części pamięci GPU. Sam wzrost zużycia nie oznacza wycieku pamięci.</translation>
         </message>
         <message>
             <location filename="../gui/main.qml" line="415" />
@@ -1616,7 +1616,7 @@
         <message>
             <location filename="../gui/main.qml" line="439" />
             <source>This version of Moonlight isn't optimized for your PC. Please download the '%1' version of Moonlight for the best streaming performance.</source>
-            <translation>Ta wersja Moonlight nie jest zoptymalizowana dla Twojego komputera. Pobierz wersję '%1', aby uzyskać najlepszą wydajność strumieniowania.</translation>
+            <translation>Ta wersja Moonlight nie jest zoptymalizowana dla tego komputera. Pobierz wersję '%1' programu Moonlight, aby uzyskać najlepszą wydajność transmisji strumieniowej.</translation>
         </message>
         <message>
             <location filename="../gui/main.qml" line="448" />
@@ -1646,7 +1646,7 @@
         <message>
             <location filename="../gui/main.qml" line="488" />
             <source>Enter the IP address of your host PC:</source>
-            <translation>Wprowadź adres IP komputera-hosta:</translation>
+            <translation>Wprowadź adres IP hosta:</translation>
         </message>
         <message>
             <location filename="../gui/main.qml" line="450" />
@@ -1656,7 +1656,7 @@
         <message>
             <location filename="../gui/main.qml" line="458" />
             <source>Are you sure you want to quit?</source>
-            <translation>Czy na pewno chcesz opuścić aplikację?</translation>
+            <translation>Czy na pewno zamknąć aplikację?</translation>
         </message>
         <message>
             <source>Devices</source>
@@ -1664,23 +1664,23 @@
         </message>
         <message>
             <source>Sharing</source>
-            <translation>Partycypujący</translation>
+            <translation>Udostępnianie</translation>
         </message>
         <message>
             <source>Getting started</source>
-            <translation>Rozpoczęcie</translation>
+            <translation>Pierwsze kroki</translation>
         </message>
         <message>
             <source>Sharing on</source>
-            <translation>Udostępnianie dalej</translation>
+            <translation>Udostępnianie włączone</translation>
         </message>
         <message>
             <source>Sharing off</source>
-            <translation>Dzielenie się</translation>
+            <translation>Udostępnianie wyłączone</translation>
         </message>
         <message>
             <source>Back</source>
-            <translation>Z powrotem</translation>
+            <translation>Wstecz</translation>
         </message>
         <message>
             <source>Add a device</source>
@@ -1692,7 +1692,7 @@
         </message>
         <message>
             <source>DeskPort defaults to :48989. If the sharing page shows another port, enter address:port. For a default Sunshine host, use :47989.</source>
-            <translation>Wartość domyślna DeskPort to: 48989. Jeśli strona udostępniania pokazuje inny port, wpisz adres:port. W przypadku domyślnego hosta Sunshine użyj :47989.</translation>
+            <translation>DeskPort domyślnie używa :48989. Jeśli na stronie „Udostępnianie” widoczny jest inny port, wpisz adres:port. Dla domyślnego hosta Sunshine użyj :47989.</translation>
         </message>
         <message>
             <source>Check permissions</source>
@@ -1708,7 +1708,7 @@
         </message>
         <message>
             <source>Connected</source>
-            <translation>Połączony</translation>
+            <translation>Połączono</translation>
         </message>
         <message>
             <source>Return</source>
@@ -1720,11 +1720,11 @@
         </message>
         <message>
             <source>Details</source>
-            <translation>Bliższe dane</translation>
+            <translation>Szczegóły</translation>
         </message>
         <message>
             <source>Received: %1</source>
-            <translation>Otrzymano: %1</translation>
+            <translation>Odebrano: %1</translation>
         </message>
         <message>
             <source>Sent: %1</source>
@@ -1732,7 +1732,7 @@
         </message>
         <message>
             <source>Counts media, control and clipboard transfer bytes for this session, including temporary reconnects. Excludes IP/VPN overhead, TLS overhead for clipboard, discovery and host-side sharing traffic. This is not your carrier's bill.</source>
-            <translation>Zlicza bajty multimediów, sterowania i schowka w tej sesji, łącznie z tymczasowymi ponownymi połączeniami. Nie obejmuje narzutu IP/VPN, narzutu TLS na potrzeby schowka, wykrywania i udostępniania po stronie hosta. To nie jest rachunek Twojego operatora.</translation>
+            <translation>Zlicza bajty przesłane w ramach obrazu, dźwięku, sterowania i schowka w tej sesji, również po chwilowych ponownych połączeniach. Nie uwzględnia narzutu IP/VPN, narzutu TLS dla schowka, ruchu wykrywania urządzeń ani udostępniania po stronie hosta. Wynik nie jest rozliczeniem operatora.</translation>
         </message>
         <message>
             <source>Update available</source>
@@ -1744,7 +1744,7 @@
         </message>
         <message>
             <source>Checking for updates…</source>
-            <translation>Sprawdzam dostępność aktualizacji…</translation>
+            <translation>Sprawdzanie dostępności aktualizacji…</translation>
         </message>
         <message>
             <source>New version: %1</source>
@@ -1768,7 +1768,7 @@
         </message>
         <message>
             <source>Opens the GitHub release page. Install using your usual method; Nix-managed installations should be updated through Nix.</source>
-            <translation>Otwiera stronę wydania GitHub. Zainstaluj przy użyciu zwykłej metody; Instalacje zarządzane przez Nix powinny być aktualizowane poprzez Nix.</translation>
+            <translation>Otwiera stronę wydania w GitHub. Zainstaluj aktualizację w zwykły sposób. Instalacje zarządzane przez Nix należy aktualizować za pomocą Nix.</translation>
         </message>
         <message>
             <source>Check again</source>
@@ -1780,15 +1780,15 @@
         </message>
         <message>
             <source>Not connected</source>
-            <translation>Nie podłączony</translation>
+            <translation>Brak połączenia</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation>Redagować</translation>
+            <translation>Edytuj</translation>
         </message>
         <message>
             <source>Done</source>
-            <translation>Zrobione</translation>
+            <translation>Gotowe</translation>
         </message>
         <message>
             <source>Refresh devices</source>
@@ -1800,11 +1800,11 @@
         </message>
         <message>
             <source>Ask client to leave full screen</source>
-            <translation>Poproś klienta o opuszczenie trybu pełnego ekranu</translation>
+            <translation>Poproś klienta o opuszczenie trybu pełnoekranowego</translation>
         </message>
         <message>
             <source>Ask the connected client to leave full screen</source>
-            <translation>Poproś podłączonego klienta o opuszczenie trybu pełnoekranowego</translation>
+            <translation>Poproś połączonego klienta o opuszczenie trybu pełnoekranowego</translation>
         </message>
         <message>
             <source>Manual</source>
@@ -1820,22 +1820,22 @@
         </message>
         <message>
             <source>Connecting…</source>
-            <translation>Złączony…</translation>
+            <translation>Łączenie…</translation>
         </message>
         <message>
             <source>Disconnecting…</source>
-            <translation>Rozłączam…</translation>
+            <translation>Rozłączanie…</translation>
         </message>
         <message>
             <source>Failed</source>
-            <translation>Przegrany</translation>
+            <translation>Niepowodzenie</translation>
         </message>
     </context>
     <context>
         <name>SettingsHome</name>
         <message>
             <source>Send this computer's audio to connected devices</source>
-            <translation>Wyślij dźwięk z tego komputera do podłączonych urządzeń</translation>
+            <translation>Przesyłaj dźwięk z tego komputera do połączonych urządzeń</translation>
         </message>
         <message>
             <source>Off by default: sound stays on this computer. Changes apply after restarting sharing.</source>
@@ -1851,7 +1851,7 @@
         </message>
         <message>
             <source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source>
-            <translation>Na komputerze Mac Super / Windows wysyła polecenie, a Alt wysyła opcję. Wybierz opcję Zawsze, aby przesyłać dalej w oknie Super + Spacja. Zmiany obowiązują przy następnym połączeniu.</translation>
+            <translation>Na hoście Mac klawisz Super / Windows działa jako Command, a Alt jako Option. Wybierz „Zawsze”, aby przekazywać Super + Spacja w trybie okna. Zmiany zostaną zastosowane przy następnym połączeniu.</translation>
         </message>
         <message>
             <source>Settings</source>
@@ -1859,11 +1859,11 @@
         </message>
         <message>
             <source>Make DeskPort your own.</source>
-            <translation>Zrób DeskPort swoim własnym.</translation>
+            <translation>Dostosuj DeskPort do swoich potrzeb.</translation>
         </message>
         <message>
             <source>Language changes apply immediately. Connection preferences apply to your next connection from this computer.</source>
-            <translation>Zmiany językowe obowiązują natychmiast. Preferencje połączenia dotyczą następnego połączenia z tego komputera.</translation>
+            <translation>Zmiana języka jest stosowana natychmiast. Preferencje połączenia obowiązują przy następnym połączeniu z tego komputera.</translation>
         </message>
         <message>
             <source>Language</source>
@@ -1871,7 +1871,7 @@
         </message>
         <message>
             <source>Follow system</source>
-            <translation>Postępuj zgodnie z systemem</translation>
+            <translation>Zgodnie z systemem</translation>
         </message>
         <message>
             <source>Restart DeskPort to apply this language.</source>
@@ -1883,11 +1883,11 @@
         </message>
         <message>
             <source>Picture</source>
-            <translation>Zdjęcie</translation>
+            <translation>Obraz</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation>Wejście</translation>
+            <translation>Sterowanie</translation>
         </message>
         <message>
             <source>Sound</source>
@@ -1895,15 +1895,15 @@
         </message>
         <message>
             <source>Connections</source>
-            <translation>Znajomości</translation>
+            <translation>Połączenia</translation>
         </message>
         <message>
             <source>Advanced</source>
-            <translation>Zaawansowany</translation>
+            <translation>Zaawansowane</translation>
         </message>
         <message>
             <source>Resolution</source>
-            <translation>Rezolucja</translation>
+            <translation>Rozdzielczość</translation>
         </message>
         <message>
             <source>Connection window</source>
@@ -1931,11 +1931,11 @@
         </message>
         <message>
             <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
-            <translation>Wyższe wartości poprawiają szczegółowość i wykorzystują większą przepustowość sieci. Zachowaj istniejące wartości zaawansowane, chyba że przesuniesz ten suwak.</translation>
+            <translation>Wyższe wartości zwiększają szczegółowość obrazu i zużycie przepustowości sieci. Dopóki nie przesuniesz tego suwaka, dotychczasowe ustawienia zaawansowane pozostaną zachowane.</translation>
         </message>
         <message>
             <source>Synchronize frames to this display</source>
-            <translation>Zsynchronizuj ramki z tym wyświetlaczem</translation>
+            <translation>Synchronizuj klatki z tym wyświetlaczem</translation>
         </message>
         <message>
             <source>Keyboard &amp; pointer</source>
@@ -1951,7 +1951,7 @@
         </message>
         <message>
             <source>Send system shortcuts to the remote computer</source>
-            <translation>Wyślij skróty systemowe do komputera zdalnego</translation>
+            <translation>Przekazuj skróty systemowe do komputera zdalnego</translation>
         </message>
         <message>
             <source>Never</source>
@@ -1967,11 +1967,11 @@
         </message>
         <message>
             <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
-            <translation>Zwolnij zdalne wprowadzanie za pomocą Ctrl + Alt + Shift + Z.</translation>
+            <translation>Zwolnij przechwytywanie klawiatury i wskaźnika za pomocą Ctrl + Alt + Shift + Z.</translation>
         </message>
         <message>
             <source>Mute when DeskPort loses focus</source>
-            <translation>Wycisz, gdy DeskPort straci ostrość</translation>
+            <translation>Wycisz, gdy okno DeskPort jest nieaktywne</translation>
         </message>
         <message>
             <source>Also play audio on the host</source>
@@ -1979,11 +1979,11 @@
         </message>
         <message>
             <source>Discover nearby devices</source>
-            <translation>Odkryj pobliskie urządzenia</translation>
+            <translation>Wykrywaj pobliskie urządzenia</translation>
         </message>
         <message>
             <source>Keep this computer awake while connected</source>
-            <translation>Nie wyłączaj tego komputera, gdy jest podłączony</translation>
+            <translation>Zapobiegaj usypianiu tego komputera podczas połączenia</translation>
         </message>
         <message>
             <source>Manage saved access</source>
@@ -1991,7 +1991,7 @@
         </message>
         <message>
             <source>Advanced &amp; support</source>
-            <translation>Zaawansowane i wsparcie</translation>
+            <translation>Ustawienia zaawansowane i pomoc</translation>
         </message>
         <message>
             <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
@@ -2011,11 +2011,11 @@
         </message>
         <message>
             <source>Match the client window resolution</source>
-            <translation>Dopasuj rozdzielczość okna klienta</translation>
+            <translation>Dopasuj do rozdzielczości okna klienta</translation>
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Używa wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inne hosty korzystają z poniższej rozdzielczości.</translation>
+            <translation>Korzysta z wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru powoduje krótkie ponowne połączenie transmisji obrazu. Aplikacje pozostają otwarte. Inne hosty używają rozdzielczości podanej poniżej.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2023,11 +2023,11 @@
         </message>
         <message>
             <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Włącz na obu sparowanych urządzeniach, a następnie połącz ponownie. Tylko nowe egzemplarze; do 128 MB. Obrazy i pliki nie są udostępniane.</translation>
+            <translation>Włącz na obu powiązanych urządzeniach, a następnie połącz się ponownie. Obejmuje tylko nowo skopiowane dane, do 128 MiB. Obrazy i pliki nie są udostępniane.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
-            <translation>Klawiatura podąża za wskaźnikiem wewnątrz skupionego wideo. Opuszczenie zwalnia przytrzymane klawisze i przyciski. Kliknij, aby ustawić ostrość; skróty zarezerwowane przez system mogą pozostać lokalne.</translation>
+            <translation>Gdy obraz zdalnego pulpitu jest aktywny, klawiatura steruje komputerem zdalnym, jeśli wskaźnik znajduje się nad obrazem. Wyjście poza obraz zwalnia przytrzymane klawisze i przyciski. Kliknij obraz, aby go aktywować. Skróty zarezerwowane przez system mogą być obsługiwane lokalnie.</translation>
         </message>
         <message>
             <source>Saved · connection changes apply next time you connect.</source>
@@ -2047,7 +2047,7 @@
         </message>
         <message>
             <source>Appearance changes apply immediately.</source>
-            <translation>Zmiany wyglądu obowiązują natychmiast.</translation>
+            <translation>Zmiany wyglądu są stosowane natychmiast.</translation>
         </message>
         <message>
             <source>Connecting to remote computers</source>
@@ -2055,11 +2055,11 @@
         </message>
         <message>
             <source>Quality preset</source>
-            <translation>Jakość ustawiona wstępnie</translation>
+            <translation>Profil jakości</translation>
         </message>
         <message>
             <source>Choose a preset…</source>
-            <translation>Wybierz ustawienie wstępne…</translation>
+            <translation>Wybierz profil…</translation>
         </message>
         <message>
             <source>Office · 30 fps / 10 Mbps</source>
@@ -2067,19 +2067,19 @@
         </message>
         <message>
             <source>Clear · 60 fps / 40 Mbps</source>
-            <translation>Wyczyść · 60 kl./s / 40 Mb/s</translation>
+            <translation>Wyraźny · 60 kl./s / 40 Mb/s</translation>
         </message>
         <message>
             <source>Smooth · 60 fps / 15 Mbps</source>
-            <translation>Płynnie · 60 kl./s / 15 Mb/s</translation>
+            <translation>Płynny · 60 kl./s / 15 Mb/s</translation>
         </message>
         <message>
             <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
-            <translation>Ustawienia wstępne zmieniają tylko liczbę klatek na sekundę i przepustowość. Dostosuj je do swojej sieci poniżej.</translation>
+            <translation>Profile zmieniają tylko liczbę klatek na sekundę i przepustowość. Poniżej można dostosować je do swojej sieci.</translation>
         </message>
         <message>
             <source>Fallback resolution</source>
-            <translation>Rozwiązanie awaryjne</translation>
+            <translation>Rozdzielczość zastępcza</translation>
         </message>
         <message>
             <source>Sound from the remote computer</source>
@@ -2091,7 +2091,7 @@
         </message>
         <message>
             <source>Manage incoming access, shared audio and login startup on the Sharing page.</source>
-            <translation>Zarządzaj dostępem przychodzącym, udostępnionym dźwiękiem i uruchamianiem logowania na stronie Udostępnianie.</translation>
+            <translation>Zarządzaj dostępem z innych urządzeń, udostępnianiem dźwięku i uruchamianiem przy logowaniu na stronie „Udostępnianie”.</translation>
         </message>
         <message>
             <source>Open sharing settings</source>
@@ -2107,11 +2107,11 @@
         </message>
         <message>
             <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
-            <translation>Wykorzystuje pułap przepustowości uwzględniający rozdzielczość i płynną synchronizację klatek. Wyłącz, aby ręcznie korzystać z przepustowości i częstotliwości.</translation>
+            <translation>Dobiera limit przepustowości do rozdzielczości i zapewnia płynną synchronizację klatek. Wyłącz, aby ręcznie ustawiać przepustowość i synchronizację klatek.</translation>
         </message>
         <message>
             <source>Smooth frame pacing</source>
-            <translation>Płynne tempo klatek</translation>
+            <translation>Płynna synchronizacja klatek</translation>
         </message>
         <message>
             <source>Show streaming statistics</source>
@@ -2119,15 +2119,15 @@
         </message>
         <message>
             <source>Device connection port</source>
-            <translation>Port podłączenia urządzenia</translation>
+            <translation>Port połączeń urządzeń</translation>
         </message>
         <message>
             <source>Usually leave this at 48991 on both computers. Video and audio ports are managed automatically. Previous entry ports stay available for saved devices.</source>
-            <translation>Zwykle zostawiaj to pod numerem 48991 na obu komputerach. Porty wideo i audio są zarządzane automatycznie. Poprzednie porty wejściowe pozostają dostępne dla zapisanych urządzeń.</translation>
+            <translation>Zwykle należy pozostawić port 48991 na obu komputerach. Porty obrazu i dźwięku są zarządzane automatycznie. Poprzednie porty połączeń pozostają dostępne dla zapisanych urządzeń.</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Stosować</translation>
+            <translation>Zastosuj</translation>
         </message>
         <message>
             <source>Settings for %1</source>
@@ -2139,7 +2139,7 @@
         </message>
         <message>
             <source>Default settings for new devices. Choose Device settings in a device menu to customize a connection.</source>
-            <translation>Domyślne ustawienia dla nowych urządzeń. Wybierz Ustawienia urządzenia w menu urządzenia, aby dostosować połączenie.</translation>
+            <translation>Domyślne ustawienia nowych urządzeń. Wybierz „Ustawienia urządzenia” w menu urządzenia, aby dostosować połączenie.</translation>
         </message>
         <message>
             <source>Saved · reconnect to apply changes.</source>
@@ -2147,15 +2147,15 @@
         </message>
         <message>
             <source>Allow keyboard, pointer and controller input</source>
-            <translation>Zezwalaj na wprowadzanie danych z klawiatury, wskaźnika i kontrolera</translation>
+            <translation>Zezwalaj na sterowanie klawiaturą, wskaźnikiem i kontrolerem</translation>
         </message>
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
-            <translation>Wyłącz dla połączenia tylko do przeglądania. Lokalne skróty DeskPort pozostają dostępne.</translation>
+            <translation>Wyłącz, aby korzystać z połączenia tylko do podglądu. Lokalne skróty DeskPort pozostają dostępne.</translation>
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Połącz się ponownie, aby udostępnić nowe kopie temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
+            <translation>Połącz się ponownie, aby udostępniać nowo kopiowane dane temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2191,11 +2191,11 @@
         </message>
         <message>
             <source>Show data usage in the top bar</source>
-            <translation>Pokaż wykorzystanie danych na górnym pasku</translation>
+            <translation>Pokaż zużycie danych na górnym pasku</translation>
         </message>
         <message>
             <source>Diagnostics and feedback</source>
-            <translation>Diagnostyka i informacja zwrotna</translation>
+            <translation>Diagnostyka i opinie</translation>
         </message>
         <message>
             <source>Enable diagnostic logs</source>
@@ -2203,19 +2203,19 @@
         </message>
         <message>
             <source>Off by default. Collects connection, interaction setup and runtime event types, timing and resize dimensions from this app, its host and display helper. Changes apply immediately. Logs are limited to 9 MiB and kept for up to 7 days while DeskPort runs.</source>
-            <translation>Domyślnie wyłączone. Gromadzi typy połączeń, konfiguracji interakcji i zdarzeń wykonawczych, czas i wymiary zmiany rozmiaru z tej aplikacji, jej hosta i pomocnika wyświetlania. Zmiany obowiązują natychmiast. Dzienniki są ograniczone do 9 MiB i przechowywane przez maksymalnie 7 dni podczas działania DeskPort.</translation>
+            <translation>Domyślnie wyłączone. Zapisuje typy zdarzeń dotyczących połączenia, konfiguracji sterowania i działania programu, informacje o czasie oraz wymiary przy zmianie rozmiaru. Dane pochodzą z tej aplikacji, jej hosta i procesu pomocniczego wyświetlania. Zmiany są stosowane natychmiast. Dzienniki zajmują maksymalnie 9 MiB i są przechowywane do 7 dni, gdy DeskPort działa.</translation>
         </message>
         <message>
             <source>IP addresses, domains, device names and arbitrary message text are omitted automatically. No key text, clipboard or screen content is collected. Each app run has a random anonymous ID. Filtering reduces detail and cannot diagnose every problem; review the archive before sharing.</source>
-            <translation>Adresy IP, domeny, nazwy urządzeń i dowolny tekst wiadomości są automatycznie pomijane. Nie są gromadzone żadne kluczowe teksty, zawartość schowka ani zawartość ekranu. Każde uruchomienie aplikacji ma losowy anonimowy identyfikator. Filtrowanie zmniejsza szczegółowość i nie jest w stanie zdiagnozować każdego problemu; przejrzyj archiwum przed udostępnieniem.</translation>
+            <translation>Adresy IP, domeny, nazwy urządzeń i dowolna treść komunikatów są automatycznie pomijane. Wpisywany tekst oraz zawartość schowka i ekranu nie są gromadzone. Każde uruchomienie aplikacji otrzymuje losowy anonimowy identyfikator. Filtrowanie ogranicza szczegółowość danych, więc nie każdy problem da się zdiagnozować. Przejrzyj archiwum przed udostępnieniem.</translation>
         </message>
         <message>
             <source>GitHub issues and attachments are public. This button creates a ZIP and opens a draft issue. Nothing is uploaded or submitted automatically. Review the ZIP, drag it into the issue, then submit it yourself.</source>
-            <translation>Problemy i załączniki w GitHubie są publiczne. Ten przycisk tworzy plik ZIP i otwiera wersję roboczą wydania. Nic nie jest przesyłane ani przesyłane automatycznie. Przejrzyj plik ZIP, przeciągnij go do problemu, a następnie prześlij samodzielnie.</translation>
+            <translation>Zgłoszenia i załączniki w GitHub są publiczne. Ten przycisk tworzy archiwum ZIP i otwiera szkic zgłoszenia. Nic nie jest automatycznie przesyłane ani publikowane. Przejrzyj ZIP, przeciągnij go do zgłoszenia, a następnie samodzielnie je opublikuj.</translation>
         </message>
         <message>
             <source>Create logs ZIP and open GitHub…</source>
-            <translation>Utwórz dzienniki ZIP i otwórz GitHub…</translation>
+            <translation>Utwórz ZIP z dziennikami i otwórz GitHub…</translation>
         </message>
         <message>
             <source>Show ZIP in folder</source>
@@ -2227,7 +2227,7 @@
         </message>
         <message>
             <source>Turning logs off stops new recording. Clear saved diagnostics to delete existing logs and the generated ZIP. Older versions' raw logs are never included.</source>
-            <translation>Wyłączenie logów zatrzymuje nowe nagrywanie. Wyczyść zapisaną diagnostykę, aby usunąć istniejące logi i wygenerowany plik ZIP. Surowe dzienniki starszych wersji nigdy nie są uwzględniane.</translation>
+            <translation>Wyłączenie dzienników zatrzymuje zapisywanie nowych danych. Użyj opcji „Wyczyść zapisaną diagnostykę”, aby usunąć istniejące dzienniki i wygenerowany ZIP. Surowe dzienniki ze starszych wersji nigdy nie są dołączane.</translation>
         </message>
         <message>
             <source>System</source>
@@ -2235,11 +2235,11 @@
         </message>
         <message>
             <source>Off by default. Logs stay on this computer until you share them. See Privacy for what is recorded.</source>
-            <translation>Domyślnie wyłączone. Dzienniki pozostają na tym komputerze, dopóki ich nie udostępnisz. Zobacz Prywatność, aby dowiedzieć się, co jest rejestrowane.</translation>
+            <translation>Domyślnie wyłączone. Dzienniki pozostają na tym komputerze, dopóki ich nie udostępnisz. Sekcja „Prywatność” opisuje rejestrowane dane.</translation>
         </message>
         <message>
             <source>About</source>
-            <translation>O</translation>
+            <translation>O programie</translation>
         </message>
         <message>
             <source>Version</source>
@@ -2255,27 +2255,27 @@
         </message>
         <message>
             <source>Create ZIP and open issue</source>
-            <translation>Utwórz ZIP i otwórz problem</translation>
+            <translation>Utwórz ZIP i otwórz zgłoszenie</translation>
         </message>
         <message>
             <source>DeskPort has no account and no DeskPort server. Your devices connect to each other directly. Settings, saved devices and approvals stay on this computer.</source>
-            <translation>DeskPort nie ma konta ani serwera DeskPort. Twoje urządzenia łączą się ze sobą bezpośrednio. Ustawienia, zapisane urządzenia i zatwierdzenia pozostają na tym komputerze.</translation>
+            <translation>DeskPort nie wymaga konta i nie korzysta z serwera DeskPort. Urządzenia łączą się ze sobą bezpośrednio. Ustawienia, zapisane urządzenia i zatwierdzenia pozostają na tym komputerze.</translation>
         </message>
         <message>
             <source>To check for updates, DeskPort asks GitHub for the latest release. Like Moonlight, it downloads public host compatibility data and controller mappings from moonlight-stream.org. Reporting a problem only opens a draft issue in your browser; you decide what to submit.</source>
-            <translation>Aby sprawdzić dostępność aktualizacji, DeskPort pyta GitHub o najnowszą wersję. Podobnie jak Moonlight, pobiera dane dotyczące zgodności hostów publicznych i mapowania kontrolerów z witryny moonlight-stream.org. Zgłoszenie problemu otwiera jedynie wersję roboczą problemu w Twojej przeglądarce; Ty decydujesz, co przesłać.</translation>
+            <translation>Aby sprawdzić dostępność aktualizacji, DeskPort pobiera z GitHub informacje o najnowszym wydaniu. Podobnie jak Moonlight pobiera publicznie dostępne dane o zgodności hostów i mapowania kontrolerów z moonlight-stream.org. Zgłaszanie problemu otwiera jedynie szkic zgłoszenia w przeglądarce. To Ty decydujesz, co opublikować.</translation>
         </message>
         <message>
             <source>DeskPort is free software under the GNU General Public License, version 3 or later. It is derived from Moonlight Qt and includes a modified Sunshine host.</source>
-            <translation>DeskPort jest darmowym oprogramowaniem objętym Powszechną Licencją Publiczną GNU w wersji 3 lub nowszej. Wywodzi się z Moonlight Qt i zawiera zmodyfikowany host Sunshine.</translation>
+            <translation>DeskPort jest wolnym oprogramowaniem na licencji GNU General Public License w wersji 3 lub nowszej. Wywodzi się z Moonlight Qt i zawiera zmodyfikowanego hosta Sunshine.</translation>
         </message>
         <message>
             <source>The shared DeskPort catalog is available under the MIT License. Operating system icons are dedicated to the public domain (CC0 1.0).</source>
-            <translation>Udostępniony katalog DeskPort jest dostępny na licencji MIT. Ikony systemów operacyjnych są przeznaczone dla domeny publicznej (CC0 1.0).</translation>
+            <translation>Wspólny katalog DeskPort jest dostępny na licencji MIT. Ikony systemów operacyjnych zostały przekazane do domeny publicznej (CC0 1.0).</translation>
         </message>
         <message>
             <source>Qt, FFmpeg, SDL and the other bundled libraries keep their own licenses. Their notices ship with each package.</source>
-            <translation>Qt, FFmpeg, SDL i inne dołączone biblioteki zachowują własne licencje. Ich powiadomienia są dostarczane z każdą paczką.</translation>
+            <translation>Qt, FFmpeg, SDL i pozostałe dołączone biblioteki podlegają własnym licencjom. Wymagane informacje licencyjne są dołączone do każdego pakietu.</translation>
         </message>
         <message>
             <source>Source code and modifications: %1</source>
@@ -2303,7 +2303,7 @@
         </message>
         <message>
             <source>Desktop shortcut: %1. Manage its binding in your desktop settings.</source>
-            <translation>Skrót pulpitu: %1. Zarządzaj przypisaniem w ustawieniach pulpitu.</translation>
+            <translation>Skrót środowiska graficznego: %1. Zarządzaj jego przypisaniem w ustawieniach środowiska.</translation>
         </message>
         <message>
             <source>Hide title bar while viewing a remote desktop</source>
@@ -2315,11 +2315,11 @@
         </message>
         <message>
             <source>Off by default. When on, the remote desktop window has no title bar or window buttons, and the remote picture uses that space. The Devices page keeps its title bar. Use the tray icon or the global window shortcut to show, hide or disconnect. Changes apply immediately.</source>
-            <translation>Domyślnie wyłączone. Po włączeniu okno zdalnego pulpitu nie ma paska tytułu ani przycisków okna, a zdalny obraz zajmuje to miejsce. Strona Urządzenia zachowuje pasek tytułu. Aby pokazać, ukryć lub rozłączyć, użyj ikony w zasobniku lub globalnego skrótu okna. Zmiany są stosowane od razu.</translation>
+            <translation>Domyślnie wyłączone. Po włączeniu okno zdalnego pulpitu nie ma paska tytułu ani przycisków okna, a obraz zajmuje zwolnione miejsce. Strona „Urządzenia” zachowuje pasek tytułu. Do pokazywania i ukrywania okna oraz rozłączania użyj ikony w zasobniku lub globalnego skrótu okna. Zmiany są stosowane od razu.</translation>
         </message>
         <message>
             <source>Linux: move or resize the window with your desktop's shortcuts, such as Meta+drag on KDE Plasma. Tiled windows are unaffected. On some older Wayland desktops, the title bar returns only after the window is reopened.</source>
-            <translation>Linux: przenoś okno lub zmieniaj jego rozmiar skrótami pulpitu, np. Meta+przeciągnij w KDE Plasma. Okna kafelkowe nie są zmieniane. Na niektórych starszych pulpitach Wayland pasek tytułu wraca dopiero po ponownym otwarciu okna.</translation>
+            <translation>Linux: przenoś okno i zmieniaj jego rozmiar skrótami środowiska graficznego, np. Meta+przeciągnięcie w KDE Plasma. Okna ułożone kafelkowo pozostają bez zmian. W niektórych starszych środowiskach Wayland pasek tytułu wraca dopiero po ponownym otwarciu okna.</translation>
         </message>
         <message>
             <source>Windows: the window cannot be moved or resized with the mouse. Turn this off or use full screen to change its size.</source>
@@ -2327,7 +2327,7 @@
         </message>
         <message>
             <source>macOS: the close, minimize and zoom buttons are hidden and the picture reaches the top edge. Resize the window from its edges; use Fn+Control+arrow keys to tile it, or use full screen.</source>
-            <translation>macOS: przyciski zamykania, minimalizowania i powiększania są ukryte, a obraz sięga górnej krawędzi. Zmieniaj rozmiar okna za krawędzie; użyj Fn+Control+strzałek, aby je ułożyć, albo pełnego ekranu.</translation>
+            <translation>macOS: przyciski zamykania, minimalizowania i powiększania są ukryte, a obraz sięga górnej krawędzi. Aby zmienić rozmiar okna, przeciągnij jego krawędzie. Użyj Fn+Control+klawiszy strzałek, aby ułożyć okna kafelkowo, lub włącz pełny ekran.</translation>
         </message>
         <message>
             <source>Off by default. Hides the title bar and window buttons so the remote picture has more room. Use the tray icon or global shortcut for window controls. Changes apply immediately.</source>
@@ -2335,11 +2335,11 @@
         </message>
         <message>
             <source>On Linux Wayland, the Devices page also stays without a title bar. Other platforms keep its title bar.</source>
-            <translation>W Linux Wayland strona Urządzenia również pozostaje bez paska tytułu. Na innych platformach zachowuje pasek tytułu.</translation>
+            <translation>W systemie Linux z Wayland strona „Urządzenia” również pozostaje bez paska tytułu. Na innych platformach zachowuje pasek tytułu.</translation>
         </message>
         <message>
             <source>Move the window: hold Control+Command and drag the picture. Resize from the edges.</source>
-            <translation>Przenoszenie okna: przytrzymaj Control+Command i przeciągnij obraz. Zmieniaj rozmiar za krawędzie.</translation>
+            <translation>Aby przenieść okno, przytrzymaj Control+Command i przeciągnij obraz. Aby zmienić rozmiar, przeciągnij krawędzie okna.</translation>
         </message>
         <message>
             <source>Hold Control+Command: drag inside the picture to move the window, or drag its edges or corners to resize it.</source>
@@ -2358,7 +2358,7 @@
         <name>DeviceCard</name>
         <message>
             <source>Checking</source>
-            <translation>Kontrola</translation>
+            <translation>Sprawdzanie</translation>
         </message>
         <message>
             <source>Online</source>
@@ -2370,15 +2370,15 @@
         </message>
         <message>
             <source>Device actions</source>
-            <translation>Działania urządzenia</translation>
+            <translation>Działania dotyczące urządzenia</translation>
         </message>
         <message>
             <source>Looking for an address</source>
-            <translation>Szukam adresu</translation>
+            <translation>Wyszukiwanie adresu</translation>
         </message>
         <message>
             <source>Checking connection…</source>
-            <translation>Sprawdzam połączenie…</translation>
+            <translation>Sprawdzanie połączenia…</translation>
         </message>
         <message>
             <source>Unavailable · check device or network</source>
@@ -2386,11 +2386,11 @@
         </message>
         <message>
             <source>Connect to desktop  →</source>
-            <translation>Połącz się z komputerem →</translation>
+            <translation>Połącz z pulpitem  →</translation>
         </message>
         <message>
             <source>Set up access  →</source>
-            <translation>Skonfiguruj dostęp →</translation>
+            <translation>Skonfiguruj dostęp  →</translation>
         </message>
         <message>
             <source>Return to desktop</source>
@@ -2398,15 +2398,15 @@
         </message>
         <message>
             <source>View details</source>
-            <translation>Zobacz szczegóły</translation>
+            <translation>Wyświetl szczegóły</translation>
         </message>
         <message>
             <source>Checking…</source>
-            <translation>Kontrola…</translation>
+            <translation>Sprawdzanie…</translation>
         </message>
         <message>
             <source>Troubleshoot</source>
-            <translation>Rozwiązywanie problemów</translation>
+            <translation>Rozwiąż problemy</translation>
         </message>
         <message>
             <source>Connect</source>
@@ -2418,7 +2418,7 @@
         </message>
         <message>
             <source>Connected</source>
-            <translation>Połączony</translation>
+            <translation>Połączono</translation>
         </message>
         <message>
             <source>Checking availability</source>
@@ -2438,11 +2438,11 @@
         </message>
         <message>
             <source>Open</source>
-            <translation>Otwarte</translation>
+            <translation>Otwórz</translation>
         </message>
         <message>
             <source>Group actions</source>
-            <translation>Działania grupowe</translation>
+            <translation>Działania dotyczące grupy</translation>
         </message>
         <message>
             <source>1 device</source>
@@ -2450,7 +2450,7 @@
         </message>
         <message>
             <source>%1 devices</source>
-            <translation>Urządzenia %1</translation>
+            <translation>Liczba urządzeń: %1</translation>
         </message>
         <message>
             <source>Add a device</source>
@@ -2469,7 +2469,7 @@
         </message>
         <message>
             <source>Changes in %1 s</source>
-            <translation>Zmiany w %1 s</translation>
+            <translation>Zmiana za %1 s</translation>
         </message>
         <message>
             <source>Too many wrong codes. Code sign-in is paused until %1.</source>
@@ -2477,7 +2477,7 @@
         </message>
         <message>
             <source>Hide authenticator QR</source>
-            <translation>Ukryj kod QR uwierzytelniającego</translation>
+            <translation>Ukryj kod QR aplikacji uwierzytelniającej</translation>
         </message>
         <message>
             <source>Add to authenticator app</source>
@@ -2485,23 +2485,23 @@
         </message>
         <message>
             <source>Reset code secret</source>
-            <translation>Zresetuj tajny kod</translation>
+            <translation>Zresetuj tajny klucz kodów</translation>
         </message>
         <message>
             <source>Could not save a new code secret. Please try again.</source>
-            <translation>Nie można zapisać nowego tajnego kodu. Spróbuj ponownie.</translation>
+            <translation>Nie można zapisać nowego tajnego klucza kodów. Spróbuj ponownie.</translation>
         </message>
         <message>
             <source>Scan with Ente Auth or another authenticator app to get the same code on your phone. Anyone with this QR code can sign in from a browser. Reset code secret disconnects every authenticator.</source>
-            <translation>Zeskanuj za pomocą Ente Auth lub innej aplikacji uwierzytelniającej, aby uzyskać ten sam kod na swoim telefonie. Każda osoba posiadająca ten kod QR może zalogować się z przeglądarki. Resetowanie tajnego kodu powoduje rozłączenie każdego modułu uwierzytelniającego.</translation>
+            <translation>Zeskanuj za pomocą Ente Auth lub innej aplikacji uwierzytelniającej, aby otrzymywać ten sam kod na telefonie. Każda osoba posiadająca ten kod QR może zalogować się przez przeglądarkę. Opcja „Zresetuj tajny klucz kodów” unieważnia wszystkie dotychczasowe konfiguracje aplikacji uwierzytelniających.</translation>
         </message>
         <message>
             <source>A browser that is not remembered needs a new code after it is closed. Start sharing before connecting. A local HTTPS certificate needs to be trusted on the connecting device.</source>
-            <translation>Przeglądarka, która nie została zapamiętana, po zamknięciu potrzebuje nowego kodu. Rozpocznij udostępnianie przed połączeniem. Lokalny certyfikat HTTPS na urządzeniu łączącym musi być zaufany.</translation>
+            <translation>Jeśli przeglądarka nie została zapamiętana, po jej zamknięciu trzeba podać nowy kod. Rozpocznij udostępnianie przed połączeniem. Na urządzeniu nawiązującym połączenie należy zaufać lokalnemu certyfikatowi HTTPS.</translation>
         </message>
         <message>
             <source>Choose Remember this browser for 7 days when connecting to skip the code on that browser.</source>
-            <translation>Wybierz opcję Zapamiętaj tę przeglądarkę przez 7 dni podczas łączenia, aby pominąć kod w tej przeglądarce.</translation>
+            <translation>Podczas łączenia wybierz „Zapamiętaj tę przeglądarkę przez 7 dni”, aby pomijać kod w tej przeglądarce.</translation>
         </message>
         <message>
             <source>Browser access is not running.</source>
@@ -2509,11 +2509,11 @@
         </message>
         <message>
             <source>Browser access is on for this network and your Tailscale network.</source>
-            <translation>Dostęp przeglądarki jest włączony dla tej sieci i Twojej sieci Tailscale.</translation>
+            <translation>Dostęp przez przeglądarkę jest włączony w tej sieci i w sieci Tailscale.</translation>
         </message>
         <message>
             <source>Browser access is on for this network.</source>
-            <translation>Dostęp przeglądarki jest włączony w tej sieci.</translation>
+            <translation>Dostęp przez przeglądarkę jest włączony w tej sieci.</translation>
         </message>
         <message>
             <source>Devices signed in to the same Tailscale account connect without the code.</source>
@@ -2529,11 +2529,11 @@
         </message>
         <message>
             <source>Disconnecting removes the virtual display and restores your physical screen layout. Reconnecting creates a new virtual display.</source>
-            <translation>Odłączenie powoduje usunięcie wirtualnego wyświetlacza i przywrócenie fizycznego układu ekranu. Ponowne połączenie tworzy nowy wirtualny wyświetlacz.</translation>
+            <translation>Rozłączenie usuwa wyświetlacz wirtualny i przywraca układ fizycznych ekranów. Ponowne połączenie tworzy nowy wyświetlacz wirtualny.</translation>
         </message>
         <message>
             <source>Sharing</source>
-            <translation>Partycypujący</translation>
+            <translation>Udostępnianie</translation>
         </message>
         <message>
             <source>Share this computer.</source>
@@ -2549,7 +2549,7 @@
         </message>
         <message>
             <source>Updating sharing…</source>
-            <translation>Aktualizuję udostępnianie…</translation>
+            <translation>Aktualizowanie udostępniania…</translation>
         </message>
         <message>
             <source>Sharing is on</source>
@@ -2561,11 +2561,11 @@
         </message>
         <message>
             <source>Stop sharing</source>
-            <translation>Przestań się dzielić</translation>
+            <translation>Zatrzymaj udostępnianie</translation>
         </message>
         <message>
             <source>Start sharing</source>
-            <translation>Zacznij udostępniać</translation>
+            <translation>Rozpocznij udostępnianie</translation>
         </message>
         <message>
             <source>Browser access</source>
@@ -2573,23 +2573,23 @@
         </message>
         <message>
             <source>Browser access code</source>
-            <translation>Kod dostępu do przeglądarki</translation>
+            <translation>Kod dostępu przez przeglądarkę</translation>
         </message>
         <message>
             <source>Browser URL</source>
-            <translation>Adres przeglądarki</translation>
+            <translation>Adres URL połączenia przez przeglądarkę</translation>
         </message>
         <message>
             <source>Paired browsers</source>
-            <translation>Sparowane przeglądarki</translation>
+            <translation>Powiązane przeglądarki</translation>
         </message>
         <message>
             <source>Remove pairing</source>
-            <translation>Usuń parowanie</translation>
+            <translation>Usuń powiązanie</translation>
         </message>
         <message>
             <source>Could not save the pairing removal. Please try again.</source>
-            <translation>Nie można zapisać usunięcia parowania. Spróbuj ponownie.</translation>
+            <translation>Nie można zapisać usunięcia powiązania. Spróbuj ponownie.</translation>
         </message>
         <message>
             <source>Access &amp; permissions</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Tylko urządzenia, które zatwierdzisz, mogą się łączyć. Zapisane powiązanie nie przyznaje systemowych uprawnień do nagrywania ani wprowadzania danych.</translation>
+            <translation>Łączyć się mogą tylko zatwierdzone urządzenia. Zapisane powiązanie nie nadaje systemowych uprawnień do nagrywania ekranu ani sterowania.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2609,7 +2609,7 @@
         </message>
         <message>
             <source>Sharing preferences</source>
-            <translation>Udostępnianie preferencji</translation>
+            <translation>Preferencje udostępniania</translation>
         </message>
         <message>
             <source>Virtual display size</source>
@@ -2621,23 +2621,23 @@
         </message>
         <message>
             <source>Start sharing when I log in</source>
-            <translation>Rozpocznij udostępnianie, gdy się zaloguję</translation>
+            <translation>Rozpoczynaj udostępnianie przy logowaniu</translation>
         </message>
         <message>
             <source>Hide compatibility &amp; diagnostics</source>
-            <translation>Ukryj kompatybilność i diagnostykę</translation>
+            <translation>Ukryj zgodność i diagnostykę</translation>
         </message>
         <message>
             <source>Compatibility &amp; diagnostics</source>
-            <translation>Kompatybilność i diagnostyka</translation>
+            <translation>Zgodność i diagnostyka</translation>
         </message>
         <message>
             <source>Legacy PIN pairing</source>
-            <translation>Parowanie starszego kodu PIN</translation>
+            <translation>Starsza metoda wiązania przez PIN</translation>
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Dla Moonlight lub innych klientów bez wzajemnych powiązań. Wprowadź kod PIN wyświetlony na tym kliencie. Zapewnia to dostęp w jednym kierunku.</translation>
+            <translation>Dla Moonlight i innych klientów bez wzajemnego powiązania. Wprowadź kod PIN wyświetlony na kliencie. Zapewnia to dostęp w jednym kierunku.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2645,23 +2645,23 @@
         </message>
         <message>
             <source>PIN</source>
-            <translation>SZPILKA</translation>
+            <translation>PIN</translation>
         </message>
         <message>
             <source>Allow</source>
-            <translation>Umożliwić</translation>
+            <translation>Zezwól</translation>
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Port hosta: %1 · Port powiązania: %2</translation>
+            <translation>Port hosta: %1  ·  Port wiązania: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
-            <translation>Otwórz logi hosta</translation>
+            <translation>Otwórz dzienniki hosta</translation>
         </message>
         <message>
             <source>Built into DeskPort; BetterDisplay is not required. This is the idle size. An approved client can adjust it automatically while connected.</source>
-            <translation>Wbudowany w DeskPort; BetterDisplay nie jest wymagany. To jest rozmiar bezczynności. Zatwierdzony klient może to dostosować automatycznie po podłączeniu.</translation>
+            <translation>Funkcja wbudowana w DeskPort; BetterDisplay nie jest wymagany. To rozmiar w stanie bezczynności. Zatwierdzony klient może dostosowywać go automatycznie podczas połączenia.</translation>
         </message>
         <message>
             <source>Built-in virtual display</source>
@@ -2669,23 +2669,23 @@
         </message>
         <message>
             <source>Active · %1 × %2 pixels</source>
-            <translation>Aktywne · %1 × %2 pikseli</translation>
+            <translation>Aktywny · %1 × %2 pikseli</translation>
         </message>
         <message>
             <source>Created automatically when sharing starts</source>
-            <translation>Tworzone automatycznie po rozpoczęciu udostępniania</translation>
+            <translation>Tworzony automatycznie po rozpoczęciu udostępniania</translation>
         </message>
         <message>
             <source>Your remote workspace stays open when the client window is hidden. After disconnecting, its resolution returns to the idle size. Stopping sharing removes this virtual display.</source>
-            <translation>Twój zdalny obszar roboczy pozostaje otwarty, gdy okno klienta jest ukryte. Po odłączeniu jego rozdzielczość powraca do rozmiaru spoczynkowego. Zatrzymanie udostępniania powoduje usunięcie tego wirtualnego wyświetlacza.</translation>
+            <translation>Zdalny obszar roboczy pozostaje otwarty, gdy okno klienta jest ukryte. Po rozłączeniu rozdzielczość wraca do rozmiaru dla stanu bezczynności. Zatrzymanie udostępniania usuwa ten wyświetlacz wirtualny.</translation>
         </message>
         <message>
             <source>Workspace · %1 × %2 · %3× scaling</source>
-            <translation>Obszar roboczy · %1 × %2 · %3× skalowanie</translation>
+            <translation>Obszar roboczy · %1 × %2 · skalowanie %3×</translation>
         </message>
         <message>
             <source>Login startup is installed by this computer's system configuration. Change it there, not here.</source>
-            <translation>Uruchamianie logowania jest instalowane przez konfigurację systemu tego komputera. Zmień to tam, nie tutaj.</translation>
+            <translation>Uruchamianie przy logowaniu jest zarządzane przez konfigurację systemową tego komputera. Zmień je w tej konfiguracji.</translation>
         </message>
         <message>
             <source>Sharing service is running</source>
@@ -2693,7 +2693,7 @@
         </message>
         <message>
             <source>Connection readiness</source>
-            <translation>Gotowość do podłączenia</translation>
+            <translation>Gotowość do połączenia</translation>
         </message>
         <message>
             <source>Start sharing to accept connections.</source>
@@ -2701,7 +2701,7 @@
         </message>
         <message>
             <source>Sharing needs permission. Review the items below.</source>
-            <translation>Udostępnianie wymaga pozwolenia. Przejrzyj poniższe elementy.</translation>
+            <translation>Udostępnianie wymaga uprawnień. Sprawdź poniższe pozycje.</translation>
         </message>
         <message>
             <source>Service available. Verify picture and control from an approved device.</source>
@@ -2709,7 +2709,7 @@
         </message>
         <message>
             <source>Allowed</source>
-            <translation>Dozwolony</translation>
+            <translation>Zezwolono</translation>
         </message>
         <message>
             <source>Verify when sharing</source>
@@ -2721,7 +2721,7 @@
         </message>
         <message>
             <source>Needs attention</source>
-            <translation>Potrzebuje uwagi</translation>
+            <translation>Wymaga uwagi</translation>
         </message>
         <message>
             <source>Open system settings</source>
@@ -2737,11 +2737,11 @@
         </message>
         <message>
             <source>Saved approval and network reachability are separate. Legacy PIN clients are managed separately.</source>
-            <translation>Zapisane zatwierdzenie i dostępność sieci to osobne kwestie. Starsi klienci PIN są zarządzani oddzielnie.</translation>
+            <translation>Zapisane zatwierdzenie dostępu i osiągalność w sieci to osobne kwestie. Klienci korzystający ze starszej metody przez PIN są zarządzani oddzielnie.</translation>
         </message>
         <message>
             <source>Share this computer's sound</source>
-            <translation>Udostępnij dźwięk tego komputera</translation>
+            <translation>Udostępniaj dźwięk tego komputera</translation>
         </message>
         <message>
             <source>Saved · restart sharing to apply audio changes.</source>
@@ -2749,11 +2749,11 @@
         </message>
         <message>
             <source>Save bandwidth on static screens</source>
-            <translation>Oszczędzaj przepustowość na ekranach statycznych</translation>
+            <translation>Oszczędzaj przepustowość przy nieruchomym obrazie</translation>
         </message>
         <message>
             <source>Skips unchanged frames and reduces frame rate during repeated packet loss. Applies when sharing restarts.</source>
-            <translation>Pomija niezmienione ramki i zmniejsza liczbę klatek na sekundę w przypadku powtarzającej się utraty pakietów. Ma zastosowanie po ponownym uruchomieniu udostępniania.</translation>
+            <translation>Pomija niezmienione klatki i zmniejsza liczbę klatek na sekundę przy powtarzającej się utracie pakietów. Zmiana zostanie zastosowana po ponownym uruchomieniu udostępniania.</translation>
         </message>
         <message>
             <source>Saved · restart sharing to apply changes.</source>
@@ -2761,15 +2761,15 @@
         </message>
         <message>
             <source>Picture, audio and input are chosen on the connecting device. Changes apply after reconnecting.</source>
-            <translation>Obraz, dźwięk i wejście wybiera się na podłączanym urządzeniu. Zmiany obowiązują po ponownym podłączeniu.</translation>
+            <translation>Ustawienia obrazu, dźwięku i sterowania wybiera się na urządzeniu nawiązującym połączenie. Zmiany są stosowane po ponownym połączeniu.</translation>
         </message>
         <message>
             <source>Device connection port</source>
-            <translation>Port podłączenia urządzenia</translation>
+            <translation>Port połączeń urządzeń</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Stosować</translation>
+            <translation>Zastosuj</translation>
         </message>
         <message>
             <source>Unattended operation</source>
@@ -2777,11 +2777,11 @@
         </message>
         <message>
             <source>Start automatically and recover if DeskPort stops. Requires one-time approval in System Settings and a logged-in desktop. Does not unlock FileVault or enable automatic login.</source>
-            <translation>Uruchom automatycznie i przywróć, jeśli DeskPort się zatrzyma. Wymaga jednorazowej zgody w Ustawieniach systemu i zalogowanego pulpitu. Nie odblokowuje FileVault ani nie włącza automatycznego logowania.</translation>
+            <translation>Uruchamia się automatycznie i wznawia działanie, jeśli DeskPort się zatrzyma. Wymaga jednorazowego zatwierdzenia w Ustawieniach systemowych i aktywnej sesji zalogowanego użytkownika. Nie odblokowuje FileVault ani nie włącza automatycznego logowania.</translation>
         </message>
         <message>
             <source>Open background permissions</source>
-            <translation>Otwórz uprawnienia w tle</translation>
+            <translation>Otwórz uprawnienia do działania w tle</translation>
         </message>
         <message>
             <source>Ask client to leave fullscreen</source>
@@ -2789,11 +2789,11 @@
         </message>
         <message>
             <source>Created when an approved client connects</source>
-            <translation>Tworzone, gdy łączy się zatwierdzony klient</translation>
+            <translation>Tworzony, gdy łączy się zatwierdzony klient</translation>
         </message>
         <message>
             <source>Disconnecting restores your physical screens and removes the virtual display. A brief network interruption keeps the workspace available for recovery.</source>
-            <translation>Odłączenie przywraca ekrany fizyczne i usuwa wyświetlacz wirtualny. Krótka przerwa w działaniu sieci sprawia, że ​​obszar roboczy jest dostępny do odzyskania.</translation>
+            <translation>Rozłączenie przywraca układ fizycznych ekranów i usuwa wyświetlacz wirtualny. Przy krótkiej przerwie w działaniu sieci obszar roboczy pozostaje dostępny, aby umożliwić wznowienie połączenia.</translation>
         </message>
         <message>
             <source>Report a problem…</source>
@@ -2801,7 +2801,7 @@
         </message>
         <message>
             <source>Shared Windows display</source>
-            <translation>Wspólny wyświetlacz Windows</translation>
+            <translation>Udostępniany ekran systemu Windows</translation>
         </message>
         <message>
             <source>Shares this Windows desktop; supported resolutions are restored after disconnect</source>
@@ -2809,11 +2809,11 @@
         </message>
         <message>
             <source>Uses this Windows desktop. Disconnecting restores the original resolution. Unsupported sizes are reported without changing the display.</source>
-            <translation>Używa tego pulpitu systemu Windows. Odłączenie przywraca pierwotną rozdzielczość. Nieobsługiwane rozmiary są zgłaszane bez zmiany sposobu wyświetlania.</translation>
+            <translation>Korzysta z tego pulpitu Windows. Rozłączenie przywraca pierwotną rozdzielczość. Nieobsługiwane rozmiary są zgłaszane bez zmiany ustawień ekranu.</translation>
         </message>
         <message>
             <source>Creates a virtual desktop that follows the client window. Choose mirror, exclusive, or extend on the client. Disconnecting restores the previous display layout.</source>
-            <translation>Tworzy wirtualny pulpit podążający za oknem klienta. Wybierz wersję lustrzaną, wyłączną lub rozszerzoną na kliencie. Odłączenie przywraca poprzedni układ wyświetlacza.</translation>
+            <translation>Tworzy wirtualny pulpit dopasowany do okna klienta. Na kliencie wybierz tryb powielania, wyłączności lub rozszerzania. Rozłączenie przywraca poprzedni układ ekranów.</translation>
         </message>
     </context>
     <context>
@@ -2832,7 +2832,7 @@
         </message>
         <message>
             <source>Where do you want to connect?</source>
-            <translation>Gdzie chcesz się połączyć?</translation>
+            <translation>Z którym komputerem chcesz się połączyć?</translation>
         </message>
         <message>
             <source>IP address or computer name</source>
@@ -2840,7 +2840,7 @@
         </message>
         <message>
             <source>Send request</source>
-            <translation>Wyślij prośbę</translation>
+            <translation>Wyślij żądanie</translation>
         </message>
         <message>
             <source>Cancel</source>
@@ -2848,7 +2848,7 @@
         </message>
         <message>
             <source>Approval lets both computers view and control each other. System permissions are still required on each device.</source>
-            <translation>Zatwierdzenie umożliwia obu komputerom wzajemne przeglądanie się i kontrolowanie. Na każdym urządzeniu nadal wymagane są uprawnienia systemowe.</translation>
+            <translation>Zatwierdzenie pozwala obu komputerom wyświetlać nawzajem swoje pulpity i sterować sobą. Każde urządzenie nadal wymaga uprawnień systemowych.</translation>
         </message>
         <message>
             <source>Saved access</source>
@@ -2860,23 +2860,23 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Powiązany w obie strony</translation>
+            <translation>Powiązano w obu kierunkach</translation>
         </message>
         <message>
             <source>Incomplete</source>
-            <translation>Niekompletny</translation>
+            <translation>Nieukończone</translation>
         </message>
         <message>
             <source>Remove access to this computer</source>
-            <translation>Usuń dostęp do tego komputera</translation>
+            <translation>Cofnij dostęp do tego komputera</translation>
         </message>
         <message>
             <source>Connecting another way?</source>
-            <translation>Podłączanie w inny sposób?</translation>
+            <translation>Połączenie w inny sposób?</translation>
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Aby uzyskać niestandardowy port powiązania, wprowadź adres:port. Zamiast tego Moonlight i niezależne hosty Sunshine korzystają ze starszego parowania.</translation>
+            <translation>Aby użyć niestandardowego portu wiązania, wpisz adres:port. Moonlight i niezależne hosty Sunshine korzystają ze starszej metody wiązania.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2884,11 +2884,11 @@
         </message>
         <message>
             <source>Remove device access?</source>
-            <translation>Usunąć dostęp do urządzenia?</translation>
+            <translation>Cofnąć dostęp urządzenia?</translation>
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 nie będzie już mógł kontrolować tego komputera. Usuń także powiązanie z drugiego urządzenia, aby unieważnić oba kierunki.</translation>
+            <translation>Urządzenie %1 nie będzie już mogło sterować tym komputerem. Usuń powiązanie również na drugim urządzeniu, aby cofnąć dostęp w obu kierunkach.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2908,7 +2908,7 @@
         </message>
         <message>
             <source>A domain name is saved as entered and resolved again when connecting.</source>
-            <translation>Nazwa domeny zostanie zapisana jako wprowadzona i ponownie rozwiązana podczas łączenia.</translation>
+            <translation>Nazwa domeny zostaje zapisana w podanej postaci. Jej adres jest ustalany ponownie przy łączeniu.</translation>
         </message>
         <message>
             <source>Enter one address per line. They are tried in order; put a LAN address first to prefer it.</source>
@@ -2920,15 +2920,15 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Port powiązania</translation>
+            <translation>Port wiązania</translation>
         </message>
         <message>
             <source>Save</source>
-            <translation>Ratować</translation>
+            <translation>Zapisz</translation>
         </message>
         <message>
             <source>Advanced port overrides</source>
-            <translation>Zaawansowane zastępowanie portów</translation>
+            <translation>Niestandardowe ustawienia portów</translation>
         </message>
         <message>
             <source>Client access</source>
@@ -2936,7 +2936,7 @@
         </message>
         <message>
             <source>Discover nearby devices</source>
-            <translation>Odkryj pobliskie urządzenia</translation>
+            <translation>Wykrywaj pobliskie urządzenia</translation>
         </message>
         <message>
             <source>Request access to a computer</source>
@@ -2944,7 +2944,7 @@
         </message>
         <message>
             <source>Approval lets this device view and control the other computer. This device does not share its own desktop.</source>
-            <translation>Zatwierdzenie umożliwia temu urządzeniu przeglądanie i kontrolowanie drugiego komputera. To urządzenie nie udostępnia własnego pulpitu.</translation>
+            <translation>Zatwierdzenie pozwala temu urządzeniu wyświetlać pulpit drugiego komputera i nim sterować. To urządzenie nie udostępnia własnego pulpitu.</translation>
         </message>
         <message>
             <source>Host access</source>
@@ -2952,22 +2952,22 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Zapomnij o zapisanym powiązaniu</translation>
+            <translation>Zapomnij zapisane powiązanie</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>Zapomnieć zapisane powiązanie dla %1 na tym urządzeniu? Usuń go osobno z urządzeń. Aby odebrać dostęp temu urządzeniu, usuń je również z hosta.</translation>
+            <translation>Zapomnieć zapisane powiązanie z %1 na tym urządzeniu? Wpis z sekcji „Urządzenia” trzeba usunąć osobno. Aby cofnąć dostęp temu urządzeniu, usuń je również na hoście.</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation>Usunąć</translation>
+            <translation>Usuń</translation>
         </message>
     </context>
     <context>
         <name>SetupView</name>
         <message>
             <source>Getting started</source>
-            <translation>Rozpoczęcie</translation>
+            <translation>Pierwsze kroki</translation>
         </message>
         <message>
             <source>Set up this computer.</source>
@@ -2975,11 +2975,11 @@
         </message>
         <message>
             <source>Connect to another computer right away. To share this one, review its permissions below.</source>
-            <translation>Natychmiast podłącz się do innego komputera. Aby udostępnić ten plik, przejrzyj jego uprawnienia poniżej.</translation>
+            <translation>Od razu połącz się z innym komputerem. Aby udostępnić ten komputer, sprawdź poniżej jego uprawnienia.</translation>
         </message>
         <message>
             <source>Allowed</source>
-            <translation>Dozwolony</translation>
+            <translation>Zezwolono</translation>
         </message>
         <message>
             <source>Checked when sharing</source>
@@ -2995,7 +2995,7 @@
         </message>
         <message>
             <source>Needs attention</source>
-            <translation>Potrzebuje uwagi</translation>
+            <translation>Wymaga uwagi</translation>
         </message>
         <message>
             <source>Skip for now · only connect to other devices</source>
@@ -3003,7 +3003,7 @@
         </message>
         <message>
             <source>1. Review permissions    2. Add a device    3. Confirm and connect</source>
-            <translation>1. Sprawdź uprawnienia 2. Dodaj urządzenie 3. Potwierdź i połącz</translation>
+            <translation>1. Przejrzyj uprawnienia    2. Dodaj urządzenie    3. Potwierdź i połącz</translation>
         </message>
         <message>
             <source>Open system settings</source>
@@ -3011,7 +3011,7 @@
         </message>
         <message>
             <source>Your Linux configuration must allow your user to access /dev/uinput. Connecting to other computers does not need this permission.</source>
-            <translation>Twoja konfiguracja systemu Linux musi umożliwiać użytkownikowi dostęp do /dev/uinput. Podłączenie do innych komputerów nie wymaga tego pozwolenia.</translation>
+            <translation>Konfiguracja Linux musi zezwalać użytkownikowi na dostęp do /dev/uinput. Łączenie się z innymi komputerami nie wymaga tego uprawnienia.</translation>
         </message>
         <message>
             <source>Authorize the installed DeskPort app</source>
@@ -3019,7 +3019,7 @@
         </message>
         <message>
             <source>If a settings pane accepts adding an app, drag the tile below into its list, then turn the switch on. Otherwise use Reveal in Finder. Some panes list DeskPort only after sharing has requested access.</source>
-            <translation>Jeśli panel ustawień pozwala na dodanie aplikacji, przeciągnij poniższy kafelek na listę, a następnie włącz przełącznik. W przeciwnym razie użyj opcji Pokaż w Finderze. W niektórych okienkach wyświetlana jest lista DeskPort dopiero po zażądaniu dostępu do udostępniania.</translation>
+            <translation>Jeśli panel ustawień umożliwia dodanie aplikacji, przeciągnij poniższy kafelek na listę i włącz przełącznik. W przeciwnym razie użyj opcji „Pokaż w Finderze”. W niektórych panelach DeskPort pojawia się dopiero po zażądaniu dostępu przez funkcję udostępniania.</translation>
         </message>
         <message>
             <source>DeskPort.app  ·  Drag to Settings</source>
@@ -3031,7 +3031,7 @@
         </message>
         <message>
             <source>After changing permissions, restart sharing. If macOS asks you to reopen DeskPort, follow that prompt. Permission checks do not replace a real picture and input test.</source>
-            <translation>Po zmianie uprawnień uruchom ponownie udostępnianie. Jeśli macOS poprosi o ponowne otwarcie DeskPort, postępuj zgodnie z monitem. Sprawdzanie uprawnień nie zastępuje prawdziwego obrazu i testu wejściowego.</translation>
+            <translation>Po zmianie uprawnień uruchom ponownie udostępnianie. Jeśli macOS poprosi o ponowne otwarcie DeskPort, wykonaj to polecenie. Sprawdzenie uprawnień nie zastępuje rzeczywistego testu obrazu i sterowania.</translation>
         </message>
         <message>
             <source>Check again</source>
@@ -3058,11 +3058,11 @@
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>Zezwolić temu urządzeniu i temu komputerowi na wzajemne przeglądanie się i kontrolowanie? Powiązanie zapisuje uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Wybierz opcję Połącz, gdy będziesz gotowy. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
+            <translation>Zezwolić temu urządzeniu i temu komputerowi na wzajemne wyświetlanie pulpitów i sterowanie? Powiązanie zapisuje zgodę bez nawiązywania połączenia ani przerywania trwających sesji. Wybierz „Połącz”, gdy chcesz rozpocząć. Akceptuj tylko oczekiwane żądania.</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>Zezwolić temu urządzeniu na przeglądanie tego komputera i sterowanie nim? Powiązanie zapisuje uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Nie zapewnia to dostępu do urządzenia żądającego. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
+            <translation>Zezwolić temu urządzeniu na wyświetlanie pulpitu tego komputera i sterowanie nim? Powiązanie zapisuje zgodę bez nawiązywania połączenia ani przerywania trwających sesji. Nie daje dostępu do urządzenia wysyłającego żądanie. Akceptuj tylko oczekiwane żądania.</translation>
         </message>
     </context>
     <context>
@@ -3073,7 +3073,7 @@
         </message>
         <message>
             <source>Quit</source>
-            <translation>Zrezygnować</translation>
+            <translation>Zakończ</translation>
         </message>
         <message>
             <source>Disconnect</source>
@@ -3085,7 +3085,7 @@
         </message>
         <message>
             <source>Sharing</source>
-            <translation>Partycypujący</translation>
+            <translation>Udostępnianie</translation>
         </message>
         <message>
             <source>Settings</source>
@@ -3105,11 +3105,11 @@
         </message>
         <message>
             <source>Stop sharing</source>
-            <translation>Przestań się dzielić</translation>
+            <translation>Zatrzymaj udostępnianie</translation>
         </message>
         <message>
             <source>PIN</source>
-            <translation>SZPILKA</translation>
+            <translation>PIN</translation>
         </message>
         <message>
             <source>Screen &amp; system audio</source>
@@ -3117,7 +3117,7 @@
         </message>
         <message>
             <source>Let a connected device see this desktop and hear its sound.</source>
-            <translation>Pozwól podłączonemu urządzeniu zobaczyć ten pulpit i usłyszeć jego dźwięk.</translation>
+            <translation>Zezwalaj połączonemu urządzeniu na wyświetlanie tego pulpitu i odbieranie jego dźwięku.</translation>
         </message>
         <message>
             <source>Keyboard &amp; mouse</source>
@@ -3125,7 +3125,7 @@
         </message>
         <message>
             <source>Let a device you approve control this computer.</source>
-            <translation>Pozwól, aby zatwierdzone przez Ciebie urządzenie kontrolowało ten komputer.</translation>
+            <translation>Zezwalaj zatwierdzonemu urządzeniu na sterowanie tym komputerem.</translation>
         </message>
         <message>
             <source>Audio input</source>
@@ -3133,7 +3133,7 @@
         </message>
         <message>
             <source>Needed only when your sharing audio path uses microphone access.</source>
-            <translation>Potrzebne tylko wtedy, gdy udostępniana ścieżka audio korzysta z dostępu do mikrofonu.</translation>
+            <translation>Potrzebne tylko wtedy, gdy sposób udostępniania dźwięku wymaga dostępu do mikrofonu.</translation>
         </message>
         <message>
             <source>Desktop capture</source>
@@ -3141,7 +3141,7 @@
         </message>
         <message>
             <source>KDE uses the current desktop. Other desktops may ask you to choose a screen when sharing starts.</source>
-            <translation>KDE używa bieżącego pulpitu. Inne komputery stacjonarne mogą poprosić Cię o wybranie ekranu po rozpoczęciu udostępniania.</translation>
+            <translation>KDE korzysta z bieżącego pulpitu. Inne środowiska graficzne mogą poprosić o wybór ekranu przy rozpoczęciu udostępniania.</translation>
         </message>
         <message>
             <source>Remote control requires access to the system input device.</source>
@@ -3153,19 +3153,19 @@
         </message>
         <message>
             <source>Quit DeskPort</source>
-            <translation>Wyjdź z DeskPort</translation>
+            <translation>Zakończ DeskPort</translation>
         </message>
         <message>
             <source>Disconnect viewer</source>
-            <translation>Odłącz przeglądarkę</translation>
+            <translation>Rozłącz klienta</translation>
         </message>
         <message>
             <source> Retrying automatically in %1 seconds.</source>
-            <translation>Automatyczna ponowna próba za %1 sekund.</translation>
+            <translation> Automatyczna ponowna próba za %1 s.</translation>
         </message>
         <message>
             <source>Reconnect</source>
-            <translation>Na nowo połączyć</translation>
+            <translation>Połącz ponownie</translation>
         </message>
         <message>
             <source>Unattended operation</source>
@@ -3173,59 +3173,59 @@
         </message>
         <message>
             <source>Pause automatic recovery and quit? Recovery resumes the next time DeskPort opens.</source>
-            <translation>Wstrzymać automatyczne odzyskiwanie i wyjść? Odzyskiwanie zostanie wznowione po następnym otwarciu DeskPort.</translation>
+            <translation>Wstrzymać automatyczne przywracanie działania i zakończyć program? Przywracanie zostanie wznowione przy następnym otwarciu DeskPort.</translation>
         </message>
         <message>
             <source>Pause and quit</source>
-            <translation>Zatrzymaj się i wyjdź</translation>
+            <translation>Wstrzymaj i zakończ</translation>
         </message>
         <message>
             <source>Turn off unattended operation before disabling login startup.</source>
-            <translation>Wyłącz pracę bez nadzoru przed wyłączeniem uruchamiania logowania.</translation>
+            <translation>Wyłącz pracę bez nadzoru przed wyłączeniem uruchamiania przy logowaniu.</translation>
         </message>
         <message>
             <source>Cannot save unattended preferences.</source>
-            <translation>Nie można zapisać preferencji nienadzorowanych.</translation>
+            <translation>Nie można zapisać ustawień pracy bez nadzoru.</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation>Wyłączony</translation>
+            <translation>Wyłączone</translation>
         </message>
         <message>
             <source>Waiting for approval in System Settings</source>
-            <translation>Oczekiwanie na zatwierdzenie w Ustawieniach systemu</translation>
+            <translation>Oczekiwanie na zatwierdzenie w Ustawieniach systemowych</translation>
         </message>
         <message>
             <source>Recovery service needs setup. Turn it off and on to try again.</source>
-            <translation>Usługa odzyskiwania wymaga konfiguracji. Wyłącz i włącz, aby spróbować ponownie.</translation>
+            <translation>Usługa przywracania działania wymaga konfiguracji. Wyłącz ją i włącz ponownie, aby spróbować jeszcze raz.</translation>
         </message>
         <message>
             <source>Enabled; waiting for the recovery service to check in</source>
-            <translation>Włączony; czekam na zgłoszenie się usługi odzyskiwania</translation>
+            <translation>Włączone; oczekiwanie na zgłoszenie usługi przywracania działania</translation>
         </message>
         <message>
             <source>Recovery has not checked in. Review background permissions.</source>
-            <translation>Odzyskiwanie nie zostało zarejestrowane. Sprawdź uprawnienia w tle.</translation>
+            <translation>Usługa przywracania działania nie zgłosiła się. Sprawdź uprawnienia do działania w tle.</translation>
         </message>
         <message>
             <source>Enabled; recovery service is checking this Mac</source>
-            <translation>Włączony; usługa odzyskiwania sprawdza tego Maca</translation>
+            <translation>Włączone; usługa przywracania działania monitoruje tego Maca</translation>
         </message>
         <message>
             <source>Waiting for a logged-in desktop session</source>
-            <translation>Oczekiwanie na zalogowaną sesję pulpitu</translation>
+            <translation>Oczekiwanie na aktywną sesję zalogowanego użytkownika</translation>
         </message>
         <message>
             <source>Recovery needs attention. Check login startup and background permissions.</source>
-            <translation>Powrót do zdrowia wymaga uwagi. Sprawdź uruchamianie logowania i uprawnienia w tle.</translation>
+            <translation>Przywracanie działania wymaga uwagi. Sprawdź uruchamianie przy logowaniu i uprawnienia do działania w tle.</translation>
         </message>
         <message>
             <source>Install DeskPort in Applications before enabling unattended operation.</source>
-            <translation>Zainstaluj DeskPort w Aplikacjach przed włączeniem pracy bez nadzoru.</translation>
+            <translation>Zainstaluj DeskPort w folderze Aplikacje przed włączeniem pracy bez nadzoru.</translation>
         </message>
         <message>
             <source>Cannot enable login startup.</source>
-            <translation>Nie można włączyć uruchamiania logowania.</translation>
+            <translation>Nie można włączyć uruchamiania przy logowaniu.</translation>
         </message>
         <message>
             <source>The host's minimum desktop size limits scaling. Use full screen or a larger window.</source>
@@ -3240,27 +3240,27 @@
         <name>DesktopSegue</name>
         <message>
             <source>This device has no Desktop entry. Open Applications from the device menu to choose an app.</source>
-            <translation>To urządzenie nie ma wpisu Pulpit. Otwórz Aplikacje z menu urządzenia, aby wybrać aplikację.</translation>
+            <translation>Na tym urządzeniu nie ma pozycji „Pulpit”. Otwórz „Aplikacje” z menu urządzenia, aby wybrać aplikację.</translation>
         </message>
         <message>
             <source>Another application is running on this device. Open Applications from the device menu to resume it or switch to Desktop.</source>
-            <translation>Na tym urządzeniu działa inna aplikacja. Otwórz Aplikacje z menu urządzenia, aby je wznowić lub przełączyć na Pulpit.</translation>
+            <translation>Na tym urządzeniu działa inna aplikacja. Otwórz „Aplikacje” z menu urządzenia, aby ją wznowić lub przełączyć się na „Pulpit”.</translation>
         </message>
         <message>
             <source>Unable to prepare the desktop connection. Try again.</source>
-            <translation>Nie można przygotować połączenia z komputerem stacjonarnym. Spróbuj ponownie.</translation>
+            <translation>Nie można przygotować połączenia z pulpitem. Spróbuj ponownie.</translation>
         </message>
         <message>
             <source>The device disconnected. Return to Devices and try again.</source>
-            <translation>Urządzenie zostało odłączone. Wróć do Urządzenia i spróbuj ponownie.</translation>
+            <translation>Urządzenie zostało rozłączone. Wróć do sekcji „Urządzenia” i spróbuj ponownie.</translation>
         </message>
         <message>
             <source>Loading the desktop timed out. Return to Devices and try again.</source>
-            <translation>Upłynął limit czasu ładowania pulpitu. Wróć do Urządzenia i spróbuj ponownie.</translation>
+            <translation>Upłynął limit czasu ładowania pulpitu. Wróć do sekcji „Urządzenia” i spróbuj ponownie.</translation>
         </message>
         <message>
             <source>Connecting to desktop…</source>
-            <translation>Łączę z komputerem…</translation>
+            <translation>Łączenie z pulpitem…</translation>
         </message>
         <message>
             <source>Back to devices</source>
@@ -3268,7 +3268,7 @@
         </message>
         <message>
             <source>Close</source>
-            <translation>Zamknąć</translation>
+            <translation>Zamknij</translation>
         </message>
         <message>
             <source>Cancel</source>
@@ -3291,27 +3291,27 @@
         </message>
         <message>
             <source>Automatic (recommended)</source>
-            <translation>Automatyczny (zalecany)</translation>
+            <translation>Automatycznie (zalecane)</translation>
         </message>
         <message>
             <source>Clear</source>
-            <translation>Jasne</translation>
+            <translation>Wyraźny</translation>
         </message>
         <message>
             <source>Smooth</source>
-            <translation>Gładki</translation>
+            <translation>Płynny</translation>
         </message>
         <message>
             <source>Save data</source>
-            <translation>Zapisz dane</translation>
+            <translation>Oszczędzaj dane</translation>
         </message>
         <message>
             <source>Custom</source>
-            <translation>Własne</translation>
+            <translation>Niestandardowe</translation>
         </message>
         <message>
             <source>Match the client window resolution</source>
-            <translation>Dopasuj rozdzielczość okna klienta</translation>
+            <translation>Dopasuj do rozdzielczości okna klienta</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3319,7 +3319,7 @@
         </message>
         <message>
             <source>Allow keyboard, pointer and controller input</source>
-            <translation>Zezwalaj na wprowadzanie danych z klawiatury, wskaźnika i kontrolera</translation>
+            <translation>Zezwalaj na sterowanie klawiaturą, wskaźnikiem i kontrolerem</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -3335,7 +3335,7 @@
         </message>
         <message>
             <source>Virtual screen</source>
-            <translation>Wirtualny ekran</translation>
+            <translation>Ekran wirtualny</translation>
         </message>
         <message>
             <source>Primary screen and mirror others (default)</source>
@@ -3351,15 +3351,15 @@
         </message>
         <message>
             <source>The previous screen layout is restored automatically when the session ends.</source>
-            <translation>Po zakończeniu sesji automatycznie przywracany jest poprzedni układ ekranu.</translation>
+            <translation>Po zakończeniu sesji automatycznie przywracany jest poprzedni układ ekranów.</translation>
         </message>
         <message>
             <source>Desktop adjustment</source>
-            <translation>Regulacja pulpitu</translation>
+            <translation>Dostosowanie pulpitu</translation>
         </message>
         <message>
             <source>1.5 makes controls larger; 0.5 fits more content. Applies after the automatic desktop calculation and takes effect immediately during a connection.</source>
-            <translation>1.5 zwiększa kontrolę; 0,5 pasuje do większej zawartości. Obowiązuje po automatycznym obliczeniu pulpitu i obowiązuje natychmiast po nawiązaniu połączenia.</translation>
+            <translation>Wartość 1,5 powiększa elementy sterujące, a 0,5 pozwala zmieścić więcej treści. Korekta jest stosowana po automatycznym obliczeniu rozmiaru pulpitu i działa od razu podczas połączenia.</translation>
         </message>
         <message>
             <source>Reached the macOS minimum desktop (800 × 600): this window cannot be enlarged further. Use full screen or a larger window.</source>
@@ -3379,11 +3379,11 @@
         </message>
         <message>
             <source>Main + mirror</source>
-            <translation>Główny + lustro</translation>
+            <translation>Główny + powielanie</translation>
         </message>
         <message>
             <source>Main only</source>
-            <translation>Tylko główne</translation>
+            <translation>Tylko główny</translation>
         </message>
         <message>
             <source>Extended</source>
@@ -3399,7 +3399,7 @@
         </message>
         <message>
             <source>Input</source>
-            <translation>Wejście</translation>
+            <translation>Sterowanie</translation>
         </message>
         <message>
             <source>The host's minimum desktop size limits scaling. Use full screen or a larger window.</source>
@@ -3418,7 +3418,7 @@
         </message>
         <message>
             <source>Make DeskPort your own.</source>
-            <translation>Zrób DeskPort swoim własnym.</translation>
+            <translation>Dostosuj DeskPort do swoich potrzeb.</translation>
         </message>
         <message>
             <source>These settings apply only to this device. Reconnect to apply changes.</source>
@@ -3426,7 +3426,7 @@
         </message>
         <message>
             <source>Default settings for new devices. Choose Device settings in a device menu to customize a connection.</source>
-            <translation>Domyślne ustawienia dla nowych urządzeń. Wybierz Ustawienia urządzenia w menu urządzenia, aby dostosować połączenie.</translation>
+            <translation>Domyślne ustawienia nowych urządzeń. Wybierz „Ustawienia urządzenia” w menu urządzenia, aby dostosować połączenie.</translation>
         </message>
         <message>
             <source>Saved · reconnect to apply changes.</source>
@@ -3438,11 +3438,11 @@
         </message>
         <message>
             <source>Picture</source>
-            <translation>Zdjęcie</translation>
+            <translation>Obraz</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation>Wejście</translation>
+            <translation>Sterowanie</translation>
         </message>
         <message>
             <source>Sound</source>
@@ -3450,15 +3450,15 @@
         </message>
         <message>
             <source>Advanced</source>
-            <translation>Zaawansowany</translation>
+            <translation>Zaawansowane</translation>
         </message>
         <message>
             <source>Match the client window resolution</source>
-            <translation>Dopasuj rozdzielczość okna klienta</translation>
+            <translation>Dopasuj do rozdzielczości okna klienta</translation>
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Używa wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inne hosty korzystają z poniższej rozdzielczości.</translation>
+            <translation>Korzysta z wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru powoduje krótkie ponowne połączenie transmisji obrazu. Aplikacje pozostają otwarte. Inne hosty używają rozdzielczości podanej poniżej.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3466,15 +3466,15 @@
         </message>
         <message>
             <source>Uses a resolution-aware bandwidth ceiling and smooth frame pacing. Turn off to use manual bandwidth and pacing.</source>
-            <translation>Wykorzystuje pułap przepustowości uwzględniający rozdzielczość i płynną synchronizację klatek. Wyłącz, aby ręcznie korzystać z przepustowości i częstotliwości.</translation>
+            <translation>Dobiera limit przepustowości do rozdzielczości i zapewnia płynną synchronizację klatek. Wyłącz, aby ręcznie ustawiać przepustowość i synchronizację klatek.</translation>
         </message>
         <message>
             <source>Quality preset</source>
-            <translation>Jakość ustawiona wstępnie</translation>
+            <translation>Profil jakości</translation>
         </message>
         <message>
             <source>Choose a preset…</source>
-            <translation>Wybierz ustawienie wstępne…</translation>
+            <translation>Wybierz profil…</translation>
         </message>
         <message>
             <source>Office · 30 fps / 10 Mbps</source>
@@ -3482,15 +3482,15 @@
         </message>
         <message>
             <source>Clear · 60 fps / 40 Mbps</source>
-            <translation>Wyczyść · 60 kl./s / 40 Mb/s</translation>
+            <translation>Wyraźny · 60 kl./s / 40 Mb/s</translation>
         </message>
         <message>
             <source>Smooth · 60 fps / 15 Mbps</source>
-            <translation>Płynnie · 60 kl./s / 15 Mb/s</translation>
+            <translation>Płynny · 60 kl./s / 15 Mb/s</translation>
         </message>
         <message>
             <source>Presets change frame rate and bandwidth only. Tune them for your network below.</source>
-            <translation>Ustawienia wstępne zmieniają tylko liczbę klatek na sekundę i przepustowość. Dostosuj je do swojej sieci poniżej.</translation>
+            <translation>Profile zmieniają tylko liczbę klatek na sekundę i przepustowość. Poniżej można dostosować je do swojej sieci.</translation>
         </message>
         <message>
             <source>Picture adjustments</source>
@@ -3498,11 +3498,11 @@
         </message>
         <message>
             <source>Fallback resolution</source>
-            <translation>Rozwiązanie awaryjne</translation>
+            <translation>Rozdzielczość zastępcza</translation>
         </message>
         <message>
             <source>Resolution</source>
-            <translation>Rezolucja</translation>
+            <translation>Rozdzielczość</translation>
         </message>
         <message>
             <source>Connection window</source>
@@ -3530,11 +3530,11 @@
         </message>
         <message>
             <source>Higher values improve detail and use more network capacity. Keep your existing advanced values unless you move this slider.</source>
-            <translation>Wyższe wartości poprawiają szczegółowość i wykorzystują większą przepustowość sieci. Zachowaj istniejące wartości zaawansowane, chyba że przesuniesz ten suwak.</translation>
+            <translation>Wyższe wartości zwiększają szczegółowość obrazu i zużycie przepustowości sieci. Dopóki nie przesuniesz tego suwaka, dotychczasowe ustawienia zaawansowane pozostaną zachowane.</translation>
         </message>
         <message>
             <source>Smooth frame pacing</source>
-            <translation>Płynne tempo klatek</translation>
+            <translation>Płynna synchronizacja klatek</translation>
         </message>
         <message>
             <source>Show streaming statistics</source>
@@ -3542,7 +3542,7 @@
         </message>
         <message>
             <source>Synchronize frames to this display</source>
-            <translation>Zsynchronizuj ramki z tym wyświetlaczem</translation>
+            <translation>Synchronizuj klatki z tym wyświetlaczem</translation>
         </message>
         <message>
             <source>Keyboard &amp; pointer</source>
@@ -3550,11 +3550,11 @@
         </message>
         <message>
             <source>Allow keyboard, pointer and controller input</source>
-            <translation>Zezwalaj na wprowadzanie danych z klawiatury, wskaźnika i kontrolera</translation>
+            <translation>Zezwalaj na sterowanie klawiaturą, wskaźnikiem i kontrolerem</translation>
         </message>
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
-            <translation>Wyłącz dla połączenia tylko do przeglądania. Lokalne skróty DeskPort pozostają dostępne.</translation>
+            <translation>Wyłącz, aby korzystać z połączenia tylko do podglądu. Lokalne skróty DeskPort pozostają dostępne.</translation>
         </message>
         <message>
             <source>Use a desktop-style pointer</source>
@@ -3574,7 +3574,7 @@
         </message>
         <message>
             <source>Send system shortcuts to the remote computer</source>
-            <translation>Wyślij skróty systemowe do komputera zdalnego</translation>
+            <translation>Przekazuj skróty systemowe do komputera zdalnego</translation>
         </message>
         <message>
             <source>Never</source>
@@ -3590,7 +3590,7 @@
         </message>
         <message>
             <source>On a Mac host, Super / Windows sends Command and Alt sends Option. Choose Always to forward Super + Space in a window. Changes apply on the next connection.</source>
-            <translation>Na komputerze Mac Super / Windows wysyła polecenie, a Alt wysyła opcję. Wybierz opcję Zawsze, aby przesyłać dalej w oknie Super + Spacja. Zmiany obowiązują przy następnym połączeniu.</translation>
+            <translation>Na hoście Mac klawisz Super / Windows działa jako Command, a Alt jako Option. Wybierz „Zawsze”, aby przekazywać Super + Spacja w trybie okna. Zmiany zostaną zastosowane przy następnym połączeniu.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -3598,15 +3598,15 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Połącz się ponownie, aby udostępnić nowe kopie temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
+            <translation>Połącz się ponownie, aby udostępniać nowo kopiowane dane temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
-            <translation>Klawiatura podąża za wskaźnikiem wewnątrz skupionego wideo. Opuszczenie zwalnia przytrzymane klawisze i przyciski. Kliknij, aby ustawić ostrość; skróty zarezerwowane przez system mogą pozostać lokalne.</translation>
+            <translation>Gdy obraz zdalnego pulpitu jest aktywny, klawiatura steruje komputerem zdalnym, jeśli wskaźnik znajduje się nad obrazem. Wyjście poza obraz zwalnia przytrzymane klawisze i przyciski. Kliknij obraz, aby go aktywować. Skróty zarezerwowane przez system mogą być obsługiwane lokalnie.</translation>
         </message>
         <message>
             <source>Release remote input with Ctrl + Alt + Shift + Z.</source>
-            <translation>Zwolnij zdalne wprowadzanie za pomocą Ctrl + Alt + Shift + Z.</translation>
+            <translation>Zwolnij przechwytywanie klawiatury i wskaźnika za pomocą Ctrl + Alt + Shift + Z.</translation>
         </message>
         <message>
             <source>Sound from the remote computer</source>
@@ -3618,7 +3618,7 @@
         </message>
         <message>
             <source>Mute when DeskPort loses focus</source>
-            <translation>Wycisz, gdy DeskPort straci ostrość</translation>
+            <translation>Wycisz, gdy okno DeskPort jest nieaktywne</translation>
         </message>
         <message>
             <source>Also play audio on the host</source>
@@ -3626,7 +3626,7 @@
         </message>
         <message>
             <source>Advanced &amp; support</source>
-            <translation>Zaawansowane i wsparcie</translation>
+            <translation>Ustawienia zaawansowane i pomoc</translation>
         </message>
         <message>
             <source>Custom resolutions, codecs, HDR, surround sound and controller options remain available in advanced settings.</source>
@@ -3646,7 +3646,7 @@
         </message>
         <message>
             <source>Automatic sets the bandwidth from the resolution and adapts to the network. Save data uses 30 fps with a 5 Mbps video limit. The data saver switch in the top bar limits every device.</source>
-            <translation>Automatycznie ustawia przepustowość na podstawie rozdzielczości i dostosowuje się do sieci. Zapisywanie danych wykorzystuje 30 kl./s z limitem wideo 5 Mb/s. Przełącznik oszczędzania danych na górnym pasku ogranicza każde urządzenie.</translation>
+            <translation>Tryb „Automatycznie” dobiera przepustowość do rozdzielczości i dostosowuje ją do sieci. Tryb „Oszczędzaj dane” używa 30 kl./s z limitem przepływności wideo 5 Mb/s. Przełącznik „Oszczędzanie danych” na górnym pasku ogranicza transmisję dla wszystkich urządzeń.</translation>
         </message>
         <message>
             <source>Picture mode</source>
@@ -3654,23 +3654,23 @@
         </message>
         <message>
             <source>Automatic (recommended)</source>
-            <translation>Automatyczny (zalecany)</translation>
+            <translation>Automatycznie (zalecane)</translation>
         </message>
         <message>
             <source>Clear</source>
-            <translation>Jasne</translation>
+            <translation>Wyraźny</translation>
         </message>
         <message>
             <source>Smooth</source>
-            <translation>Gładki</translation>
+            <translation>Płynny</translation>
         </message>
         <message>
             <source>Save data</source>
-            <translation>Zapisz dane</translation>
+            <translation>Oszczędzaj dane</translation>
         </message>
         <message>
             <source>Custom</source>
-            <translation>Własne</translation>
+            <translation>Niestandardowe</translation>
         </message>
         <message>
             <source>Ctrl+Alt+Shift+X also toggles full screen during a connection.</source>
@@ -3678,11 +3678,11 @@
         </message>
         <message>
             <source>Bandwidth</source>
-            <translation>Przepustowość łącza</translation>
+            <translation>Przepustowość</translation>
         </message>
         <message>
             <source>Automatic</source>
-            <translation>Wybierz automatycznie</translation>
+            <translation>Automatycznie</translation>
         </message>
         <message>
             <source>%1 Mbps</source>
@@ -3698,14 +3698,14 @@
         </message>
         <message>
             <source>Commit text with this computer's IME. Candidates stay at the top left; the remote caret is unavailable. Turn off for remote IME or games. Reconnect to apply.</source>
-            <translation>Zatwierdzaj tekst metodą wprowadzania tego komputera. Kandydaci pozostają w lewym górnym rogu; zdalny kursor tekstowy jest niedostępny. Wyłącz dla zdalnego wprowadzania lub gier. Połącz ponownie, aby zastosować.</translation>
+            <translation>Wpisuj i zatwierdzaj tekst za pomocą IME tego komputera. Propozycje są wyświetlane w lewym górnym rogu, ponieważ pozycja zdalnego kursora tekstowego jest niedostępna. Wyłącz tę opcję, aby korzystać ze zdalnego IME lub grać. Połącz się ponownie, aby zastosować zmianę.</translation>
         </message>
     </context>
     <context>
         <name>SdlInputHandler</name>
         <message>
             <source>DeskPort — Remote keyboard · Ctrl+Alt+Shift+Z releases</source>
-            <translation>DeskPort — Zdalna klawiatura · Wersje Ctrl+Alt+Shift+Z</translation>
+            <translation>DeskPort — Zdalna klawiatura · Ctrl+Alt+Shift+Z zwalnia przechwytywanie</translation>
         </message>
         <message>
             <source>DeskPort — Remote typing · system shortcuts local</source>
@@ -3713,7 +3713,7 @@
         </message>
         <message>
             <source>DeskPort — Local keyboard · click inside to focus</source>
-            <translation>DeskPort — Klawiatura lokalna · kliknij wewnątrz, aby ustawić ostrość</translation>
+            <translation>DeskPort — Lokalna klawiatura · kliknij obraz, aby go aktywować</translation>
         </message>
     </context>
     <context>
@@ -3724,14 +3724,14 @@
         </message>
         <message>
             <source>Clipboard sharing is unavailable. Reconnect to try again; desktop control is unaffected.</source>
-            <translation>Udostępnianie schowka jest niedostępne. Połącz się ponownie, aby spróbować ponownie; sterowanie pulpitem pozostaje niezmienione.</translation>
+            <translation>Udostępnianie schowka jest niedostępne. Połącz się ponownie, aby spróbować jeszcze raz. Sterowanie pulpitem nadal działa.</translation>
         </message>
     </context>
     <context>
         <name>NavigableDialog</name>
         <message>
             <source>Close</source>
-            <translation>Zamknąć</translation>
+            <translation>Zamknij</translation>
         </message>
     </context>
     <context>
@@ -3742,11 +3742,11 @@
         </message>
         <message>
             <source>Connected</source>
-            <translation>Połączony</translation>
+            <translation>Połączono</translation>
         </message>
         <message>
             <source>Checking…</source>
-            <translation>Kontrola…</translation>
+            <translation>Sprawdzanie…</translation>
         </message>
         <message>
             <source>Online</source>
@@ -3766,7 +3766,7 @@
         </message>
         <message>
             <source>Make sure DeskPort or the host is running on %1 and that both devices can reach each other. Refresh in the top bar checks again.</source>
-            <translation>Upewnij się, że DeskPort lub host działa na %1 i że oba urządzenia mogą się ze sobą komunikować. Odśwież w górnym pasku sprawdza ponownie.</translation>
+            <translation>Upewnij się, że DeskPort lub host działa na %1 i oba urządzenia mogą się ze sobą komunikować. Opcja „Odśwież” na górnym pasku ponawia sprawdzenie.</translation>
         </message>
         <message>
             <source>Original name</source>
@@ -3790,7 +3790,7 @@
         </message>
         <message>
             <source>Legacy pairing</source>
-            <translation>Starsze parowanie</translation>
+            <translation>Starsza metoda wiązania</translation>
         </message>
         <message>
             <source>Not set up</source>
@@ -3806,11 +3806,11 @@
         </message>
         <message>
             <source>Reconnect</source>
-            <translation>Na nowo połączyć</translation>
+            <translation>Połącz ponownie</translation>
         </message>
         <message>
             <source>Toggle full screen</source>
-            <translation>Przełącz pełny ekran</translation>
+            <translation>Przełącz tryb pełnoekranowy</translation>
         </message>
         <message>
             <source>Disconnect</source>
@@ -3826,7 +3826,7 @@
         </message>
         <message>
             <source>Pair with a legacy PIN</source>
-            <translation>Sparuj ze starszym kodem PIN</translation>
+            <translation>Powiąż starszą metodą przez PIN</translation>
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
@@ -3834,7 +3834,7 @@
         </message>
         <message>
             <source>Move out of group</source>
-            <translation>Wyjdź z grupy</translation>
+            <translation>Przenieś poza grupę</translation>
         </message>
         <message>
             <source>Remove from list</source>
@@ -3852,7 +3852,7 @@
         <name>MainWindow</name>
         <message>
             <source>Disconnecting…</source>
-            <translation>Rozłączam…</translation>
+            <translation>Rozłączanie…</translation>
         </message>
     </context>
     <context>
@@ -3887,11 +3887,11 @@
         </message>
         <message>
             <source>Record shortcut</source>
-            <translation>Nagraj skrót</translation>
+            <translation>Zarejestruj skrót</translation>
         </message>
         <message>
             <source>Some shortcuts are reserved by the desktop. If recording does not respond, choose the keys below. The desktop may ask you to resolve a conflict when you save.</source>
-            <translation>Niektóre skróty są zarezerwowane przez pulpit. Jeśli nagrywanie nie reaguje, wybierz klawisze poniżej. Podczas zapisywania pulpit może poprosić o rozwiązanie konfliktu.</translation>
+            <translation>Niektóre skróty są zarezerwowane przez środowisko graficzne. Jeśli rejestrowanie nie reaguje, wybierz klawisze poniżej. Przy zapisywaniu środowisko może poprosić o rozwiązanie konfliktu.</translation>
         </message>
         <message>
             <source>A shortcut needs Control, Alt/Option or Meta/Command.</source>
