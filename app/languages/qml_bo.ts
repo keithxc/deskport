@@ -2017,10 +2017,6 @@
             <translation>ཚོགས་ཐུན་སྐབས་ཡི་གེ་དང་པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་པ།</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>ཆ་སྒྲིག་བྱས་པའི་ཐབས་འཕྲུལ་གཉིས་ཀར་ལྕོགས་ཅན་བཟོས་རྗེས་ཡང་བསྐྱར་མཐུད་དགོས། འདྲ་བཤུས་གསར་པ་ཁོ་ན་དང་། 128 MiB བར། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>ལྡེ་སྒྲོམ་གྱིས་དམིགས་འབེན་བྱས་པའི་བརྙན་འཕྲིན་ནང་དུ་མཚོན་རྟགས་རྗེས་སུ་འབྲང་བ་རེད། ལྡེ་མིག་དང་མཐེབ་གཞོང་འཛིན་པའི་གློད་བཀྲོལ་བཞག་ཡོད། དམིགས་གཏད་བྱེད་པར་སྣུན། མ་ལག་གིས་བཀག་སྡོམ་བྱས་པའི་མགྱོགས་ལམ་དེ་ས་གནས་སུ་གནས་སྲིད།</translation>
         </message>
@@ -2147,10 +2143,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>མཐོང་སྣང་ཁོ་ནའི་མཐུད་ཁའི་ཆེད་དུ་ཁ་བརྒྱབ་དགོས། ས་གནས་ཀྱི་DeskPortམགྱོགས་ཐབས་ད་དུང་ཡང་ཡོད།</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>སྦྲེལ་མཐུད་བྱས་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3590,10 +3582,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>ཚོགས་ཐུན་སྐབས་ཡི་གེ་དང་པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་པ།</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>སྦྲེལ་མཐུད་བྱས་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

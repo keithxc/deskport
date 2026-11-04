@@ -2022,10 +2022,6 @@
             <translation>Oturum sırasında metin, resim ve dosyaları paylaşın</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Her iki eşleştirilmiş cihazda da etkinleştirin, ardından yeniden bağlanın. Yalnızca yeni kopyalar; 128 MiB'a kadar. Resim ve dosyalar paylaşılmaz.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Klavye odaklanılan videonun içindeki işaretçiyi takip eder. Ayrılmak, basılı tutulan tuşları ve düğmeleri serbest bırakır. Odaklanmak için tıklayın; sistem tarafından ayrılmış kısayollar yerel kalabilir.</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Salt görüntüleme bağlantısı için kapatın. Yerel DeskPort kısayolları kullanılabilir durumda kalır.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Bu bağlı cihazla yeni kopyaları paylaşmak için yeniden bağlanın. 128 MiB'a kadar düz metin; görseller ve dosyalar paylaşılmaz.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Oturum sırasında metin, resim ve dosyaları paylaşın</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Bu bağlı cihazla yeni kopyaları paylaşmak için yeniden bağlanın. 128 MiB'a kadar düz metin; görseller ve dosyalar paylaşılmaz.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

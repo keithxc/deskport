@@ -2017,10 +2017,6 @@
             <translation>مشاركة النصوص والصور والملفات أثناء الجلسة</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>قم بالتمكين على كلا الجهازين المقترنين، ثم أعد الاتصال. النسخ الجديدة فقط؛ ما يصل إلى 128 ميجابايت. لا تتم مشاركة الصور والملفات.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>تتبع لوحة المفاتيح المؤشر داخل الفيديو الذي تم التركيز عليه. ترك الإصدارات عقد المفاتيح والأزرار. انقر للتركيز. قد تظل الاختصارات المحفوظة بواسطة النظام محلية.</translation>
         </message>
@@ -2147,10 +2143,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>قم بإيقاف تشغيله لاتصال العرض فقط. تظل اختصارات DeskPort المحلية متاحة.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المربوط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3590,10 +3582,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>مشاركة النصوص والصور والملفات أثناء الجلسة</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المربوط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

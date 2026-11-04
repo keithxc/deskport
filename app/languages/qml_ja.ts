@@ -2025,10 +2025,6 @@
             <translation>セッション中にテキスト、画像、ファイルを共有</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>ペアリング済みの両端末で有効にして再接続してください。新しくコピーしたテキストのみ、上限 128 MiB。画像とファイルは共有されません。</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>フォーカス中の映像内ではキーボードがポインターに従います。外に出るとキーとボタンを解放します。クリックでフォーカスし、システム予約キーはローカルに残る場合があります。</translation>
         </message>
@@ -2155,10 +2151,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>オフにすると閲覧専用になります。ローカルの DeskPort ショートカットは引き続き使えます。</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>再接続後、この連携済みデバイスと新しくコピーした内容を共有します。最大 128 MiB のプレーンテキストのみ。画像やファイルは共有されません。</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3614,10 +3606,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>セッション中にテキスト、画像、ファイルを共有</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>再接続後、この連携済みデバイスと新しくコピーした内容を共有します。最大 128 MiB のプレーンテキストのみ。画像やファイルは共有されません。</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

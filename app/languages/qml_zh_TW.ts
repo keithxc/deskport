@@ -2045,10 +2045,6 @@
             <translation>工作階段期間共享文字、圖片和檔案</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>在已綁定的兩台裝置上開啟後重新連線。僅同步新複製的內容，上限 128 MiB；不共享圖片和檔案。</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>滑鼠位於已聚焦的遠端畫面內時接管鍵盤，離開即釋放按鍵和滑鼠按鈕。點擊畫面取得焦點；系統保留快捷鍵可能仍在本機處理。</translation>
         </message>
@@ -2175,10 +2171,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>關閉後僅可觀看。本機 DeskPort 快速鍵仍可使用。</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>重新連線後，與此綁定裝置共享新複製的內容。僅限不超過 128 MiB 的純文字，不共享圖片和檔案。</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3682,10 +3674,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>工作階段期間共享文字、圖片和檔案</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>重新連線後，與此綁定裝置共享新複製的內容。僅限不超過 128 MiB 的純文字，不共享圖片和檔案。</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

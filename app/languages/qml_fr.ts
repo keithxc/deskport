@@ -2017,10 +2017,6 @@
             <translation>Partager du texte, des images et des fichiers pendant une session</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Activez sur les deux appareils associés, puis reconnectez-vous. Nouvelles copies uniquement, jusqu’à 1 Mio. Images et fichiers exclus.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Le clavier suit le pointeur dans la vidéo active. En sortant, les touches et boutons sont relâchés. Cliquez pour activer ; les raccourcis réservés au système peuvent rester locaux.</translation>
         </message>
@@ -2147,10 +2143,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Désactivez pour une connexion en lecture seule. Les raccourcis locaux de DeskPort restent disponibles.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Reconnectez-vous pour partager les nouvelles copies avec cet appareil associé. Texte brut uniquement, jusqu’à 128 MiB ; aucune image ni aucun fichier.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3590,10 +3582,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Partager du texte, des images et des fichiers pendant une session</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Reconnectez-vous pour partager les nouvelles copies avec cet appareil associé. Texte brut uniquement, jusqu’à 128 MiB ; aucune image ni aucun fichier.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

@@ -1,3 +1,15 @@
+## Desktop tuning note and stale clipboard text — 2026-11-04
+
+Core `f75afe8da4d0f109330aa34b7aea1273565756fc` corrects the mobile desktop tuning footnote:
+`dp_workspace_adjust` enlarges remote content for larger factors, so the note now
+reads "Larger values enlarge text and controls. Smaller values show more
+desktop." in every locale. The old key is removed; the Apple and Android callers
+in `deskport-client` (`DPDeviceSettings`, `DPControls`) must switch to the new
+key when they advance their core pin. The core also drops two text-only
+clipboard notes that the desktop no longer shows; clipboard sharing has carried
+images and files since 0.3.2. Desktop Git and Nix pin the same published tree.
+Wire contracts are unchanged.
+
 ## Polish UI review — 2026-11-04
 
 Core `10a84ac8382755f65f1b1b6e60cb94557e4377f9` corrects 575 of the 1,214 Polish strings: wrong

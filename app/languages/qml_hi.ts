@@ -2022,10 +2022,6 @@
             <translation>एक सत्र के दौरान पाठ, चित्र और फ़ाइलें साझा करें</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>दोनों युग्मित डिवाइसों पर सक्षम करें, फिर पुनः कनेक्ट करें। केवल नई प्रतियां; 128 MiB तक. छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>कीबोर्ड फोकस्ड वीडियो के अंदर पॉइंटर का अनुसरण करता है। रिलीज़ को छोड़ते समय कुंजियाँ और बटन रखे हुए थे। फोकस करने के लिए क्लिक करें; सिस्टम-आरक्षित शॉर्टकट स्थानीय रह सकते हैं।</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>केवल-दृश्य कनेक्शन के लिए बंद करें। स्थानीय DeskPort शॉर्टकट उपलब्ध रहते हैं।</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>इस बाइंड किए गए डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>एक सत्र के दौरान पाठ, चित्र और फ़ाइलें साझा करें</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>इस बाइंड किए गए डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

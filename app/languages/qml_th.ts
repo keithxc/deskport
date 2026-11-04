@@ -2022,10 +2022,6 @@
             <translation>แบ่งปันข้อความ รูปภาพ และไฟล์ระหว่างเซสชั่น</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>เปิดใช้งานบนอุปกรณ์ที่จับคู่ทั้งสองเครื่อง จากนั้นเชื่อมต่อใหม่ สำเนาใหม่เท่านั้น สูงสุด 128 MiB รูปภาพและไฟล์จะไม่ถูกแชร์</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>แป้นพิมพ์ตามตัวชี้ภายในวิดีโอที่โฟกัส ปล่อยปุ่มและปุ่มค้างไว้ คลิกเพื่อโฟกัส ทางลัดที่สงวนไว้โดยระบบอาจยังคงอยู่ในเครื่อง</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>ปิดสำหรับการเชื่อมต่อแบบดูอย่างเดียว ทางลัด DeskPort ในเครื่องยังคงใช้งานได้</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>เชื่อมต่อใหม่เพื่อแชร์สำเนาใหม่กับอุปกรณ์ที่ถูกผูกไว้นี้ ข้อความธรรมดาสูงสุด 128 MiB; รูปภาพและไฟล์จะไม่ถูกแชร์</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>แบ่งปันข้อความ รูปภาพ และไฟล์ระหว่างเซสชั่น</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>เชื่อมต่อใหม่เพื่อแชร์สำเนาใหม่กับอุปกรณ์ที่ถูกผูกไว้นี้ ข้อความธรรมดาสูงสุด 128 MiB; รูปภาพและไฟล์จะไม่ถูกแชร์</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

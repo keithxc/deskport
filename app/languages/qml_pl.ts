@@ -2022,10 +2022,6 @@
             <translation>Udostępniaj tekst, obrazy i pliki podczas sesji</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Włącz na obu powiązanych urządzeniach, a następnie połącz się ponownie. Obejmuje tylko nowo skopiowane dane, do 128 MiB. Obrazy i pliki nie są udostępniane.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Gdy obraz zdalnego pulpitu jest aktywny, klawiatura steruje komputerem zdalnym, jeśli wskaźnik znajduje się nad obrazem. Wyjście poza obraz zwalnia przytrzymane klawisze i przyciski. Kliknij obraz, aby go aktywować. Skróty zarezerwowane przez system mogą być obsługiwane lokalnie.</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Wyłącz, aby korzystać z połączenia tylko do podglądu. Lokalne skróty DeskPort pozostają dostępne.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Połącz się ponownie, aby udostępniać nowo kopiowane dane temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Udostępniaj tekst, obrazy i pliki podczas sesji</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Połącz się ponownie, aby udostępniać nowo kopiowane dane temu powiązanemu urządzeniu. Do 128 MiB zwykłego tekstu; obrazy i pliki nie są udostępniane.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

@@ -2017,10 +2017,6 @@
             <translation>세션 중 텍스트, 이미지 및 파일 공유</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>페어링된 두 기기에서 켠 후 다시 연결하세요. 새로 복사한 텍스트만 최대 128 MiB까지 공유합니다. 이미지와 파일은 공유하지 않습니다.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>포커스된 영상 안에서 포인터를 따라 키보드를 전달합니다. 벗어나면 키와 버튼을 놓습니다. 클릭하여 포커스하세요. 시스템 예약 단축키는 로컬에서 처리될 수 있습니다.</translation>
         </message>
@@ -2147,10 +2143,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>끄면 보기 전용으로 연결됩니다. 로컬 DeskPort 단축키는 계속 사용할 수 있습니다.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>다시 연결하면 새로 복사한 내용을 이 바인딩된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3590,10 +3582,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>세션 중 텍스트, 이미지 및 파일 공유</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>다시 연결하면 새로 복사한 내용을 이 바인딩된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

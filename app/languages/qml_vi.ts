@@ -2022,10 +2022,6 @@
             <translation>Chia sẻ văn bản, hình ảnh và tập tin trong phiên</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Kích hoạt trên cả hai thiết bị được ghép nối, sau đó kết nối lại. Chỉ có bản sao mới; lên tới 128 MiB. Hình ảnh và tập tin không được chia sẻ.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Bàn phím đi theo con trỏ bên trong video được tập trung. Để lại các phím và nút được giữ. Bấm để tập trung; các phím tắt dành riêng cho hệ thống có thể ở lại cục bộ.</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Tắt cho kết nối chỉ xem. Các phím tắt DeskPort cục bộ vẫn khả dụng.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Kết nối lại để chia sẻ bản sao mới với thiết bị được liên kết này. Lên tới 128 MiB văn bản thuần túy; hình ảnh và tập tin không được chia sẻ.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Chia sẻ văn bản, hình ảnh và tập tin trong phiên</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Kết nối lại để chia sẻ bản sao mới với thiết bị được liên kết này. Lên tới 128 MiB văn bản thuần túy; hình ảnh và tập tin không được chia sẻ.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

@@ -2017,10 +2017,6 @@
             <translation>Bagikan teks, gambar, dan file selama sesi</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Aktifkan di kedua perangkat yang dipasangkan, lalu sambungkan kembali. Hanya salinan baru; hingga 128 MiB. Gambar dan file tidak dibagikan.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Keyboard mengikuti penunjuk di dalam video yang difokuskan. Membiarkan rilis menahan tombol dan tombol. Klik untuk fokus; pintasan yang dicadangkan sistem mungkin tetap bersifat lokal.</translation>
         </message>
@@ -2147,10 +2143,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Nonaktifkan untuk koneksi hanya lihat. Pintasan DeskPort lokal tetap tersedia.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Hubungkan kembali untuk berbagi salinan baru dengan perangkat terikat ini. Hingga 128 MiB teks biasa; gambar dan file tidak dibagikan.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3590,10 +3582,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Bagikan teks, gambar, dan file selama sesi</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Hubungkan kembali untuk berbagi salinan baru dengan perangkat terikat ini. Hingga 128 MiB teks biasa; gambar dan file tidak dibagikan.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

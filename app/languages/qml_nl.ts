@@ -2022,10 +2022,6 @@
             <translation>Deel tekst, afbeeldingen en bestanden tijdens een sessie</translation>
         </message>
         <message>
-            <source>Enable on both paired devices, then reconnect. New copies only; up to 128 MiB. Images and files are not shared.</source>
-            <translation>Schakel dit in op beide gekoppelde apparaten en maak vervolgens opnieuw verbinding. Alleen nieuwe exemplaren; tot 128 MiB. Afbeeldingen en bestanden worden niet gedeeld.</translation>
-        </message>
-        <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
             <translation>Het toetsenbord volgt de aanwijzer in de gefocuste video. Als u weggaat, worden vastgehouden toetsen en knoppen vrijgegeven. Klik om scherp te stellen; door het systeem gereserveerde snelkoppelingen kunnen lokaal blijven.</translation>
         </message>
@@ -2152,10 +2148,6 @@
         <message>
             <source>Turn off for a view-only connection. Local DeskPort shortcuts remain available.</source>
             <translation>Schakel uit voor een alleen-lezen-verbinding. Lokale DeskPort-snelkoppelingen blijven beschikbaar.</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gekoppelde apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -3595,10 +3587,6 @@
         <message>
             <source>Share text, images and files during a session</source>
             <translation>Deel tekst, afbeeldingen en bestanden tijdens een sessie</translation>
-        </message>
-        <message>
-            <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gekoppelde apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

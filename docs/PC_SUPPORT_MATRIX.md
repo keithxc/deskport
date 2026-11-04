@@ -1,15 +1,16 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-11-04 against source `38bdbf9c44fcc10cb9fe3c713fe1af975200bac8` and pinned core
-`10a84ac8382755f65f1b1b6e60cb94557e4377f9`. This is a source snapshot, not an installed version.
+Reviewed 2026-11-04 against source `37cfd10bac67b1ee89cd50ccabec64e326c5f287` and pinned core
+`f75afe8da4d0f109330aa34b7aea1273565756fc`. This is a source snapshot, not an installed version.
 Seven tested task branches are integrated with their scoped acceptance records;
 the remaining ten tasks retain explicit gates in [the integration ledger](PC_TASK_INTEGRATION.md).
 Historical package and hardware results retain their exact source identities.
 
 This snapshot regenerates the Qt catalogs from the pinned core. The core
 follow-ups translate the remaining offline manual steps into all 22 primary
-locales, use one device-binding term per locale and correct the Polish UI text;
-display arithmetic and wire contracts are unchanged. See the
+locales, use one device-binding term per locale, correct the Polish UI text and
+remove two stale clipboard notes; display arithmetic and wire contracts are
+unchanged. See the
 [shared core notes](SHARED_CORE.md#manual-translations--2026-11-04).
 This review updates the source inventory, without advancing historical package,
 hardware or hosted-CI evidence to the newer revision.
