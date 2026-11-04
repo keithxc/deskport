@@ -1,3 +1,12 @@
+## Manual translations — 2026-11-04
+
+Core `d5d7ffde97c72384edce9a3253a86d0cdfada89f` fills the 50 offline manual titles and steps that
+still fell back to English in the 19 primary locales other than English and
+Chinese. They are machine-assisted drafts that reuse each locale's UI labels for
+the menus they name. `scripts/export-manual-site.py` renders the same manual on
+the project site. Desktop Git and Nix pin the same published tree. Mobile pins
+and wire contracts are unchanged.
+
 ## Fallback address manual step — 2026-11-03
 
 Core `10307719a4b139d6674eb96ebd013a8eec175b6d` adds one offline manual step under "Connect to a computer":

@@ -1,15 +1,15 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-11-03 against source `3c945555f6f4c1b270178727df633059e826e32e` and pinned core
-`10307719a4b139d6674eb96ebd013a8eec175b6d`. This is a source snapshot, not an installed version.
+Reviewed 2026-11-04 against source `5b9ce015c88d6946e752b6a6722cffe86fd97442` and pinned core
+`d5d7ffde97c72384edce9a3253a86d0cdfada89f`. This is a source snapshot, not an installed version.
 Seven tested task branches are integrated with their scoped acceptance records;
 the remaining ten tasks retain explicit gates in [the integration ledger](PC_TASK_INTEGRATION.md).
 Historical package and hardware results retain their exact source identities.
 
-This snapshot keeps the previous application code. The core follow-up adds an
-offline manual step for ordered fallback addresses and editing them while
-connected; display arithmetic and wire contracts are unchanged. See the
-[fallback address checkpoint](ROADMAP.md#ordered-fallback-addresses-and-live-edits--2026-10-30).
+This snapshot adds the site manual exporter; application code is unchanged. The
+core follow-up translates the remaining offline manual steps into all 22 primary
+locales; display arithmetic and wire contracts are unchanged. See the
+[shared core notes](SHARED_CORE.md#manual-translations--2026-11-04).
 This review updates the source inventory, without advancing historical package,
 hardware or hosted-CI evidence to the newer revision.
 
