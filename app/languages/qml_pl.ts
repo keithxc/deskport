@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Używa wbudowanego wyświetlacza wirtualnego na podłączonym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inni hosty korzystają z poniższej rozdzielczości.</translation>
+            <translation>Używa wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inne hosty korzystają z poniższej rozdzielczości.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Związany w obie strony</translation>
+            <translation>Powiązany w obie strony</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Wiązanie portu</translation>
+            <translation>Port powiązania</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2952,7 +2952,7 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Zapomnij o zapisanym wiązaniu</translation>
+            <translation>Zapomnij o zapisanym powiązaniu</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
@@ -3058,11 +3058,11 @@
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>Zezwolić temu urządzeniu i temu komputerowi na wzajemne przeglądanie się i kontrolowanie? Wiązanie oszczędza uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Wybierz opcję Połącz, gdy będziesz gotowy. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
+            <translation>Zezwolić temu urządzeniu i temu komputerowi na wzajemne przeglądanie się i kontrolowanie? Powiązanie zapisuje uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Wybierz opcję Połącz, gdy będziesz gotowy. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>Zezwolić temu urządzeniu na przeglądanie tego komputera i sterowanie nim? Wiązanie oszczędza uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Nie zapewnia to dostępu do urządzenia żądającego. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
+            <translation>Zezwolić temu urządzeniu na przeglądanie tego komputera i sterowanie nim? Powiązanie zapisuje uprawnienia bez rozpoczynania połączenia i przerywania istniejących sesji. Nie zapewnia to dostępu do urządzenia żądającego. Zaakceptuj tylko tę prośbę, której się spodziewasz.</translation>
         </message>
     </context>
     <context>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Używa wbudowanego wyświetlacza wirtualnego na podłączonym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inni hosty korzystają z poniższej rozdzielczości.</translation>
+            <translation>Używa wbudowanego wyświetlacza wirtualnego na powiązanym komputerze Mac. Zmiana rozmiaru na krótko powoduje ponowne połączenie obrazu i pozostawienie aplikacji otwartych. Inne hosty korzystają z poniższej rozdzielczości.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>Wiązanie DeskPort</translation>
+            <translation>Powiązanie DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

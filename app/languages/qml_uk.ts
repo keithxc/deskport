@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Використовує вбудований віртуальний дисплей на підключеному Mac. Зміна розміру ненадовго відновлює з’єднання зображення та залишає ваші програми відкритими. Інші хости використовують наведену нижче роздільну здатність.</translation>
+            <translation>Використовує вбудований віртуальний дисплей на прив’язаному Mac. Зміна розміру ненадовго відновлює з’єднання зображення та залишає ваші програми відкритими. Інші хости використовують наведену нижче роздільну здатність.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2155,7 +2155,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Повторно підключіться, щоб поділитися новими копіями з цим зв’язаним пристроєм. До 128 MiB звичайного тексту; зображення та файли не надаються.</translation>
+            <translation>Повторно підключіться, щоб поділитися новими копіями з цим прив’язаним пристроєм. До 128 MiB звичайного тексту; зображення та файли не надаються.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Лише дозволені вами пристрої можуть підключатися. Збережене прив’язування не надає системних дозволів на запис або введення.</translation>
+            <translation>Лише дозволені вами пристрої можуть підключатися. Збережена прив’язка не надає системних дозволів на запис або введення.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Зв'язаний в обидві сторони</translation>
+            <translation>Прив'язаний в обидві сторони</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2952,11 +2952,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Забути збережене прив’язування</translation>
+            <translation>Забути збережену прив’язку</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>Забути збережене прив’язування для %1 на цьому пристрої? Видаліть його з пристроїв окремо. Щоб скасувати доступ цього пристрою, видаліть його також на хості.</translation>
+            <translation>Забути збережену прив’язку для %1 на цьому пристрої? Видаліть його з пристроїв окремо. Щоб скасувати доступ цього пристрою, видаліть його також на хості.</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3046,7 +3046,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>Зв’язати з цим пристроєм?</translation>
+            <translation>Прив’язати цей пристрій?</translation>
         </message>
         <message>
             <source>Not now</source>
@@ -3054,7 +3054,7 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>Дозволити та зв'язати</translation>
+            <translation>Дозволити та прив'язати</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Використовує вбудований віртуальний дисплей на підключеному Mac. Зміна розміру ненадовго відновлює з’єднання зображення та залишає ваші програми відкритими. Інші хости використовують наведену нижче роздільну здатність.</translation>
+            <translation>Використовує вбудований віртуальний дисплей на прив’язаному Mac. Зміна розміру ненадовго відновлює з’єднання зображення та залишає ваші програми відкритими. Інші хости використовують наведену нижче роздільну здатність.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3598,7 +3598,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Повторно підключіться, щоб поділитися новими копіями з цим зв’язаним пристроєм. До 128 MiB звичайного тексту; зображення та файли не надаються.</translation>
+            <translation>Повторно підключіться, щоб поділитися новими копіями з цим прив’язаним пристроєм. До 128 MiB звичайного тексту; зображення та файли не надаються.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>Палітурка DeskPort</translation>
+            <translation>Прив’язка DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

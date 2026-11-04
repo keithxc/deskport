@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>ลบ '%1' ซึ่งเป็นการเชื่อมโยงที่บันทึกไว้และการตั้งค่าอุปกรณ์ออกจากคอมพิวเตอร์เครื่องนี้หรือไม่</translation>
+            <translation>ลบ '%1' การผูกที่บันทึกไว้ และการตั้งค่าอุปกรณ์ออกจากคอมพิวเตอร์เครื่องนี้หรือไม่</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>เฉพาะอุปกรณ์ที่คุณอนุมัติเท่านั้นที่สามารถเชื่อมต่อได้ การเชื่อมโยงที่บันทึกไว้ไม่ให้สิทธิ์ในการบันทึกหรือป้อนข้อมูลของระบบ</translation>
+            <translation>เฉพาะอุปกรณ์ที่คุณอนุมัติเท่านั้นที่สามารถเชื่อมต่อได้ การผูกที่บันทึกไว้ไม่ให้สิทธิ์ในการบันทึกหรือป้อนข้อมูลของระบบ</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>สำหรับ Moonlight หรือไคลเอ็นต์อื่นๆ ที่ไม่มีผลผูกพันร่วมกัน ป้อน PIN ที่แสดงบนไคลเอนต์นั้น สิ่งนี้ให้สิทธิ์การเข้าถึงในทิศทางเดียว</translation>
+            <translation>สำหรับ Moonlight หรือไคลเอ็นต์อื่นๆ ที่ไม่มีการผูกระหว่างกัน ป้อน PIN ที่แสดงบนไคลเอนต์นั้น สิ่งนี้ให้สิทธิ์การเข้าถึงในทิศทางเดียว</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2653,7 +2653,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>พอร์ตเชื่อมต่อโฮสต์:%1 ·พอร์ตเชื่อมต่อ:%2</translation>
+            <translation>พอร์ตเชื่อมต่อโฮสต์:%1 ·พอร์ตการผูก:%2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>ผูกพันทั้งสองทาง</translation>
+            <translation>ผูกทั้งสองทาง</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2876,7 +2876,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>สำหรับพอร์ตการเชื่อมโยงแบบกำหนดเอง ให้ป้อนที่อยู่:พอร์ต โฮสต์ Moonlight และ Sunshine อิสระใช้การจับคู่แบบเดิมแทน</translation>
+            <translation>สำหรับพอร์ตการผูกแบบกำหนดเอง ให้ป้อนที่อยู่:พอร์ต โฮสต์ Moonlight และ Sunshine อิสระใช้การจับคู่แบบเดิมแทน</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2888,7 +2888,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 จะไม่สามารถควบคุมคอมพิวเตอร์เครื่องนี้ได้อีกต่อไป ลบการเชื่อมโยงบนอุปกรณ์อื่นด้วยเพื่อเพิกถอนทั้งสองทิศทาง</translation>
+            <translation>%1 จะไม่สามารถควบคุมคอมพิวเตอร์เครื่องนี้ได้อีกต่อไป ลบการผูกบนอุปกรณ์อื่นด้วยเพื่อเพิกถอนทั้งสองทิศทาง</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2952,11 +2952,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>ลืมการเชื่อมโยงที่บันทึกไว้</translation>
+            <translation>ลืมการผูกที่บันทึกไว้</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>ลืมการเชื่อมโยงที่บันทึกไว้สำหรับ %1 บนอุปกรณ์นี้ใช่ไหม ลบออกจากอุปกรณ์แยกต่างหาก หากต้องการเพิกถอนการเข้าถึงอุปกรณ์นี้ ให้ลบอุปกรณ์ออกจากโฮสต์ด้วย</translation>
+            <translation>ลืมการผูกที่บันทึกไว้สำหรับ %1 บนอุปกรณ์นี้ใช่ไหม ลบออกจากอุปกรณ์แยกต่างหาก หากต้องการเพิกถอนการเข้าถึงอุปกรณ์นี้ ให้ลบอุปกรณ์ออกจากโฮสต์ด้วย</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3054,15 +3054,15 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>อนุญาตและผูกมัด</translation>
+            <translation>อนุญาตและผูก</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>อนุญาตให้อุปกรณ์นี้และคอมพิวเตอร์เครื่องนี้ดูและควบคุมซึ่งกันและกันไหม การเชื่อมโยงจะบันทึกการอนุญาตโดยไม่ต้องเริ่มการเชื่อมต่อหรือขัดจังหวะเซสชันที่มีอยู่ เลือกเชื่อมต่อเมื่อคุณพร้อม ยอมรับเฉพาะคำขอที่คุณคาดหวังเท่านั้น</translation>
+            <translation>อนุญาตให้อุปกรณ์นี้และคอมพิวเตอร์เครื่องนี้ดูและควบคุมซึ่งกันและกันไหม การผูกจะบันทึกการอนุญาตโดยไม่ต้องเริ่มการเชื่อมต่อหรือขัดจังหวะเซสชันที่มีอยู่ เลือกเชื่อมต่อเมื่อคุณพร้อม ยอมรับเฉพาะคำขอที่คุณคาดหวังเท่านั้น</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>อนุญาตให้อุปกรณ์นี้ดูและควบคุมคอมพิวเตอร์เครื่องนี้ไหม การเชื่อมโยงจะบันทึกการอนุญาตโดยไม่ต้องเริ่มการเชื่อมต่อหรือขัดจังหวะเซสชันที่มีอยู่ สิ่งนี้ไม่ได้ให้สิทธิ์การเข้าถึงอุปกรณ์ที่ร้องขอ ยอมรับเฉพาะคำขอที่คุณคาดหวังเท่านั้น</translation>
+            <translation>อนุญาตให้อุปกรณ์นี้ดูและควบคุมคอมพิวเตอร์เครื่องนี้ไหม การผูกจะบันทึกการอนุญาตโดยไม่ต้องเริ่มการเชื่อมต่อหรือขัดจังหวะเซสชันที่มีอยู่ สิ่งนี้ไม่ได้ให้สิทธิ์การเข้าถึงอุปกรณ์ที่ร้องขอ ยอมรับเฉพาะคำขอที่คุณคาดหวังเท่านั้น</translation>
         </message>
     </context>
     <context>
@@ -3830,7 +3830,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>สำหรับ Sunshine หรือโฮสต์อื่นที่ไม่มีการเชื่อมโยง DeskPort</translation>
+            <translation>สำหรับ Sunshine หรือโฮสต์อื่นที่ไม่มีการผูก DeskPort</translation>
         </message>
         <message>
             <source>Move out of group</source>

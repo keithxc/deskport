@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Связаны в обе стороны</translation>
+            <translation>Привязаны в обе стороны</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Связывающий порт</translation>
+            <translation>Порт привязки</translation>
         </message>
         <message>
             <source>Save</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>Обвязка DeskPort</translation>
+            <translation>Привязка DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

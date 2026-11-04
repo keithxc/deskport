@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>이 컴퓨터에서 '%1', 저장된 연결 및 기기 설정을 삭제할까요?</translation>
+            <translation>이 컴퓨터에서 '%1', 저장된 바인딩 및 기기 설정을 삭제할까요?</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2010,7 +2010,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>연결된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
+            <translation>바인딩된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2150,7 +2150,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>다시 연결하면 새로 복사한 내용을 이 연결된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
+            <translation>다시 연결하면 새로 복사한 내용을 이 바인딩된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2592,7 +2592,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>승인한 기기만 연결할 수 있습니다. 저장된 연결 승인은 시스템 녹화 및 입력 권한을 부여하지 않습니다.</translation>
+            <translation>승인한 기기만 연결할 수 있습니다. 저장된 바인딩은 시스템 녹화 및 입력 권한을 부여하지 않습니다.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2632,7 +2632,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>양방향 연결 승인을 지원하지 않는 Moonlight 등에 사용합니다. 클라이언트의 PIN을 입력하면 단방향 접근이 허용됩니다.</translation>
+            <translation>양방향 바인딩을 지원하지 않는 Moonlight 등에 사용합니다. 클라이언트의 PIN을 입력하면 단방향 접근이 허용됩니다.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2648,7 +2648,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>호스트 포트: %1  ·  연결 승인 포트: %2</translation>
+            <translation>호스트 포트: %1  ·  바인딩 포트: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2855,7 +2855,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>양방향 연결 승인됨</translation>
+            <translation>양방향 바인딩됨</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2871,7 +2871,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>사용자 지정 연결 승인 포트는 주소:포트로 입력하세요. Moonlight와 독립 Sunshine 호스트는 기존 페어링을 사용합니다.</translation>
+            <translation>사용자 지정 바인딩 포트는 주소:포트로 입력하세요. Moonlight와 독립 Sunshine 호스트는 기존 페어링을 사용합니다.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2883,7 +2883,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1에서 이 컴퓨터를 더 이상 제어할 수 없습니다. 양방향으로 해제하려면 상대 기기에서도 연결 승인을 제거하세요.</translation>
+            <translation>%1에서 이 컴퓨터를 더 이상 제어할 수 없습니다. 양방향으로 해제하려면 상대 기기에서도 바인딩을 제거하세요.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2915,7 +2915,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>연결 승인 포트</translation>
+            <translation>바인딩 포트</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2947,11 +2947,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>저장된 연결 승인 삭제</translation>
+            <translation>저장된 바인딩 삭제</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>이 기기에 저장된 %1 연결 승인을 삭제할까요? 기기 목록에서는 별도로 제거해야 합니다. 이 기기의 접근 권한을 취소하려면 호스트에서도 제거하세요.</translation>
+            <translation>이 기기에 저장된 %1 바인딩을 삭제할까요? 기기 목록에서는 별도로 제거해야 합니다. 이 기기의 접근 권한을 취소하려면 호스트에서도 제거하세요.</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3041,7 +3041,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>이 기기와 연결을 승인할까요?</translation>
+            <translation>이 기기와 바인딩할까요?</translation>
         </message>
         <message>
             <source>Not now</source>
@@ -3049,15 +3049,15 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>허용 및 연결 승인</translation>
+            <translation>허용 및 바인딩</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>이 장치와 컴퓨터가 서로 화면을 보고 제어하도록 허용할까요? 연결 등록은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 준비되면 연결을 선택하세요. 예상한 요청만 수락하세요.</translation>
+            <translation>이 장치와 컴퓨터가 서로 화면을 보고 제어하도록 허용할까요? 바인딩은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 준비되면 연결을 선택하세요. 예상한 요청만 수락하세요.</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>이 장치에서 이 컴퓨터를 보고 제어하도록 허용할까요? 연결 등록은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 요청한 장치에 대한 접근 권한은 부여하지 않습니다. 예상한 요청만 수락하세요.</translation>
+            <translation>이 장치에서 이 컴퓨터를 보고 제어하도록 허용할까요? 바인딩은 권한만 저장하며 연결을 시작하거나 기존 세션을 중단하지 않습니다. 요청한 장치에 대한 접근 권한은 부여하지 않습니다. 예상한 요청만 수락하세요.</translation>
         </message>
     </context>
     <context>
@@ -3453,7 +3453,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>연결된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
+            <translation>바인딩된 Mac의 내장 가상 디스플레이를 사용합니다. 창 크기를 변경하면 화면이 잠시 다시 연결되지만 앱은 열린 상태로 유지됩니다. 다른 호스트에는 아래 해상도가 적용됩니다.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3593,7 +3593,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>다시 연결하면 새로 복사한 내용을 이 연결된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
+            <translation>다시 연결하면 새로 복사한 내용을 이 바인딩된 기기와 공유합니다. 일반 텍스트 최대 128 MiB이며 이미지와 파일은 공유하지 않습니다.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
@@ -3781,7 +3781,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>DeskPort 연결 승인</translation>
+            <translation>DeskPort 바인딩</translation>
         </message>
         <message>
             <source>Legacy pairing</source>
@@ -3825,7 +3825,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>Sunshine 등 DeskPort 연결 승인을 지원하지 않는 호스트용입니다.</translation>
+            <translation>Sunshine 등 DeskPort 바인딩을 지원하지 않는 호스트용입니다.</translation>
         </message>
         <message>
             <source>Move out of group</source>

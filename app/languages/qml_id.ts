@@ -2915,7 +2915,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Pelabuhan pengikatan</translation>
+            <translation>Port pengikatan</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2947,7 +2947,7 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Lupakan ikatan yang disimpan</translation>
+            <translation>Lupakan pengikatan yang disimpan</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
@@ -3041,7 +3041,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>Terikat dengan perangkat ini?</translation>
+            <translation>Ikat dengan perangkat ini?</translation>
         </message>
         <message>
             <source>Not now</source>

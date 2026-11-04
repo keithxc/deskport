@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Per Moonlight o altri client senza vincolo reciproco. Inserisci il PIN mostrato su quel client. Ciò garantisce l'accesso in una direzione.</translation>
+            <translation>Per Moonlight o altri client senza associazione reciproca. Inserisci il PIN mostrato su quel client. Ciò garantisce l'accesso in una direzione.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2653,7 +2653,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Porta host: %1 · Porta di collegamento: %2</translation>
+            <translation>Porta host: %1 · Porta di associazione: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Legato in entrambe le direzioni</translation>
+            <translation>Associato in entrambe le direzioni</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2876,7 +2876,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Per una porta di collegamento personalizzata, immettere indirizzo:porta. Moonlight e gli host Sunshine indipendenti utilizzano invece l'accoppiamento legacy.</translation>
+            <translation>Per una porta di associazione personalizzata, immettere indirizzo:porta. Moonlight e gli host Sunshine indipendenti utilizzano invece l'accoppiamento legacy.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2888,7 +2888,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 non sarà più in grado di controllare questo computer. Rimuovere la legatura anche sull'altro dispositivo per annullare entrambe le direzioni.</translation>
+            <translation>%1 non sarà più in grado di controllare questo computer. Rimuovere l'associazione anche sull'altro dispositivo per annullare entrambe le direzioni.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Porto vincolante</translation>
+            <translation>Porta di associazione</translation>
         </message>
         <message>
             <source>Save</source>
@@ -3054,7 +3054,7 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>Consenti e vincola</translation>
+            <translation>Consenti e associa</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>Rilegatura DeskPort</translation>
+            <translation>Associazione DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

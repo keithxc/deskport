@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>このコンピュータから「%1」と保存済みのペアリング、デバイス設定を削除しますか？</translation>
+            <translation>このコンピュータから「%1」と保存済みの連携、デバイス設定を削除しますか？</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2018,7 +2018,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>バインド済み Mac の内蔵仮想ディスプレイを使用します。サイズ変更時に映像が一時的に再接続されますが、アプリは開いたままです。他のホストには下の解像度が適用されます。</translation>
+            <translation>連携済み Mac の内蔵仮想ディスプレイを使用します。サイズ変更時に映像が一時的に再接続されますが、アプリは開いたままです。他のホストには下の解像度が適用されます。</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2923,7 +2923,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>バインドポート</translation>
+            <translation>連携ポート</translation>
         </message>
         <message>
             <source>Save</source>
@@ -3061,11 +3061,11 @@
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>このデバイスとコンピューターの相互表示・操作を許可しますか？登録は権限のみを保存し、接続を開始したり既存のセッションを中断したりしません。準備ができたら接続を選択してください。心当たりのある要求のみ承認してください。</translation>
+            <translation>このデバイスとコンピューターの相互表示・操作を許可しますか？連携は権限のみを保存し、接続を開始したり既存のセッションを中断したりしません。準備ができたら接続を選択してください。心当たりのある要求のみ承認してください。</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>このデバイスによるコンピューターの表示と操作を許可しますか？登録は権限のみを保存し、接続を開始したり既存のセッションを中断したりしません。要求元のデバイスへのアクセスは許可されません。心当たりのある要求のみ承認してください。</translation>
+            <translation>このデバイスによるコンピューターの表示と操作を許可しますか？連携は権限のみを保存し、接続を開始したり既存のセッションを中断したりしません。要求元のデバイスへのアクセスは許可されません。心当たりのある要求のみ承認してください。</translation>
         </message>
     </context>
     <context>
@@ -3414,7 +3414,7 @@
         </message>
         <message>
             <source>Your existing binding is kept. Reconnect to use the saved address.</source>
-            <translation>既存のペアリングは保持されます。再接続すると保存したアドレスを使用します。</translation>
+            <translation>既存の連携は保持されます。再接続すると保存したアドレスを使用します。</translation>
         </message>
         <message>
             <source>Computer name or IP, without port</source>
@@ -3477,7 +3477,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>バインド済み Mac の内蔵仮想ディスプレイを使用します。サイズ変更時に映像が一時的に再接続されますが、アプリは開いたままです。他のホストには下の解像度が適用されます。</translation>
+            <translation>連携済み Mac の内蔵仮想ディスプレイを使用します。サイズ変更時に映像が一時的に再接続されますが、アプリは開いたままです。他のホストには下の解像度が適用されます。</translation>
         </message>
         <message>
             <source>Smart streaming</source>

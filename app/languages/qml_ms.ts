@@ -2592,7 +2592,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Hanya peranti yang anda luluskan boleh menyambung. Ikatan yang disimpan tidak memberikan kebenaran rakaman atau input sistem.</translation>
+            <translation>Hanya peranti yang anda luluskan boleh menyambung. Pengikatan yang disimpan tidak memberikan kebenaran rakaman atau input sistem.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2648,7 +2648,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Port hos: %1 · Port pengikat: %2</translation>
+            <translation>Port hos: %1 · Port pengikatan: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2871,7 +2871,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Untuk port mengikat tersuai, masukkan alamat:port. Moonlight dan hos bebas Sunshine menggunakan gandingan warisan.</translation>
+            <translation>Untuk port pengikatan tersuai, masukkan alamat:port. Moonlight dan hos bebas Sunshine menggunakan gandingan warisan.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2915,7 +2915,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Pelabuhan pengikat</translation>
+            <translation>Port pengikatan</translation>
         </message>
         <message>
             <source>Save</source>
@@ -3053,11 +3053,11 @@
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>Benarkan peranti ini dan komputer ini melihat dan mengawal satu sama lain? Binding menjimatkan kebenaran tanpa memulakan sambungan atau mengganggu sesi sedia ada. Pilih Sambung apabila anda sudah bersedia. Terima hanya permintaan yang anda jangkakan.</translation>
+            <translation>Benarkan peranti ini dan komputer ini melihat dan mengawal satu sama lain? Pengikatan menyimpan kebenaran tanpa memulakan sambungan atau mengganggu sesi sedia ada. Pilih Sambung apabila anda sudah bersedia. Terima hanya permintaan yang anda jangkakan.</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>Benarkan peranti ini melihat dan mengawal komputer ini? Binding menjimatkan kebenaran tanpa memulakan sambungan atau mengganggu sesi sedia ada. Ini tidak memberikan akses kepada peranti yang meminta. Terima hanya permintaan yang anda jangkakan.</translation>
+            <translation>Benarkan peranti ini melihat dan mengawal komputer ini? Pengikatan menyimpan kebenaran tanpa memulakan sambungan atau mengganggu sesi sedia ada. Ini tidak memberikan akses kepada peranti yang meminta. Terima hanya permintaan yang anda jangkakan.</translation>
         </message>
     </context>
     <context>
@@ -3781,7 +3781,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>DeskPort mengikat</translation>
+            <translation>Pengikatan DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

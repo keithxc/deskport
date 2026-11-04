@@ -1,3 +1,12 @@
+## Binding terminology — 2026-11-04
+
+Core `4e65606c6c5115f641da5ed681b372b4f97cb8a8` replaces bookbinding and other inconsistent
+translations of "binding" with one device-binding term per locale, keeps the
+key-binding sense in keyboard shortcut strings, and fixes agreement errors found
+in review (378 strings). The Qt catalogs are regenerated from the same table.
+Desktop Git and Nix pin the same published tree. Mobile pins and wire contracts
+are unchanged.
+
 ## Manual translations — 2026-11-04
 
 Core `d5d7ffde97c72384edce9a3253a86d0cdfada89f` fills the 50 offline manual titles and steps that

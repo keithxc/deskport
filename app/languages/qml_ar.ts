@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>هل تريد حذف '%1' وارتباطه المحفوظ وإعدادات الجهاز من هذا الكمبيوتر؟</translation>
+            <translation>هل تريد حذف '%1' والربط المحفوظ له وإعدادات الجهاز من هذا الكمبيوتر؟</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2010,7 +2010,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>يستخدم شاشة العرض الافتراضية المضمنة على جهاز Mac مقيد. يؤدي تغيير الحجم إلى إعادة ربط الصورة لفترة وجيزة وإبقاء تطبيقاتك مفتوحة. يستخدم المضيفون الآخرون الدقة الموضحة أدناه.</translation>
+            <translation>يستخدم شاشة العرض الافتراضية المضمنة على جهاز Mac مربوط. يؤدي تغيير الحجم إلى إعادة ربط الصورة لفترة وجيزة وإبقاء تطبيقاتك مفتوحة. يستخدم المضيفون الآخرون الدقة الموضحة أدناه.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2150,7 +2150,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المرتبط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
+            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المربوط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2592,7 +2592,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>يمكن فقط للأجهزة التي توافق عليها الاتصال. الارتباط المحفوظ لا يمنح تسجيل النظام أو أذونات الإدخال.</translation>
+            <translation>يمكن فقط للأجهزة التي توافق عليها الاتصال. الربط المحفوظ لا يمنح تسجيل النظام أو أذونات الإدخال.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2855,7 +2855,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>ملزمة في كلا الاتجاهين</translation>
+            <translation>مربوط في كلا الاتجاهين</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2883,7 +2883,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>لن يتمكن %1 من التحكم في هذا الكمبيوتر بعد الآن. قم بإزالة الرابط الموجود على الجهاز الآخر أيضًا لإلغاء كلا الاتجاهين.</translation>
+            <translation>لن يتمكن %1 من التحكم في هذا الكمبيوتر بعد الآن. قم بإزالة الربط الموجود على الجهاز الآخر أيضًا لإلغاء كلا الاتجاهين.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2915,7 +2915,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>ميناء ملزم</translation>
+            <translation>منفذ الربط</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2947,11 +2947,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>ننسى ملزمة المحفوظة</translation>
+            <translation>نسيان الربط المحفوظ</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>هل نسيت الارتباط المحفوظ لـ %1 على هذا الجهاز؟ قم بإزالته من الأجهزة بشكل منفصل. لإلغاء وصول هذا الجهاز، قم بإزالته من المضيف أيضًا.</translation>
+            <translation>هل تريد نسيان الربط المحفوظ لـ %1 على هذا الجهاز؟ قم بإزالته من الأجهزة بشكل منفصل. لإلغاء وصول هذا الجهاز، قم بإزالته من المضيف أيضًا.</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3453,7 +3453,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>يستخدم شاشة العرض الافتراضية المضمنة على جهاز Mac مقيد. يؤدي تغيير الحجم إلى إعادة ربط الصورة لفترة وجيزة وإبقاء تطبيقاتك مفتوحة. يستخدم المضيفون الآخرون الدقة الموضحة أدناه.</translation>
+            <translation>يستخدم شاشة العرض الافتراضية المضمنة على جهاز Mac مربوط. يؤدي تغيير الحجم إلى إعادة ربط الصورة لفترة وجيزة وإبقاء تطبيقاتك مفتوحة. يستخدم المضيفون الآخرون الدقة الموضحة أدناه.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3593,7 +3593,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المرتبط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
+            <translation>أعد الاتصال لمشاركة نسخ جديدة مع هذا الجهاز المربوط. ما يصل إلى 128 ميجا بايت من النص العادي؛ لا تتم مشاركة الصور والملفات.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
@@ -3781,7 +3781,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>ملزمة DeskPort</translation>
+            <translation>ربط DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>

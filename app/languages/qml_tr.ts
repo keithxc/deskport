@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Moonlight veya karşılıklı bağlayıcılığı olmayan diğer istemciler için. Söz konusu istemcide gösterilen PIN'i girin. Bu, tek yönde erişim sağlar.</translation>
+            <translation>Moonlight veya karşılıklı bağlaması olmayan diğer istemciler için. Söz konusu istemcide gösterilen PIN'i girin. Bu, tek yönde erişim sağlar.</translation>
         </message>
         <message>
             <source>Device name</source>

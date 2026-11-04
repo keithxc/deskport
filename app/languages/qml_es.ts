@@ -2592,7 +2592,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Solo pueden conectarse los dispositivos aprobados. El vínculo guardado no concede permisos del sistema de grabación o entrada.</translation>
+            <translation>Solo pueden conectarse los dispositivos aprobados. La vinculación guardada no concede permisos del sistema de grabación o entrada.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2632,7 +2632,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Para Moonlight y clientes sin vínculo mutuo. Introduce el PIN del cliente para conceder acceso en un solo sentido.</translation>
+            <translation>Para Moonlight y clientes sin vinculación mutua. Introduce el PIN del cliente para conceder acceso en un solo sentido.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2648,7 +2648,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Puerto del anfitrión: %1  ·  Puerto de vínculo: %2</translation>
+            <translation>Puerto del anfitrión: %1  ·  Puerto de vinculación: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2871,7 +2871,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Para un puerto de vínculo personalizado, usa dirección:puerto. Moonlight y los anfitriones Sunshine independientes usan emparejamiento clásico.</translation>
+            <translation>Para un puerto de vinculación personalizado, usa dirección:puerto. Moonlight y los anfitriones Sunshine independientes usan emparejamiento clásico.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2883,7 +2883,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 ya no podrá controlar este equipo. Elimina también el vínculo en el otro dispositivo para revocar ambos sentidos.</translation>
+            <translation>%1 ya no podrá controlar este equipo. Elimina también la vinculación en el otro dispositivo para revocar ambos sentidos.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2947,11 +2947,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Olvidar vínculo guardado</translation>
+            <translation>Olvidar vinculación guardada</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>¿Olvidar el vínculo guardado para %1 en este dispositivo? Elimínalo por separado de Dispositivos. Para revocar el acceso de este dispositivo, elimínalo también en el host.</translation>
+            <translation>¿Olvidar la vinculación guardada para %1 en este dispositivo? Elimínalo por separado de Dispositivos. Para revocar el acceso de este dispositivo, elimínalo también en el host.</translation>
         </message>
         <message>
             <source>Remove</source>

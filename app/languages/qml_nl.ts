@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>'%1', de opgeslagen binding en apparaatinstellingen van deze computer verwijderen?</translation>
+            <translation>'%1', de opgeslagen koppeling en apparaatinstellingen van deze computer verwijderen?</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Maakt gebruik van het ingebouwde virtuele beeldscherm op een afhankelijke Mac. Als u het formaat wijzigt, wordt de afbeelding kort opnieuw verbonden en blijven uw apps geopend. Andere hosts gebruiken de onderstaande resolutie.</translation>
+            <translation>Maakt gebruik van het ingebouwde virtuele beeldscherm op een gekoppelde Mac. Als u het formaat wijzigt, wordt de afbeelding kort opnieuw verbonden en blijven uw apps geopend. Andere hosts gebruiken de onderstaande resolutie.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2155,7 +2155,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gebonden apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
+            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gekoppelde apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Alleen apparaten die u goedkeurt, kunnen verbinding maken. Een opgeslagen binding verleent geen systeemopname- of invoerrechten.</translation>
+            <translation>Alleen apparaten die u goedkeurt, kunnen verbinding maken. Een opgeslagen koppeling verleent geen systeemopname- of invoerrechten.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Voor Moonlight of andere klanten zonder onderlinge binding. Voer de pincode in die op die client wordt weergegeven. Hierdoor is toegang in één richting mogelijk.</translation>
+            <translation>Voor Moonlight of andere klanten zonder onderlinge koppeling. Voer de pincode in die op die client wordt weergegeven. Hierdoor is toegang in één richting mogelijk.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2653,7 +2653,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Hostpoort: %1 · Bindingspoort: %2</translation>
+            <translation>Hostpoort: %1 · Koppelingspoort: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Aan beide kanten gebonden</translation>
+            <translation>Aan beide kanten gekoppeld</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2876,7 +2876,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Voor een aangepaste bindingspoort voert u adres:poort in. Moonlight en onafhankelijke Sunshine-hosts gebruiken in plaats daarvan verouderde koppelingen.</translation>
+            <translation>Voor een aangepaste koppelingspoort voert u adres:poort in. Moonlight en onafhankelijke Sunshine-hosts gebruiken in plaats daarvan verouderde koppelingen.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2888,7 +2888,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 kan deze computer niet langer bedienen. Verwijder ook de binding op het andere apparaat om beide richtingen in te trekken.</translation>
+            <translation>%1 kan deze computer niet langer bedienen. Verwijder ook de koppeling op het andere apparaat om beide richtingen in te trekken.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Bindende poort</translation>
+            <translation>Koppelingspoort</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2952,11 +2952,11 @@
         </message>
         <message>
             <source>Forget saved binding</source>
-            <translation>Vergeet opgeslagen binding</translation>
+            <translation>Vergeet opgeslagen koppeling</translation>
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>De opgeslagen binding voor %1 op dit apparaat vergeten? Verwijder het afzonderlijk van Apparaten. Als u de toegang van dit apparaat wilt intrekken, verwijdert u het ook op de host.</translation>
+            <translation>De opgeslagen koppeling voor %1 op dit apparaat vergeten? Verwijder het afzonderlijk van Apparaten. Als u de toegang van dit apparaat wilt intrekken, verwijdert u het ook op de host.</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3046,7 +3046,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>Binden met dit apparaat?</translation>
+            <translation>Koppelen met dit apparaat?</translation>
         </message>
         <message>
             <source>Not now</source>
@@ -3054,15 +3054,15 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>Toestaan ​​&amp; binden</translation>
+            <translation>Toestaan ​​&amp; koppelen</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>Toestaan ​​dat dit apparaat en deze computer elkaar bekijken en besturen? Binding slaat toestemming op zonder een verbinding te starten of bestaande sessies te onderbreken. Kies Verbinden als u er klaar voor bent. Accepteer alleen een verzoek dat u verwacht.</translation>
+            <translation>Toestaan ​​dat dit apparaat en deze computer elkaar bekijken en besturen? Koppeling slaat toestemming op zonder een verbinding te starten of bestaande sessies te onderbreken. Kies Verbinden als u er klaar voor bent. Accepteer alleen een verzoek dat u verwacht.</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>Toestaan ​​dat dit apparaat deze computer bekijkt en bestuurt? Binding slaat toestemming op zonder een verbinding te starten of bestaande sessies te onderbreken. Hierdoor wordt geen toegang verleend tot het aanvragende apparaat. Accepteer alleen een verzoek dat u verwacht.</translation>
+            <translation>Toestaan ​​dat dit apparaat deze computer bekijkt en bestuurt? Koppeling slaat toestemming op zonder een verbinding te starten of bestaande sessies te onderbreken. Hierdoor wordt geen toegang verleend tot het aanvragende apparaat. Accepteer alleen een verzoek dat u verwacht.</translation>
         </message>
     </context>
     <context>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Maakt gebruik van het ingebouwde virtuele beeldscherm op een afhankelijke Mac. Als u het formaat wijzigt, wordt de afbeelding kort opnieuw verbonden en blijven uw apps geopend. Andere hosts gebruiken de onderstaande resolutie.</translation>
+            <translation>Maakt gebruik van het ingebouwde virtuele beeldscherm op een gekoppelde Mac. Als u het formaat wijzigt, wordt de afbeelding kort opnieuw verbonden en blijven uw apps geopend. Andere hosts gebruiken de onderstaande resolutie.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3598,7 +3598,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gebonden apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
+            <translation>Maak opnieuw verbinding om nieuwe exemplaren te delen met dit gekoppelde apparaat. Tot 128 MiB aan platte tekst; afbeeldingen en bestanden worden niet gedeeld.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>DeskPort-binding</translation>
+            <translation>DeskPort-koppeling</translation>
         </message>
         <message>
             <source>Legacy pairing</source>
@@ -3830,7 +3830,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>Voor Sunshine of andere hosts zonder DeskPort-binding.</translation>
+            <translation>Voor Sunshine of andere hosts zonder DeskPort-koppeling.</translation>
         </message>
         <message>
             <source>Move out of group</source>

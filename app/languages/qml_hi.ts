@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>बाउंड मैक पर अंतर्निहित वर्चुअल डिस्प्ले का उपयोग करता है। संक्षेप में आकार बदलने से चित्र पुनः जुड़ जाता है और आपके ऐप्स खुले रहते हैं। अन्य होस्ट नीचे दिए गए रिज़ॉल्यूशन का उपयोग करते हैं।</translation>
+            <translation>बाइंड किए गए मैक पर अंतर्निहित वर्चुअल डिस्प्ले का उपयोग करता है। संक्षेप में आकार बदलने से चित्र पुनः जुड़ जाता है और आपके ऐप्स खुले रहते हैं। अन्य होस्ट नीचे दिए गए रिज़ॉल्यूशन का उपयोग करते हैं।</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2155,7 +2155,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>इस बाउंड डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
+            <translation>इस बाइंड किए गए डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Moonlight या आपसी बंधन के बिना अन्य ग्राहकों के लिए। उस क्लाइंट पर दिखाया गया पिन दर्ज करें। यह एक दिशा में पहुंच प्रदान करता है।</translation>
+            <translation>Moonlight या आपसी बाइंडिंग के बिना अन्य ग्राहकों के लिए। उस क्लाइंट पर दिखाया गया पिन दर्ज करें। यह एक दिशा में पहुंच प्रदान करता है।</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>दोनों तरफ से बंधा हुआ</translation>
+            <translation>दोनों तरफ से बाइंड किया गया</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -3046,7 +3046,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>इस डिवाइस से जुड़ें?</translation>
+            <translation>इस डिवाइस से बाइंड करें?</translation>
         </message>
         <message>
             <source>Not now</source>
@@ -3054,7 +3054,7 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>अनुमति दें और बांधें</translation>
+            <translation>अनुमति दें और बाइंड करें</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>बाउंड मैक पर अंतर्निहित वर्चुअल डिस्प्ले का उपयोग करता है। संक्षेप में आकार बदलने से चित्र पुनः जुड़ जाता है और आपके ऐप्स खुले रहते हैं। अन्य होस्ट नीचे दिए गए रिज़ॉल्यूशन का उपयोग करते हैं।</translation>
+            <translation>बाइंड किए गए मैक पर अंतर्निहित वर्चुअल डिस्प्ले का उपयोग करता है। संक्षेप में आकार बदलने से चित्र पुनः जुड़ जाता है और आपके ऐप्स खुले रहते हैं। अन्य होस्ट नीचे दिए गए रिज़ॉल्यूशन का उपयोग करते हैं।</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3598,7 +3598,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>इस बाउंड डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
+            <translation>इस बाइंड किए गए डिवाइस के साथ नई प्रतियां साझा करने के लिए पुनः कनेक्ट करें। सादे पाठ के 128 एमआईबी तक; छवियाँ और फ़ाइलें साझा नहीं की जाती हैं.</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>

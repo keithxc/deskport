@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Sử dụng màn hình ảo tích hợp trên máy Mac bị ràng buộc. Việc thay đổi kích thước sẽ nhanh chóng kết nối lại hình ảnh và giữ cho ứng dụng của bạn luôn mở. Các máy chủ khác sử dụng độ phân giải bên dưới.</translation>
+            <translation>Sử dụng màn hình ảo tích hợp trên máy Mac được liên kết. Việc thay đổi kích thước sẽ nhanh chóng kết nối lại hình ảnh và giữ cho ứng dụng của bạn luôn mở. Các máy chủ khác sử dụng độ phân giải bên dưới.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Chỉ những thiết bị bạn chấp thuận mới có thể kết nối. Ràng buộc đã lưu không cấp quyền ghi hoặc nhập dữ liệu hệ thống.</translation>
+            <translation>Chỉ những thiết bị bạn chấp thuận mới có thể kết nối. Liên kết đã lưu không cấp quyền ghi hoặc nhập dữ liệu hệ thống.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Dành cho Moonlight hoặc các máy khách khác không có ràng buộc lẫn nhau. Nhập mã PIN được hiển thị trên máy khách đó. Điều này cấp quyền truy cập theo một hướng.</translation>
+            <translation>Dành cho Moonlight hoặc các máy khách khác không có liên kết lẫn nhau. Nhập mã PIN được hiển thị trên máy khách đó. Điều này cấp quyền truy cập theo một hướng.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Ràng buộc cả hai cách</translation>
+            <translation>Đã liên kết hai chiều</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Cổng ràng buộc</translation>
+            <translation>Cổng liên kết</translation>
         </message>
         <message>
             <source>Save</source>
@@ -3054,7 +3054,7 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>Cho phép &amp; ràng buộc</translation>
+            <translation>Cho phép &amp; liên kết</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Sử dụng màn hình ảo tích hợp trên máy Mac bị ràng buộc. Việc thay đổi kích thước sẽ nhanh chóng kết nối lại hình ảnh và giữ cho ứng dụng của bạn luôn mở. Các máy chủ khác sử dụng độ phân giải bên dưới.</translation>
+            <translation>Sử dụng màn hình ảo tích hợp trên máy Mac được liên kết. Việc thay đổi kích thước sẽ nhanh chóng kết nối lại hình ảnh và giữ cho ứng dụng của bạn luôn mở. Các máy chủ khác sử dụng độ phân giải bên dưới.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3830,7 +3830,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>Dành cho Sunshine hoặc các máy chủ khác không có ràng buộc DeskPort.</translation>
+            <translation>Dành cho Sunshine hoặc các máy chủ khác không có liên kết DeskPort.</translation>
         </message>
         <message>
             <source>Move out of group</source>

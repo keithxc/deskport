@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>Excluir '%1', sua ligação salva e configurações de dispositivo deste computador?</translation>
+            <translation>Excluir '%1', sua vinculação salva e configurações de dispositivo deste computador?</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2015,7 +2015,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Usa o display virtual integrado em um Mac limitado. O redimensionamento reconecta brevemente a imagem e mantém seus aplicativos abertos. Outros hosts usam a resolução abaixo.</translation>
+            <translation>Usa o display virtual integrado em um Mac vinculado. O redimensionamento reconecta brevemente a imagem e mantém seus aplicativos abertos. Outros hosts usam a resolução abaixo.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2597,7 +2597,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>Somente dispositivos aprovados por você podem se conectar. Uma ligação salva não concede permissões de gravação ou entrada do sistema.</translation>
+            <translation>Somente dispositivos aprovados por você podem se conectar. Uma vinculação salva não concede permissões de gravação ou entrada do sistema.</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2637,7 +2637,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Para Moonlight ou outros clientes sem ligação mútua. Insira o PIN mostrado nesse cliente. Isso concede acesso em uma direção.</translation>
+            <translation>Para Moonlight ou outros clientes sem vinculação mútua. Insira o PIN mostrado nesse cliente. Isso concede acesso em uma direção.</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2653,7 +2653,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>Porta host: %1 · Porta de ligação: %2</translation>
+            <translation>Porta host: %1 · Porta de vinculação: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2860,7 +2860,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>Obrigado em ambos os sentidos</translation>
+            <translation>Vinculado em ambos os sentidos</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2876,7 +2876,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>Para uma porta de ligação personalizada, insira endereço:porta. Os hosts Moonlight e Sunshine independentes usam o emparelhamento legado.</translation>
+            <translation>Para uma porta de vinculação personalizada, insira endereço:porta. Os hosts Moonlight e Sunshine independentes usam o emparelhamento legado.</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2888,7 +2888,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 não poderá mais controlar este computador. Remova também a ligação do outro dispositivo para revogar ambas as direções.</translation>
+            <translation>%1 não poderá mais controlar este computador. Remova também a vinculação do outro dispositivo para revogar ambas as direções.</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2920,7 +2920,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>Porta de ligação</translation>
+            <translation>Porta de vinculação</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2956,7 +2956,7 @@
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>Esqueceu a ligação salva para %1 neste dispositivo? Remova-o de Dispositivos separadamente. Para revogar o acesso deste dispositivo, remova-o também do host.</translation>
+            <translation>Esquecer a vinculação salva para %1 neste dispositivo? Remova-o de Dispositivos separadamente. Para revogar o acesso deste dispositivo, remova-o também do host.</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3458,7 +3458,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Usa o display virtual integrado em um Mac limitado. O redimensionamento reconecta brevemente a imagem e mantém seus aplicativos abertos. Outros hosts usam a resolução abaixo.</translation>
+            <translation>Usa o display virtual integrado em um Mac vinculado. O redimensionamento reconecta brevemente a imagem e mantém seus aplicativos abertos. Outros hosts usam a resolução abaixo.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3786,7 +3786,7 @@
         </message>
         <message>
             <source>DeskPort binding</source>
-            <translation>Ligação DeskPort</translation>
+            <translation>Vinculação DeskPort</translation>
         </message>
         <message>
             <source>Legacy pairing</source>
@@ -3830,7 +3830,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>Para Sunshine ou outros hosts sem ligação DeskPort.</translation>
+            <translation>Para Sunshine ou outros hosts sem vinculação DeskPort.</translation>
         </message>
         <message>
             <source>Move out of group</source>

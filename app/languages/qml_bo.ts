@@ -228,7 +228,7 @@
         </message>
         <message>
             <source>Delete '%1', its saved binding and device settings from this computer?</source>
-            <translation>གློག་ཀླད་འདི་ནས་'%1' དང་དེའི་གསོག་འཇོག་བྱས་པའི་བཀག་སྡོམ་དང་ཡོ་ཆས་ཀྱི་སྒྲིག་སྟངས་རྣམས་སུབ་དགོས་སམ།</translation>
+            <translation>གློག་ཀླད་འདི་ནས་'%1' དང་དེའི་གསོག་འཇོག་བྱས་པའི་སྦྲེལ་མཐུད་དང་ཡོ་ཆས་ཀྱི་སྒྲིག་སྟངས་རྣམས་སུབ་དགོས་སམ།</translation>
         </message>
         <message>
             <source>Change address</source>
@@ -2010,7 +2010,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>མཐུད་ཡོད་པའི་མེག་སྟེང་དུ་ནང་འཇུག་བྱས་པའི་གཟུགས་བརྙན་བརྙན་ཤེལ་བེད་སྤྱོད་བྱེད། ཚད་བསྒྱུར་གྱིས་པར་རིས་དེ་བསྐྱར་དུ་མཐུད་པ་དང་ཁྱེད་ཀྱི་མཉེན་ཆས་ཁ་ཕྱེ་བར་བྱེད། གཙོ་བདག་གཞན་པས་གཤམ་གྱི་ཐག་གཅོད་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
+            <translation>སྦྲེལ་མཐུད་བྱས་ཡོད་པའི་མེག་སྟེང་དུ་ནང་འཇུག་བྱས་པའི་གཟུགས་བརྙན་བརྙན་ཤེལ་བེད་སྤྱོད་བྱེད། ཚད་བསྒྱུར་གྱིས་པར་རིས་དེ་བསྐྱར་དུ་མཐུད་པ་དང་ཁྱེད་ཀྱི་མཉེན་ཆས་ཁ་ཕྱེ་བར་བྱེད། གཙོ་བདག་གཞན་པས་གཤམ་གྱི་ཐག་གཅོད་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -2150,7 +2150,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>མཐུད་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
+            <translation>སྦྲེལ་མཐུད་བྱས་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
         </message>
         <message>
             <source>Receive sound from this device</source>
@@ -2592,7 +2592,7 @@
         </message>
         <message>
             <source>Only devices you approve can connect. A saved binding does not grant system recording or input permissions.</source>
-            <translation>ཁྱེད་ཀྱིས་ཆོག་མཆན་སྤྲད་པའི་འཕྲུལ་ཆས་ཁོ་ན་མཐུད་ཐུབ། གསོག་འཇོག་བྱས་པའི་བཀག་སྡོམ་གྱིས་མ་ལག་གི་སྒྲ་འཇུག་ཡང་ན་ནང་འཇུག་ཆོག་མཆན་སྤྲོད་ཀྱི་མེད།</translation>
+            <translation>ཁྱེད་ཀྱིས་ཆོག་མཆན་སྤྲད་པའི་འཕྲུལ་ཆས་ཁོ་ན་མཐུད་ཐུབ། གསོག་འཇོག་བྱས་པའི་སྦྲེལ་མཐུད་ཀྱིས་མ་ལག་གི་སྒྲ་འཇུག་ཡང་ན་ནང་འཇུག་ཆོག་མཆན་སྤྲོད་ཀྱི་མེད།</translation>
         </message>
         <message>
             <source>Review permissions</source>
@@ -2632,7 +2632,7 @@
         </message>
         <message>
             <source>For Moonlight or other clients without mutual binding. Enter the PIN shown on that client. This grants access in one direction.</source>
-            <translation>Moonlight ཡང་ན་ཕན་ཚུན་འབྲེལ་བ་མེད་པའི་ཚོང་ཤག་གཞན་པའི་ཆེད་དུ། མཁོ་སྤྲོད་བྱེད་མཁན་དེ་ལ་སྟོན་པའི་PINབླུགས། འདིས་ཕྱོགས་གཅིག་ལ་འགྲོ་ཆོག་པའི་ཆོག་མཆན་སྤྲོད་ཀྱི་ཡོད།</translation>
+            <translation>Moonlight ཡང་ན་ཕན་ཚུན་སྦྲེལ་མཐུད་མེད་པའི་ཚོང་ཤག་གཞན་པའི་ཆེད་དུ། མཁོ་སྤྲོད་བྱེད་མཁན་དེ་ལ་སྟོན་པའི་PINབླུགས། འདིས་ཕྱོགས་གཅིག་ལ་འགྲོ་ཆོག་པའི་ཆོག་མཆན་སྤྲོད་ཀྱི་ཡོད།</translation>
         </message>
         <message>
             <source>Device name</source>
@@ -2648,7 +2648,7 @@
         </message>
         <message>
             <source>Host port: %1  ·  Binding port: %2</source>
-            <translation>གཙོ་གཉེར་མཐུད་ཁ།: %1 · འབྲེལ་མཐུད་མཐུད་ཁ།: %2</translation>
+            <translation>གཙོ་གཉེར་མཐུད་ཁ།: %1 · སྦྲེལ་མཐུད་མཐུད་ཁ།: %2</translation>
         </message>
         <message>
             <source>Open host logs</source>
@@ -2855,7 +2855,7 @@
         </message>
         <message>
             <source>Bound both ways</source>
-            <translation>ཕྱོགས་གཉིས་ཀ་བཅིངས་པ།</translation>
+            <translation>ཕྱོགས་གཉིས་ཀ་སྦྲེལ་མཐུད་བྱས་པ།</translation>
         </message>
         <message>
             <source>Incomplete</source>
@@ -2871,7 +2871,7 @@
         </message>
         <message>
             <source>For a custom binding port, enter address:port. Moonlight and independent Sunshine hosts use legacy pairing instead.</source>
-            <translation>སྲོལ་སྒྲིག་འབྲེལ་མཐུད་མཐུད་ཁའི་ཆེད་དུ་ཁ་བྱང་:མཐུད་ཁ་བླུགས། Moonlight དང་རང་དབང་ཅན་གྱི་Sunshine གཙོ་བདག་གིས་དེའི་ཚབ་ཏུ་སྲོལ་རྒྱུན་གྱི་ཆ་སྒྲིག་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
+            <translation>སྲོལ་སྒྲིག་སྦྲེལ་མཐུད་མཐུད་ཁའི་ཆེད་དུ་ཁ་བྱང་:མཐུད་ཁ་བླུགས། Moonlight དང་རང་དབང་ཅན་གྱི་Sunshine གཙོ་བདག་གིས་དེའི་ཚབ་ཏུ་སྲོལ་རྒྱུན་གྱི་ཆ་སྒྲིག་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
         </message>
         <message>
             <source>Add a legacy host</source>
@@ -2883,7 +2883,7 @@
         </message>
         <message>
             <source>%1 will no longer be able to control this computer. Remove the binding on the other device too to revoke both directions.</source>
-            <translation>%1 ཡིས་གློག་ཀླད་འདི་ལ་སྟངས་འཛིན་བྱེད་མི་ཐུབ། ཕྱོགས་གཉིས་ཀ་མེད་པར་བཟོ་བར་འཕྲུལ་ཆས་གཞན་དེའི་ཐོག་གི་སྒྲིག་ཆས་དེ་ཡང་བཏོན་དགོས།</translation>
+            <translation>%1 ཡིས་གློག་ཀླད་འདི་ལ་སྟངས་འཛིན་བྱེད་མི་ཐུབ། ཕྱོགས་གཉིས་ཀ་མེད་པར་བཟོ་བར་འཕྲུལ་ཆས་གཞན་དེའི་ཐོག་གི་སྦྲེལ་མཐུད་དེ་ཡང་བཏོན་དགོས།</translation>
         </message>
         <message>
             <source>Edit device</source>
@@ -2915,7 +2915,7 @@
         </message>
         <message>
             <source>Binding port</source>
-            <translation>འཐུད་སྦྲེལ་མཐུད་ཁ།</translation>
+            <translation>སྦྲེལ་མཐུད་མཐུད་ཁ།</translation>
         </message>
         <message>
             <source>Save</source>
@@ -2951,7 +2951,7 @@
         </message>
         <message>
             <source>Forget the saved binding for %1 on this device? Remove it from Devices separately. To revoke this device’s access, remove it on the host too.</source>
-            <translation>ཡོ་ཆས་འདིའི་སྟེང་དུ་%1 ཡི་སྒྲིག་ཆས་ཉར་ཚགས་བྱས་པ་བརྗེད་སོང་ངམ། དེ་འཕྲུལ་ཆས་ནས་སོ་སོར་མེད་པར་བཟོས། ཐབས་འཕྲུལ་འདིའི་འཛུལ་སྤྱོད་མེད་པར་བཟོ་བར། དེ་གཙོ་བོའི་སྟེང་ནས་ཀྱང་མེད་པར་བཟོས།</translation>
+            <translation>ཡོ་ཆས་འདིའི་སྟེང་དུ་%1 ཡི་སྦྲེལ་མཐུད་ཉར་ཚགས་བྱས་པ་བརྗེད་དགོས་སམ། དེ་འཕྲུལ་ཆས་ནས་སོ་སོར་མེད་པར་བཟོས། ཐབས་འཕྲུལ་འདིའི་འཛུལ་སྤྱོད་མེད་པར་བཟོ་བར། དེ་གཙོ་བོའི་སྟེང་ནས་ཀྱང་མེད་པར་བཟོས།</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3041,7 +3041,7 @@
         <name>BindingApproval</name>
         <message>
             <source>Bind with this device?</source>
-            <translation>ཡོ་ཆས་འདི་དང་མཉམ་དུ་འཐུད་དགོས་སམ།</translation>
+            <translation>ཡོ་ཆས་འདི་དང་མཉམ་དུ་སྦྲེལ་མཐུད་བྱེད་དགོས་སམ།</translation>
         </message>
         <message>
             <source>Not now</source>
@@ -3049,15 +3049,15 @@
         </message>
         <message>
             <source>Allow &amp; bind</source>
-            <translation>ཆོག་མཆན་སྤྲད་ནས་སྦྲེལ།</translation>
+            <translation>ཆོག་མཆན་སྤྲད་ནས་སྦྲེལ་མཐུད་བྱེད།</translation>
         </message>
         <message>
             <source>Allow this device and this computer to view and control each other? Binding saves permission without starting a connection or interrupting existing sessions. Choose Connect when you are ready. Accept only a request you are expecting.</source>
-            <translation>ཡོ་ཆས་འདི་དང་གློག་ཀླད་འདི་ཕན་ཚུན་ལྟ་ཀློག་དང་ཚོད་འཛིན་བྱེད་དུ་འཇུག་གམ། འབྲེལ་མཐུད་འགོ་མ་བཙུགས་པའམ་ཡང་ན་ད་ཡོད་ཀྱི་ལས་རིམ་ལ་བར་ཆད་མ་བཟོས་པར་ཆོག་མཆན་གསོག་འཇོག་བྱེད། ཁྱེད་རང་གྲ་སྒྲིག་ཡོད་དུས་མཐུད་འདེམས། ཁྱོད་ཀྱིས་རེ་སྒུག་བྱེད་བཞིན་པའི་རེ་འདུན་ཁོ་ན་དང་ལེན་བྱོས།</translation>
+            <translation>ཡོ་ཆས་འདི་དང་གློག་ཀླད་འདི་ཕན་ཚུན་ལྟ་ཀློག་དང་ཚོད་འཛིན་བྱེད་དུ་འཇུག་གམ། འབྲེལ་མཐུད་འགོ་མ་བཙུགས་པའམ་ཡང་ན་ད་ཡོད་ཀྱི་ལས་རིམ་ལ་བར་ཆད་མ་བཟོས་པར་སྦྲེལ་མཐུད་ཀྱིས་ཆོག་མཆན་གསོག་འཇོག་བྱེད། ཁྱེད་རང་གྲ་སྒྲིག་ཡོད་དུས་མཐུད་འདེམས། ཁྱོད་ཀྱིས་རེ་སྒུག་བྱེད་བཞིན་པའི་རེ་འདུན་ཁོ་ན་དང་ལེན་བྱོས།</translation>
         </message>
         <message>
             <source>Allow this device to view and control this computer? Binding saves permission without starting a connection or interrupting existing sessions. This does not grant access to the requesting device. Accept only a request you are expecting.</source>
-            <translation>ཡོ་ཆས་འདི་ལ་གློག་ཀླད་འདི་ལྟ་བ་དང་ཚོད་འཛིན་བྱེད་དུ་འཇུག་གམ། འབྲེལ་མཐུད་འགོ་མ་བཙུགས་པའམ་ཡང་ན་ད་ཡོད་ཀྱི་ལས་རིམ་ལ་བར་ཆད་མ་བཟོས་པར་ཆོག་མཆན་གསོག་འཇོག་བྱེད། འདིས་རེ་ཞུ་བྱེད་མཁན་གྱི་འཕྲུལ་ཆས་ལ་འཛུལ་སྤྱོད་བྱེད་མི་ཐུབ། ཁྱོད་ཀྱིས་རེ་སྒུག་བྱེད་བཞིན་པའི་རེ་འདུན་ཁོ་ན་དང་ལེན་བྱོས།</translation>
+            <translation>ཡོ་ཆས་འདི་ལ་གློག་ཀླད་འདི་ལྟ་བ་དང་ཚོད་འཛིན་བྱེད་དུ་འཇུག་གམ། འབྲེལ་མཐུད་འགོ་མ་བཙུགས་པའམ་ཡང་ན་ད་ཡོད་ཀྱི་ལས་རིམ་ལ་བར་ཆད་མ་བཟོས་པར་སྦྲེལ་མཐུད་ཀྱིས་ཆོག་མཆན་གསོག་འཇོག་བྱེད། འདིས་རེ་ཞུ་བྱེད་མཁན་གྱི་འཕྲུལ་ཆས་ལ་འཛུལ་སྤྱོད་བྱེད་མི་ཐུབ། ཁྱོད་ཀྱིས་རེ་སྒུག་བྱེད་བཞིན་པའི་རེ་འདུན་ཁོ་ན་དང་ལེན་བྱོས།</translation>
         </message>
     </context>
     <context>
@@ -3453,7 +3453,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>མཐུད་ཡོད་པའི་མེག་སྟེང་དུ་ནང་འཇུག་བྱས་པའི་གཟུགས་བརྙན་བརྙན་ཤེལ་བེད་སྤྱོད་བྱེད། ཚད་བསྒྱུར་གྱིས་པར་རིས་དེ་བསྐྱར་དུ་མཐུད་པ་དང་ཁྱེད་ཀྱི་མཉེན་ཆས་ཁ་ཕྱེ་བར་བྱེད། གཙོ་བདག་གཞན་པས་གཤམ་གྱི་ཐག་གཅོད་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
+            <translation>སྦྲེལ་མཐུད་བྱས་ཡོད་པའི་མེག་སྟེང་དུ་ནང་འཇུག་བྱས་པའི་གཟུགས་བརྙན་བརྙན་ཤེལ་བེད་སྤྱོད་བྱེད། ཚད་བསྒྱུར་གྱིས་པར་རིས་དེ་བསྐྱར་དུ་མཐུད་པ་དང་ཁྱེད་ཀྱི་མཉེན་ཆས་ཁ་ཕྱེ་བར་བྱེད། གཙོ་བདག་གཞན་པས་གཤམ་གྱི་ཐག་གཅོད་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</translation>
         </message>
         <message>
             <source>Smart streaming</source>
@@ -3593,7 +3593,7 @@
         </message>
         <message>
             <source>Reconnect to share new copies with this bound device. Up to 128 MiB of plain text; images and files are not shared.</source>
-            <translation>མཐུད་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
+            <translation>སྦྲེལ་མཐུད་བྱས་པའི་ཡོ་ཆས་འདི་དང་མཉམ་དུ་འདྲ་བཤུས་གསར་བ་མཉམ་སྤྱོད་བྱེད་པར་བསྐྱར་དུ་མཐུད་དགོས། ཡིག་ཆ་གཙང་མའི་128 MiB བར་དང་། པར་རིས་དང་ཡིག་ཆ་མཉམ་སྤྱོད་བྱེད་ཀྱི་མེད།</translation>
         </message>
         <message>
             <source>Keyboard follows the pointer inside the focused video. Leaving releases held keys and buttons. Click to focus; system-reserved shortcuts may stay local.</source>
@@ -3825,7 +3825,7 @@
         </message>
         <message>
             <source>For Sunshine or other hosts without DeskPort binding.</source>
-            <translation>Sunshine ཡང་ན་ DeskPort མཐུད་མེད་པའི་གཙོ་བདག་གཞན་པའི་ཆེད་དུ།</translation>
+            <translation>Sunshine ཡང་ན་ DeskPort སྦྲེལ་མཐུད་མེད་པའི་གཙོ་བདག་གཞན་པའི་ཆེད་དུ།</translation>
         </message>
         <message>
             <source>Move out of group</source>

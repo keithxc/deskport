@@ -2010,7 +2010,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Verwendet das integrierte virtuelle Display eines verbundenen Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
+            <translation>Verwendet das integrierte virtuelle Display eines gekoppelten Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
         </message>
         <message>
             <source>Share text, images and files during a session</source>
@@ -3453,7 +3453,7 @@
         </message>
         <message>
             <source>Uses the built-in virtual display on a bound Mac. Resizing briefly reconnects the picture and keeps your apps open. Other hosts use the resolution below.</source>
-            <translation>Verwendet das integrierte virtuelle Display eines verbundenen Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
+            <translation>Verwendet das integrierte virtuelle Display eines gekoppelten Mac. Größenänderungen verbinden das Bild kurz neu; Ihre Apps bleiben geöffnet. Andere Hosts verwenden die Auflösung unten.</translation>
         </message>
         <message>
             <source>Smart streaming</source>
