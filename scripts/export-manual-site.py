@@ -5,6 +5,10 @@ The manual stays single-sourced in shared/deskport-core/manual/manual.json.
 For every site language this writes manual.html, using that language's
 support.html as the page shell (head, navigation, language switcher, footer),
 and adds a Manual link to the navigation of the site's other pages.
+
+It also owns the per-language plumbing of every page: html lang/dir,
+canonical and og:url, og:locale alternates, hreflang alternates, the language
+switcher and the root auto-detect script, all generated from SITE_LANGUAGES.
 """
 import argparse
 import html
@@ -14,9 +18,34 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / 'shared/deskport-core'
-# Site directory ('' is English at the root) -> manual language code.
-SITE_LANGUAGES = {'': 'en', 'zh-CN': 'zh-Hans', 'zh-TW': 'zh-Hant', 'ja': 'ja', 'ko': 'ko',
-                  'de': 'de', 'es': 'es', 'fr': 'fr', 'pt-BR': 'pt', 'ru': 'ru'}
+BASE_URL = 'https://keithxc.github.io/deskport/'
+# Site directory ('' is English at the root) -> (manual code, og:locale, native name).
+LANGUAGE_INFO = {
+    '': ('en', 'en_US', 'English'),
+    'zh-CN': ('zh-Hans', 'zh_CN', '简体中文'),
+    'zh-TW': ('zh-Hant', 'zh_TW', '繁體中文'),
+    'ja': ('ja', 'ja_JP', '日本語'),
+    'ko': ('ko', 'ko_KR', '한국어'),
+    'de': ('de', 'de_DE', 'Deutsch'),
+    'es': ('es', 'es_ES', 'Español'),
+    'fr': ('fr', 'fr_FR', 'Français'),
+    'pt-BR': ('pt', 'pt_BR', 'Português (Brasil)'),
+    'ru': ('ru', 'ru_RU', 'Русский'),
+    'it': ('it', 'it_IT', 'Italiano'),
+    'nl': ('nl', 'nl_NL', 'Nederlands'),
+    'pl': ('pl', 'pl_PL', 'Polski'),
+    'uk': ('uk', 'uk_UA', 'Українська'),
+    'tr': ('tr', 'tr_TR', 'Türkçe'),
+    'ar': ('ar', 'ar_AR', 'العربية'),
+    'hi': ('hi', 'hi_IN', 'हिन्दी'),
+    'th': ('th', 'th_TH', 'ไทย'),
+    'vi': ('vi', 'vi_VN', 'Tiếng Việt'),
+    'id': ('id', 'id_ID', 'Bahasa Indonesia'),
+    'ms': ('ms', 'ms_MY', 'Bahasa Melayu'),
+    'bo': ('bo', 'bo_CN', 'བོད་ཡིག'),
+}
+SITE_LANGUAGES = {directory: info[0] for directory, info in LANGUAGE_INFO.items()}
+RTL = {'ar'}
 PAGES = ('index.html', 'support.html', 'privacy.html', 'source.html')
 SUPPORT_LINK = re.compile(r'<a href="support\.html"[^>]*>[^<]*</a>')
 
@@ -49,7 +78,7 @@ def manual_link(label, current=False):
 
 def add_nav_link(page, label, current=False):
     """Insert the Manual link after Setup & Support once; idempotent."""
-    nav = re.search(r'<nav aria-label="Main">.*?</nav>', page, re.S)
+    nav = re.search(r'<nav[^>]*>.*?</nav>', page, re.S)
     assert nav, 'site page has no main navigation'
     links = re.sub(r'<a href="manual\.html"[^>]*>[^<]*</a>', '', nav.group(0))
     links, count = SUPPORT_LINK.subn(lambda match: match.group(0) + manual_link(label, current),
@@ -75,7 +104,7 @@ def render(shell, manual, language, label):
     """Turn a support.html shell into manual.html for the same language."""
     title = f'{label} | DeskPort'
     description = html.escape(localized(manual['chapters'][0]['steps'][0]['text'], language), quote=True)
-    nav = re.search(r'<nav aria-label="Main">.*?</nav>', shell, re.S)
+    nav = re.search(r'<nav[^>]*>.*?</nav>', shell, re.S)
     head, tail = shell[:nav.start()], shell[nav.end():]
     # Head and language switcher point at this page; the nav keeps its Setup & Support link.
     head = head.replace('support.html', 'manual.html')
@@ -91,6 +120,69 @@ def render(shell, manual, language, label):
     footer = re.sub(r'(<footer>DeskPort) · [^·<]+ ·', r'\1 ·', tail[main.end():])
     return (head + links + '<details' + switcher + tail[:main.start()]
             + f'<main>\n{body(manual, language, label)}\n</main>' + footer)
+
+
+def hreflang(directory):
+    return directory or 'en'
+
+
+def page_url(directory, name):
+    folder = f'{directory}/' if directory else ''
+    return BASE_URL + folder + ('' if name == 'index.html' else name)
+
+
+def relative(source, target, name):
+    """Link from a page in `source` to `name` in `target`, as the site writes them."""
+    if source == target:
+        return name
+    return ('../' if source else '') + (f'{target}/' if target else '') + name
+
+
+AUTO_DETECT = (
+    "<script>(function(){try{var q=location.search;if(/[?&]lang=/.test(q)||"
+    "localStorage.getItem('deskport-lang')||/bot|crawl|spider|slurp/i.test(navigator.userAgent))return;"
+    "var S=%s,L=navigator.languages&&navigator.languages.length?navigator.languages:"
+    "[navigator.language||''];for(var i=0;i<L.length;i++){var l=String(L[i]).toLowerCase(),"
+    "b=l.split('-')[0],t=null;if(b==='en')return;if(b==='zh')t=/hant|-tw|-hk|-mo/.test(l)?'zh-TW':'zh-CN';"
+    "else if(b==='pt')t='pt-BR';else if(S.indexOf(b)>=0)t=b;if(t){location.replace(t+'/'+"
+    "(location.pathname.split('/').pop()||'')+location.hash);return}}}catch(e){}})();</script>")
+
+
+def switch_item(directory, other, name):
+    code = hreflang(other)
+    current = ' aria-current="true"' if other == directory else ''
+    remember = f"try{{localStorage.setItem('deskport-lang','{code}')}}catch(e){{}}"
+    return (f'<li><a href="{relative(directory, other, name)}" hreflang="{code}" lang="{code}"'
+            f'{current} onclick="{remember}">{LANGUAGE_INFO[other][2]}</a></li>')
+
+
+def sync_languages(page, directory, name):
+    """Regenerate the language plumbing of one page from LANGUAGE_INFO."""
+    direction = ' dir="rtl"' if directory in RTL else ''
+    page = re.sub(r'<html[^>]*>', f'<html lang="{hreflang(directory)}"{direction}>', page, count=1)
+    url = page_url(directory, name)
+    page = re.sub(r'(<meta property="og:url" content=")[^"]*', rf'\g<1>{url}', page, count=1)
+    page = re.sub(r'(<link rel="canonical" href=")[^"]*', rf'\g<1>{url}', page, count=1)
+    page = re.sub(r'<meta property="og:locale:alternate" content="[^"]*">', '', page)
+    others = ''.join(f'<meta property="og:locale:alternate" content="{info[1]}">'
+                     for other, info in LANGUAGE_INFO.items() if other != directory)
+    page = re.sub(r'(<meta property="og:locale" content=")[^"]*(">)',
+                  lambda match: match.group(1) + LANGUAGE_INFO[directory][1] + match.group(2) + others,
+                  page, count=1)
+    page = re.sub(r'<link rel="alternate" hreflang="[^"]*" href="[^"]*">', '', page)
+    alternates = ''.join(f'<link rel="alternate" hreflang="{hreflang(other)}" href="{page_url(other, name)}">'
+                         for other in LANGUAGE_INFO)
+    alternates += f'<link rel="alternate" hreflang="x-default" href="{page_url("", name)}">'
+    page = re.sub(r'<link rel="canonical" href="[^"]*">', lambda match: match.group(0) + alternates,
+                  page, count=1)
+    detected = '[' + ','.join(f"'{other}'" for other in LANGUAGE_INFO if other) + ']'
+    page = re.sub(r'<script>\(function\(\)\{try\{var q=location\.search.*?</script>',
+                  lambda match: AUTO_DETECT % detected, page, count=1, flags=re.S)
+    items = ''.join(switch_item(directory, other, name) for other in LANGUAGE_INFO)
+    page = re.sub(r'(<details class="lang-switch">.*?<span>)[^<]*(</span></summary>)<ul>.*?</ul>',
+                  lambda match: match.group(1) + LANGUAGE_INFO[directory][2] + match.group(2)
+                  + f'<ul>{items}</ul>', page, count=1, flags=re.S)
+    return page
 
 
 def resolve_site(path):
@@ -114,11 +206,12 @@ def export(site):
         for name in PAGES:
             page = folder / name
             if page.is_file():
-                text = page.read_text(encoding='utf-8')
-                page.write_text(add_nav_link(text, label), encoding='utf-8')
+                text = add_nav_link(page.read_text(encoding='utf-8'), label)
+                page.write_text(sync_languages(text, directory, name), encoding='utf-8')
         shell = (folder / 'support.html').read_text(encoding='utf-8')
         target = folder / 'manual.html'
-        target.write_text(render(shell, manual, language, label), encoding='utf-8')
+        text = render(shell, manual, language, label)
+        target.write_text(sync_languages(text, directory, 'manual.html'), encoding='utf-8')
         written.append(target)
     return written
 

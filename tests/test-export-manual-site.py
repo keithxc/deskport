@@ -31,13 +31,18 @@ def page(directory, name):
     prefix = '../' if directory else ''
     switch = ''.join(f'<li><a href="{prefix}{d + "/" if d else ""}{name}">{d or "en"}</a></li>'
                      for d in site_export.SITE_LANGUAGES)
-    return ('<!doctype html><html><head><meta name="description" content="Old">'
+    script = ("<script>(function(){try{var q=location.search;var S=['ja'];}catch(e){}})();</script>"
+              if not directory else '')
+    return ('<!doctype html><html lang="xx"><head><meta name="description" content="Old">'
             '<meta property="og:title" content="Setup &amp; Support | DeskPort">'
-            f'<link rel="canonical" href="https://example.test/{directory}/{name}">'
-            '<title>Setup &amp; Support | DeskPort</title></head><body>'
+            '<meta property="og:url" content="https://example.test/old">'
+            '<meta property="og:locale" content="xx_XX"><meta property="og:locale:alternate" content="yy_YY">'
+            '<link rel="canonical" href="https://example.test/old">'
+            '<link rel="alternate" hreflang="yy" href="https://example.test/yy">'
+            f'{script}<title>Setup &amp; Support | DeskPort</title></head><body>'
             '<nav aria-label="Main"><a href="index.html">DeskPort</a>'
             '<a href="support.html">Setup &amp; Support</a><a href="privacy.html">Privacy</a>'
-            f'<details class="lang-switch"><summary>x</summary><ul>{switch}</ul></details></nav>'
+            f'<details class="lang-switch"><summary aria-label="Language"><span>x</span></summary><ul>{switch}</ul></details></nav>'
             '<main><h1>Support</h1></main><footer>DeskPort · Updated October 12, 2026 · '
             '<a href="https://github.com/keithxc/deskport">GitHub</a></footer></body></html>')
 
@@ -70,6 +75,23 @@ with tempfile.TemporaryDirectory(prefix='site-', dir=base) as temporary:
             site_export.source_language(step['text'], language) == 'en'
             for chapter in manual['chapters'] for step in chapter['steps'])),
               f'{directory}: English fallback marking')
+        url = site_export.page_url(directory, 'manual.html')
+        check(f'<link rel="canonical" href="{url}">' in text and f'content="{url}"' in text,
+              f'{directory}: canonical and og:url')
+        check(text.count('rel="alternate" hreflang=') == len(site_export.LANGUAGE_INFO) + 1
+              and 'hreflang="yy"' not in text, f'{directory}: hreflang alternates')
+        check(text.count('og:locale:alternate') == len(site_export.LANGUAGE_INFO) - 1,
+              f'{directory}: og:locale alternates')
+        own = directory or 'en'
+        rtl = ' dir="rtl"' if directory in site_export.RTL else ''
+        check(f'<html lang="{own}"{rtl}>' in text, f'{directory}: html lang and direction')
+        switch = text.split('<ul>')[-1].split('</ul>')[0]
+        check(switch.count('<li>') == len(site_export.LANGUAGE_INFO) and switch.count('aria-current') == 1
+              and f'lang="{own}" aria-current="true"' in switch, f'{directory}: language switcher')
+        if not directory:
+            root = (site / 'index.html').read_text(encoding='utf-8')
+            check("'bo'" in root and "var S=['ja']" not in root and 'location.pathname' in root,
+                  'root auto-detect covers every language')
         for name in site_export.PAGES:
             other = (site / directory / name).read_text(encoding='utf-8')
             check(other.count('href="manual.html"') == 1 and 'aria-current="page"' not in other,
