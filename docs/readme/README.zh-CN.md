@@ -94,7 +94,7 @@ macOS 客户端连接到一台 Windows 11 专业版测试机，显示 Windows「
 | Linux x86_64 | 查看端 + 主机端；符合条件的 KWin、Mutter 和 Hyprland 主机支持自适应工作区 | **0.7.8**：DEB、RPM、Arch、AppImage、便携包与 Nix | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [安装指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 仅查看端 | **0.7.8**，Freedesktop Platform 25.08 | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
 | iPhone / iPad，iOS/iPadOS 15+ | 仅客户端 | 已上架 App Store；较新的版本另在 TestFlight 测试 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 仅客户端 | 开发中；正在实机检查，尚未在商店公开发布 | 暂不可用 |
+| Android 8.0+ | 仅客户端 | **2.7** · Google Play 封闭测试待完成 | APK 待发布 |
 | Windows x64 | 查看端 + 主机端 + 虚拟显示器 | **0.7.8**；完整安装包提供主机功能，便携 ZIP 仅为查看端；应用与安装器未签名 | [安装包](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 未验证 | 没有经过验证的发布包 | — |
 
@@ -124,6 +124,8 @@ AppImage 与便携版会在开始共享时自动注册当前显示助手的路�
 [主机输入的前提设置](../LINUX_PACKAGES.md#first-connection-and-hosting)。
 使用 Nix：`nix run --refresh github:keithxc/deskport/v0.7.8`。
 Flatpak 仅提供查看功能。发布文件附有 [SHA-256 校验和](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt)、[验证报告](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION.txt)与 [Linux 安装包验证记录](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt)。
+
+**Android 版 DeskPort** 尚未完成 Google Play 正式上架所需的封闭测试。上架前，我们计划通过 [GitHub Releases](https://github.com/keithxc/deskport/releases) 临时提供已签名的早期版本 APK。iOS 和 Android 客户端的源码仓库均为私有，此仓库公开的是桌面端源码。
 
 **iPhone / iPad：** 从 [App Store 安装 DeskPort](https://apps.apple.com/us/app/deskport/id6812389978)。
 移动应用为一次性付费购买，当地价格以你所在地区的商店为准。

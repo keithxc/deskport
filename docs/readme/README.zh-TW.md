@@ -86,7 +86,7 @@
 | Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **0.7.3 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [安裝指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 僅檢視端 | **0.7.3 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad，iOS/iPadOS 15+ | 僅用戶端 | 已在 App Store 上架；較新的版本另於 TestFlight 測試 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 僅用戶端 | 開發中；正在實機檢查，尚未在商店公開發布 | 尚未提供 |
+| Android 8.0+ | 僅用戶端 | **2.7** · Google Play 封閉測試待完成 | APK 待發布 |
 | Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **0.7.3 正式版**；安裝程式包含主機，可攜式 ZIP 僅為檢視端；未安裝狀態的套件與 CLI 驗證通過；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 未經驗證 | 沒有經過驗證的發布套件 | — |
 
@@ -110,6 +110,8 @@ AppImage 與可攜版會在開始分享時自動註冊目前顯示輔助程式�
 **Linux：** 選擇適合你系統的 [0.7.3 套件](https://github.com/keithxc/deskport/releases/tag/v0.7.3)，
 並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run github:keithxc/deskport/v0.7.3`。
 Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)。
+
+**Android 版 DeskPort** 尚未完成 Google Play 正式上架所需的封閉測試。上架前，我們計劃透過 [GitHub Releases](https://github.com/keithxc/deskport/releases) 暫時提供已簽署的早期版本 APK。iOS 和 Android 用戶端的原始碼儲存庫均為私有，此儲存庫公開的是桌面端原始碼。
 
 **iPhone / iPad：** 從 [App Store 安裝 DeskPort](https://apps.apple.com/us/app/deskport/id6812389978)。
 行動 App 為一次性付費購買，實際價格請以你所在地區的商店為準。
