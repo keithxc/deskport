@@ -105,7 +105,7 @@ records exact package identities and validation limits in its verification repor
 | Linux x86_64 | Viewer + host; adaptive workspace on capable KWin, Mutter and Hyprland hosts | **0.7.8**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [installation guide](docs/LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer only | **0.7.8**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client only | **2.7** · Google Play closed testing pending completion | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-62.apk) |
+| Android 8.0+ | Client only | **2.7** · Google Play closed testing pending completion | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Viewer + host + virtual display | **0.7.8**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
@@ -144,7 +144,9 @@ Flatpak provides viewing only. The release includes [SHA-256 checksums](https://
 Until the Google Play listing is available, signed early-access Android installation packages are available through [GitHub Releases](https://github.com/keithxc/deskport/releases).
 The mobile clients are closed source. This temporary Android distribution provides the installer only. The desktop source is available in this repository.
 
-The GitHub APK and Google Play use different signing keys. To switch channels later, uninstall DeskPort, install it again from the new channel, and pair your computers again. Uninstalling clears local bindings and settings.
+Starting with Android 2.7 (build 63), the GitHub APK uses the same app signing key as Google Play. A newer Play release can update this installation and keep your paired computers and settings.
+
+If you installed GitHub build 62, switching to build 63 requires a one-time uninstall and reinstall. This clears local settings and requires pairing your computers again.
 
 **iPhone / iPad:** Install [DeskPort from the App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 The mobile app is a paid, one-time purchase; see your storefront for current local
