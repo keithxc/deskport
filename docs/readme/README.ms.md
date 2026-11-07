@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -124,7 +124,7 @@ termasuk [keperluan input hos](../LINUX_PACKAGES.md#first-connection-and-hosting
 Dengan Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak hanya untuk melihat. Keluaran menyertakan [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) dan [laporan pengesahan](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · Sementara menunggu ujian tertutup Google Play selesai, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tersedia buat sementara waktu di GitHub. Kod sumber klien mudah alih adalah tertutup. Hanya fail pemasangan diedarkan di sini.
+**Android 2.7 (63)** · ~~$4.99~~ · Sementara menunggu ujian tertutup Google Play selesai, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tersedia buat sementara waktu di GitHub. Kod sumber klien mudah alih adalah tertutup. Hanya fail pemasangan diedarkan di sini.
 
 Binaan 63 menggunakan kunci tandatangan yang sama dengan Google Play. Kemas kini kepada versi Play yang lebih baharu mengekalkan gandingan komputer dan tetapan. Jika anda memasang binaan 62 daripada GitHub, nyahpasangnya sebelum memasang binaan 63. Tetapan setempat akan dipadamkan dan komputer perlu digandingkan semula.
 

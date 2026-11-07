@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -124,7 +124,7 @@ DeskPort को Applications में खींचें और खोलें
 Nix के साथ: `nix run github:keithxc/deskport/v0.7.3`।
 Flatpak केवल देखने की सुविधा देता है। रिलीज़ में [SHA-256 चेकसम](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) और [सत्यापन रिपोर्ट](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt) शामिल हैं।
 
-**Android 2.7 (63)** · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
+**Android 2.7 (63)** · ~~$4.99~~ · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
 
 बिल्ड 63 में Google Play वाली साइनिंग कुंजी का इस्तेमाल हुआ है। आगे चलकर Play के नए संस्करण में अपडेट करने पर पेयर किए गए कंप्यूटर और सेटिंग्स बनी रहेंगी। अगर आपने GitHub से बिल्ड 62 इंस्टॉल किया था, तो 63 इंस्टॉल करने से पहले उसे अनइंस्टॉल करना होगा। इससे स्थानीय सेटिंग्स मिट जाएँगी और कंप्यूटर फिर से पेयर करने होंगे।
 

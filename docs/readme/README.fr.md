@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -121,7 +121,7 @@ adapté à votre système et suivez le [guide d'installation](../LINUX_PACKAGES.
 y compris les autorisations d'entrée de l'hôte. Avec Nix : `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak permet uniquement l'affichage. Les fichiers de la version incluent des [sommes de contrôle SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) et un [rapport de vérification](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · En attendant la fin du test fermé sur Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) est disponible temporairement sur GitHub. Le code source des clients mobiles est privé. Seul le fichier d’installation est distribué ici.
+**Android 2.7 (63)** · ~~$4.99~~ · En attendant la fin du test fermé sur Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) est disponible temporairement sur GitHub. Le code source des clients mobiles est privé. Seul le fichier d’installation est distribué ici.
 
 La version 63 utilise la même clé de signature que Google Play. Une mise à jour vers une version ultérieure de Play conserve les ordinateurs associés et les réglages. Si vous avez installé la version 62 de GitHub, vous devez la désinstaller avant d’installer la 63. Les réglages locaux seront effacés et il faudra associer de nouveau vos ordinateurs.
 

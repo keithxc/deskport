@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -125,7 +125,7 @@ w tym [wymagania dotyczące sterowania hostem](../LINUX_PACKAGES.md#first-connec
 Przez Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak służy tylko do oglądania. Wydanie zawiera [sumy kontrolne SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) i [raport weryfikacji](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · Do zakończenia testów zamkniętych w Google Play plik [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) jest tymczasowo dostępny na GitHubie. Kod źródłowy aplikacji mobilnych jest zamknięty. Udostępniamy tu tylko instalator.
+**Android 2.7 (63)** · ~~$4.99~~ · Do zakończenia testów zamkniętych w Google Play plik [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) jest tymczasowo dostępny na GitHubie. Kod źródłowy aplikacji mobilnych jest zamknięty. Udostępniamy tu tylko instalator.
 
 Kompilacja 63 jest podpisana tym samym kluczem co aplikacja w Google Play. Aktualizacja do nowszej wersji ze sklepu zachowa sparowane komputery i ustawienia. Jeśli masz kompilację 62 z GitHuba, przed instalacją 63 musisz ją odinstalować. Spowoduje to usunięcie ustawień lokalnych i konieczność ponownego sparowania komputerów.
 

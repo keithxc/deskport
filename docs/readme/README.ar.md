@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -122,7 +122,7 @@
 باستخدام Nix: `nix run github:keithxc/deskport/v0.7.3`.
 يوفر Flatpak العرض فقط. يتضمن الإصدار [مجاميع SHA-256 الاختبارية](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) و[تقرير تحقق](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
+**Android 2.7 (63)** · ~~$4.99~~ · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
 
 يستخدم الإصدار 63 مفتاح توقيع Google Play نفسه، لذا يحتفظ التحديث إلى إصدار أحدث من المتجر بأجهزة الكمبيوتر المقترنة والإعدادات. إذا ثبّتَّ الإصدار 62 من GitHub، فيجب إلغاء تثبيته قبل تثبيت 63. يؤدي ذلك إلى مسح الإعدادات المحلية ويتطلب إقران أجهزة الكمبيوتر مجددًا.
 

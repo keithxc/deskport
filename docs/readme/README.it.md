@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -126,7 +126,7 @@ inclusi i [requisiti di input dell'host](../LINUX_PACKAGES.md#first-connection-a
 Con Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Il Flatpak offre solo la visualizzazione. La release include [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) e un [rapporto di verifica](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · Fino al termine del test chiuso di Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) è disponibile temporaneamente su GitHub. Il codice sorgente dei client mobili è privato. Qui viene distribuito solo il pacchetto di installazione.
+**Android 2.7 (63)** · ~~$4.99~~ · Fino al termine del test chiuso di Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) è disponibile temporaneamente su GitHub. Il codice sorgente dei client mobili è privato. Qui viene distribuito solo il pacchetto di installazione.
 
 La build 63 usa la stessa chiave di firma di Google Play. L’aggiornamento a una versione Play successiva conserva i computer abbinati e le impostazioni. Se hai installato la build 62 da GitHub, devi disinstallarla prima di installare la 63. Le impostazioni locali verranno cancellate e dovrai abbinare di nuovo i computer.
 

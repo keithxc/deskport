@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -118,7 +118,7 @@ AppImage มีรันไทม์ส่วนตัวสำหรับเ�
 ใช้ Nix: `nix run github:keithxc/deskport/v0.7.3`
 Flatpak ใช้ดูได้อย่างเดียว รุ่นเผยแพร่มี[เช็กซัม SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) และ[รายงานการตรวจสอบ](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)
 
-**Android 2.7 (63)** · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
+**Android 2.7 (63)** · ~~$4.99~~ · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
 
 บิลด์ 63 ใช้คีย์ลงนามเดียวกับ Google Play เมื่ออัปเดตเป็นเวอร์ชันที่ใหม่กว่าจาก Play การจับคู่กับคอมพิวเตอร์และการตั้งค่าจะยังอยู่ หากติดตั้งบิลด์ 62 จาก GitHub ต้องถอนการติดตั้งก่อนติดตั้งบิลด์ 63 การถอนการติดตั้งจะล้างการตั้งค่าในเครื่องและต้องจับคู่คอมพิวเตอร์ใหม่
 

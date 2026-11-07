@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -121,7 +121,7 @@ bao gồm [yêu cầu về đầu vào của máy chủ](../LINUX_PACKAGES.md#fi
 Với Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak chỉ hỗ trợ xem. Bản phát hành kèm [mã kiểm tra SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) và [báo cáo xác minh](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
 
-**Android 2.7 (63)** · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
+**Android 2.7 (63)** · ~~$4.99~~ · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
 
 Bản dựng 63 dùng cùng khóa ký ứng dụng với Google Play. Khi cập nhật lên phiên bản mới hơn từ Play, các máy tính đã ghép đôi và các thiết lập sẽ được giữ lại. Nếu đã cài bản dựng 62 từ GitHub, bạn cần gỡ bản đó trước khi cài bản 63. Các thiết lập cục bộ sẽ bị xóa và bạn phải ghép đôi lại với máy tính.
 

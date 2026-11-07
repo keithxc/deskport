@@ -43,7 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="ライセンス" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -116,7 +116,7 @@ DeskPort を「アプリケーション」にドラッグして起動します�
 ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run github:keithxc/deskport/v0.7.3`。
 Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)が含まれます。
 
-**Android 2.7 (63)** · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
+**Android 2.7 (63)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
 
 ビルド 63 は Google Play 版と同じ署名鍵を使用しています。今後、より新しい Play 版に上書き更新すると、パソコンとのペアリングと設定が引き継がれます。GitHub のビルド 62 をお使いの場合は、63 のインストール前に旧版をアンインストールしてください。ローカル設定が消去されるため、再度ペアリングが必要です。
 
