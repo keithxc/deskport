@@ -105,7 +105,7 @@ records exact package identities and validation limits in its verification repor
 | Linux x86_64 | Viewer + host; adaptive workspace on capable KWin, Mutter and Hyprland hosts | **0.7.8**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [installation guide](docs/LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer only | **0.7.8**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client only | **2.7** · Google Play closed testing pending completion | APK pending |
+| Android 8.0+ | Client only | **2.7** · Google Play closed testing pending completion | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-62.apk) |
 | Windows x64 | Viewer + host + virtual display | **0.7.8**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
@@ -141,8 +141,10 @@ With Nix: `nix run --refresh github:keithxc/deskport/v0.7.8`.
 Flatpak provides viewing only. The release includes [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt), a [verification report](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION.txt), and [Linux package verification](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt).
 
 **DeskPort for Android** has yet to complete the closed testing required for a Google Play production listing.
-Until it is listed, we plan to offer signed early-access APKs through [GitHub Releases](https://github.com/keithxc/deskport/releases).
-The iOS and Android client repositories are private. This repository hosts the desktop source code.
+Until the Google Play listing is available, signed early-access Android installation packages are available through [GitHub Releases](https://github.com/keithxc/deskport/releases).
+The mobile clients are closed source. This temporary Android distribution provides the installer only. The desktop source is available in this repository.
+
+The GitHub APK and Google Play use different signing keys. To switch channels later, uninstall DeskPort, install it again from the new channel, and pair your computers again. Uninstalling clears local bindings and settings.
 
 **iPhone / iPad:** Install [DeskPort from the App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 The mobile app is a paid, one-time purchase; see your storefront for current local
