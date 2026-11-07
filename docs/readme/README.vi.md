@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -66,7 +67,7 @@
   kèm thiết bị; thẻ, ghim, chủ đề và giao diện bản địa hóa.
 - **Chia sẻ bảng tạm khi cần.** Văn bản cập nhật ngay; hình ảnh và tệp được hỗ trợ được lấy theo yêu cầu giữa
   các máy tính đã liên kết và đồng ý tham gia. Xem [phạm vi và giới hạn bảng tạm](../CLIPBOARD.md).
-- **Điều khiển di động gốc.** iPhone/iPad và ứng dụng Android đang phát triển hỗ trợ cảm ứng/bàn di chuột,
+- **Điều khiển di động gốc.** iPhone/iPad và ứng dụng Android hỗ trợ cảm ứng/bàn di chuột,
   điều khiển bàn phím và vào thẳng máy tính từ xa.
 - **Tùy chọn khởi động khi đăng nhập và khôi phục trên macOS.** Cần phiên đăng nhập đồ họa đang hoạt động và sự
   chấp thuận của hệ thống; không mở khóa FileVault hay đăng nhập thay bạn.
@@ -93,7 +94,7 @@ chính xác và giới hạn xác minh trong báo cáo xác minh.
 | Linux x86_64 | Trình xem + máy chủ; không gian làm việc thích ứng trên máy chủ KWin, Mutter và Hyprland đủ điều kiện | **0.7.3 ổn định**: DEB, RPM, Arch, AppImage, gói di động và Nix | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [hướng dẫn cài đặt](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Chỉ trình xem | **0.7.3 ổn định**, Freedesktop Platform 25.08 | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Chỉ thiết bị khách | App Store; bản mới hơn được thử riêng trên TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Chỉ thiết bị khách | Đang phát triển; kiểm tra trên thiết bị thật, chưa phát hành công khai trên cửa hàng | Chưa có |
+| Android 8.0+ | Chỉ thiết bị khách | **2.7 (63)** · Đang thử nghiệm kín trên Google Play | [Tải APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Trình xem + máy chủ + màn hình ảo | **0.7.3 ổn định**; bộ cài đầy đủ làm máy chủ, ZIP di động chỉ để xem; ứng dụng và bộ cài chưa được ký | [Bộ cài](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Chưa đủ điều kiện | Chưa có gói phát hành được xác minh | — |
 
@@ -119,6 +120,10 @@ cho hệ thống của bạn và làm theo [các bước theo bản phân phối
 bao gồm [yêu cầu về đầu vào của máy chủ](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Với Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak chỉ hỗ trợ xem. Bản phát hành kèm [mã kiểm tra SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) và [báo cáo xác minh](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
+
+Bản dựng 63 dùng cùng khóa ký ứng dụng với Google Play. Khi cập nhật lên phiên bản mới hơn từ Play, các máy tính đã ghép đôi và các thiết lập sẽ được giữ lại. Nếu đã cài bản dựng 62 từ GitHub, bạn cần gỡ bản đó trước khi cài bản 63. Các thiết lập cục bộ sẽ bị xóa và bạn phải ghép đôi lại với máy tính.
 
 **iPhone / iPad:** cài [DeskPort từ App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Ứng dụng di động là giao dịch mua trả phí một lần; xem giá địa phương hiện tại trên cửa hàng của bạn. Bản máy tính
@@ -396,7 +401,7 @@ không phải phép đo độ trễ hay chất lượng hình ảnh. Tính năng
 | Quy trình chính | Không gian máy tính từ xa liên tục, kích thước thích ứng và chuyển giao giữa thiết bị | Truyền phát game/màn hình qua ứng dụng khách và máy chủ riêng | Điều khiển và hỗ trợ từ xa nói chung | Máy tính từ xa tương tác và cộng tác |
 | Nền tảng máy chủ | macOS Apple Silicon, Linux x86_64 và Windows x64 | Windows, macOS, Linux và FreeBSD, tùy giới hạn nền tảng | Windows, macOS và Linux | Windows và macOS; Linux không làm máy chủ được |
 | Ứng dụng khách máy tính | macOS Apple Silicon, Linux x86_64 và Windows x64 | Windows, macOS, Linux và các nền tảng khác | Windows, macOS và Linux | Windows, macOS, Linux và trình duyệt Chromium được hỗ trợ |
-| Ứng dụng khách di động | iPhone/iPad đã phát hành; Android đang phát triển | iOS/iPadOS và Android | iOS/iPadOS và Android; iOS không làm máy chủ được | Android; không có ứng dụng iOS/iPadOS |
+| Ứng dụng khách di động | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS và Android | iOS/iPadOS và Android; iOS không làm máy chủ được | Android; không có ứng dụng iOS/iPadOS |
 | Mô hình thiết lập | Máy chủ tích hợp trong gói gốc; phê duyệt thiết bị trong DeskPort | Cài và cấu hình Sunshine riêng, rồi ghép nối Moonlight | Hạ tầng máy chủ công cộng hoặc máy chủ tự lưu trữ | Tài khoản và ứng dụng Parsec |
 | Mô hình mạng/dịch vụ | Tự lo khả năng kết nối LAN/VPN; không có máy chủ chuyển tiếp DeskPort | Truyền phát tự lưu trữ; tự cấu hình khả năng kết nối | Hạ tầng công cộng hoặc máy chủ OSS/Pro tự lưu trữ | Hạ tầng tài khoản/dịch vụ Parsec |
 | Mã nguồn và phân phối | Bản máy tính GPL, gói miễn phí; ứng dụng Apple trả phí phân phối riêng | Ứng dụng khách và máy chủ mã nguồn mở | Ứng dụng khách mã nguồn mở và máy chủ OSS; tùy chọn máy chủ Pro thương mại | Ứng dụng/dịch vụ độc quyền |

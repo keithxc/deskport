@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -67,7 +68,7 @@
   مع البطاقات والتثبيت والسمات والواجهات المترجمة.
 - **مشاركة الحافظة عند الطلب.** يُحدَّث النص فورًا؛ وتُجلب الصور والملفات المدعومة عند الطلب بين
   أجهزة سطح المكتب المرتبطة التي وافقت على ذلك. راجع [نطاق الحافظة وحدودها](../CLIPBOARD.md).
-- **تحكم أصلي على الأجهزة المحمولة.** يوفر iPhone/iPad وعميل Android قيد التطوير إدخال اللمس ولوحة
+- **تحكم أصلي على الأجهزة المحمولة.** يوفر iPhone/iPad وعميل Android إدخال اللمس ولوحة
   التتبع، وأدوات لوحة المفاتيح، والدخول المباشر إلى سطح المكتب البعيد.
 - **تشغيل اختياري عند تسجيل الدخول واسترداد على macOS.** يتطلبان تسجيل دخول رسوميًا نشطًا وموافقة
   النظام؛ ولا يفتحان FileVault ولا يسجلان الدخول نيابةً عنك.
@@ -94,7 +95,7 @@
 | Linux x86_64 | عارض + مضيف؛ مساحة عمل تكيّفية على مضيفات KWin وMutter وHyprland المؤهلة | **0.7.3 مستقر**: DEB وRPM وArch وAppImage وأرشيف محمول وNix | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [دليل التثبيت](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | عارض فقط | **0.7.3 مستقر**، Freedesktop Platform 25.08 | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad، iOS/iPadOS 15+ | عميل فقط | App Store؛ تُختبر الإصدارات الأحدث بشكل منفصل في TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | عميل فقط | قيد التطوير؛ فحوص على أجهزة فعلية، ولا يوجد إصدار عام في المتجر بعد | غير متاح بعد |
+| Android 8.0+ | عميل فقط | **2.7 (63)** · لم يكتمل الاختبار المغلق في Google Play | [تنزيل APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | عارض + مضيف + شاشة افتراضية | **0.7.3 مستقر**؛ المثبّت الكامل يدعم الاستضافة، وZIP المحمول للعرض فقط؛ التطبيق والمثبّت غير موقّعين | [المثبّت](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | غير مؤهل | لا توجد حزمة إصدار متحقق منها | — |
 
@@ -120,6 +121,10 @@
 بما في ذلك [متطلبات إدخال المضيف](../LINUX_PACKAGES.md#first-connection-and-hosting).
 باستخدام Nix: `nix run github:keithxc/deskport/v0.7.3`.
 يوفر Flatpak العرض فقط. يتضمن الإصدار [مجاميع SHA-256 الاختبارية](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) و[تقرير تحقق](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
+
+يستخدم الإصدار 63 مفتاح توقيع Google Play نفسه، لذا يحتفظ التحديث إلى إصدار أحدث من المتجر بأجهزة الكمبيوتر المقترنة والإعدادات. إذا ثبّتَّ الإصدار 62 من GitHub، فيجب إلغاء تثبيته قبل تثبيت 63. يؤدي ذلك إلى مسح الإعدادات المحلية ويتطلب إقران أجهزة الكمبيوتر مجددًا.
 
 **iPhone / iPad:** ثبّت [DeskPort من App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 التطبيق المحمول شراء مدفوع لمرة واحدة؛ راجع متجرك لمعرفة السعر المحلي الحالي. تبقى إصدارات سطح المكتب
@@ -403,7 +408,7 @@ flake المشروع `pkgs.deskport` متاحًا في Nixpkgs. إدخال ال�
 | أسلوب العمل الرئيسي | مساحة سطح مكتب بعيد دائمة وحجم تكيّفي وتسليم بين الأجهزة | بث الألعاب/سطح المكتب عبر تطبيقي عميل ومضيف منفصلين | تحكم ودعم عن بُعد عام | سطح مكتب بعيد تفاعلي وتعاون |
 | منصات المضيف | macOS Apple Silicon وLinux x86_64 وWindows x64 | Windows وmacOS وLinux وFreeBSD، وفق حدود كل منصة | Windows وmacOS وLinux | Windows وmacOS؛ لا يمكن لـ Linux الاستضافة |
 | عملاء سطح المكتب | macOS Apple Silicon وLinux x86_64 وWindows x64 | Windows وmacOS وLinux وغيرها | Windows وmacOS وLinux | Windows وmacOS وLinux ومتصفحات Chromium المدعومة |
-| عملاء الأجهزة المحمولة | iPhone/iPad صادر؛ Android قيد التطوير | iOS/iPadOS وAndroid | iOS/iPadOS وAndroid؛ لا يمكن لـ iOS الاستضافة | Android؛ لا يوجد عميل iOS/iPadOS |
+| عملاء الأجهزة المحمولة | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS وAndroid | iOS/iPadOS وAndroid؛ لا يمكن لـ iOS الاستضافة | Android؛ لا يوجد عميل iOS/iPadOS |
 | نموذج الإعداد | مضيف مدمج في حزم سطح المكتب الأصلية؛ الموافقة على الأجهزة في DeskPort | تثبيت Sunshine وتهيئته منفصلًا ثم اقتران Moonlight | بنية خوادم عامة أو خادم مستضاف ذاتيًا | حساب وتطبيق Parsec |
 | نموذج الشبكة/الخدمة | وصول عبر شبكتك المحلية/VPN؛ لا يوجد خادم ترحيل لـ DeskPort | بث مستضاف ذاتيًا؛ هيّئ الوصول الشبكي | بنية عامة أو خادم OSS/Pro مستضاف ذاتيًا | بنية حسابات/خدمات Parsec |
 | المصدر والتوزيع | سطح مكتب بترخيص GPL وحزم مجانية؛ تطبيق Apple مدفوع يوزَّع منفصلًا | عملاء ومضيف مفتوحو المصدر | عميل مفتوح المصدر وخادم OSS؛ خيار خادم Pro تجاري | تطبيق/خدمة مملوكة |

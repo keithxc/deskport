@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -66,7 +67,7 @@
   ཤོག་བྱང་། བཏགས་པ། བརྗོད་གཞི་དང་སྐད་ཡིག་ས་གནས་ཅན་གྱི་ངོས་ལྡེབ།
 - **དགོས་མཁོ་ལྟར་སྦྱར་སྡེར (clipboard) མཉམ་སྤྱོད།** ཡི་གེ་འཕྲལ་དུ་གསར་སྒྱུར། རྒྱབ་སྐྱོར་ཡོད་པའི་པར་རིས་དང་ཡིག་ཆ་
   མོས་མཐུན་བྱས་པའི་སྦྲེལ་ཡོད་ཅོག་ངོས་བར་དུ་རེ་ཞུ་བྱས་སྐབས་ལེན། [སྦྱར་སྡེར་གྱི་ཁྱབ་ཁོངས་དང་ཚད་བཀག](../CLIPBOARD.md) ལ་ལྟོས།
-- **ཁ་པར་གྱི་རང་བཞིན་ཚོད་འཛིན།** iPhone/iPad དང་གསར་སྤེལ་ཁྲོད་ཀྱི་ Android client ཡིས་རེག་ཐིག/trackpad ནང་འཇུག
+- **ཁ་པར་གྱི་རང་བཞིན་ཚོད་འཛིན།** iPhone/iPad དང་Android client ཡིས་རེག་ཐིག/trackpad ནང་འཇུག
   མཐེབ་གཞོང་ཚོད་འཛིན། རྒྱང་རིང་ཅོག་ངོས་སུ་ཐད་ཀར་འཛུལ་བ་བཅས་མཁོ་སྤྲོད།
 - **ནང་འཛུལ་སྐབས་འགོ་སློང་དང་ macOS སླར་གསོ། (འདེམས་རུང་)** བྱེད་བཞིན་པའི་རི་མོའི་ནང་འཛུལ་དང་མ་ལག་གི་ཆོག་མཆན་དགོས།
   FileVault ཁ་འབྱེད་པ་དང་ཁྱེད་ཀྱི་ཚབ་ཏུ་ནང་འཛུལ་མི་བྱེད།
@@ -93,7 +94,7 @@
 | Linux x86_64 | Viewer + host; ནུས་ལྡན་ KWin, Mutter དང་ Hyprland host ཐོག་རང་འགྱུར་ལས་ཀའི་ས་ཁུལ | **0.7.3 བརྟན་པོ**: DEB, RPM, Arch, AppImage, འཁྱེར་བདེའི་ཡིག་སྣོད་དང་ Nix | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [སྒྲིག་འཇུག་ལམ་སྟོན](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer ཙམ | **0.7.3 བརྟན་པོ**, Freedesktop Platform 25.08 | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client ཙམ | App Store; པར་གཞི་གསར་པ་ TestFlight ནང་ལོགས་སུ་ཚོད་ལྟ | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client ཙམ | གསར་སྤེལ་ཁྲོད; དངོས་ཡོད་སྒྲིག་ཆས་ཐོག་ཞིབ་བཤེར། ཚོང་ཁང་དུ་སྤྱི་སྤྱོད་འགྲེམས་སྤེལ་ད་དུང་མེད | ད་དུང་མེད |
+| Android 8.0+ | Client ཙམ | **2.7 (63)** · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་བསྒྲིལ་མེད། | [APK ཕབ་ལེན།](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Viewer + host + རྟོག་བཟོའི་བརྙན་ཡོལ | **0.7.3 བརྟན་པོ**; སྒྲིག་འཇུག་ཆས་ཆ་ཚང་གིས་ host བྱེད། འཁྱེར་བདེའི་ ZIP ལྟ་བ་ཙམ། ཉེར་སྤྱོད་དང་སྒྲིག་འཇུག་ཆས་ལ་མིང་རྟགས་མེད | [སྒྲིག་འཇུག་ཆས](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | ཚད་མ་ལོན | ཞིབ་བཤེར་བྱས་པའི་འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ་མེད | — |
 
@@ -118,6 +119,10 @@ Nix དང་ Homebrew མི་དགོས།
 [གཤམ་གྱི་ཁྱབ་སྤེལ་སོ་སོའི་གོ་རིམ](#ཁྱབསྤེལསོསོའི-linux-སྒྲིགའཇུག) ལྟར་བྱེད། [host ནང་འཇུག་གི་དགོས་མཁོ](../LINUX_PACKAGES.md#first-connection-and-hosting) ཡང་ཚུད།
 Nix བརྒྱུད་: `nix run github:keithxc/deskport/v0.7.3`
 Flatpak ལྟ་བ་ཙམ། འགྲེམས་སྤེལ་ནང་ [SHA-256 checksum](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) དང་ [ཞིབ་བཤེར་སྙན་ཞུ](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt) ཚུད་ཡོད།
+
+**Android 2.7 (63)** · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་མ་བསྒྲིལ་བར་ GitHub ནས་ [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) གནས་སྐབས་སུ་ཕབ་ལེན་བྱེད་ཐུབ། ཁ་པར་གྱི་ client ལ་ཁུངས་ཀྱི་ཨང་རྟགས་ཡོངས་གྲགས་མི་བྱེད། འདིར་སྒྲིག་འཇུག་ཡིག་ཆ་ཁོ་ན་སྤེལ་ཡོད།
+
+Build 63 དང་ Google Play གཉིས་ཀྱི་མཚན་རྟགས་ལྡེ་མིག་གཅིག་ཡིན། རྗེས་སུ་ Play ཡི་པར་གཞི་གསར་པར་རིམ་སྤོར་བྱེད་སྐབས་ཆ་སྒྲིག་བྱས་པའི་གློག་ཀླད་དང་སྒྲིག་འགོད་སོར་གནས་བྱེད། GitHub གྱི་ build 62 ནས་ 63 ལ་བརྗེ་སྐབས་སྔོན་ལ་ 62 བསུབ་དགོས། དེས་རང་སའི་སྒྲིག་འགོད་སུབ་པས་གློག་ཀླད་སླར་ཆ་སྒྲིག་བྱེད་དགོས།
 
 **iPhone / iPad:** [App Store ནས་ DeskPort](https://apps.apple.com/us/app/deskport/id6812389978) སྒྲིག་འཇུག་བྱེད།
 ཁ་པར་ཉེར་སྤྱོད་ནི་ཐེངས་གཅིག་གི་རིན་ཅན་ཉོ་སྒྲུབ་ཡིན། ས་གནས་རིན་གོང་ཁྱེད་ཀྱི་ཚོང་ཁང་ནང་ལྟོས། ཅོག་ངོས་འགྲེམས་སྤེལ་རིན་མེད་དང་ཁུངས་ཡིག་སྒོ་ཕྱེ་བ་ཡིན།
@@ -377,7 +382,7 @@ Nixpkgs ནང་ `pkgs.deskport` སྤྱོད་རུང་དུ་མི�
 | ལས་ཀའི་རྒྱུན་གཙོ་བོ | རྟག་བརྟན་རྒྱང་རིང་ཅོག་ངོས་ལས་ཀའི་ས་ཁུལ། ཆེ་ཆུང་རང་འགྱུར་དང་སྒྲིག་ཆས་བར་སྤྲོད་ལེན | client དང་ host ཉེར་སྤྱོད་ལོགས་སུ་བརྒྱུད་རྩེད་མོ/ཅོག་ངོས་རྒྱུན་བསྐུར | སྤྱིར་བཏང་རྒྱང་རིང་ཚོད་འཛིན་དང་རོགས་རམ | ཕན་ཚུན་འབྲེལ་བའི་རྒྱང་རིང་ཅོག་ངོས་དང་མཉམ་ལས |
 | ཅོག་ངོས་ host སྟེགས་བུ | macOS Apple Silicon, Linux x86_64 དང་ Windows x64 | Windows, macOS, Linux དང་ FreeBSD (སྟེགས་བུའི་ཚད་བཀག་ལྟར) | Windows, macOS དང་ Linux | Windows དང་ macOS; Linux host བྱེད་མི་ཐུབ |
 | ཅོག་ངོས་ client | macOS Apple Silicon, Linux x86_64 དང་ Windows x64 | Windows, macOS, Linux སོགས | Windows, macOS དང་ Linux | Windows, macOS, Linux དང་རྒྱབ་སྐྱོར་ཡོད་པའི་ Chromium བརྡ་འཚོལ་ཆས |
-| ཁ་པར་ client | iPhone/iPad འགྲེམས་སྤེལ་བྱས; Android གསར་སྤེལ་ཁྲོད | iOS/iPadOS དང་ Android | iOS/iPadOS དང་ Android; iOS host བྱེད་མི་ཐུབ | Android; iOS/iPadOS client མེད |
+| ཁ་པར་ client | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS དང་ Android | iOS/iPadOS དང་ Android; iOS host བྱེད་མི་ཐུབ | Android; iOS/iPadOS client མེད |
 | སྒྲིག་འགོད་རྣམ་པ | རང་བཞིན་ཅོག་ངོས་ཐུམ་སྒྲིལ་ནང་ host ཚུད; DeskPort ནང་སྒྲིག་ཆས་ཆོག་མཆན | Sunshine ལོགས་སུ་སྒྲིག་འཇུག་དང་སྒྲིག་འགོད་བྱས་རྗེས་ Moonlight ཆ་སྒྲིག | སྤྱི་སྤྱོད་ཞབས་ཞུ་འཕྲུལ་ཆས་ཡང་ན་རང་བཀོད་ཞབས་ཞུ་འཕྲུལ་ཆས | Parsec རྩིས་ཐོ་དང་ཉེར་སྤྱོད |
 | དྲ་རྒྱ/ཞབས་ཞུའི་རྣམ་པ | རང་གི་ LAN/VPN འབྱོར་ཐུབ; DeskPort relay མེད | རང་བཀོད་རྒྱུན་བསྐུར; དྲ་རྒྱའི་འབྱོར་ཐུབ་སྒྲིག་འགོད | སྤྱི་སྤྱོད་གཞི་རྟེན་ཡང་ན་རང་བཀོད་ OSS/Pro ཞབས་ཞུ་འཕྲུལ་ཆས | Parsec རྩིས་ཐོ/ཞབས་ཞུའི་གཞི་རྟེན |
 | ཁུངས་ཡིག་དང་ཁྱབ་སྤེལ | GPL ཅོག་ངོས། རིན་མེད་ཐུམ་སྒྲིལ; རིན་ཅན་ Apple ཉེར་སྤྱོད་ལོགས་སུ་ཁྱབ་སྤེལ | ཁུངས་ཡིག་སྒོ་ཕྱེ་བའི་ client དང་ host | ཁུངས་ཡིག་སྒོ་ཕྱེ་བའི་ client དང་ OSS ཞབས་ཞུ་འཕྲུལ་ཆས; ཚོང་ལས་ Pro གདམ་ག | སྒེར་དབང་ཉེར་སྤྱོད/ཞབས་ཞུ |

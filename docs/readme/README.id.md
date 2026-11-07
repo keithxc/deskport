@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Bagikan papan klip desktop sesuai permintaan.** Teks diperbarui seketika; gambar dan file yang didukung
   diambil saat diminta di antara rekan desktop terikat yang ikut serta.
   Lihat [cakupan dan batasan papan klip](../CLIPBOARD.md).
-- **Kontrol seluler native.** iPhone/iPad dan klien Android dalam pengembangan menyediakan input
+- **Kontrol seluler native.** iPhone/iPad dan klien Android menyediakan input
   sentuh/trackpad, kontrol keyboard, dan masuk langsung ke desktop jarak jauh.
 - **Mulai saat login dan pemulihan macOS opsional.** Memerlukan login grafis aktif dan persetujuan sistem;
   fitur ini tidak membuka FileVault atau login atas nama Anda.
@@ -95,7 +96,7 @@ identitas paket yang tepat dan batas validasi dalam laporan verifikasinya.
 | Linux x86_64 | Penampil + host; ruang kerja adaptif pada host KWin, Mutter, dan Hyprland yang mendukung | **0.7.3 stabil**: DEB, RPM, Arch, AppImage, arsip portabel, dan Nix | [Rilis](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [panduan instalasi](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Hanya penampil | **0.7.3 stabil**, Freedesktop Platform 25.08 | [Rilis](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Hanya klien | App Store; build lebih baru diuji terpisah di TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Hanya klien | Dalam pengembangan; pemeriksaan perangkat fisik, belum ada rilis publik di toko | Belum tersedia |
+| Android 8.0+ | Hanya klien | **2.7 (63)** · Pengujian tertutup Google Play masih berlangsung | [Unduh APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Penampil + host + layar virtual | **0.7.3 stabil**; installer lengkap bisa menjadi host, ZIP portabel hanya melihat; aplikasi dan installer belum ditandatangani | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Belum memenuhi syarat | Tidak ada paket rilis terverifikasi | — |
 
@@ -122,6 +123,10 @@ untuk sistem Anda dan ikuti [langkah per distribusi di bawah](#instalasi-linux-p
 termasuk [persyaratan input host](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Dengan Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak hanya untuk melihat. Rilis menyertakan [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) dan [laporan verifikasi](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Selama pengujian tertutup Google Play berlangsung, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tersedia sementara di GitHub. Kode sumber klien seluler bersifat tertutup. Di sini hanya tersedia berkas instalasi.
+
+Build 63 menggunakan kunci penandatanganan yang sama dengan Google Play. Pembaruan ke versi Play yang lebih baru akan mempertahankan pasangan komputer dan pengaturan. Jika Anda memasang build 62 dari GitHub, hapus instalasinya sebelum memasang build 63. Pengaturan lokal akan terhapus dan komputer perlu dipasangkan kembali.
 
 **iPhone / iPad:** pasang [DeskPort dari App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Aplikasi seluler adalah pembelian berbayar sekali; lihat toko Anda untuk harga lokal terkini. Rilis desktop
@@ -412,7 +417,7 @@ Ini adalah perbandingan alur kerja dan platform, diperiksa terhadap dokumentasi 
 | Alur kerja utama | Ruang kerja desktop jarak jauh persisten, ukuran adaptif, dan serah terima antarperangkat | Streaming game/desktop melalui aplikasi klien dan host terpisah | Kendali jarak jauh dan dukungan umum | Desktop jarak jauh interaktif dan kolaborasi |
 | Platform host desktop | macOS Apple Silicon, Linux x86_64, dan Windows x64 | Windows, macOS, Linux, dan FreeBSD, dengan batasan platform | Windows, macOS, dan Linux | Windows dan macOS; Linux tidak bisa menjadi host |
 | Klien desktop | macOS Apple Silicon, Linux x86_64, dan Windows x64 | Windows, macOS, dan Linux, antara lain | Windows, macOS, dan Linux | Windows, macOS, Linux, dan browser Chromium yang didukung |
-| Klien seluler | iPhone/iPad dirilis; Android dalam pengembangan | iOS/iPadOS dan Android | iOS/iPadOS dan Android; iOS tidak bisa menjadi host | Android; tidak ada klien iOS/iPadOS |
+| Klien seluler | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS dan Android | iOS/iPadOS dan Android; iOS tidak bisa menjadi host | Android; tidak ada klien iOS/iPadOS |
 | Model penyiapan | Host bawaan dalam paket desktop native; setujui perangkat di DeskPort | Pasang dan konfigurasi Sunshine terpisah, lalu pasangkan Moonlight | Infrastruktur server publik atau server yang di-host sendiri | Akun dan aplikasi Parsec |
 | Model jaringan/layanan | Keterjangkauan LAN/VPN milik sendiri; tanpa relay DeskPort | Streaming yang di-host sendiri; konfigurasikan keterjangkauan jaringan | Infrastruktur publik atau server OSS/Pro yang di-host sendiri | Infrastruktur akun/layanan Parsec |
 | Sumber dan distribusi | Desktop GPL, paket desktop gratis; aplikasi Apple berbayar didistribusikan terpisah | Klien dan host sumber terbuka | Klien sumber terbuka dan server OSS; opsi server Pro komersial | Aplikasi/layanan proprietary |

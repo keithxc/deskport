@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Desktop-Zwischenablage bei Bedarf teilen.** Text wird sofort aktualisiert;
   unterstützte Bilder und Dateien werden auf Anforderung zwischen gebundenen Desktop-Peers mit
   aktivierter Option abgerufen. Siehe [Umfang und Grenzen der Zwischenablage](../CLIPBOARD.md).
-- **Native mobile Steuerung.** iPhone/iPad und der Android-Entwicklungsclient bieten
+- **Native mobile Steuerung.** iPhone/iPad und der Android-Client bieten
   Touch-/Trackpad-Eingabe, Tastatursteuerung und direkten Einstieg in den Remote-Desktop.
 - **Optionaler Start bei der Anmeldung und macOS-Wiederherstellung.** Diese erfordern eine aktive grafische
   Anmeldung und eine Systemfreigabe; sie entsperren weder FileVault noch melden sie Sie an.
@@ -92,7 +93,7 @@ Die folgenden Links führen zum offiziellen Release 0.7.3. Paketprüfungen und L
 | Linux x86_64 | Viewer + Host; adaptiver virtueller Arbeitsbereich auf geeigneten KWin-, Mutter- und Hyprland-Hosts | **0.7.3 stabil**: DEB, RPM, Arch, AppImage, portables Archiv und Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [Installationsanleitung](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Nur Viewer | **0.7.3 stabil**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Nur Client | App Store; neuere Builds werden separat in TestFlight getestet | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Nur Client | In Entwicklung; Prüfungen auf physischen Geräten, noch keine öffentliche Store-Veröffentlichung | Noch nicht verfügbar |
+| Android 8.0+ | Nur Client | **2.7 (63)** · Geschlossener Test bei Google Play läuft | [APK herunterladen](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Viewer + Host + virtuelle Anzeige | **0.7.3 stabil**; Installer mit Host; portables ZIP nur als Viewer; Paket- und CLI-Prüfungen ohne Installation bestanden; Anwendung und Installer unsigniert | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Nicht qualifiziert | Kein verifiziertes Release-Paket | — |
 
@@ -119,6 +120,10 @@ Bedienungshilfen, um Host-Funktionen zu nutzen. Nix und Homebrew werden nicht be
 für Ihr System und folgen Sie der [Installationsanleitung](../LINUX_PACKAGES.md),
 einschließlich der Berechtigungen für Host-Eingaben. Mit Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak bietet nur das Ansehen. Die Release-Assets enthalten [SHA-256-Prüfsummen](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) und einen [Prüfbericht](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Bis zum Abschluss des geschlossenen Tests bei Google Play ist die [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) vorübergehend auf GitHub verfügbar. Der Quellcode der mobilen Clients ist nicht öffentlich. Hier wird nur das Installationspaket angeboten.
+
+Build 63 verwendet denselben Signaturschlüssel wie Google Play. Beim Update auf eine neuere Play-Version bleiben gekoppelte Computer und Einstellungen erhalten. Wer GitHub-Build 62 installiert hat, muss ihn vor der Installation von Build 63 deinstallieren. Dabei gehen lokale Einstellungen verloren und die Computer müssen erneut gekoppelt werden.
 
 **iPhone / iPad:** Installieren Sie [DeskPort aus dem App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Die mobile App ist ein kostenpflichtiger Einmalkauf; den aktuellen lokalen Preis finden Sie in Ihrem Store.
@@ -169,7 +174,7 @@ und Plattformgrenzen können sich ändern.
 | Hauptarbeitsablauf | Dauerhafter Remote-Desktop-Arbeitsbereich, adaptive Größenanpassung und Geräteübergabe | Spiele-/Desktop-Streaming über separate Client- und Host-Apps | Allgemeine Fernsteuerung und Support | Interaktiver Remote-Desktop und Zusammenarbeit |
 | Desktop-Host-Plattformen | macOS Apple Silicon, Linux x86_64 und Windows x64 | Windows, macOS, Linux und FreeBSD, je nach Plattformgrenzen | Windows, macOS und Linux | Windows und macOS; Linux kann nicht hosten |
 | Desktop-Clients | macOS Apple Silicon, Linux x86_64 und Windows x64 | Unter anderem Windows, macOS und Linux | Windows, macOS und Linux | Windows, macOS, Linux und unterstützte Chromium-Browser |
-| Mobile Clients | iPhone/iPad veröffentlicht; Android in Entwicklung | iOS/iPadOS und Android | iOS/iPadOS und Android; iOS kann nicht hosten | Android; kein iOS/iPadOS-Client |
+| Mobile Clients | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS und Android | iOS/iPadOS und Android; iOS kann nicht hosten | Android; kein iOS/iPadOS-Client |
 | Einrichtungsmodell | Integrierter Host in nativen Desktop-Paketen; Geräte in DeskPort genehmigen | Sunshine separat installieren und konfigurieren, dann Moonlight koppeln | Öffentliche Serverinfrastruktur oder selbst gehosteter Server | Parsec-Konto und -Anwendung |
 | Netzwerk-/Dienstmodell | Eigene LAN-/VPN-Erreichbarkeit mitbringen; kein DeskPort-Relay | Selbst gehostetes Streaming; Netzwerkerreichbarkeit konfigurieren | Öffentliche Infrastruktur oder selbst gehosteter OSS-/Pro-Server | Parsec-Konto-/Dienstinfrastruktur |
 | Quellcode und Vertrieb | GPL-Desktop, kostenlose Desktop-Pakete; kostenpflichtige Apple-App separat vertrieben | Open-Source-Clients und -Host | Open-Source-Client und OSS-Server; kommerzielle Pro-Server-Option | Proprietäre Anwendung/Dienst |

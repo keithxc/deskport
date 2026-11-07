@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Partagez le presse-papiers du bureau à la demande.** Le texte est mis à jour immédiatement ;
   les images et fichiers pris en charge sont récupérés sur demande, entre pairs de bureau liés
   ayant activé l'option. Voir [portée et limites du presse-papiers](../CLIPBOARD.md).
-- **Contrôles mobiles natifs.** iPhone/iPad et le client Android en développement offrent
+- **Contrôles mobiles natifs.** iPhone/iPad et le client Android offrent
   la saisie tactile/trackpad, des contrôles clavier et un accès direct au bureau distant.
 - **Démarrage à l'ouverture de session et récupération macOS, en option.** Ils nécessitent une session graphique
   active et l'approbation du système ; ils ne déverrouillent pas FileVault et n'ouvrent pas de session à votre place.
@@ -92,7 +93,7 @@ Les liens ci-dessous correspondent à la version officielle 0.7.3. Les vérifica
 | Linux x86_64 | Visualiseur + hôte ; espace de travail virtuel adaptatif sur les hôtes KWin, Mutter et Hyprland compatibles | **0.7.3 stable** : DEB, RPM, Arch, AppImage, archive portable et Nix | [Version](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [guide d'installation](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Visualiseur uniquement | **0.7.3 stable**, Freedesktop Platform 25.08 | [Version](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client uniquement | App Store ; les builds plus récents sont testés séparément dans TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client uniquement | En développement ; vérifications sur appareils physiques, pas encore de publication en boutique | Pas encore disponible |
+| Android 8.0+ | Client uniquement | **2.7 (63)** · Test fermé Google Play en cours | [Télécharger l’APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Visualiseur + hôte + écran virtuel | **0.7.3 stable** ; installateur avec hôte ; ZIP portable réservé à la visualisation ; paquet et CLI vérifiés sans installation ; application et installateur non signés | [Installateur](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Mac Intel | Non qualifié | Aucun paquet de version vérifié | — |
 
@@ -119,6 +120,10 @@ Accessibilité pour utiliser les fonctions d'hôte. Nix et Homebrew ne sont pas 
 adapté à votre système et suivez le [guide d'installation](../LINUX_PACKAGES.md),
 y compris les autorisations d'entrée de l'hôte. Avec Nix : `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak permet uniquement l'affichage. Les fichiers de la version incluent des [sommes de contrôle SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) et un [rapport de vérification](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · En attendant la fin du test fermé sur Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) est disponible temporairement sur GitHub. Le code source des clients mobiles est privé. Seul le fichier d’installation est distribué ici.
+
+La version 63 utilise la même clé de signature que Google Play. Une mise à jour vers une version ultérieure de Play conserve les ordinateurs associés et les réglages. Si vous avez installé la version 62 de GitHub, vous devez la désinstaller avant d’installer la 63. Les réglages locaux seront effacés et il faudra associer de nouveau vos ordinateurs.
 
 **iPhone / iPad :** Installez [DeskPort depuis l'App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 L'application mobile est un achat unique payant ; consultez votre boutique pour le prix local actuel.
@@ -169,7 +174,7 @@ des produits et les limites des plateformes peuvent changer.
 | Flux de travail principal | Espace de travail de bureau distant persistant, dimensionnement adaptatif et passage d'un appareil à l'autre | Streaming de jeux/bureau via des applications client et hôte séparées | Contrôle à distance général et assistance | Bureau à distance interactif et collaboration |
 | Plateformes hôtes de bureau | macOS Apple Silicon, Linux x86_64 et Windows x64 | Windows, macOS, Linux et FreeBSD, selon les limites des plateformes | Windows, macOS et Linux | Windows et macOS ; Linux ne peut pas héberger |
 | Clients de bureau | macOS Apple Silicon, Linux x86_64 et Windows x64 | Windows, macOS et Linux, entre autres | Windows, macOS et Linux | Windows, macOS, Linux et navigateurs Chromium pris en charge |
-| Clients mobiles | iPhone/iPad publié ; Android en développement | iOS/iPadOS et Android | iOS/iPadOS et Android ; iOS ne peut pas héberger | Android ; pas de client iOS/iPadOS |
+| Clients mobiles | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS et Android | iOS/iPadOS et Android ; iOS ne peut pas héberger | Android ; pas de client iOS/iPadOS |
 | Modèle de configuration | Hôte intégré aux paquets de bureau natifs ; approbation des appareils dans DeskPort | Installer et configurer Sunshine séparément, puis appairer Moonlight | Infrastructure de serveurs publique ou serveur auto-hébergé | Compte et application Parsec |
 | Modèle réseau/service | Accessibilité LAN/VPN à fournir vous-même ; pas de relais DeskPort | Streaming auto-hébergé ; configurer l'accessibilité réseau | Infrastructure publique ou serveur OSS/Pro auto-hébergé | Infrastructure de compte/service Parsec |
 | Code source et distribution | Bureau sous GPL, paquets de bureau gratuits ; application Apple payante distribuée séparément | Clients et hôte open source | Client open source et serveur OSS ; option commerciale de serveur Pro | Application/service propriétaire |

@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="ライセンス" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -65,7 +66,7 @@
 - **必要なときにデスクトップのクリップボードを共有。** テキストは即時に反映され、
   オプションを有効にしたバインド済みデスクトップ間では対応する画像やファイルをオンデマンドで取得します。
   [クリップボードの範囲と制限](../CLIPBOARD.md)を参照してください。
-- **ネイティブなモバイル操作。** iPhone/iPad と開発中の Android クライアントで、
+- **ネイティブなモバイル操作。** iPhone/iPad とAndroid クライアントで、
   タッチ／トラックパッド入力、キーボード操作、リモートデスクトップへの直接移動が可能です。
 - **オプションのログイン時起動と macOS 復元。** アクティブなグラフィカルログインとシステムの承認が必要です。
   FileVault のロック解除やログインを代わりに行うものではありません。
@@ -89,7 +90,7 @@
 | Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **0.7.3 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [インストールガイド](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | ビューアのみ | **0.7.3 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad、iOS/iPadOS 15+ | クライアントのみ | App Store で公開中。新しいビルドは TestFlight で別途テスト | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | クライアントのみ | 開発中。実機での確認中で、ストアでの一般公開はまだ | 未提供 |
+| Android 8.0+ | クライアントのみ | **2.7 (63)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **0.7.3 正式版**。インストーラーはホストを含み、ポータブル ZIP はビューア専用。未インストール状態のパッケージと CLI を検証済み。アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 未検証 | 検証済みのリリースパッケージなし | — |
 
@@ -114,6 +115,10 @@ DeskPort を「アプリケーション」にドラッグして起動します�
 **Linux：** お使いのシステムに合った [0.7.3 パッケージ](https://github.com/keithxc/deskport/releases/tag/v0.7.3)を選び、
 ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run github:keithxc/deskport/v0.7.3`。
 Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)が含まれます。
+
+**Android 2.7 (63)** · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
+
+ビルド 63 は Google Play 版と同じ署名鍵を使用しています。今後、より新しい Play 版に上書き更新すると、パソコンとのペアリングと設定が引き継がれます。GitHub のビルド 62 をお使いの場合は、63 のインストール前に旧版をアンインストールしてください。ローカル設定が消去されるため、再度ペアリングが必要です。
 
 **iPhone / iPad：** [App Store から DeskPort をインストール](https://apps.apple.com/us/app/deskport/id6812389978)してください。
 モバイルアプリは買い切りの有料アプリです。現地価格はお使いのストアでご確認ください。
@@ -162,7 +167,7 @@ Nixpkgs に `pkgs.deskport` が加わるわけでもありません。ホスト�
 | 主なワークフロー | 常駐するリモートデスクトップ・ワークスペース、アダプティブなサイズ調整、デバイス間の引き継ぎ | 別々のクライアント／ホストアプリによるゲーム・デスクトップのストリーミング | 汎用のリモート操作とサポート | インタラクティブなリモートデスクトップとコラボレーション |
 | デスクトップのホスト | macOS Apple Silicon、Linux x86_64、Windows x64 | Windows、macOS、Linux、FreeBSD（各プラットフォームの制限あり） | Windows、macOS、Linux | Windows、macOS。Linux はホスト不可 |
 | デスクトップクライアント | macOS Apple Silicon、Linux x86_64、Windows x64 | Windows、macOS、Linux など | Windows、macOS、Linux | Windows、macOS、Linux、対応 Chromium ブラウザ |
-| モバイルクライアント | iPhone/iPad 公開済み。Android は開発中 | iOS/iPadOS、Android | iOS/iPadOS、Android。iOS はホスト不可 | Android。iOS/iPadOS クライアントなし |
+| モバイルクライアント | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS、Android | iOS/iPadOS、Android。iOS はホスト不可 | Android。iOS/iPadOS クライアントなし |
 | セットアップ方式 | ネイティブのデスクトップパッケージにホストを内蔵。DeskPort でデバイスを承認 | Sunshine を別途インストール・設定し、Moonlight とペアリング | 公開サーバー基盤またはセルフホストサーバー | Parsec アカウントとアプリ |
 | ネットワーク／サービス | LAN／VPN の到達性は各自で用意。DeskPort のリレーなし | セルフホストのストリーミング。ネットワーク到達性を設定 | 公開基盤、またはセルフホストの OSS/Pro サーバー | Parsec のアカウント／サービス基盤 |
 | ソースと配布 | GPL のデスクトップ版、無料のデスクトップパッケージ。有料の Apple アプリは別途配布 | オープンソースのクライアントとホスト | オープンソースのクライアントと OSS サーバー。商用 Pro サーバーあり | プロプライエタリなアプリ／サービス |

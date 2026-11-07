@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="授權條款" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -63,7 +64,7 @@
   另有卡片、釘選、主題與多語系介面。
 - **視需要分享桌面剪貼簿。** 文字即時更新；在已綁定且啟用此選項的桌面裝置之間，
   支援的圖片與檔案會依需求取得。請參閱[剪貼簿範圍與限制](../CLIPBOARD.md)。
-- **原生行動裝置操控。** iPhone/iPad 與開發中的 Android 用戶端提供觸控/觸控板輸入、
+- **原生行動裝置操控。** iPhone/iPad 與Android 用戶端提供觸控/觸控板輸入、
   鍵盤操控，並可直接進入遠端桌面。
 - **可選的登入時啟動與 macOS 復原。** 需要有效的圖形登入工作階段並取得系統授權；
   它們不會解鎖 FileVault，也不會替你登入。
@@ -86,7 +87,7 @@
 | Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **0.7.3 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [安裝指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 僅檢視端 | **0.7.3 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad，iOS/iPadOS 15+ | 僅用戶端 | 已在 App Store 上架；較新的版本另於 TestFlight 測試 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 僅用戶端 | **2.7** · Google Play 封閉測試待完成 | APK 待發布 |
+| Android 8.0+ | 僅用戶端 | **2.7（組建 63）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **0.7.3 正式版**；安裝程式包含主機，可攜式 ZIP 僅為檢視端；未安裝狀態的套件與 CLI 驗證通過；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 未經驗證 | 沒有經過驗證的發布套件 | — |
 
@@ -111,7 +112,9 @@ AppImage 與可攜版會在開始分享時自動註冊目前顯示輔助程式�
 並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run github:keithxc/deskport/v0.7.3`。
 Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)。
 
-**Android 版 DeskPort** 尚未完成 Google Play 正式上架所需的封閉測試。上架前，我們計劃透過 [GitHub Releases](https://github.com/keithxc/deskport/releases) 暫時提供已簽署的早期版本 APK。iOS 和 Android 用戶端的原始碼儲存庫均為私有，此儲存庫公開的是桌面端原始碼。
+**Android 2.7（組建 63）** · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
+
+組建 63 使用 Google Play 的應用程式簽章，日後可直接安裝較新的 Play 版，保留配對與設定。若已安裝 GitHub 組建 62，首次切換至 63 須先解除安裝舊版。解除安裝會清除本機設定，安裝後須重新配對電腦。
 
 **iPhone / iPad：** 從 [App Store 安裝 DeskPort](https://apps.apple.com/us/app/deskport/id6812389978)。
 行動 App 為一次性付費購買，實際價格請以你所在地區的商店為準。
@@ -157,7 +160,7 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 | 主要工作流程 | 常駐的遠端桌面工作區、自動調整大小與跨裝置接管 | 透過各自獨立的用戶端與主機 App 進行遊戲/桌面串流 | 一般遠端控制與技術支援 | 互動式遠端桌面與協作 |
 | 桌面主機平台 | macOS Apple Silicon、Linux x86_64 與 Windows x64 | Windows、macOS、Linux 與 FreeBSD，依各平台限制而定 | Windows、macOS 與 Linux | Windows 與 macOS；Linux 無法作為主機 |
 | 桌面用戶端 | macOS Apple Silicon、Linux x86_64 與 Windows x64 | Windows、macOS、Linux 等 | Windows、macOS 與 Linux | Windows、macOS、Linux 與支援的 Chromium 瀏覽器 |
-| 行動用戶端 | iPhone/iPad 已發布；Android 開發中 | iOS/iPadOS 與 Android | iOS/iPadOS 與 Android；iOS 無法作為主機 | Android；沒有 iOS/iPadOS 用戶端 |
+| 行動用戶端 | iPhone/iPad（App Store）· Android（GitHub APK） | iOS/iPadOS 與 Android | iOS/iPadOS 與 Android；iOS 無法作為主機 | Android；沒有 iOS/iPadOS 用戶端 |
 | 設定方式 | 原生桌面套件內建主機；在 DeskPort 中核准裝置 | 另外安裝並設定 Sunshine，再與 Moonlight 配對 | 公用伺服器或自架伺服器 | Parsec 帳號與 App |
 | 網路/服務模式 | 自備區域網路/VPN 連線；沒有 DeskPort 中繼 | 自架串流；需自行設定網路連通 | 公用基礎架構或自架 OSS/Pro 伺服器 | Parsec 帳號/服務基礎架構 |
 | 原始碼與發行 | GPL 桌面版，桌面套件免費；付費 Apple App 另行發行 | 開源用戶端與主機 | 開源用戶端與 OSS 伺服器；另有商業 Pro 伺服器 | 專有 App/服務 |

@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Udostępnianie schowka na żądanie.** Tekst aktualizuje się od razu; obsługiwane obrazy i pliki są
   pobierane na żądanie między powiązanymi komputerami, które wyraziły zgodę.
   Zobacz [zakres i ograniczenia schowka](../CLIPBOARD.md).
-- **Natywne sterowanie mobilne.** iPhone/iPad oraz rozwojowy klient Android oferują dotyk/gładzik,
+- **Natywne sterowanie mobilne.** iPhone/iPad oraz klient Android oferują dotyk/gładzik,
   sterowanie klawiaturą i bezpośrednie wejście do zdalnego pulpitu.
 - **Opcjonalne uruchamianie po zalogowaniu i odzyskiwanie w macOS.** Wymagają aktywnego logowania
   graficznego i zgody systemu; nie odblokowują FileVault ani nie logują za ciebie.
@@ -95,7 +96,7 @@ systemu. Wydanie 0.7.3 zapisuje dokładne tożsamości pakietów i granice walid
 | Linux x86_64 | Przeglądarka + host; adaptacyjna przestrzeń na obsługiwanych hostach KWin, Mutter i Hyprland | **0.7.3 stabilna**: DEB, RPM, Arch, AppImage, archiwum przenośne i Nix | [Wydanie](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [instrukcja instalacji](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Tylko przeglądarka | **0.7.3 stabilna**, Freedesktop Platform 25.08 | [Wydanie](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Tylko klient | App Store; nowsze kompilacje testowane osobno w TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Tylko klient | W rozwoju; testy na fizycznych urządzeniach, brak publicznego wydania w sklepie | Jeszcze niedostępny |
+| Android 8.0+ | Tylko klient | **2.7 (63)** · Trwają testy zamknięte w Google Play | [Pobierz APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Przeglądarka + host + ekran wirtualny | **0.7.3 stabilna**; pełny instalator umożliwia hostowanie, przenośny ZIP tylko oglądanie; aplikacja i instalator niepodpisane | [Instalator](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Niekwalifikowane | Brak zweryfikowanego pakietu wydania | — |
 
@@ -123,6 +124,10 @@ dla swojego systemu i wykonaj [kroki dla dystrybucji poniżej](#instalacja-w-lin
 w tym [wymagania dotyczące sterowania hostem](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Przez Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak służy tylko do oglądania. Wydanie zawiera [sumy kontrolne SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) i [raport weryfikacji](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Do zakończenia testów zamkniętych w Google Play plik [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) jest tymczasowo dostępny na GitHubie. Kod źródłowy aplikacji mobilnych jest zamknięty. Udostępniamy tu tylko instalator.
+
+Kompilacja 63 jest podpisana tym samym kluczem co aplikacja w Google Play. Aktualizacja do nowszej wersji ze sklepu zachowa sparowane komputery i ustawienia. Jeśli masz kompilację 62 z GitHuba, przed instalacją 63 musisz ją odinstalować. Spowoduje to usunięcie ustawień lokalnych i konieczność ponownego sparowania komputerów.
 
 **iPhone / iPad:** zainstaluj [DeskPort z App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Aplikacja mobilna to jednorazowy płatny zakup; aktualną cenę lokalną znajdziesz w swoim sklepie.
@@ -427,7 +432,7 @@ się zmienić.
 | Główny sposób pracy | Trwała przestrzeń zdalnego pulpitu, adaptacyjny rozmiar i przekazywanie między urządzeniami | Strumieniowanie gier/pulpitu przez osobne aplikacje klienta i hosta | Ogólne zdalne sterowanie i wsparcie | Interaktywny zdalny pulpit i współpraca |
 | Platformy hosta | macOS Apple Silicon, Linux x86_64 i Windows x64 | Windows, macOS, Linux i FreeBSD, z ograniczeniami platform | Windows, macOS i Linux | Windows i macOS; Linux nie może być hostem |
 | Klienci desktopowi | macOS Apple Silicon, Linux x86_64 i Windows x64 | Między innymi Windows, macOS i Linux | Windows, macOS i Linux | Windows, macOS, Linux i obsługiwane przeglądarki Chromium |
-| Klienci mobilni | iPhone/iPad wydany; Android w rozwoju | iOS/iPadOS i Android | iOS/iPadOS i Android; iOS nie może być hostem | Android; brak klienta iOS/iPadOS |
+| Klienci mobilni | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS i Android | iOS/iPadOS i Android; iOS nie może być hostem | Android; brak klienta iOS/iPadOS |
 | Model konfiguracji | Host wbudowany w natywne pakiety; zatwierdzanie urządzeń w DeskPort | Osobna instalacja i konfiguracja Sunshine, potem parowanie Moonlight | Publiczna infrastruktura serwerów lub własny serwer | Konto i aplikacja Parsec |
 | Model sieci/usługi | Własna osiągalność LAN/VPN; brak przekaźnika DeskPort | Własne strumieniowanie; konfiguracja osiągalności sieci | Publiczna infrastruktura lub własny serwer OSS/Pro | Infrastruktura kont/usług Parsec |
 | Kod i dystrybucja | Aplikacja desktopowa na GPL, darmowe pakiety; płatna aplikacja Apple dystrybuowana osobno | Otwartoźródłowi klienci i host | Otwartoźródłowy klient i serwer OSS; komercyjna opcja serwera Pro | Własnościowa aplikacja/usługa |

@@ -38,6 +38,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.8"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.8-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -70,7 +71,7 @@ and the limits of the live testing.
 - **Share desktop clipboard content on demand.** Text updates immediately;
   supported images and files are fetched when requested, between opted-in bound
   desktop peers. See [clipboard scope and limits](docs/CLIPBOARD.md).
-- **Native mobile controls.** iPhone/iPad and the Android development client offer
+- **Native mobile controls.** iPhone/iPad and the Android client offer
   touch/trackpad input, keyboard controls and direct entry into the remote desktop.
 - **Optional login startup and macOS recovery.** These require an active graphical
   login and system approval; they do not unlock FileVault or log in for you.
@@ -105,7 +106,7 @@ records exact package identities and validation limits in its verification repor
 | Linux x86_64 | Viewer + host; adaptive workspace on capable KWin, Mutter and Hyprland hosts | **0.7.8**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [installation guide](docs/LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer only | **0.7.8**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client only | **2.7** · Google Play closed testing pending completion | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Client only | **2.7 (63)** · Google Play closed testing in progress | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Viewer + host + virtual display | **0.7.8**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
@@ -140,13 +141,9 @@ including the [host input requirements](docs/LINUX_PACKAGES.md#first-connection-
 With Nix: `nix run --refresh github:keithxc/deskport/v0.7.8`.
 Flatpak provides viewing only. The release includes [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt), a [verification report](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION.txt), and [Linux package verification](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt).
 
-**DeskPort for Android** has yet to complete the closed testing required for a Google Play production listing.
-Until the Google Play listing is available, signed early-access Android installation packages are available through [GitHub Releases](https://github.com/keithxc/deskport/releases).
-The mobile clients are closed source. This temporary Android distribution provides the installer only. The desktop source is available in this repository.
+**Android 2.7 (63)** · Until Google Play closed testing is complete, the [signed APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) is available on GitHub. The mobile clients are closed source. GitHub temporarily provides the Android installer only.
 
-Starting with Android 2.7 (build 63), the GitHub APK uses the same app signing key as Google Play. A newer Play release can update this installation and keep your paired computers and settings.
-
-If you installed GitHub build 62, switching to build 63 requires a one-time uninstall and reinstall. This clears local settings and requires pairing your computers again.
+Build 63 uses the Google Play signing key. A newer Play release can update it in place and keep your paired computers and settings. If you installed GitHub build 62, switching to build 63 requires uninstalling DeskPort first. This clears your settings and you’ll need to pair your computers again.
 
 **iPhone / iPad:** Install [DeskPort from the App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 The mobile app is a paid, one-time purchase; see your storefront for current local
@@ -478,7 +475,7 @@ features and platform limits may change.
 | Main workflow | Persistent remote desktop workspace, adaptive sizing and device handoff | Game/desktop streaming through separate client and host apps | General remote control and support | Interactive remote desktop and collaboration |
 | Desktop host platforms | macOS Apple Silicon, Linux x86_64 and Windows x64 | Windows, macOS, Linux and FreeBSD, subject to platform limits | Windows, macOS and Linux | Windows and macOS; Linux cannot host |
 | Desktop clients | macOS Apple Silicon, Linux x86_64 and Windows x64 | Windows, macOS and Linux, among others | Windows, macOS and Linux | Windows, macOS, Linux and supported Chromium browsers |
-| Mobile clients | iPhone/iPad released; Android in development | iOS/iPadOS and Android | iOS/iPadOS and Android; iOS cannot host | Android; no iOS/iPadOS client |
+| Mobile clients | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS and Android | iOS/iPadOS and Android; iOS cannot host | Android; no iOS/iPadOS client |
 | Setup model | Bundled host in native desktop packages; approve devices in DeskPort | Install and configure Sunshine separately, then pair Moonlight | Public server infrastructure or a self-hosted server | Parsec account and application |
 | Network/service model | Bring your own LAN/VPN reachability; no DeskPort relay | Self-hosted streaming; configure network reachability | Public infrastructure or self-hosted OSS/Pro server | Parsec account/service infrastructure |
 | Source and distribution | GPL desktop, free desktop packages; paid Apple app distributed separately | Open-source clients and host | Open-source client and OSS server; commercial Pro server option | Proprietary application/service |

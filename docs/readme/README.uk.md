@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Спільний буфер обміну на вимогу.** Текст оновлюється одразу; підтримувані зображення й файли
   завантажуються на запит між пов’язаними комп’ютерами, які на це погодилися.
   Див. [обсяг і обмеження буфера обміну](../CLIPBOARD.md).
-- **Нативне мобільне керування.** iPhone/iPad і клієнт Android у розробці пропонують сенсорне введення
+- **Нативне мобільне керування.** iPhone/iPad і клієнт Android пропонують сенсорне введення
   й тачпад, керування клавіатурою та прямий вхід у віддалений робочий стіл.
 - **Необов’язковий запуск під час входу й відновлення в macOS.** Потребують активного графічного входу
   та схвалення системи; вони не розблоковують FileVault і не входять у систему замість вас.
@@ -95,7 +96,7 @@
 | Linux x86_64 | Переглядач + хост; адаптивний простір на придатних хостах KWin, Mutter і Hyprland | **0.7.3 стабільна**: DEB, RPM, Arch, AppImage, портативний архів і Nix | [Випуск](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [посібник зі встановлення](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Лише переглядач | **0.7.3 стабільна**, Freedesktop Platform 25.08 | [Випуск](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Лише клієнт | App Store; новіші збірки окремо тестуються в TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Лише клієнт | У розробці; перевірки на фізичних пристроях, публічного випуску в магазині ще немає | Поки недоступно |
+| Android 8.0+ | Лише клієнт | **2.7 (63)** · Триває закрите тестування в Google Play | [Завантажити APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Переглядач + хост + віртуальний дисплей | **0.7.3 стабільна**; повний інсталятор дає змогу хостити, портативний ZIP лише переглядає; застосунок та інсталятор не підписані | [Інсталятор](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Не кваліфіковано | Немає перевіреного пакета випуску | — |
 
@@ -123,6 +124,10 @@ AppImage і портативні збірки автоматично реєст�
 включно з [вимогами до введення на хості](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Через Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak забезпечує лише перегляд. Випуск містить [контрольні суми SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) і [звіт про перевірку](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · До завершення закритого тестування в Google Play файл [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) тимчасово доступний на GitHub. Вихідний код мобільних клієнтів закритий. Тут розповсюджується лише інсталяційний пакет.
+
+Збірка 63 використовує той самий ключ підпису, що й Google Play. Оновлення до новішої версії з магазину збереже налаштування та сполучення з комп’ютерами. Якщо у вас установлена збірка 62 із GitHub, перед встановленням збірки 63 її потрібно видалити. Локальні налаштування буде стерто, а комп’ютери доведеться сполучити повторно.
 
 **iPhone / iPad:** встановіть [DeskPort з App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Мобільний застосунок — одноразова платна покупка; актуальну місцеву ціну дивіться у своєму магазині.
@@ -426,7 +431,7 @@ LAN або VPN. Встановлення пакета не налаштовує 
 | Основний сценарій | Постійний віддалений робочий простір, адаптивний розмір і передавання між пристроями | Трансляція ігор/робочого столу через окремі застосунки клієнта й хоста | Загальне віддалене керування й підтримка | Інтерактивний віддалений робочий стіл і співпраця |
 | Платформи хоста | macOS Apple Silicon, Linux x86_64 і Windows x64 | Windows, macOS, Linux і FreeBSD з обмеженнями платформ | Windows, macOS і Linux | Windows і macOS; Linux не може бути хостом |
 | Настільні клієнти | macOS Apple Silicon, Linux x86_64 і Windows x64 | Windows, macOS, Linux та інші | Windows, macOS і Linux | Windows, macOS, Linux і підтримувані браузери Chromium |
-| Мобільні клієнти | iPhone/iPad випущено; Android у розробці | iOS/iPadOS і Android | iOS/iPadOS і Android; iOS не може бути хостом | Android; клієнта iOS/iPadOS немає |
+| Мобільні клієнти | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS і Android | iOS/iPadOS і Android; iOS не може бути хостом | Android; клієнта iOS/iPadOS немає |
 | Модель налаштування | Хост вбудовано в нативні пакети; пристрої схвалюються в DeskPort | Окремо встановити й налаштувати Sunshine, потім сполучити Moonlight | Публічна серверна інфраструктура або власний сервер | Обліковий запис і застосунок Parsec |
 | Мережа/служба | Власна доступність через LAN/VPN; без ретранслятора DeskPort | Власна трансляція; налаштуйте мережеву доступність | Публічна інфраструктура або власний сервер OSS/Pro | Інфраструктура облікових записів/служб Parsec |
 | Код і розповсюдження | Настільний застосунок під GPL, безкоштовні пакети; платний застосунок Apple розповсюджується окремо | Відкриті клієнти й хост | Відкритий клієнт і сервер OSS; комерційний сервер Pro | Пропрієтарний застосунок/служба |

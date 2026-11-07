@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Masaüstü panosunu isteğe bağlı paylaşın.** Metin hemen güncellenir; desteklenen görseller ve dosyalar,
   katılmayı seçmiş eşleşmiş masaüstü eşleri arasında istendiğinde alınır.
   Bkz. [pano kapsamı ve sınırları](../CLIPBOARD.md).
-- **Yerel mobil kontroller.** iPhone/iPad ve geliştirme aşamasındaki Android istemcisi dokunma/izleme
+- **Yerel mobil kontroller.** iPhone/iPad ve Android istemcisi dokunma/izleme
   paneli girdisi, klavye kontrolleri ve uzak masaüstüne doğrudan giriş sunar.
 - **İsteğe bağlı oturum açılışında başlatma ve macOS kurtarma.** Etkin bir grafik oturum ve sistem onayı
   gerektirir; FileVault kilidini açmaz veya sizin yerinize oturum açmaz.
@@ -95,7 +96,7 @@ kimliklerini ve doğrulama sınırlarını doğrulama raporunda kaydeder.
 | Linux x86_64 | Görüntüleyici + ana bilgisayar; uygun KWin, Mutter ve Hyprland ana bilgisayarlarında uyarlanabilir çalışma alanı | **0.7.3 kararlı**: DEB, RPM, Arch, AppImage, taşınabilir arşiv ve Nix | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [kurulum kılavuzu](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Yalnızca görüntüleyici | **0.7.3 kararlı**, Freedesktop Platform 25.08 | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Yalnızca istemci | App Store; yeni derlemeler TestFlight'ta ayrıca test edilir | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Yalnızca istemci | Geliştirme aşamasında; fiziksel cihaz kontrolleri, henüz herkese açık mağaza sürümü yok | Henüz yok |
+| Android 8.0+ | Yalnızca istemci | **2.7 (63)** · Google Play kapalı testi sürüyor | [APK indir](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Görüntüleyici + ana bilgisayar + sanal ekran | **0.7.3 kararlı**; tam yükleyici ana bilgisayar olur, taşınabilir ZIP yalnızca görüntüler; uygulama ve yükleyici imzasız | [Yükleyici](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Nitelendirilmedi | Doğrulanmış sürüm paketi yok | — |
 
@@ -122,6 +123,10 @@ seçin ve [aşağıdaki dağıtıma özel adımları](#dağıtıma-göre-linux-k
 [ana bilgisayar girdi gereksinimleri](../LINUX_PACKAGES.md#first-connection-and-hosting) de dahildir.
 Nix ile: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak yalnızca görüntüleme sağlar. Sürüm, [SHA-256 sağlama toplamlarını](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) ve bir [doğrulama raporunu](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt) içerir.
+
+**Android 2.7 (63)** · Google Play kapalı testi tamamlanana kadar [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) geçici olarak GitHub üzerinden indirilebilir. Mobil istemcilerin kaynak kodu kapalıdır. Burada yalnızca kurulum paketi dağıtılır.
+
+63 numaralı derleme Google Play ile aynı uygulama imzalama anahtarını kullanır. Play üzerinden daha yeni bir sürüme güncellediğinizde eşleştirilmiş bilgisayarlar ve ayarlarınız korunur. GitHub’dan 62 numaralı derlemeyi yüklediyseniz 63’ü yüklemeden önce uygulamayı kaldırmanız gerekir. Yerel ayarlar silinir ve bilgisayarları yeniden eşleştirmeniz gerekir.
 
 **iPhone / iPad:** [DeskPort'u App Store'dan](https://apps.apple.com/us/app/deskport/id6812389978) yükleyin.
 Mobil uygulama tek seferlik ücretli bir satın alımdır; güncel yerel fiyat için mağazanıza bakın.
@@ -422,7 +427,7 @@ ve platform sınırları değişebilir.
 | Ana iş akışı | Kalıcı uzak masaüstü çalışma alanı, uyarlanabilir boyut ve cihaz devri | Ayrı istemci ve ana bilgisayar uygulamalarıyla oyun/masaüstü akışı | Genel uzaktan kontrol ve destek | Etkileşimli uzak masaüstü ve iş birliği |
 | Masaüstü ana bilgisayar platformları | macOS Apple Silicon, Linux x86_64 ve Windows x64 | Platform sınırlarıyla Windows, macOS, Linux ve FreeBSD | Windows, macOS ve Linux | Windows ve macOS; Linux ana bilgisayar olamaz |
 | Masaüstü istemcileri | macOS Apple Silicon, Linux x86_64 ve Windows x64 | Diğerlerinin yanı sıra Windows, macOS ve Linux | Windows, macOS ve Linux | Windows, macOS, Linux ve desteklenen Chromium tarayıcıları |
-| Mobil istemciler | iPhone/iPad yayımlandı; Android geliştirmede | iOS/iPadOS ve Android | iOS/iPadOS ve Android; iOS ana bilgisayar olamaz | Android; iOS/iPadOS istemcisi yok |
+| Mobil istemciler | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS ve Android | iOS/iPadOS ve Android; iOS ana bilgisayar olamaz | Android; iOS/iPadOS istemcisi yok |
 | Kurulum modeli | Yerel masaüstü paketlerinde paketlenmiş ana bilgisayar; cihazları DeskPort'ta onaylayın | Sunshine'ı ayrı kurup yapılandırın, ardından Moonlight'ı eşleştirin | Herkese açık sunucu altyapısı veya kendi barındırdığınız sunucu | Parsec hesabı ve uygulaması |
 | Ağ/hizmet modeli | Kendi LAN/VPN erişiminiz; DeskPort aktarma sunucusu yok | Kendi barındırdığınız akış; ağ erişimini yapılandırın | Herkese açık altyapı veya kendi barındırdığınız OSS/Pro sunucu | Parsec hesap/hizmet altyapısı |
 | Kaynak ve dağıtım | GPL masaüstü, ücretsiz masaüstü paketleri; ücretli Apple uygulaması ayrı dağıtılır | Açık kaynak istemciler ve ana bilgisayar | Açık kaynak istemci ve OSS sunucu; ticari Pro sunucu seçeneği | Tescilli uygulama/hizmet |

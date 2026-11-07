@@ -38,6 +38,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.8"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-0.7.8-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="许可证" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -63,7 +64,7 @@ macOS 桌面输入改由独立主机进程处理。安装包检查及实测范�
   支持卡片、置顶、主题和多语言界面。
 - **按需共享桌面剪贴板。** 文本即时更新；在已绑定且启用该选项的桌面设备之间，
   受支持的图片与文件按需获取。见[剪贴板范围与限制](../CLIPBOARD.md)。
-- **原生移动端控制。** iPhone/iPad 与开发中的 Android 客户端提供触控/触控板输入、
+- **原生移动端控制。** iPhone/iPad 与Android 客户端提供触控/触控板输入、
   键盘控制，并可直接进入远程桌面。
 - **可选的登录启动与 macOS 恢复。** 需要处于活动的图形登录会话并获得系统授权；
   它们不会解锁 FileVault，也不会替你登录。
@@ -94,7 +95,7 @@ macOS 客户端连接到一台 Windows 11 专业版测试机，显示 Windows「
 | Linux x86_64 | 查看端 + 主机端；符合条件的 KWin、Mutter 和 Hyprland 主机支持自适应工作区 | **0.7.8**：DEB、RPM、Arch、AppImage、便携包与 Nix | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [安装指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 仅查看端 | **0.7.8**，Freedesktop Platform 25.08 | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
 | iPhone / iPad，iOS/iPadOS 15+ | 仅客户端 | 已上架 App Store；较新的版本另在 TestFlight 测试 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 仅客户端 | **2.7** · Google Play 封闭测试待完成 | APK 待发布 |
+| Android 8.0+ | 仅客户端 | **2.7（构建 63）** · Google Play 封闭测试尚未完成 | [下载 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | 查看端 + 主机端 + 虚拟显示器 | **0.7.8**；完整安装包提供主机功能，便携 ZIP 仅为查看端；应用与安装器未签名 | [安装包](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 未验证 | 没有经过验证的发布包 | — |
 
@@ -125,7 +126,9 @@ AppImage 与便携版会在开始共享时自动注册当前显示助手的路�
 使用 Nix：`nix run --refresh github:keithxc/deskport/v0.7.8`。
 Flatpak 仅提供查看功能。发布文件附有 [SHA-256 校验和](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt)、[验证报告](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION.txt)与 [Linux 安装包验证记录](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt)。
 
-**Android 版 DeskPort** 尚未完成 Google Play 正式上架所需的封闭测试。上架前，我们计划通过 [GitHub Releases](https://github.com/keithxc/deskport/releases) 临时提供已签名的早期版本 APK。iOS 和 Android 客户端的源码仓库均为私有，此仓库公开的是桌面端源码。
+**Android 2.7（构建 63）** · Google Play 正式上架所需的封闭测试尚未完成，目前可从 GitHub 临时下载 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。移动客户端不开源，这里仅提供安装包。
+
+构建 63 使用 Google Play 的应用签名，今后可直接用更高版本的 Play 版覆盖安装，保留配对和设置。如果已安装 GitHub 构建 62，首次切换到 63 需先卸载旧版。卸载会清除本地设置，安装后需重新配对电脑。
 
 **iPhone / iPad：** 从 [App Store 安装 DeskPort](https://apps.apple.com/us/app/deskport/id6812389978)。
 移动应用为一次性付费购买，当地价格以你所在地区的商店为准。
@@ -371,7 +374,7 @@ flatpak run io.github.keithxc.DeskPort
 | 主要工作流程 | 持续的远程桌面工作区、自适应尺寸与跨设备接管 | 通过独立的客户端与主机应用进行游戏/桌面串流 | 通用远程控制与支持 | 交互式远程桌面与协作 |
 | 桌面主机平台 | macOS Apple Silicon、Linux x86_64 与 Windows x64 | Windows、macOS、Linux 与 FreeBSD，受各平台限制 | Windows、macOS 与 Linux | Windows 与 macOS；Linux 不能作为主机 |
 | 桌面客户端 | macOS Apple Silicon、Linux x86_64 与 Windows x64 | Windows、macOS、Linux 等 | Windows、macOS 与 Linux | Windows、macOS、Linux 与受支持的 Chromium 浏览器 |
-| 移动客户端 | iPhone/iPad 已发布；Android 开发中 | iOS/iPadOS 与 Android | iOS/iPadOS 与 Android；iOS 不能作为主机 | Android；无 iOS/iPadOS 客户端 |
+| 移动客户端 | iPhone/iPad（App Store）· Android（GitHub APK） | iOS/iPadOS 与 Android | iOS/iPadOS 与 Android；iOS 不能作为主机 | Android；无 iOS/iPadOS 客户端 |
 | 配置方式 | 原生桌面包内置主机；在 DeskPort 中批准设备 | 单独安装并配置 Sunshine，再与 Moonlight 配对 | 公共服务器或自建服务器 | Parsec 账号与应用 |
 | 网络/服务模式 | 自备局域网/VPN 可达性；无 DeskPort 中继 | 自建串流；自行配置网络可达性 | 公共服务或自建 OSS/Pro 服务器 | Parsec 账号/服务体系 |
 | 源码与分发 | GPL 桌面版，桌面安装包免费；付费 Apple 应用单独分发 | 开源客户端与主机端 | 开源客户端与 OSS 服务器；另有商业 Pro 服务器 | 专有应用/服务 |

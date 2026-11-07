@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Общий буфер обмена по запросу.** Текст обновляется сразу;
   поддерживаемые изображения и файлы загружаются по запросу между связанными настольными
   устройствами, на которых это включено. См. [возможности и ограничения буфера обмена](../CLIPBOARD.md).
-- **Нативное мобильное управление.** iPhone/iPad и клиент Android (в разработке) предлагают
+- **Нативное мобильное управление.** iPhone/iPad и клиент Android предлагают
   сенсорный ввод/трекпад, управление клавиатурой и прямой вход в удалённый рабочий стол.
 - **Необязательный автозапуск при входе и восстановление на macOS.** Требуют активного графического
   сеанса и одобрения системы; они не разблокируют FileVault и не выполняют вход за вас.
@@ -92,7 +93,7 @@
 | Linux x86_64 | Просмотр + хост; адаптивное виртуальное рабочее пространство на подходящих хостах KWin, Mutter и Hyprland | **0.7.3 стабильная**: DEB, RPM, Arch, AppImage, переносной архив и Nix | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [руководство по установке](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Только просмотр | **0.7.3 стабильная**, Freedesktop Platform 25.08 | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Только клиент | App Store; новые сборки отдельно тестируются в TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Только клиент | В разработке; проверки на физических устройствах, публичного выпуска в магазине пока нет | Пока недоступно |
+| Android 8.0+ | Только клиент | **2.7 (63)** · Идёт закрытое тестирование в Google Play | [Скачать APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Просмотр + хост + виртуальный дисплей | **0.7.3 стабильная**; установщик включает хост; переносной ZIP — только клиент; пакет и CLI проверены без установки; приложение и установщик не подписаны | [Установщик](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Не квалифицировано | Нет проверенного пакета выпуска | — |
 
@@ -119,6 +120,10 @@ AppImage и переносные сборки автоматически рег�
 для своей системы и следуйте [руководству по установке](../LINUX_PACKAGES.md),
 включая разрешения на ввод для хоста. Через Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak обеспечивает только просмотр. Файлы выпуска включают [контрольные суммы SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) и [отчёт о проверке](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Пока не завершено закрытое тестирование в Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) временно доступен на GitHub. Исходный код мобильных клиентов закрыт. Здесь распространяется только установочный пакет.
+
+Сборка 63 подписана тем же ключом, что и приложение в Google Play. При обновлении до более новой версии из магазина сохраняются настройки и сопряжения с компьютерами. Если у вас установлена сборка 62 с GitHub, перед установкой сборки 63 её нужно удалить. Локальные настройки будут сброшены, а компьютеры придётся подключить заново.
 
 **iPhone / iPad:** Установите [DeskPort из App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 Мобильное приложение — платная разовая покупка; актуальную местную цену см. в вашем магазине.
@@ -169,7 +174,7 @@ Tailscale. DeskPort не предоставляет сервис учётных 
 | Основной сценарий | Постоянное рабочее пространство удалённого рабочего стола, адаптивный размер и передача между устройствами | Стриминг игр/рабочего стола через отдельные клиентское и хост-приложения | Универсальное удалённое управление и поддержка | Интерактивный удалённый рабочий стол и совместная работа |
 | Настольные платформы хоста | macOS Apple Silicon, Linux x86_64 и Windows x64 | Windows, macOS, Linux и FreeBSD с учётом ограничений платформ | Windows, macOS и Linux | Windows и macOS; Linux не может быть хостом |
 | Настольные клиенты | macOS Apple Silicon, Linux x86_64 и Windows x64 | Windows, macOS, Linux и другие | Windows, macOS и Linux | Windows, macOS, Linux и поддерживаемые браузеры на Chromium |
-| Мобильные клиенты | iPhone/iPad выпущен; Android в разработке | iOS/iPadOS и Android | iOS/iPadOS и Android; iOS не может быть хостом | Android; клиента для iOS/iPadOS нет |
+| Мобильные клиенты | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS и Android | iOS/iPadOS и Android; iOS не может быть хостом | Android; клиента для iOS/iPadOS нет |
 | Модель настройки | Встроенный хост в нативных настольных пакетах; одобрение устройств в DeskPort | Отдельная установка и настройка Sunshine, затем сопряжение с Moonlight | Публичная серверная инфраструктура или собственный сервер | Аккаунт и приложение Parsec |
 | Сетевая/сервисная модель | Собственная доступность через LAN/VPN; без ретранслятора DeskPort | Самостоятельно размещаемый стриминг; настройка сетевой доступности | Публичная инфраструктура или собственный сервер OSS/Pro | Инфраструктура аккаунтов/сервиса Parsec |
 | Исходный код и распространение | Настольная версия под GPL, бесплатные настольные пакеты; платное приложение Apple распространяется отдельно | Клиенты и хост с открытым исходным кодом | Клиент с открытым кодом и сервер OSS; коммерческий вариант Pro-сервера | Проприетарное приложение/сервис |

@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -65,7 +66,7 @@
   พร้อมการ์ด การปักหมุด ธีม และอินเทอร์เฟซหลายภาษา
 - **แชร์คลิปบอร์ดเมื่อต้องการ** ข้อความอัปเดตทันที ส่วนรูปภาพและไฟล์ที่รองรับจะดึงเมื่อร้องขอ
   ระหว่างเครื่องเดสก์ท็อปที่ผูกกันและเลือกเปิดใช้ ดู[ขอบเขตและข้อจำกัดของคลิปบอร์ด](../CLIPBOARD.md)
-- **การควบคุมบนมือถือแบบเนทีฟ** iPhone/iPad และไคลเอนต์ Android ที่อยู่ระหว่างพัฒนามีอินพุตแบบสัมผัส/แทร็กแพด
+- **การควบคุมบนมือถือแบบเนทีฟ** iPhone/iPad และไคลเอนต์ Androidมีอินพุตแบบสัมผัส/แทร็กแพด
   การควบคุมด้วยคีย์บอร์ด และการเข้าสู่เดสก์ท็อประยะไกลโดยตรง
 - **เริ่มทำงานเมื่อเข้าสู่ระบบและการกู้คืนบน macOS (ไม่บังคับ)** ต้องมีการเข้าสู่ระบบแบบกราฟิกที่ใช้งานอยู่
   และการอนุมัติของระบบ ไม่ได้ปลดล็อก FileVault หรือเข้าสู่ระบบแทนคุณ
@@ -91,7 +92,7 @@
 | Linux x86_64 | ตัวแสดงผล + โฮสต์; พื้นที่ทำงานปรับขนาดได้บนโฮสต์ KWin, Mutter และ Hyprland ที่รองรับ | **0.7.3 เสถียร**: DEB, RPM, Arch, AppImage, ไฟล์พกพา และ Nix | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [คู่มือการติดตั้ง](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | ตัวแสดงผลเท่านั้น | **0.7.3 เสถียร**, Freedesktop Platform 25.08 | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | ไคลเอนต์เท่านั้น | App Store; รุ่นใหม่กว่าทดสอบแยกใน TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | ไคลเอนต์เท่านั้น | อยู่ระหว่างพัฒนา; ทดสอบบนอุปกรณ์จริง ยังไม่มีรุ่นสาธารณะในสโตร์ | ยังไม่พร้อมใช้งาน |
+| Android 8.0+ | ไคลเอนต์เท่านั้น | **2.7 (63)** · อยู่ระหว่างการทดสอบแบบปิดบน Google Play | [ดาวน์โหลด APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | ตัวแสดงผล + โฮสต์ + จอเสมือน | **0.7.3 เสถียร**; ตัวติดตั้งแบบเต็มเป็นโฮสต์ได้ ZIP แบบพกพาใช้ดูเท่านั้น; แอปและตัวติดตั้งยังไม่ได้ลงนาม | [ตัวติดตั้ง](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | ยังไม่ผ่านเกณฑ์ | ไม่มีแพ็กเกจรุ่นเผยแพร่ที่ผ่านการตรวจสอบ | — |
 
@@ -116,6 +117,10 @@ AppImage มีรันไทม์ส่วนตัวสำหรับเ�
 รวมถึง[ข้อกำหนดอินพุตของโฮสต์](../LINUX_PACKAGES.md#first-connection-and-hosting)
 ใช้ Nix: `nix run github:keithxc/deskport/v0.7.3`
 Flatpak ใช้ดูได้อย่างเดียว รุ่นเผยแพร่มี[เช็กซัม SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) และ[รายงานการตรวจสอบ](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)
+
+**Android 2.7 (63)** · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
+
+บิลด์ 63 ใช้คีย์ลงนามเดียวกับ Google Play เมื่ออัปเดตเป็นเวอร์ชันที่ใหม่กว่าจาก Play การจับคู่กับคอมพิวเตอร์และการตั้งค่าจะยังอยู่ หากติดตั้งบิลด์ 62 จาก GitHub ต้องถอนการติดตั้งก่อนติดตั้งบิลด์ 63 การถอนการติดตั้งจะล้างการตั้งค่าในเครื่องและต้องจับคู่คอมพิวเตอร์ใหม่
 
 **iPhone / iPad:** ติดตั้ง [DeskPort จาก App Store](https://apps.apple.com/us/app/deskport/id6812389978)
 แอปมือถือเป็นการซื้อแบบชำระครั้งเดียว ดูราคาท้องถิ่นปัจจุบันในสโตร์ของคุณ รุ่นเดสก์ท็อปยังคงฟรีและเป็นโอเพนซอร์ส
@@ -382,7 +387,7 @@ flatpak run io.github.keithxc.DeskPort
 | เวิร์กโฟลว์หลัก | พื้นที่เดสก์ท็อประยะไกลถาวร ปรับขนาดอัตโนมัติ และส่งต่อระหว่างอุปกรณ์ | สตรีมเกม/เดสก์ท็อปผ่านแอปไคลเอนต์และโฮสต์แยกกัน | ควบคุมและช่วยเหลือระยะไกลทั่วไป | เดสก์ท็อประยะไกลแบบโต้ตอบและการทำงานร่วมกัน |
 | แพลตฟอร์มโฮสต์ | macOS Apple Silicon, Linux x86_64 และ Windows x64 | Windows, macOS, Linux และ FreeBSD ตามข้อจำกัดแพลตฟอร์ม | Windows, macOS และ Linux | Windows และ macOS; Linux เป็นโฮสต์ไม่ได้ |
 | ไคลเอนต์เดสก์ท็อป | macOS Apple Silicon, Linux x86_64 และ Windows x64 | Windows, macOS, Linux และอื่น ๆ | Windows, macOS และ Linux | Windows, macOS, Linux และเบราว์เซอร์ Chromium ที่รองรับ |
-| ไคลเอนต์มือถือ | iPhone/iPad เปิดตัวแล้ว; Android อยู่ระหว่างพัฒนา | iOS/iPadOS และ Android | iOS/iPadOS และ Android; iOS เป็นโฮสต์ไม่ได้ | Android; ไม่มีไคลเอนต์ iOS/iPadOS |
+| ไคลเอนต์มือถือ | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS และ Android | iOS/iPadOS และ Android; iOS เป็นโฮสต์ไม่ได้ | Android; ไม่มีไคลเอนต์ iOS/iPadOS |
 | รูปแบบการตั้งค่า | โฮสต์ในตัวในแพ็กเกจเดสก์ท็อปเนทีฟ; อนุมัติอุปกรณ์ใน DeskPort | ติดตั้งและตั้งค่า Sunshine แยก แล้วจับคู่ Moonlight | โครงสร้างเซิร์ฟเวอร์สาธารณะหรือเซิร์ฟเวอร์ที่โฮสต์เอง | บัญชีและแอป Parsec |
 | รูปแบบเครือข่าย/บริการ | ใช้ LAN/VPN ของคุณเอง; ไม่มีรีเลย์ของ DeskPort | สตรีมแบบโฮสต์เอง; ตั้งค่าการเข้าถึงเครือข่ายเอง | โครงสร้างสาธารณะหรือเซิร์ฟเวอร์ OSS/Pro ที่โฮสต์เอง | โครงสร้างบัญชี/บริการของ Parsec |
 | ซอร์สและการแจกจ่าย | เดสก์ท็อป GPL แพ็กเกจเดสก์ท็อปฟรี; แอป Apple แบบชำระเงินแจกจ่ายแยก | ไคลเอนต์และโฮสต์โอเพนซอร์ส | ไคลเอนต์โอเพนซอร์สและเซิร์ฟเวอร์ OSS; มีตัวเลือกเซิร์ฟเวอร์ Pro เชิงพาณิชย์ | แอป/บริการกรรมสิทธิ์ |

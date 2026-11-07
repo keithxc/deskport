@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Comparte el portapapeles del escritorio bajo demanda.** El texto se actualiza al instante;
   las imágenes y archivos compatibles se obtienen cuando se solicitan, entre pares de escritorio vinculados
   que lo hayan activado. Consulta [alcance y límites del portapapeles](../CLIPBOARD.md).
-- **Controles móviles nativos.** iPhone/iPad y el cliente Android en desarrollo ofrecen
+- **Controles móviles nativos.** iPhone/iPad y el cliente Android ofrecen
   entrada táctil/trackpad, controles de teclado y acceso directo al escritorio remoto.
 - **Inicio opcional al iniciar sesión y recuperación en macOS.** Requieren una sesión gráfica
   activa y aprobación del sistema; no desbloquean FileVault ni inician sesión por ti.
@@ -92,7 +93,7 @@ Los siguientes enlaces corresponden a la versión oficial 0.7.3. Las comprobacio
 | Linux x86_64 | Visor + host; espacio de trabajo virtual adaptativo en hosts KWin, Mutter y Hyprland compatibles | **0.7.3 estable**: DEB, RPM, Arch, AppImage, archivo portable y Nix | [Versión](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [guía de instalación](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Solo visor | **0.7.3 estable**, Freedesktop Platform 25.08 | [Versión](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Solo cliente | App Store; las compilaciones más recientes se prueban por separado en TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Solo cliente | En desarrollo; pruebas en dispositivos físicos, aún sin publicación en tienda | Aún no disponible |
+| Android 8.0+ | Solo cliente | **2.7 (63)** · Prueba cerrada de Google Play en curso | [Descargar APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Visor + host + pantalla virtual | **0.7.3 estable**; instalador con host; ZIP portable solo como visor; paquete y CLI verificados sin instalar; aplicación e instalador sin firma | [Instalador](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Mac Intel | No cualificado | Sin paquete de versión verificado | — |
 
@@ -119,6 +120,10 @@ Accesibilidad para usar las funciones de host. No se necesitan Nix ni Homebrew.
 para tu sistema y sigue la [guía de instalación](../LINUX_PACKAGES.md),
 incluidos los permisos de entrada del host. Con Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak solo permite visualizar. Los recursos de la versión incluyen [sumas de verificación SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) y un [informe de verificación](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Hasta que termine la prueba cerrada de Google Play, el [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) está disponible temporalmente en GitHub. Los clientes móviles son de código cerrado. Aquí solo se distribuye el instalador.
+
+La compilación 63 usa la misma clave de firma que Google Play. Al actualizar a una versión posterior de Play se conservan los equipos vinculados y los ajustes. Si instalaste la compilación 62 de GitHub, debes desinstalarla antes de instalar la 63. Se borrarán los ajustes locales y tendrás que volver a vincular los equipos.
 
 **iPhone / iPad:** Instala [DeskPort desde la App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 La app móvil es una compra única de pago; consulta tu tienda para ver el precio local actual.
@@ -169,7 +174,7 @@ de los productos y los límites de plataforma pueden cambiar.
 | Flujo de trabajo principal | Espacio de trabajo de escritorio remoto persistente, tamaño adaptativo y traspaso entre dispositivos | Streaming de juegos/escritorio mediante apps cliente y host separadas | Control remoto general y soporte | Escritorio remoto interactivo y colaboración |
 | Plataformas de host de escritorio | macOS Apple Silicon, Linux x86_64 y Windows x64 | Windows, macOS, Linux y FreeBSD, según los límites de cada plataforma | Windows, macOS y Linux | Windows y macOS; Linux no puede actuar como host |
 | Clientes de escritorio | macOS Apple Silicon, Linux x86_64 y Windows x64 | Windows, macOS y Linux, entre otros | Windows, macOS y Linux | Windows, macOS, Linux y navegadores Chromium compatibles |
-| Clientes móviles | iPhone/iPad publicado; Android en desarrollo | iOS/iPadOS y Android | iOS/iPadOS y Android; iOS no puede actuar como host | Android; sin cliente para iOS/iPadOS |
+| Clientes móviles | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS y Android | iOS/iPadOS y Android; iOS no puede actuar como host | Android; sin cliente para iOS/iPadOS |
 | Modelo de configuración | Host integrado en los paquetes nativos de escritorio; aprueba dispositivos en DeskPort | Instala y configura Sunshine por separado y luego empareja Moonlight | Infraestructura de servidores pública o servidor autoalojado | Cuenta y aplicación de Parsec |
 | Modelo de red/servicio | Aporta tu propia accesibilidad por LAN/VPN; sin relé de DeskPort | Streaming autoalojado; configura la accesibilidad de red | Infraestructura pública o servidor OSS/Pro autoalojado | Infraestructura de cuenta/servicio de Parsec |
 | Código y distribución | Escritorio GPL, paquetes de escritorio gratuitos; app de Apple de pago distribuida por separado | Clientes y host de código abierto | Cliente de código abierto y servidor OSS; opción comercial de servidor Pro | Aplicación/servicio propietario |

@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **ज़रूरत पड़ने पर क्लिपबोर्ड साझा करें।** टेक्स्ट तुरंत अपडेट होता है; समर्थित चित्र और फ़ाइलें
   अनुमति देने वाले जुड़े डेस्कटॉप पीयर के बीच माँगने पर लाई जाती हैं।
   देखें [क्लिपबोर्ड का दायरा और सीमाएँ](../CLIPBOARD.md)।
-- **नेटिव मोबाइल नियंत्रण।** iPhone/iPad और विकासाधीन Android क्लाइंट टच/ट्रैकपैड इनपुट, कीबोर्ड नियंत्रण
+- **नेटिव मोबाइल नियंत्रण।** iPhone/iPad और Android क्लाइंट टच/ट्रैकपैड इनपुट, कीबोर्ड नियंत्रण
   और रिमोट डेस्कटॉप में सीधा प्रवेश देते हैं।
 - **वैकल्पिक लॉगिन स्टार्टअप और macOS रिकवरी।** इनके लिए सक्रिय ग्राफ़िकल लॉगिन और सिस्टम स्वीकृति
   ज़रूरी है; ये FileVault अनलॉक नहीं करते और न ही आपकी ओर से लॉग इन करते हैं।
@@ -95,7 +96,7 @@
 | Linux x86_64 | व्यूअर + होस्ट; सक्षम KWin, Mutter और Hyprland होस्ट पर अनुकूली वर्कस्पेस | **0.7.3 स्थिर**: DEB, RPM, Arch, AppImage, पोर्टेबल आर्काइव और Nix | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [इंस्टॉलेशन गाइड](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | केवल व्यूअर | **0.7.3 स्थिर**, Freedesktop Platform 25.08 | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | केवल क्लाइंट | App Store; नए बिल्ड TestFlight में अलग से परखे जाते हैं | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | केवल क्लाइंट | विकासाधीन; भौतिक डिवाइस पर जाँच, अभी कोई सार्वजनिक स्टोर रिलीज़ नहीं | अभी उपलब्ध नहीं |
+| Android 8.0+ | केवल क्लाइंट | **2.7 (63)** · Google Play का बंद परीक्षण जारी है | [APK डाउनलोड करें](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | व्यूअर + होस्ट + वर्चुअल डिस्प्ले | **0.7.3 स्थिर**; पूर्ण इंस्टॉलर होस्ट करता है, पोर्टेबल ZIP केवल देखता है; ऐप और इंस्टॉलर हस्ताक्षरित नहीं | [इंस्टॉलर](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | योग्य नहीं | कोई सत्यापित रिलीज़ पैकेज नहीं | — |
 
@@ -122,6 +123,10 @@ DeskPort को Applications में खींचें और खोलें
 जिनमें [होस्ट इनपुट आवश्यकताएँ](../LINUX_PACKAGES.md#first-connection-and-hosting) भी शामिल हैं।
 Nix के साथ: `nix run github:keithxc/deskport/v0.7.3`।
 Flatpak केवल देखने की सुविधा देता है। रिलीज़ में [SHA-256 चेकसम](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) और [सत्यापन रिपोर्ट](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt) शामिल हैं।
+
+**Android 2.7 (63)** · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
+
+बिल्ड 63 में Google Play वाली साइनिंग कुंजी का इस्तेमाल हुआ है। आगे चलकर Play के नए संस्करण में अपडेट करने पर पेयर किए गए कंप्यूटर और सेटिंग्स बनी रहेंगी। अगर आपने GitHub से बिल्ड 62 इंस्टॉल किया था, तो 63 इंस्टॉल करने से पहले उसे अनइंस्टॉल करना होगा। इससे स्थानीय सेटिंग्स मिट जाएँगी और कंप्यूटर फिर से पेयर करने होंगे।
 
 **iPhone / iPad:** [App Store से DeskPort](https://apps.apple.com/us/app/deskport/id6812389978) इंस्टॉल करें।
 मोबाइल ऐप एक बार की सशुल्क खरीद है; मौजूदा स्थानीय कीमत अपने स्टोर में देखें। डेस्कटॉप रिलीज़ मुफ़्त
@@ -407,7 +412,7 @@ Flathub पर DeskPort लिस्टिंग की ज़रूरत न�
 | मुख्य कार्यप्रवाह | स्थायी रिमोट डेस्कटॉप वर्कस्पेस, अनुकूली आकार और डिवाइस हैंडऑफ़ | अलग क्लाइंट और होस्ट ऐप से गेम/डेस्कटॉप स्ट्रीमिंग | सामान्य रिमोट कंट्रोल और सहायता | इंटरैक्टिव रिमोट डेस्कटॉप और सहयोग |
 | डेस्कटॉप होस्ट प्लेटफ़ॉर्म | macOS Apple Silicon, Linux x86_64 और Windows x64 | प्लेटफ़ॉर्म सीमाओं के साथ Windows, macOS, Linux और FreeBSD | Windows, macOS और Linux | Windows और macOS; Linux होस्ट नहीं कर सकता |
 | डेस्कटॉप क्लाइंट | macOS Apple Silicon, Linux x86_64 और Windows x64 | Windows, macOS और Linux, आदि | Windows, macOS और Linux | Windows, macOS, Linux और समर्थित Chromium ब्राउज़र |
-| मोबाइल क्लाइंट | iPhone/iPad जारी; Android विकासाधीन | iOS/iPadOS और Android | iOS/iPadOS और Android; iOS होस्ट नहीं कर सकता | Android; कोई iOS/iPadOS क्लाइंट नहीं |
+| मोबाइल क्लाइंट | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS और Android | iOS/iPadOS और Android; iOS होस्ट नहीं कर सकता | Android; कोई iOS/iPadOS क्लाइंट नहीं |
 | सेटअप मॉडल | नेटिव डेस्कटॉप पैकेज में बंडल होस्ट; DeskPort में डिवाइस स्वीकृत करें | Sunshine अलग से इंस्टॉल और कॉन्फ़िगर करें, फिर Moonlight पेयर करें | सार्वजनिक सर्वर इन्फ्रास्ट्रक्चर या सेल्फ़-होस्टेड सर्वर | Parsec अकाउंट और ऐप |
 | नेटवर्क/सेवा मॉडल | अपनी LAN/VPN पहुँच; कोई DeskPort रिले नहीं | सेल्फ़-होस्टेड स्ट्रीमिंग; नेटवर्क पहुँच कॉन्फ़िगर करें | सार्वजनिक इन्फ्रास्ट्रक्चर या सेल्फ़-होस्टेड OSS/Pro सर्वर | Parsec अकाउंट/सेवा इन्फ्रास्ट्रक्चर |
 | सोर्स और वितरण | GPL डेस्कटॉप, मुफ़्त डेस्कटॉप पैकेज; सशुल्क Apple ऐप अलग से वितरित | ओपन-सोर्स क्लाइंट और होस्ट | ओपन-सोर्स क्लाइंट और OSS सर्वर; व्यावसायिक Pro सर्वर विकल्प | मालिकाना ऐप/सेवा |

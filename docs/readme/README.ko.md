@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **필요할 때 데스크톱 클립보드 공유.** 텍스트는 즉시 업데이트되고,
   지원되는 이미지와 파일은 이 기능을 켠 연결된 데스크톱 기기 사이에서 요청 시 가져옵니다.
   [클립보드 범위와 제한](../CLIPBOARD.md)을 참고하세요.
-- **네이티브 모바일 컨트롤.** iPhone/iPad와 개발 중인 Android 클라이언트는
+- **네이티브 모바일 컨트롤.** iPhone/iPad와 Android 클라이언트는
   터치/트랙패드 입력, 키보드 컨트롤, 원격 데스크톱으로의 바로 진입을 제공합니다.
 - **선택적 로그인 시 시작 및 macOS 복구.** 활성 그래픽 로그인과 시스템 승인이
   필요하며, FileVault를 잠금 해제하거나 대신 로그인해 주지는 않습니다.
@@ -92,7 +93,7 @@
 | Linux x86_64 | 뷰어 + 호스트, 지원 KWin·Mutter·Hyprland 호스트에서 적응형 가상 작업 공간 | **0.7.3 정식 버전**: DEB, RPM, Arch, AppImage, 포터블 아카이브, Nix | [릴리스](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [설치 가이드](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 뷰어 전용 | **0.7.3 정식 버전**, Freedesktop Platform 25.08 | [릴리스](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | 클라이언트 전용 | App Store, 최신 빌드는 TestFlight에서 별도 테스트 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 클라이언트 전용 | 개발 중, 실기기 검사 진행, 아직 공개 스토어 출시 없음 | 아직 제공되지 않음 |
+| Android 8.0+ | 클라이언트 전용 | **2.7 (63)** · Google Play 비공개 테스트 진행 중 | [APK 다운로드](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | 뷰어 + 호스트 + 가상 디스플레이 | **0.7.3 정식 버전**; 설치 프로그램은 호스트 포함, 포터블 ZIP은 뷰어 전용; 설치하지 않은 상태의 패키지와 CLI 검증 통과; 앱과 설치 프로그램은 서명되지 않음 | [설치 프로그램](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | 검증되지 않음 | 검증된 릴리스 패키지 없음 | — |
 
@@ -118,6 +119,10 @@ DeskPort를 응용 프로그램 폴더로 끌어다 놓은 뒤 실행합니다. 
 선택하고 호스트 입력 권한을 포함해 [설치 가이드](../LINUX_PACKAGES.md)를 따르세요.
 Nix 사용 시: `nix run github:keithxc/deskport/v0.7.3`.
 Flatpak은 보기 기능만 제공합니다. 릴리스 자산에는 [SHA-256 체크섬](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)과 [검증 보고서](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)가 포함됩니다.
+
+**Android 2.7 (63)** · Google Play 비공개 테스트가 끝날 때까지 GitHub에서 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)를 임시로 제공합니다. 모바일 클라이언트의 소스 코드는 비공개이며 여기서는 설치 파일만 배포합니다.
+
+빌드 63은 Google Play와 같은 앱 서명 키를 사용합니다. 이후 더 최신인 Play 버전으로 업데이트하면 페어링된 컴퓨터와 설정이 유지됩니다. GitHub에서 빌드 62를 설치했다면 63을 설치하기 전에 기존 앱을 삭제해야 합니다. 로컬 설정이 삭제되며 컴퓨터를 다시 페어링해야 합니다.
 
 **iPhone / iPad:** [App Store에서 DeskPort](https://apps.apple.com/us/app/deskport/id6812389978)를 설치하세요.
 모바일 앱은 유료 일회성 구매이며, 현재 현지 가격은 해당 스토어에서 확인하세요.
@@ -166,7 +171,7 @@ AppImage에는 전용 glibc 런타임이 포함되어 있으며, 네이티브 �
 | 주요 워크플로 | 상시 원격 데스크톱 작업 공간, 적응형 크기 조정, 기기 간 인계 | 별도의 클라이언트·호스트 앱을 통한 게임/데스크톱 스트리밍 | 범용 원격 제어 및 지원 | 대화형 원격 데스크톱 및 협업 |
 | 데스크톱 호스트 플랫폼 | macOS Apple Silicon, Linux x86_64, Windows x64 | Windows, macOS, Linux, FreeBSD(플랫폼별 제한 있음) | Windows, macOS, Linux | Windows, macOS; Linux는 호스트 불가 |
 | 데스크톱 클라이언트 | macOS Apple Silicon, Linux x86_64, Windows x64 | Windows, macOS, Linux 등 | Windows, macOS, Linux | Windows, macOS, Linux, 지원되는 Chromium 브라우저 |
-| 모바일 클라이언트 | iPhone/iPad 출시, Android 개발 중 | iOS/iPadOS, Android | iOS/iPadOS, Android; iOS는 호스트 불가 | Android; iOS/iPadOS 클라이언트 없음 |
+| 모바일 클라이언트 | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS, Android | iOS/iPadOS, Android; iOS는 호스트 불가 | Android; iOS/iPadOS 클라이언트 없음 |
 | 설정 방식 | 네이티브 데스크톱 패키지에 호스트 내장, DeskPort에서 기기 승인 | Sunshine을 별도 설치·설정한 뒤 Moonlight와 페어링 | 공용 서버 인프라 또는 자체 호스팅 서버 | Parsec 계정과 애플리케이션 |
 | 네트워크/서비스 방식 | LAN/VPN 연결은 직접 마련, DeskPort 릴레이 없음 | 자체 호스팅 스트리밍, 네트워크 연결 직접 설정 | 공용 인프라 또는 자체 호스팅 OSS/Pro 서버 | Parsec 계정/서비스 인프라 |
 | 소스와 배포 | GPL 데스크톱, 무료 데스크톱 패키지, 유료 Apple 앱은 별도 배포 | 오픈 소스 클라이언트와 호스트 | 오픈 소스 클라이언트와 OSS 서버, 상용 Pro 서버 옵션 | 독점 애플리케이션/서비스 |

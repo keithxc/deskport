@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Condividi gli appunti del desktop su richiesta.** Il testo si aggiorna subito; immagini e file
   supportati vengono scaricati su richiesta tra peer desktop associati che hanno aderito.
   Vedi [ambito e limiti degli appunti](../CLIPBOARD.md).
-- **Controlli mobili nativi.** iPhone/iPad e il client Android in sviluppo offrono input touch/trackpad,
+- **Controlli mobili nativi.** iPhone/iPad e il client Android offrono input touch/trackpad,
   controlli da tastiera e accesso diretto al desktop remoto.
 - **Avvio all'accesso e ripristino su macOS opzionali.** Richiedono un accesso grafico attivo e
   l'approvazione del sistema; non sbloccano FileVault né effettuano l'accesso al posto tuo.
@@ -96,7 +97,7 @@ registra le identità esatte dei pacchetti e i limiti di validazione nel suo rap
 | Linux x86_64 | Visualizzatore + host; spazio di lavoro adattivo sugli host KWin, Mutter e Hyprland compatibili | **0.7.3 stabile**: DEB, RPM, Arch, AppImage, archivio portatile e Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [guida all'installazione](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Solo visualizzatore | **0.7.3 stabile**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Solo client | App Store; build più recenti testate separatamente su TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Solo client | In sviluppo; verifiche su dispositivi fisici, nessuna release pubblica nello store | Non ancora disponibile |
+| Android 8.0+ | Solo client | **2.7 (63)** · Test chiuso di Google Play in corso | [Scarica l’APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Visualizzatore + host + display virtuale | **0.7.3 stabile**; l'installer completo fa da host, lo ZIP portatile solo visualizzatore; applicazione e installer non firmati | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Mac Intel | Non qualificato | Nessun pacchetto di release verificato | — |
 
@@ -124,6 +125,10 @@ per il tuo sistema e segui i [passaggi per distribuzione qui sotto](#installazio
 inclusi i [requisiti di input dell'host](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Con Nix: `nix run github:keithxc/deskport/v0.7.3`.
 Il Flatpak offre solo la visualizzazione. La release include [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) e un [rapporto di verifica](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Fino al termine del test chiuso di Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) è disponibile temporaneamente su GitHub. Il codice sorgente dei client mobili è privato. Qui viene distribuito solo il pacchetto di installazione.
+
+La build 63 usa la stessa chiave di firma di Google Play. L’aggiornamento a una versione Play successiva conserva i computer abbinati e le impostazioni. Se hai installato la build 62 da GitHub, devi disinstallarla prima di installare la 63. Le impostazioni locali verranno cancellate e dovrai abbinare di nuovo i computer.
 
 **iPhone / iPad:** installa [DeskPort dall'App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 L'app mobile è un acquisto unico a pagamento; il prezzo locale è indicato nel tuo store.
@@ -440,7 +445,7 @@ limiti delle piattaforme dei prodotti possono cambiare.
 | Flusso principale | Spazio di lavoro remoto persistente, dimensionamento adattivo e passaggio tra dispositivi | Streaming di giochi/desktop tramite app client e host separate | Controllo remoto e assistenza generici | Desktop remoto interattivo e collaborazione |
 | Piattaforme host desktop | macOS Apple Silicon, Linux x86_64 e Windows x64 | Windows, macOS, Linux e FreeBSD, con limiti per piattaforma | Windows, macOS e Linux | Windows e macOS; Linux non può fare da host |
 | Client desktop | macOS Apple Silicon, Linux x86_64 e Windows x64 | Windows, macOS e Linux, tra gli altri | Windows, macOS e Linux | Windows, macOS, Linux e browser Chromium supportati |
-| Client mobili | iPhone/iPad rilasciato; Android in sviluppo | iOS/iPadOS e Android | iOS/iPadOS e Android; iOS non può fare da host | Android; nessun client iOS/iPadOS |
+| Client mobili | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS e Android | iOS/iPadOS e Android; iOS non può fare da host | Android; nessun client iOS/iPadOS |
 | Modello di configurazione | Host integrato nei pacchetti desktop nativi; approvi i dispositivi in DeskPort | Installa e configura Sunshine separatamente, poi abbina Moonlight | Infrastruttura server pubblica o server self-hosted | Account e applicazione Parsec |
 | Modello di rete/servizio | Raggiungibilità tramite la tua LAN/VPN; nessun relay DeskPort | Streaming self-hosted; configura la raggiungibilità di rete | Infrastruttura pubblica o server OSS/Pro self-hosted | Infrastruttura di account/servizio Parsec |
 | Sorgente e distribuzione | Desktop GPL, pacchetti desktop gratuiti; app Apple a pagamento distribuita separatamente | Client e host open source | Client e server OSS open source; opzione server Pro commerciale | Applicazione/servizio proprietari |

@@ -43,6 +43,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
+  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -68,7 +69,7 @@
 - **Deel klembordinhoud op verzoek.** Tekst wordt meteen bijgewerkt; ondersteunde afbeeldingen en
   bestanden worden op verzoek opgehaald tussen gekoppelde desktop-peers die hiervoor kozen.
   Zie [reikwijdte en grenzen van het klembord](../CLIPBOARD.md).
-- **Native mobiele bediening.** iPhone/iPad en de Android-ontwikkelclient bieden aanraak-/trackpadinvoer,
+- **Native mobiele bediening.** iPhone/iPad en de Android-client bieden aanraak-/trackpadinvoer,
   toetsenbordbediening en directe toegang tot het externe bureaublad.
 - **Optioneel starten bij aanmelden en herstel op macOS.** Dit vereist een actieve grafische
   aanmelding en systeemgoedkeuring; FileVault wordt niet ontgrendeld en er wordt niet voor je aangemeld.
@@ -96,7 +97,7 @@ verificatierapport.
 | Linux x86_64 | Viewer + host; adaptieve werkruimte op geschikte KWin-, Mutter- en Hyprland-hosts | **0.7.3 stabiel**: DEB, RPM, Arch, AppImage, draagbaar archief en Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [installatiegids](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Alleen viewer | **0.7.3 stabiel**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Alleen client | App Store; nieuwere builds apart getest in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Alleen client | In ontwikkeling; controles op fysieke apparaten, nog geen openbare winkelrelease | Nog niet beschikbaar |
+| Android 8.0+ | Alleen client | **2.7 (63)** · Gesloten test op Google Play loopt | [APK downloaden](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
 | Windows x64 | Viewer + host + virtueel scherm | **0.7.3 stabiel**; volledig installatieprogramma kan hosten, draagbare ZIP alleen bekijken; applicatie en installatieprogramma niet ondertekend | [Installatieprogramma](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
 | Linux ARM64 / Intel Mac | Niet gekwalificeerd | Geen geverifieerd releasepakket | — |
 
@@ -123,6 +124,10 @@ voor je systeem en volg de [stappen per distributie hieronder](#linux-installati
 inclusief de [vereisten voor hostinvoer](../LINUX_PACKAGES.md#first-connection-and-hosting).
 Met Nix: `nix run github:keithxc/deskport/v0.7.3`.
 De Flatpak biedt alleen bekijken. De release bevat [SHA-256-controlesommen](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) en een [verificatierapport](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+
+**Android 2.7 (63)** · Tot de gesloten test op Google Play is afgerond, is de [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tijdelijk beschikbaar op GitHub. De broncode van de mobiele apps is gesloten. Hier wordt alleen het installatiebestand aangeboden.
+
+Build 63 gebruikt dezelfde ondertekeningssleutel als Google Play. Bij een update naar een nieuwere Play-versie blijven gekoppelde computers en instellingen behouden. Heb je build 62 van GitHub geïnstalleerd, verwijder deze dan voordat je build 63 installeert. Je lokale instellingen worden gewist en je moet je computers opnieuw koppelen.
 
 **iPhone / iPad:** installeer [DeskPort uit de App Store](https://apps.apple.com/us/app/deskport/id6812389978).
 De mobiele app is een eenmalige betaalde aankoop; zie je winkel voor de actuele lokale prijs.
@@ -433,7 +438,7 @@ platformgrenzen kunnen veranderen.
 | Hoofdwerkwijze | Blijvende externe bureaubladwerkruimte, adaptieve grootte en apparaatoverdracht | Game-/desktopstreaming via aparte client- en host-apps | Algemene externe bediening en ondersteuning | Interactief extern bureaublad en samenwerking |
 | Desktophostplatforms | macOS Apple Silicon, Linux x86_64 en Windows x64 | Windows, macOS, Linux en FreeBSD, met platformgrenzen | Windows, macOS en Linux | Windows en macOS; Linux kan niet hosten |
 | Desktopclients | macOS Apple Silicon, Linux x86_64 en Windows x64 | Onder andere Windows, macOS en Linux | Windows, macOS en Linux | Windows, macOS, Linux en ondersteunde Chromium-browsers |
-| Mobiele clients | iPhone/iPad uitgebracht; Android in ontwikkeling | iOS/iPadOS en Android | iOS/iPadOS en Android; iOS kan niet hosten | Android; geen iOS/iPadOS-client |
+| Mobiele clients | iPhone/iPad (App Store) · Android (GitHub APK) | iOS/iPadOS en Android | iOS/iPadOS en Android; iOS kan niet hosten | Android; geen iOS/iPadOS-client |
 | Installatiemodel | Ingebouwde host in native desktoppakketten; apparaten goedkeuren in DeskPort | Sunshine apart installeren en configureren, daarna Moonlight koppelen | Openbare serverinfrastructuur of een zelfgehoste server | Parsec-account en -applicatie |
 | Netwerk-/dienstmodel | Eigen LAN/VPN-bereikbaarheid; geen DeskPort-relay | Zelfgehoste streaming; netwerkbereikbaarheid zelf instellen | Openbare infrastructuur of zelfgehoste OSS/Pro-server | Parsec-account-/dienstinfrastructuur |
 | Broncode en distributie | GPL-desktop, gratis desktoppakketten; betaalde Apple-app apart verspreid | Open-source clients en host | Open-source client en OSS-server; commerciële Pro-serveroptie | Propriëtaire applicatie/dienst |
