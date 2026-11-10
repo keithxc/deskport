@@ -1,3 +1,29 @@
+## Client-driven key repeat — 2026-11-10
+
+Reason: typing from a Windows client over a routed link (16–84 ms RTT sampled,
+no loss during the sample) intermittently repeated keys on the mm4 host while
+the separate input process was running. The host starts its repeat timer when a
+press arrives, so a release that arrives more than 500 ms later is typed as a
+held key. Which hop delayed those releases was not measured; host logging was
+off.
+
+- Desktop clients set a client-driven bit (`0x80`) in the keyboard packet flags
+  on every key event and forward the local keyboard's own repeats as further
+  key-down packets for keys the host already holds. Modifier and lock keys,
+  shortcut chords and keys consumed by local text input are not forwarded.
+- For such keys the host re-emits on request and does not start its timer; the
+  bit is removed before the host's input code sees the flags. The overlay
+  applies to every host platform (`host/common/keyrepeat.h`).
+- No negotiation: an older host keeps its timer and ignores the repeated
+  presses, and clients that do not set the bit (older desktop builds, mobile and
+  browser clients) keep host-timed repeat. The contract lives in this repository;
+  it moves to deskport-core if other clients adopt it.
+- Validation: flag unit test, overlay anchors on both pinned host sources, the
+  full series on macOS, Windows, portable Linux and Nix Linux, and a syntax
+  check of the two client sources. Not yet compiled into a host or client
+  build, and not checked live: held-key repeat on Windows, KDE Wayland and
+  macOS clients, and the absence of repeats under a delayed release.
+
 ## Desktop 0.7.8 formal release — 2026-11-03
 
 Published [v0.7.8](https://github.com/keithxc/deskport/releases/tag/v0.7.8) as

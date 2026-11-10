@@ -1,5 +1,6 @@
 #include "streaming/canvasbridge.h"
 #include <Limelight.h>
+#include "../../../host/common/keyrepeat.h"
 #include <SDL.h>
 #include "streaming/session.h"
 #include "settings/mappingmanager.h"
@@ -290,7 +291,7 @@ void SdlInputHandler::raiseAllKeys()
                 (int)m_KeysDown.count());
 
     for (auto keyDown : m_KeysDown) {
-        LiSendKeyboardEvent(0x8000 | keyDown, KEY_ACTION_UP, 0);
+        LiSendKeyboardEvent2(0x8000 | keyDown, KEY_ACTION_UP, 0, char(deskport::key_repeat::kClientDriven));
     }
 
     m_KeysDown.clear();

@@ -2,6 +2,7 @@
 #include "streaming/canvasbridge.h"
 
 #include <Limelight.h>
+#include "../../../host/common/keyrepeat.h"
 #include <SDL.h>
 
 #define VK_0 0x30
@@ -169,14 +170,13 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     short keyCode;
     char modifiers;
 
-    if (event->repeat) {
-        // Ignore repeat key down events
-        SDL_assert(event->state == SDL_PRESSED);
-        return;
-    }
+    // The host does not time repeats for this client; the local keyboard's own
+    // repeat is forwarded below for a key the host already holds.
+    const bool repeat = event->repeat;
+    SDL_assert(!repeat || event->state == SDL_PRESSED);
 
     // Check for our special key combos
-    if ((event->state == SDL_PRESSED) &&
+    if (!repeat && (event->state == SDL_PRESSED) &&
             (event->keysym.mod & KMOD_CTRL) &&
             (event->keysym.mod & KMOD_ALT) &&
             (event->keysym.mod & KMOD_SHIFT)) {
@@ -207,14 +207,14 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     }
 
     if (!keyboardRoutingActive()) return;
-    if (m_LocalTextInput.consumeKey(*event)) {
+    if (!repeat && m_LocalTextInput.consumeKey(*event)) {
         // Local modifiers must not contaminate UTF-8 commits. Release any
         // synthesized command modifiers when the physical modifier is released.
         if (event->type == SDL_KEYUP && event->keysym.scancode >= SDL_SCANCODE_LCTRL &&
             event->keysym.scancode <= SDL_SCANCODE_RGUI) raiseAllKeys();
         return;
     }
-    if (m_LocalTextInput.active() && event->type == SDL_KEYDOWN) {
+    if (!repeat && m_LocalTextInput.active() && event->type == SDL_KEYDOWN) {
         // Hosts cannot all synthesize Meta from a packet flag. Explicit command
         // modifiers also preserve held chords until release/focus loss.
         const struct { int mask; short key; } commandMods[] = {
@@ -222,7 +222,7 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
         };
         for (const auto& modifier : commandMods) {
             if ((event->keysym.mod & modifier.mask) && !m_KeysDown.contains(modifier.key)) {
-                LiSendKeyboardEvent(0x8000 | modifier.key, KEY_ACTION_DOWN, 0);
+                LiSendKeyboardEvent2(0x8000 | modifier.key, KEY_ACTION_DOWN, 0, char(deskport::key_repeat::kClientDriven));
                 m_KeysDown.insert(modifier.key);
             }
         }
@@ -465,17 +465,23 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     }
 
     // Track the key state so we always know which keys are down
-    if (event->state == SDL_PRESSED) {
+    if (repeat) {
+        // Keys consumed locally or by a shortcut were never pressed on the host.
+        if (!m_KeysDown.contains(keyCode) || !deskport::key_repeat::repeatable(keyCode)) return;
+    }
+    else if (event->state == SDL_PRESSED) {
         m_KeysDown.insert(keyCode);
     }
     else if (!m_KeysDown.remove(keyCode)) {
         return; // Already released on exit/focus loss, or pressed locally.
     }
 
-    LiSendKeyboardEvent(0x8000 | keyCode,
-                        event->state == SDL_PRESSED ?
-                            KEY_ACTION_DOWN : KEY_ACTION_UP,
-                        modifiers);
+    // Every key event carries the same flags; older hosts match a release to
+    // its press by code and flags.
+    LiSendKeyboardEvent2(0x8000 | keyCode,
+                         event->state == SDL_PRESSED ?
+                             KEY_ACTION_DOWN : KEY_ACTION_UP,
+                         modifiers, char(deskport::key_repeat::kClientDriven));
 }
 
 void SdlInputHandler::handleTextEvent(const SDL_Event& event)

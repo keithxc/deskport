@@ -76,6 +76,7 @@ jobs:
           nix develop -c python3 tests/test-vt-clock.py
           nix develop -c python3 tests/test-picture-quality.py
           nix develop -c python3 tests/test-input-process.py
+          nix develop -c python3 tests/test-key-repeat.py
           python3 tests/test-saver-wire.py
           python3 tests/test-saver-regression-control.py
           nix develop -c python3 tests/test-video-resume.py
