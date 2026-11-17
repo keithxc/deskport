@@ -1,3 +1,10 @@
+## macOS streaming session shutdown — 2026-11-17
+
+- [x] Fence video and audio senders before retiring a session, discard only that session's pending packets, and join the final broadcast owner while session resources remain alive.
+- [x] Keep stopped packet queues alive through worker shutdown and synchronize event/queue state reads. Replace expired mailbox entries safely.
+- [x] Verify the production shutdown paths with overlapping sessions, queued packets, dequeue/retirement contention, AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer. Retain the existing ten-second watchdog.
+- [ ] Verify repeated live rotations and rapid orientation bursts against the updated macOS host.
+
 ## Client-driven key repeat — 2026-11-10
 
 Reason: typing from a Windows client over a routed link (16–84 ms RTT sampled,

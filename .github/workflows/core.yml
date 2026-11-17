@@ -17,4 +17,5 @@ jobs:
       - run: nix develop -c python3 tests/test-core.py
       - run: nix develop -c python3 tests/test-host-lifecycle.py --binding
       - run: nix develop -c python3 tests/test-host-lifecycle.py
+      - run: nix develop -c python3 tests/test-host-macos-shutdown.py --work-dir "${{ runner.temp }}/host-macos-shutdown"
       - run: nix develop -c python3 tests/test-session-topology.py

@@ -1,0 +1,314 @@
+// Compile real pinned mailbox, sender dequeue fences, retirement, join and
+// end_broadcast. Stand-ins avoid sockets, capture, platform callbacks and input.
+#include "src/thread_safe.h"
+#include <cassert>
+#include <barrier>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <sstream>
+#include <thread>
+using namespace std::chrono_literals;
+using namespace std::literals;
+static std::ostringstream output;
+#define BOOST_LOG(level) output
+namespace mail {
+inline auto man = std::make_shared<safe::mail_raw_t>();
+constexpr auto broadcast_shutdown = "broadcast_shutdown";
+constexpr auto video_packets = "video_packets";
+constexpr auto audio_packets = "audio_packets";
+}
+struct session_t;
+struct Marker {
+  std::atomic<bool> alive {true};
+  std::atomic<int> used {0};
+};
+struct Packet {
+  void *channel_data;
+  std::shared_ptr<Marker> marker;
+  bool gated;
+};
+namespace video { using packet_t = std::unique_ptr<Packet>; }
+namespace audio { using packet_t = std::tuple<void *, std::shared_ptr<Marker>, bool>; }
+struct Socket { void close() {} };
+struct Io { void stop() {} };
+struct broadcast_ctx_t {
+  std::shared_ptr<safe::queue_t<int>> message_queue_queue;
+  std::jthread recv_thread, video_thread, audio_thread, control_thread;
+  Io io_context;
+  Socket video_sock, audio_sock;
+};
+static std::atomic<int> ready;
+static std::atomic<bool> late_use;
+[[maybe_unused]] static std::promise<void> *retire_started = nullptr;
+static std::shared_future<void> sender_start;
+static std::shared_ptr<std::barrier<>> active, release;
+static void use_packet(const std::shared_ptr<Marker> &marker, bool gated) {
+  if (gated) { active->arrive_and_wait(); release->arrive_and_wait(); }
+  if (!marker->alive) late_use = true;
+  ++marker->used;
+}
+@PACKET_MUTEXES@
+void video_sender() {
+  auto shutdown_event = mail::man->event<bool>(mail::broadcast_shutdown);
+  auto packets = mail::man->queue<video::packet_t>(mail::video_packets);
+  ++ready;
+  if (sender_start.valid()) sender_start.wait();
+  @VIDEO_DEQUEUE@
+    if (shutdown_event->peek()) break;
+    use_packet(packet->marker, packet->gated);
+  }
+}
+void audio_sender() {
+  auto shutdown_event = mail::man->event<bool>(mail::broadcast_shutdown);
+  auto packets = mail::man->queue<audio::packet_t>(mail::audio_packets);
+  ++ready;
+  if (sender_start.valid()) sender_start.wait();
+  @AUDIO_DEQUEUE@
+    if (shutdown_event->peek()) break;
+    use_packet(std::get<1>(*packet), std::get<2>(*packet));
+  }
+}
+@END_BROADCAST@
+int start_broadcast(broadcast_ctx_t &ctx) {
+  ctx.message_queue_queue = std::make_shared<safe::queue_t<int>>();
+  auto listener = [] {
+    auto stop = mail::man->event<bool>(mail::broadcast_shutdown);
+    ++ready;
+    stop->view();
+  };
+  ctx.recv_thread = std::jthread(listener);
+  ctx.control_thread = std::jthread(listener);
+  ctx.video_thread = std::jthread(video_sender);
+  ctx.audio_thread = std::jthread(audio_sender);
+  while (ready.load() != 4) std::this_thread::yield();
+  return 0;
+}
+static auto broadcast = safe::make_shared<broadcast_ctx_t>(start_broadcast, end_broadcast);
+struct Payload {
+  std::shared_ptr<Marker> marker = std::make_shared<Marker>();
+  ~Payload() { marker->alive = false; }
+};
+struct session_t {
+  std::jthread videoThread {[] {}}, audioThread {[] {}};
+  safe::shared_t<broadcast_ctx_t>::ptr_t broadcast_ref;
+  Payload payload; // Upstream payload is destroyed before broadcast_ref.
+  safe::signal_t controlEnd;
+  std::shared_ptr<int> input;
+  session_t() { broadcast_ref = broadcast.ref(); controlEnd.raise(true); }
+};
+@RETIRE_PACKETS@
+namespace input {
+void reset(const std::shared_ptr<int> &) {}
+void terminate_gamepads() {}
+}
+namespace deskport::input_process {
+struct Host { static Host &get() { static Host host; return host; } void reset() {} };
+}
+namespace config {
+struct Video { struct Display { bool config_revert_on_disconnect = false; } dd; } video;
+}
+namespace proc { struct Process { int running() { return 0; } }; inline Process proc; }
+namespace display_device { void revert_configuration() {} }
+namespace platf { void streaming_will_stop() {} }
+namespace logging { void log_flush() {} }
+namespace lifetime { void debug_trap() { std::abort(); } }
+struct Pool {
+  struct Task { int task_id; };
+  template<class F> Task pushDelayed(F &&, std::chrono::seconds delay) {
+    assert(delay == 10s); return {1};
+  }
+  void cancel(int id) { assert(id == 1); }
+} task_pool;
+namespace session {
+std::atomic_uint running_sessions;
+@JOIN@
+}
+void enqueue(session_t &session, bool gated = false) {
+  mail::man->queue<video::packet_t>(mail::video_packets)->raise(
+      std::make_unique<Packet>(&session, session.payload.marker, gated));
+  mail::man->queue<audio::packet_t>(mail::audio_packets)->raise(
+      &session, session.payload.marker, gated);
+}
+int retirement(bool overlap) {
+  ready = 0; late_use = false;
+  active = std::make_shared<std::barrier<>>(3);
+  release = std::make_shared<std::barrier<>>(3);
+  session::running_sessions = overlap ? 2 : 1;
+  auto retiring = std::make_unique<session_t>();
+  auto other = overlap ? std::make_unique<session_t>() : nullptr;
+  auto marker = retiring->payload.marker;
+  enqueue(*retiring, true);
+  active->arrive_and_wait(); // Both senders are using the retiring payload.
+  enqueue(*retiring); // Also leave raw pointers queued behind the active packets.
+  if (other) enqueue(*other);
+#if @FIXED@
+  // Start the real join with senders paused in their fenced critical sections.
+  // The join cannot pass its retirement lock until this barrier is released.
+  std::promise<void> entered;
+  retire_started = &entered;
+  std::jthread joining([&] { session::join(*retiring); retiring.reset(); });
+  entered.get_future().wait();
+  retire_started = nullptr;
+  release->arrive_and_wait();
+  joining.join();
+#else
+  // Original join returns even with another broadcast owner and paused senders.
+  // With a last owner, retain its broadcast ref only until we release the gate;
+  // this reproduces upstream's payload-before-broadcast destructor ordering
+  // without deadlocking the deliberately paused negative-control workers.
+  session::join(*retiring);
+  auto hold = std::move(retiring->broadcast_ref);
+  retiring.reset();
+  release->arrive_and_wait();
+  hold = {};
+#endif
+  if (other) {
+    // Queue a later packet and wait using an external acknowledgement marker.
+    // Neither spin reads session state; a generous process timeout catches hangs.
+    enqueue(*other);
+    while (other->payload.marker->used.load() < 4) std::this_thread::yield();
+    session::join(*other);
+    other.reset();
+  }
+  assert(session::running_sessions == 0);
+  return late_use ? 21 : 0;
+}
+// Hold sender startup so the real join must remove queued raw pointers. The
+// remaining session's original packets must survive retirement unchanged.
+int queued_retirement() {
+#if @FIXED@
+  ready = 0; late_use = false; session::running_sessions = 2;
+  std::promise<void> start;
+  sender_start = start.get_future().share();
+  auto retiring = std::make_unique<session_t>();
+  auto other = std::make_unique<session_t>();
+  auto marker = retiring->payload.marker;
+  enqueue(*retiring); enqueue(*other);
+  session::join(*retiring);
+  retiring.reset();
+  start.set_value();
+  enqueue(*other);
+  while (other->payload.marker->used.load() < 4) std::this_thread::yield();
+  session::join(*other);
+  other.reset();
+  sender_start = {};
+  assert(marker->used == 0 && !late_use);
+#endif
+  return 0;
+}
+// Force queue availability to change while pop waits for the sender mutex. A
+// dequeued-but-unlocked raw packet would survive erase_if and fail this check.
+int dequeue_gap() {
+#if @FIXED@
+  safe::queue_t<int> queue;
+  std::mutex mutex;
+  std::unique_lock held {mutex};
+  queue.raise(1);
+  std::promise<void> started;
+  std::jthread worker([&] {
+    std::unique_lock lock {mutex, std::defer_lock};
+    started.set_value();
+    auto value = queue.pop(lock);
+    assert(lock.owns_lock() && *value == 2);
+  });
+  started.get_future().wait();
+  queue.erase_if([](int value) { return value == 1; });
+  queue.raise(2);
+  held.unlock();
+  worker.join();
+  // Scope exits, continue, exception and break all release the consumer lock.
+  for (int mode = 0; mode < 4; ++mode) {
+    queue.raise(mode);
+    try {
+      for (int pass = 0; pass < 1; ++pass) {
+        std::unique_lock lock {mutex, std::defer_lock};
+        auto value = queue.pop(lock);
+        assert(value && lock.owns_lock());
+        if (mode == 1) continue;
+        if (mode == 2) throw 2;
+        break;
+      }
+    } catch (int) {}
+    assert(mutex.try_lock()); mutex.unlock();
+  }
+#endif
+  return 0;
+}
+
+// Pause last-owner destruction before post_t::cleanup(), reproducing the real
+// interval where weak_ptr::expired() is true but the mailbox entry still exists.
+template<class Base> struct Retiring: Base {
+  std::promise<void> &entered;
+  std::shared_future<void> proceed;
+  Retiring(safe::mail_t mail, std::promise<void> &entered, std::shared_future<void> proceed):
+      Base(std::move(mail)), entered(entered), proceed(std::move(proceed)) {}
+  ~Retiring() { entered.set_value(); proceed.wait(); }
+};
+template<bool Queue> bool expired_lookup() {
+  auto box = std::make_shared<safe::mail_raw_t>();
+  using Base = std::conditional_t<Queue, safe::mail_raw_t::queue_t<int>, safe::mail_raw_t::event_t<int>>::element_type;
+  std::promise<void> entered, proceed;
+  auto post = std::make_shared<Retiring<Base>>(box, entered, proceed.get_future().share());
+  box->id_to_post.emplace("retired", post);
+  std::jthread retire([post = std::move(post)]() mutable { post.reset(); });
+  entered.get_future().wait();
+  auto replacement = [&] {
+    if constexpr (Queue) return box->queue<int>("retired");
+    else return box->event<int>("retired");
+  }();
+  proceed.set_value();
+  retire.join();
+  if (!replacement) return false;
+  if constexpr (Queue) assert(replacement == box->queue<int>("retired"));
+  else assert(replacement == box->event<int>("retired"));
+  replacement->raise(42);
+  assert(*replacement->pop() == 42);
+  return true;
+}
+
+int main(int argc, char **argv) {
+  assert(argc == 2);
+  const std::string mode = argv[1];
+  if (mode == "queued") return queued_retirement();
+  if (mode == "gap") return dequeue_gap();
+  if (mode == "expired") {
+    const bool event = expired_lookup<false>();
+    const bool queue = expired_lookup<true>();
+    return event && queue ? 0 : 20;
+  }
+  if (mode == "shutdown" || mode == "overlap") {
+    int result = retirement(mode == "overlap");
+    if (result) return result;
+    for (int cycle = 0; cycle < 100; ++cycle) {
+      ready = 0; session::running_sessions = 1;
+      { session_t stream; session::join(stream); }
+      auto queue = mail::man->queue<video::packet_t>(mail::video_packets);
+      assert(queue && queue->running() && !queue->peek());
+      auto event = mail::man->event<bool>(mail::broadcast_shutdown);
+      assert(event && !event->peek());
+      output.str("");
+    }
+    return 0;
+  }
+  assert(mode == "concurrent");
+  safe::event_t<int> event;
+  safe::queue_t<int> queue;
+  std::barrier start(2);
+  std::jthread writer([&] {
+    start.arrive_and_wait();
+    for (int i = 0; i < 20000; ++i) {
+      event.raise(i); event.reset(); event.stop(); event.reset();
+      queue.raise(i);
+    }
+    queue.stop();
+  });
+  start.arrive_and_wait();
+  int observed = 0;
+  for (int i = 0; i < 20000; ++i) {
+    observed += event.peek(); observed += event.running();
+    observed += queue.peek(); observed += queue.running();
+  }
+  writer.join();
+  std::cout << "concurrent observations: " << observed << '\n';
+}

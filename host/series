@@ -94,6 +94,9 @@ macos          script  patch-host-input-process.py  {src}
 # Browser access: WebRTC transport over the existing capture and encoders.
 all            script  patch-host-browser.py  {src}  {repo}/host/browser
 
+# Native packet lifetime fencing (after every stream overlay).
+macos          script  patch-host-macos-shutdown.py  {src}
+
 # Toolchain compatibility for the portable build container (Ubuntu 24.04's
 # libstdc++ lacks ranges::to; only debug formatting changes).
 linux-portable apply   .                          host/linux/patches/sunshine-gcc13-log.patch
