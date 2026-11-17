@@ -3,7 +3,8 @@
 - [x] Fence video and audio senders before retiring a session, discard only that session's pending packets, and join the final broadcast owner while session resources remain alive.
 - [x] Keep stopped packet queues alive through worker shutdown and synchronize event/queue state reads. Replace expired mailbox entries safely.
 - [x] Verify the production shutdown paths with overlapping sessions, queued packets, dequeue/retirement contention, AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer. Retain the existing ten-second watchdog.
-- [ ] Verify repeated live rotations and rapid orientation bursts against the updated macOS host.
+- [x] Verify a signed host test copy through eight rotation rounds and eight rapid bursts on each of two simulator sizes. The helper process stays unchanged, no new crash report appears, and fresh displayed buffers match the requested sizes. An additional eight rounds pass after a display-wake assertion.
+- [ ] Complete administrator-authenticated installation and verify the installed service. Temporary-copy screenshots still contain black video, so visible desktop edges remain unverified.
 
 ## Client-driven key repeat — 2026-11-10
 
