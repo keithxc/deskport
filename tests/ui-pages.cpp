@@ -101,15 +101,18 @@ public:
     bool viewerReady() const { return nativeReady; }
     Q_INVOKABLE void setViewerRequested(bool visible) { viewerRequested = visible; }
     void makeViewerReady() { nativeReady = true; emit viewerReadyChanged(); }
+    bool quiet = false;
+    Q_INVOKABLE bool quietRecovery() const { return quiet; }
     int delay = 0; bool cancelled = false;
     Q_INVOKABLE int retryDelay() const { return delay; }
     Q_INVOKABLE void cancelRecovery() { cancelled = true; }
     int executions = 0;
     QQuickWindow* receivedWindow = nullptr;
     TestSession* next = nullptr;
+    bool refuseContinuation = false;
     std::function<void()> duringExec;
     Q_INVOKABLE bool adaptiveRestartPending() const { return next != nullptr; }
-    Q_INVOKABLE TestSession* adaptiveContinuation() { auto value = next; next = nullptr; return value; }
+    Q_INVOKABLE TestSession* adaptiveContinuation() { auto value = refuseContinuation ? nullptr : next; next = nullptr; return value; }
     Q_INVOKABLE void exec(QQuickWindow* window) { receivedWindow = window; ++executions; if (duringExec) duringExec(); }
 signals:
     void viewerReadyChanged();
@@ -534,6 +537,38 @@ ApplicationWindow {
         QVERIFY(!root->property("navigationVisible").toBool());
         QVERIFY(QMetaObject::invokeMethod(root.data(),"back"));
         QVERIFY(root->property("navigationVisible").toBool());
+        QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
+    }
+    void lifecycleBackoffAndFailureDoNotShowShell() {
+        QQmlEngine engine;
+        QStringList warnings;
+        connect(&engine,&QQmlEngine::warnings,this,[&](const QList<QQmlError>& errors){for(const auto& e:errors) warnings<<e.toString();});
+        TestSession session; session.delay = 10000; session.quiet = true;
+        engine.rootContext()->setContextProperty("testSession", &session);
+        QQmlComponent harness(&engine);
+        harness.setData(R"(import QtQuick 2.9
+import QtQuick.Controls 2.2
+ApplicationWindow {
+ id: window; width: 800; height: 600; visible: false
+ property alias depth: stackView.depth
+ property int errorsOpened: streamSegueErrorDialog.opens
+ QtObject { id: streamSegueErrorDialog; property string text: ""; property bool quitAfter: false; property int opens: 0; function open() { opens++ } }
+ StackView { id: stackView; anchors.fill: parent; initialItem: Item {} }
+ function start() { stackView.push(Qt.resolvedUrl("StreamSegue.qml"), {session: testSession, appName: "Test"}, StackView.Immediate) }
+})",QUrl::fromLocalFile(qEnvironmentVariable("TEST_GUI_DIR")+"/quiet-lifecycle-harness.qml"));
+        QScopedPointer<QObject> root(harness.create()); QVERIFY2(root,qPrintable(harness.errorString()));
+        QVERIFY(QMetaObject::invokeMethod(root.data(),"start"));
+        QTest::qWait(100);
+        QCOMPARE(session.executions,0); QVERIFY(!root->property("visible").toBool());
+        emit session.stageFailed("fixture",-1,{});
+        TestSession withdrawn;
+        session.next = &withdrawn; session.refuseContinuation = true;
+        emit session.sessionFinished(0);
+        QCOMPARE(root->property("depth").toInt(),2);
+        emit session.readyForDeletion(); // Revocation wins before continuation creation.
+        QTest::qWait(100);
+        QCOMPARE(root->property("depth").toInt(),1); QVERIFY(!root->property("visible").toBool());
+        QCOMPARE(root->property("errorsOpened").toInt(),0);
         QVERIFY2(warnings.isEmpty(),qPrintable(warnings.join('\n')));
     }
     void reconnectDelayCanBeCancelled() {
@@ -1247,6 +1282,25 @@ QtObject {
         QScopedPointer<QObject> root(component.create()); QVERIFY2(root,qPrintable(component.errorString()));
         auto window=qobject_cast<QQuickWindow*>(root.data()); QVERIFY(window);
         window->resize(1120,620); window->show(); QTest::qWait(100);
+#ifdef Q_OS_MACOS
+        if (outcome == "cancel") {
+            struct RestoreDirection {
+                Qt::LayoutDirection value;
+                ~RestoreDirection() { QGuiApplication::setLayoutDirection(value); }
+            } restore{QGuiApplication::layoutDirection()};
+            auto bar = findVisual(window->contentItem(), "titlebarContent"); QVERIFY(bar);
+            const double originalInset = root->property("windowButtonsEnd").toDouble();
+            for (double inset : {originalInset, 129.0}) {
+                root->setProperty("windowButtonsEnd", inset);
+                for (auto direction : {Qt::LeftToRight, Qt::RightToLeft}) {
+                    QGuiApplication::setLayoutDirection(direction);
+                    QTRY_VERIFY2(std::abs(bar->x() - inset - 16) < 0.5,
+                        qPrintable(QString("Physical left titlebar clearance: %1, expected %2").arg(bar->x()).arg(inset + 16)));
+                }
+            }
+            root->setProperty("windowButtonsEnd", originalInset);
+        }
+#endif
         auto memoryButton = findVisual(window->contentItem(), "memorySummary"); QVERIFY(memoryButton);
         QVERIFY(memoryButton->property("text").toString().contains("10 MiB"));
         QVERIFY(QMetaObject::invokeMethod(memoryButton, "clicked"));

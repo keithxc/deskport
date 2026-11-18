@@ -65,8 +65,21 @@ Set `DESKPORT_JOBS` to cap parallel compilation, and optionally set
 
 `build --target macos` currently invokes the existing application packager,
 including local signing. `build --target windows` stops after host compilation.
-The Linux Nix result remains in `/nix/store`; its `work/result` link is managed
-and removed by `clean --work-only --apply` without deleting store contents.
+Linux Nix builds use `nix build -L --cores 4 --max-jobs 1 --no-link
+--print-out-paths`. Stdout goes directly to `records/<run>/linux-nix/nix-outputs.txt`;
+stderr remains in the private build log. After a successful exit, the runner
+requires exactly one absolute `/nix/store/<hash>-<name>` output that is an
+existing directory, records it as `nix_output` in `run.json`, and passes that
+store path directly to smoke checks. `steps.json` records the exit status and
+separate stdout/log SHA-256 digests. Empty, multiple or malformed outputs stop
+the run before smoke checks; stderr is never parsed for output paths.
+
+The managed run creates no store symlinks or GC roots. Store retention belongs
+to the delivery configuration prebuild, which maintains only the fixed pending
+and rollback roots. Text records do not retain store contents against GC.
+Cleanup retains those records without deleting store contents; historical
+runs containing `work/result` remain cleanable with `clean --work-only --apply`,
+which unlinks the old result link without following it.
 
 ## Directory ownership
 

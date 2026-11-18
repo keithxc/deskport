@@ -157,7 +157,8 @@ Range state{0,0,5};unsigned effective=96,writes=0,sleeps=0,readError=0,writeErro
 DWORD query(Source,Range& r){r=state;return readError?readError:valid(r)?0:50;}
 DWORD effectiveDpi(Source,UINT& dpi){dpi=effective;return windowError;}
 DWORD DisplayConfigSetDeviceInfo(Header* h){++writes;assert(h->type==-4&&h->adapterId==7&&h->id==3);
- if(!writeError)state.current=reinterpret_cast<SetPacket*>(h)->relative;return writeError;}
+ if(!writeError)state.current=reinterpret_cast<SetPacket*>(h)->relative;
+ return writeError;}
 void Sleep(unsigned ms){assert(ms==50);++sleeps;}
 ''' + setter + r'''
 int main(){

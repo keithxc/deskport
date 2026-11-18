@@ -17,7 +17,7 @@ def patch(name, old, new):
         raise SystemExit(f'Rate API anchor mismatch: {name}: {old[:80]!r}')
     path.write_text(source.replace(old, new))
 
-patch('src/confighttp.cpp', '#include "confighttp.h"', '#include "confighttp.h"\n#include "deskport/common/ratecontrol.h"')
+patch('src/confighttp.cpp', '#include "confighttp.h"', '#include "confighttp.h"\n#include "deskport/common/ratecontrol.h"\n#include <thread>')
 patch('src/confighttp.cpp', '''        if (action == "video") {''', '''        if (action == "rate") {
           const auto ceiling = input.contains("ceilingKbps") && input["ceilingKbps"].is_number_integer()
             ? input["ceilingKbps"].get<long long>() : -1;
@@ -28,13 +28,23 @@ patch('src/confighttp.cpp', '''        if (action == "video") {''', '''        i
             output["status"] = false; output["code"] = "unauthorized";
           } else {
             // Saver first: the encoder applies the ceiling with the saver's burst.
+            const int permille = deskport::ceilingPermille(ceiling, deskport::requestedKbps.load());
             if (input.contains("saver")) {
               deskport::liveSaver = input["saver"].get<bool>() ? 1 : 0;
               output["saver"] = input["saver"].get<bool>();
             }
-            deskport::liveCeilingPermille = deskport::ceilingPermille(ceiling, deskport::requestedKbps.load());
+            deskport::liveCeilingPermille = permille;
+            const int saver = deskport::liveSaver.load();
             output["status"] = true;
             output["ceilingKbps"] = ceiling;
-            output["live"] = deskport::liveEncoder.load() == 1;
+            // The old capability describes the previous target. Wait briefly
+            // for the encode thread's acknowledgment; fixed backends return at
+            // once. A stalled/paused encoder safely uses the existing reconnect
+            // fallback instead of claiming a queued change is applied.
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(250);
+            while (deskport::liveEncoder.load() == 1 && (deskport::appliedCeilingPermille.load() != permille || deskport::appliedSaver.load() != saver) &&
+                   std::chrono::steady_clock::now() < deadline)
+              std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            output["live"] = deskport::liveEncoder.load() == 1 && deskport::appliedCeilingPermille.load() == permille && deskport::appliedSaver.load() == saver;
           }
         } else if (action == "video") {''')

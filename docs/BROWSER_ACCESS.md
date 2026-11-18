@@ -355,3 +355,15 @@ fixture binary was reused only after confirming its five production/test C++
 source files are unchanged from its recorded build. These are synthetic
 transport and Web UI results, not a newly built full macOS application or
 physical streaming/input acceptance. No installed application or mynix changed.
+## Compatibility follow-up — 2026-10-17
+
+Playback recovery now handles browsers that block even silent autoplay, missing
+codec capabilities and decoder errors. DPR-only display changes use a rearmed
+resolution query alongside viewport resize notifications. See the
+[compatibility acceptance matrix](BROWSER_COMPATIBILITY.md) for strict-TLS
+Chromium results, native WebDriver entry points and the remaining Windows-host
+and physical-client gates. Native Safari 27.0.1 passed 12 checks against the
+isolated Linux capture fixture with normal Keychain TLS validation, real H.264
+decoding, Opus receipt and pairing lifecycle checks. The approved temporary
+certificate and trust were removed after testing. Windows-host and physical
+iPad acceptance remain separate.

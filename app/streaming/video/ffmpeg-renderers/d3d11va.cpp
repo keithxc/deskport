@@ -500,6 +500,19 @@ bool D3D11VARenderer::initialize(PDECODER_PARAMETERS params)
         return false;
     }
 
+    if (params->videoFormat & VIDEO_FORMAT_MASK_10BIT) {
+        // A P010 decoder and 10-bit swap-chain format do not qualify HDR output.
+        // Query before SetColorSpace1: DXGI reports a successfully set space as
+        // supported even when the current output clips it to SDR.
+        UINT support = 0;
+        hr = m_SwapChain->CheckColorSpaceSupport(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, &support);
+        if (FAILED(hr) || !(support & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "Current D3D11 output does not support HDR10 presentation; qualifying an SDR renderer/profile instead");
+            return false;
+        }
+    }
+
     // Disable Alt+Enter, PrintScreen, and window message snooping. This makes
     // it safe to run the renderer on a separate rendering thread rather than
     // requiring the main (message loop) thread.

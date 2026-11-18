@@ -1,3 +1,14 @@
+## Browser recovery messages and integrated core — 2026-11-18
+
+Core `44f228995f23435d2aa93b661d2f105d3664b338` consolidates the existing keyboard guidance and portable
+sizing work, adds independent portable session/input/rate contracts, and registers
+four Browser-only playback recovery messages in all 22 locales. The portable
+content additions preserve all existing values; they do not change desktop UI.
+The desktop Git and Nix pins advance together; native Qt catalogs
+keep their existing values. These are machine-assisted translations pending
+native-speaker review. No wire message or display policy changes. Historical
+platform acceptance remains tied to the source recorded in its evidence row.
+
 ## Desktop tuning note and stale clipboard text — 2026-11-04
 
 Core `f75afe8da4d0f109330aa34b7aea1273565756fc` corrects the mobile desktop tuning footnote:

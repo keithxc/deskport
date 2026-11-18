@@ -19,6 +19,7 @@ extern "C" {
 
 #ifdef Q_OS_DARWIN
 #include "ffmpeg-renderers/vt.h"
+#include "ffmpeg-renderers/vt-hardware.h"
 #endif
 
 #ifdef HAVE_LIBVA
@@ -593,6 +594,16 @@ bool FFmpegVideoDecoder::completeInitialization(const AVCodec* decoder, enum AVP
                          params->videoFormat);
             return false;
         }
+
+#ifdef Q_OS_DARWIN
+        if (m_HwDecodeCfg && m_HwDecodeCfg->device_type == AV_HWDEVICE_TYPE_VIDEOTOOLBOX &&
+            (params->videoFormat & VIDEO_FORMAT_MASK_H265) &&
+            !dp_vt_hevc_hardware_probe(m_Pkt->data, size_t(m_Pkt->size))) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "HEVC profile has no verified VideoToolbox hardware decoder; trying another decoder");
+            return false;
+        }
+#endif
 
         AVFrame* frame = av_frame_alloc();
         if (!frame) {
@@ -1673,7 +1684,10 @@ void FFmpegVideoDecoder::decoderThreadProc()
                     // correctly synchronized to each frame, unlike our async HDR metadata message.
                     SS_HDR_METADATA hdrMetadata;
                     if (m_Source->hdrMetadata(&hdrMetadata)) {
-                        if (av_frame_get_side_data(frame, AV_FRAME_DATA_MASTERING_DISPLAY_METADATA) == nullptr) {
+                        // Unknown static mastering data is optional. Attaching an
+                        // empty block makes renderers infer a measured black level.
+                        if ((hdrMetadata.maxDisplayLuminance != 0 || hdrMetadata.displayPrimaries[0].x != 0) &&
+                            av_frame_get_side_data(frame, AV_FRAME_DATA_MASTERING_DISPLAY_METADATA) == nullptr) {
                             auto mdm = av_mastering_display_metadata_create_side_data(frame);
 
                             mdm->display_primaries[0][0] = av_make_q(hdrMetadata.displayPrimaries[0].x, 50000);

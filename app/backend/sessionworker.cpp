@@ -2,6 +2,7 @@
 #include "streaming/canvasbridge.h"
 #include "streaming/video/videostatus.h"
 #include "diagnostics.h"
+#include "sleepmonitor.h"
 #include "computermanager.h"
 #include "cli/startstream.h"
 #include "settings/streamingpreferences.h"
@@ -59,6 +60,7 @@ int SessionWorker::run() {
 }
 void SessionWorker::attach(Session* session) {
     m_Session=session; session->setViewerRequested(m_Visible);
+    session->setClientBlocked(m_Sleeping || m_Locked);
     if (m_PendingTuning > 0) { session->applyDesktopAdjustment(m_PendingTuning); m_PendingTuning = 0; }
     if (m_Stopping) session->cancelRecovery();
     connect(session, &Session::canvasFullscreenRequested, this, [this] { send({{"type","canvas-fullscreen"}}); });
@@ -78,7 +80,11 @@ void SessionWorker::attach(Session* session) {
     connect(session,&Session::readyForDeletion,this,[this,session] {
         m_Session=nullptr;
         if (!m_Stopping && session->adaptiveRestartPending()) {
-            auto next=session->adaptiveContinuation(); QTimer::singleShot(next->retryDelay(),this,[this,next] { attach(next); });
+            auto next=session->adaptiveContinuation();
+            if (!next) { finish(); return; }
+            // Keep the pending object cancellable during backoff and sleep.
+            m_Session = next;
+            QTimer::singleShot(next->retryDelay(),this,[this,next] { attach(next); });
         } else finish();
     });
     QTimer::singleShot(0,this,[this,session] { session->exec(this); });
@@ -110,10 +116,22 @@ void SessionWorker::command(const QJsonObject& message) {
     } else if (action=="shortcut" && message.value("enabled").isBool()) {
         ShortcutState::configure(message.value("enabled").toBool(),
             message.value("sequence").toString(ShortcutBinding::defaultSequence()));
+    } else if (action=="lifecycle" && message.value("sleeping").isBool() && message.value("locked").isBool()) {
+        m_Sleeping = message.value("sleeping").toBool(); m_Locked = message.value("locked").toBool();
+        if (m_Session) m_Session->setClientBlocked(m_Sleeping || m_Locked);
+        if (m_Sleeping || m_Locked) {
+            m_Visible = false;
+            if (m_Session) {
+                m_Session->releaseForClientLock();
+                if (m_Sleeping) m_Session->endForSystemSleep();
+            }
+        }
+        send({{"type","lifecycle"},{"blocked",m_Sleeping || m_Locked}});
     } else if (action=="diagnostics" && message.value("enabled").isBool()) {
         Diagnostics::instance().setEnabled(message.value("enabled").toBool());
     } else if (action=="show") {
         // Only a user's request raises the window; recovery restores state quietly.
+        if (m_Sleeping || m_Locked || SleepMonitor::asleep() || ScreenLockMonitor::locked()) return;
         const bool raise=message.value("raise").toBool(true);
         m_Visible=true; m_InputEpoch = quint64(message.value("epoch").toDouble());
         CanvasBridge::requested(true);

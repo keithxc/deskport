@@ -27,6 +27,7 @@ private:
     QPointer<Session> m_Session;
     ComputerManager* m_Computers = nullptr;
     bool m_Visible = false, m_Stopping = false, m_Finished = false;
+    bool m_Sleeping = false, m_Locked = false;
     // A saved tuning value that arrived between sessions.
     double m_PendingTuning = 0;
     quint64 m_HideEpoch = 0, m_InputEpoch = 0;

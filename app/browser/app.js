@@ -40,6 +40,9 @@
   let heartbeatBusy = false;
   let heartbeatFailures = 0;
   let wantAudio = false;
+  let playbackAttempt = 0;
+  let playbackBlocked = false;
+  let audioBlocked = false;
   let inputQueue = [];
   let inputDraining = false;
   let composing = false;
@@ -65,7 +68,7 @@
     busy: "The computer is in use by another connection. End that connection and try again.",
     'taken-over': "A DeskPort client took over the computer. The browser connection has ended.",
     unsupported: "Browser streaming is unavailable. Check the computer.",
-    'unsupported-codec': "This browser does not support H.264 Baseline 3.1. Update it or use another browser.",
+    'unsupported-codec': "This browser cannot decode the required H.264 video. Update it, use another browser, or try a smaller window.",
     'media-unavailable': "The computer cannot capture or encode video. Check sharing permissions and the encoder.",
     'invalid-request': "The computer rejected the request. Reload the page and try again.",
     timeout: "Connection timed out. Check the computer and network.",
@@ -274,6 +277,10 @@
     const videoCapabilities = codecs?.filter(codec => codec.mimeType.toLowerCase() === 'video/h264')
       .map(({ mimeType, clockRate, sdpFmtpLine }) => ({ mimeType, clockRate, sdpFmtpLine }));
     if (codecs && !videoCapabilities.length) throw uiError("No H.264 decoder is available. Use a recent Safari, Chrome or Edge.");
+    const audioCodecs = window.RTCRtpReceiver?.getCapabilities?.('audio')?.codecs;
+    if (wantAudio && audioCodecs && !audioCodecs.some(codec => codec.mimeType.toLowerCase() === 'audio/opus')) {
+      throw uiError("No Opus audio decoder is available. Turn off audio in Connection options or update your browser.");
+    }
     return {
       width: Math.floor(width / 4) * 4, height: Math.floor(height / 4) * 4,
       fps: 60, bitrateKbps: quality === 'smooth' ? 4500 : quality === 'sharp' ? 12000 : 8000,
@@ -433,6 +440,9 @@
   }
 
   function clearLocalSession() {
+    ++playbackAttempt;
+    playbackBlocked = audioBlocked = false;
+    composing = false;
     clearInterval(heartbeatTimer);
     clearInterval(statsTimer);
     clearTimeout(connectionTimer);
@@ -548,7 +558,14 @@
     if (channel?.readyState === 'open' && !inputDraining && !inputQueue.length) {
       if (channel.bufferedAmount >= 65536) {
         // Switching transports here could deliver a key-up before its queued key-down.
-        if (event.type !== 'release') failSession("Input congested. Disconnected to release remote keys. Reconnect to try again.");
+        // A dropped blur release is unsafe too. Defer termination so the release
+        // inside endSession cannot recursively start another teardown.
+        const currentGeneration = generation;
+        queueMicrotask(() => {
+          if (currentGeneration === generation && ['connecting', 'streaming'].includes(phase)) {
+            void failSession("Input congested. Disconnected to release remote keys. Reconnect to try again.");
+          }
+        });
         return false;
       }
       try { channel.send(JSON.stringify(event)); return true; } catch (_) { /* Use the authenticated HTTP fallback. */ }
@@ -770,36 +787,53 @@
 
   function updateSoundLabel() {
     ui['sound-toggle'].textContent = t(video.muted ? 'Sound off' : 'Sound on');
+    ui['resume-audio'].textContent = playbackBlocked ? t("Tap to play video") : t("Tap to enable audio");
   }
   function updateSound() {
     updateSoundLabel();
     ui['sound-toggle'].setAttribute('aria-pressed', String(!video.muted));
-    if (!video.paused && (!video.muted || !wantAudio)) ui['resume-audio'].hidden = true;
+    ui['resume-audio'].hidden = !(playbackBlocked || (wantAudio && audioBlocked));
   }
-  async function playRemote() {
+  async function playRemote(unmute = false) {
+    if (!video.srcObject || !['connecting', 'streaming'].includes(phase)) return;
     const currentGeneration = generation;
+    const attempt = ++playbackAttempt;
+    const current = () => currentGeneration === generation && attempt === playbackAttempt;
+    if (unmute) video.muted = false;
     try { await video.play(); }
-    catch (_) {
-      if (currentGeneration !== generation) return;
-      // Receive-only Safari sessions may reject unmuted autoplay. Keep video usable.
+    catch (error) {
+      if (!current() || error.name === 'AbortError') return;
+      if (error.name === 'NotSupportedError') { void failSession(errorMessages['unsupported-codec']); return; }
+      // A receive-only stream has no capture permission to unlock Safari audio.
+      // Retry muted, then offer a real user gesture even when audio was disabled.
+      audioBlocked = wantAudio && !video.muted;
       video.muted = true;
-      try { await video.play(); } catch (_) { /* The connection timeout supplies actionable feedback. */ }
-      if (currentGeneration !== generation) return;
-      ui['resume-audio'].hidden = !wantAudio;
+      try { await video.play(); }
+      catch (mutedError) {
+        if (!current() || mutedError.name === 'AbortError') return;
+        if (mutedError.name === 'NotSupportedError') { void failSession(errorMessages['unsupported-codec']); return; }
+        playbackBlocked = true;
+        updateSound();
+        return;
+      }
     }
-    if (currentGeneration !== generation) return;
+    if (!current()) return;
+    playbackBlocked = false;
+    if (!video.muted) audioBlocked = false;
     updateSound();
   }
   async function enableAudio() {
     if (!wantAudio) { notice("Audio is off for this session. Disconnect and enable it in Connection options."); return; }
-    video.muted = false;
-    try { await video.play(); ui['resume-audio'].hidden = true; }
-    catch (_) { ui['resume-audio'].hidden = false; notice("The browser blocked audio. Tap Enable audio again."); }
-    updateSound();
+    await playRemote(true);
   }
-  ui['resume-audio'].addEventListener('click', enableAudio);
+  ui['resume-audio'].addEventListener('click', () => { void playRemote(wantAudio); });
   ui['sound-toggle'].addEventListener('click', () => {
-    if (video.muted || video.paused) void enableAudio(); else { video.muted = true; updateSound(); }
+    if (video.muted || video.paused) void enableAudio(); else { ++playbackAttempt; video.muted = true; audioBlocked = false; updateSound(); }
+  });
+  video.addEventListener('error', () => {
+    if (!video.srcObject || !['connecting', 'streaming'].includes(phase)) return;
+    const decoding = video.error?.code === 3 || video.error?.code === 4;
+    void failSession(decoding ? errorMessages['unsupported-codec'] : "Playback stopped. Check the network and reconnect.");
   });
   video.addEventListener('playing', () => {
     if (!['connecting', 'streaming'].includes(phase) || !video.videoWidth) return;
@@ -865,7 +899,18 @@
     element.addEventListener('pointerleave', () => showControls());
   }
   if (window.ResizeObserver) new ResizeObserver(() => scheduleResize()).observe(ui.viewport);
-  else window.addEventListener('resize', () => scheduleResize());
+  window.addEventListener('resize', () => scheduleResize());
+  window.visualViewport?.addEventListener('resize', () => scheduleResize());
+  // Moving between displays can change DPR without changing the CSS rectangle.
+  // Rearm the query at each new ratio; ResizeObserver alone misses this case.
+  let densityQuery;
+  function watchDensity() {
+    densityQuery?.removeEventListener('change', watchDensity);
+    densityQuery = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    densityQuery.addEventListener('change', watchDensity);
+    scheduleResize();
+  }
+  watchDensity();
   for (const [source, other] of [['desktop-zoom', 'session-zoom'], ['session-zoom', 'desktop-zoom']]) {
     ui[source].addEventListener('change', () => {
       ui[other].value = ui[source].value;
@@ -903,7 +948,7 @@
   window.addEventListener('blur', releaseInput);
   document.addEventListener('visibilitychange', () => {
     releaseInput();
-    if (!document.hidden && phase === 'streaming') { void heartbeat(); void playRemote(); }
+    if (!document.hidden && phase === 'streaming') { void heartbeat(); void playRemote(); scheduleResize(0); }
   });
   window.addEventListener('pagehide', () => { pageLeaving = true; void endSession('', false, true); });
   window.addEventListener('pageshow', event => {

@@ -7,42 +7,10 @@
 #include <QSet>
 #include "localtextinput.h"
 #include "streaming/shortcutstate.h"
+#include "inputtimergate.h"
 
-struct GamepadState {
-    SDL_GameController* controller;
-    SDL_JoystickID jsId;
-    short index;
-
-#if !SDL_VERSION_ATLEAST(2, 0, 9)
-    SDL_Haptic* haptic;
-    int hapticMethod;
-    int hapticEffectId;
-#endif
-
-    SDL_TimerID mouseEmulationTimer;
-    uint32_t lastStartDownTime;
-
-    bool clickpadButtonEmulationEnabled;
-    bool emulatedClickpadButtonDown;
-
-#if SDL_VERSION_ATLEAST(2, 0, 14)
-    uint8_t gyroReportPeriodMs;
-    float lastGyroEventData[SDL_arraysize(SDL_ControllerSensorEvent::data)];
-    uint32_t lastGyroEventTime;
-
-    uint8_t accelReportPeriodMs;
-    float lastAccelEventData[SDL_arraysize(SDL_ControllerSensorEvent::data)];
-    uint32_t lastAccelEventTime;
-#endif
-
-    int buttons;
-    short lsX, lsY;
-    short rsX, rsY;
-    unsigned char lt, rt;
-};
-
-// activeGamepadMask is a short, so we're bounded by the number of mask bits
-#define MAX_GAMEPADS 16
+#include "gamepadstate.h"
+static_assert(MAX_GAMEPADS <= 16, "Input timer context reserves four bits for controller slots");
 
 #define MAX_FINGERS 2
 
@@ -105,11 +73,15 @@ public:
     int getAttachedGamepadMask();
 
     void raiseAllKeys();
+    // Stop global controller/mouse emulation as well as keyboard capture.
+    void suspendInput();
 
     void notifyMouseLeave();
     void notifyPointerPosition();
     bool keyboardRoutingActive();
     void releaseRemoteInput(bool cancelText = true);
+    // Release all input before a viewer stops owning presentation.
+    void resumeInput() { m_InputTimerGate.resume(); }
 
     void notifyFocusLost();
 
@@ -180,6 +152,7 @@ private:
     SDL_Window* m_Window = nullptr;
     ShortcutState::KeyChord m_ShortcutChord;
     LocalTextInput m_LocalTextInput;
+    InputTimerGate m_InputTimerGate;
     bool m_RemoteInputEnabled;
     bool m_MultiController;
     bool m_GamepadMouse;

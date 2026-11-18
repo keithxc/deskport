@@ -105,21 +105,26 @@
        BOOST_LOG(error) << "Video setup failed."sv;
 --- a/cmake/compile_definitions/macos.cmake
 +++ b/cmake/compile_definitions/macos.cmake
-@@ -26,6 +26,8 @@
+@@ -26,6 +26,9 @@
  endif()
  
  list(APPEND SUNSHINE_EXTERNAL_LIBRARIES
 +        "-framework ScreenCaptureKit"
 +        "-framework QuartzCore"
++        "-framework Metal"
          ${APP_KIT_LIBRARY}
          ${APP_SERVICES_LIBRARY}
          ${AUDIO_TOOLBOX_LIBRARY}
-@@ -61,3 +63,8 @@
+@@ -61,3 +64,12 @@
          "${CMAKE_SOURCE_DIR}/third-party/TPCircularBuffer/TPCircularBuffer.h"
          ${APPLE_ENTITLEMENTS_FILE}
          ${APPLE_PLIST_FILE})
 +
 +# DeskPort's ScreenCaptureKit bridge owns asynchronous streams with ARC.
-+list(APPEND PLATFORM_TARGET_FILES "${CMAKE_SOURCE_DIR}/src/deskport/macos/screen-video.m")
-+set_source_files_properties("${CMAKE_SOURCE_DIR}/src/deskport/macos/screen-video.m"
++list(APPEND PLATFORM_TARGET_FILES
++    "${CMAKE_SOURCE_DIR}/src/deskport/macos/screen-video.m"
++    "${CMAKE_SOURCE_DIR}/src/deskport/macos/color-conversion.m")
++set_source_files_properties(
++    "${CMAKE_SOURCE_DIR}/src/deskport/macos/screen-video.m"
++    "${CMAKE_SOURCE_DIR}/src/deskport/macos/color-conversion.m"
 +    PROPERTIES COMPILE_FLAGS "-fobjc-arc")

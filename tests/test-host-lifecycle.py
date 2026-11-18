@@ -184,7 +184,8 @@ else:
     extra_sources = f'"{root}/app/backend/peermanager.cpp" "{root}/app/backend/peermanager-session.cpp" "{root}/app/backend/peermanager-devices.cpp" "{root}/app/backend/adaptivedisplay.cpp"' if binding else ""
     extra_headers = f'"{root}/app/backend/peermanager.h"' if binding else ""
     if "--cli" in sys.argv:
-        extra_sources += f' "{root}/app/cli/hostcontrol.cpp" "{root}/third_party/qrcodegen/qrcodegen.cpp"'
+        extra_sources += f' "{root}/app/cli/hostcontrol.cpp" "{root}/third_party/qrcodegen/qrcodegen.cpp" "{root}/app/backend/seamlesshostmanager.cpp"'
+        extra_headers += f' "{root}/app/backend/seamlesshostmanager.h"'
     if "--ui" in sys.argv:
         extra_sources += f' "{root}/app/gui/hostlayout.cpp" "{root}/app/gui/manual.cpp" "{root}/app/backend/trafficbudget.cpp"'
         extra_headers += f' "{root}/app/gui/manual.h" "{root}/app/backend/trafficbudget.h"'
@@ -236,12 +237,6 @@ macx {{
             subprocess.run([lrelease, "-silent", str(root / "app/languages" / (name + ".ts")),
                             "-qm", str(catalogs / (name + ".qm"))], check=True)
         environment["DESKPORT_TRANSLATIONS_DIR"] = str(catalogs)
-    if "--sessions" in sys.argv:
-        # QLocalServer appends a UUID. Managed run paths can exceed macOS's
-        # Unix socket limit; only socket files use this short shared directory.
-        socket_root = Path(subprocess.check_output(["bash", str(root / "scripts/build-paths.sh"), "root"], text=True).strip()) / "sockets"
-        socket_root.mkdir(parents=True, exist_ok=True)
-        environment["TMPDIR"] = str(socket_root)
     if "--cli" in sys.argv:
         environment["DESKPORT_CLI_TEST_CONFIG"] = str(work / "cli-config")
     if "--service" in sys.argv:
@@ -320,4 +315,25 @@ commonName = supplied
     # Either selection route: explicit arguments after "--", or the environment
     # variable the Windows branch uses.
     test_args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else os.environ.get("DESKPORT_TEST_FUNCTIONS", "").split()
+    if "--sessions" in sys.argv and sys.platform != "win32":
+        # Budget the complete QLocalServer name, not only its root. Qt also
+        # creates a short-lived QTemporaryDir for UserAccessOption before bind.
+        # Keep the compiler's TMPDIR unchanged; this applies only to the suite.
+        override = os.environ.get("DESKPORT_TEST_SOCKET_ROOT")
+        build_root = Path(subprocess.check_output(
+            ["bash", str(root / "scripts/build-paths.sh"), "root"], text=True).strip())
+        candidates = [Path(override)] if override else [build_root / "sockets", build_root]
+        longest_name = "deskport-sessions-" + "x" * 36
+        # Qt reserves two NUL bytes on Linux, one on Darwin (sun_path[104]).
+        limit = 103 if sys.platform == "darwin" else 106
+        socket_root = next((candidate.absolute() for candidate in candidates
+                            if len(os.fsencode(candidate.absolute() / longest_name)) <= limit), None)
+        if socket_root is None:
+            raise RuntimeError("Session socket path exceeds sun_path: set DESKPORT_TEST_SOCKET_ROOT "
+                               f"to a writable private root of at most {limit - len(longest_name) - 1} bytes")
+        socket_root.mkdir(parents=True, exist_ok=True)
+        environment["TMPDIR"] = str(socket_root)
+        environment["DESKPORT_TEST_FIXTURE_ROOT"] = str(work)
+        print(f"Session socket root: {socket_root}; longest endpoint: "
+              f"{len(os.fsencode(socket_root / longest_name))}/{limit} bytes", flush=True)
     subprocess.run([str(test_binary), *test_args], cwd=work, env=environment, check=True)

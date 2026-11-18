@@ -41,6 +41,8 @@ macos          copy    host/macos/pixelmatch.h    src/deskport/macos/
 macos          apply   .                          host/macos/patches/sunshine-screen-capture-kit.patch
 macos          copy    host/macos/screen-video.h       src/deskport/macos/
 macos          copy    host/macos/screen-video.m       src/deskport/macos/
+macos          copy    host/macos/color-conversion.h   src/deskport/macos/
+macos          copy    host/macos/color-conversion.m   src/deskport/macos/
 macos          copy    host/macos/admitted-display.h   src/deskport/macos/
 macos          copy    host/macos/admitted-display.h   third-party/libvirtualhid/src/platform/macos/deskport-admitted-display.h
 macos          copy    host/macos/scroll-pacer.h       third-party/libvirtualhid/src/platform/macos/deskport-scroll-pacer.h
@@ -60,6 +62,7 @@ all            copy    host/common/framecadence.h   src/deskport/common/
 all            copy    host/common/encoderpolicy.h  src/deskport/common/
 macos,windows  script  patch-host-encoder-policy.py  {src}
 macos          script  patch-host-macos-lifecycle.py  {src}
+macos          script  patch-host-macos-color.py      {src}
 macos          script  patch-host-vt-drain.py        {src}
 all            script  patch-host-input-activity.py  {src}
 all            copy    host/common/keyrepeat.h      src/deskport/common/
@@ -78,17 +81,17 @@ linux-nix      script  patch-host-memory-diagnostics.py   {src}  {repo}/host/com
 linux          script  patch-host-encoder-policy.py       {src}
 
 # Rate control, data saver and video pause (after the input/cadence overlays).
-macos,linux    copy    host/common/ratecontrol.h  src/deskport/common/
-macos,linux    copy    host/common/picturequality.h  src/deskport/common/
+all            copy    host/common/ratecontrol.h  src/deskport/common/
+all            copy    host/common/picturequality.h  src/deskport/common/
 macos          copy    host/macos/vtbitrate.h     src/deskport/macos/
 macos          copy    host/macos/vtlatency.h     src/deskport/macos/
 macos          copy    host/macos/vtclock.h       src/deskport/macos/
 macos          copy    host/common/inputprocess.h  src/deskport/common/
 macos          copy    host/macos/inputprocess-host.h  src/deskport/macos/
-macos,linux    script  patch-host-remote-rate.py  {src}
-macos,linux    script  patch-host-data-saver.py   {src}
-macos,linux    script  patch-host-video-pause.py  {src}
-macos,linux    script  patch-host-rate-api.py     {src}
+all            script  patch-host-remote-rate.py  {src}
+all            script  patch-host-data-saver.py   {src}
+all            script  patch-host-video-pause.py  {src}
+all            script  patch-host-rate-api.py     {src}
 macos          script  patch-host-input-process.py  {src}
 
 # Browser access: WebRTC transport over the existing capture and encoders.

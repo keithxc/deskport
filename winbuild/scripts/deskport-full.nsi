@@ -52,6 +52,10 @@ BrandingText "${APPNAME} ${VERSION} x64"
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
+; ExecWait leaves the exit-code variable undefined if CreateProcess fails. A
+; missing/quarantined helper must hit the same fail-closed gate as a failed one.
+!include "checked-exec.nsh"
+
 Function .onInit
   ${IfNot} ${RunningX64}
     MessageBox MB_ICONSTOP "This package requires 64-bit Windows (x64)." /SD IDOK
@@ -92,18 +96,32 @@ Section "DeskPort" SecMain
   InitPluginsDir
   SetOutPath "$PLUGINSDIR"
   File "${PAYLOAD}\deskport-maintenance.exe"
-  ExecWait '$\"$PLUGINSDIR\deskport-maintenance.exe$\" stop-installation $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$PLUGINSDIR\deskport-maintenance.exe$\" stop-installation $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "DeskPort could not close this installation safely. Close its windows and tray process, then retry." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
+  ClearErrors
   SetOutPath "$INSTDIR"
   File /r "${PAYLOAD}\*.*"
+  ${If} ${Errors}
+    ; Preserve a cleanup entry point even after a partial payload copy.
+    WriteUninstaller "$INSTDIR\Uninstall.exe"
+    MessageBox MB_ICONSTOP "DeskPort could not copy its complete payload. Repair or uninstall this installation before retrying. Its display service has not been started." /SD IDOK
+    SetErrorLevel 1
+    Abort
+  ${EndIf}
 
   ; Write this before the first integrity gate so a quarantined install keeps
   ; an executable path for cleanup and repair.
+  ClearErrors
   WriteUninstaller "$INSTDIR\Uninstall.exe"
+  ${If} ${Errors}
+    MessageBox MB_ICONSTOP "DeskPort could not create its uninstaller. Repair this installation before retrying." /SD IDOK
+    SetErrorLevel 1
+    Abort
+  ${EndIf}
   Call VerifyPayload
   Pop $0
   ${If} $0 != 0
@@ -114,7 +132,7 @@ Section "DeskPort" SecMain
   WriteRegStr HKLM "Software\${APPNAME}" "InstallDir" "$INSTDIR"
   WriteRegStr HKLM "Software\${APPNAME}" "Version" "${VERSION}"
 
-  ExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" register-recovery $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" register-recovery $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "DeskPort could not register its owned display recovery task (error $0). An unrelated task was not replaced." /SD IDOK
     SetErrorLevel 1
@@ -132,14 +150,14 @@ Section "DeskPort" SecMain
 
   ; Windows performs normal catalog verification and publisher consent. No
   ; certificate is imported and no signature policy is weakened.
-  ExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" stage $\"$INSTDIR\driver\MttVDD.inf$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" stage $\"$INSTDIR\driver\MttVDD.inf$\"'
   ${If} $0 != 0
   ${AndIf} $0 != 3010
     MessageBox MB_ICONSTOP "Windows rejected or canceled staging the signed display driver (error $0). The installed uninstaller can remove the incomplete installation." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
-  ExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" install $\"$INSTDIR\driver\MttVDD.inf$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" install $\"$INSTDIR\driver\MttVDD.inf$\"'
   ${If} $0 == 3010
     SetRebootFlag true
   ${ElseIf} $0 != 0
@@ -148,7 +166,7 @@ Section "DeskPort" SecMain
     Abort
   ${EndIf}
 
-  ExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" register-display-service $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" register-display-service $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "DeskPort could not register or start its display service (error $0). An unrelated service was not replaced. Repair or uninstall this installation." /SD IDOK
     SetErrorLevel 1
@@ -224,25 +242,25 @@ Section "Desktop shortcut" SecDesktop
 SectionEnd
 
 Section "Uninstall"
-  ExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" stop-installation $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" stop-installation $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "Close this DeskPort installation before uninstalling." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
-  ExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" remove-display-service $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" remove-display-service $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "DeskPort could not safely remove its display service (error $0). Its files were retained." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
-  ExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" remove-recovery $\"$INSTDIR$\"' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-maintenance.exe$\" remove-recovery $\"$INSTDIR$\"'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "DeskPort could not safely remove its recovery task (error $0)." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
-  ExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" remove' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" remove'
   ${If} $0 != 0
   ${AndIf} $0 != 3010
     MessageBox MB_ICONSTOP "The DeskPort virtual display could not be removed. Its files and ownership record have been retained." /SD IDOK
@@ -259,13 +277,13 @@ Section "Uninstall"
   Pop $0
   nsExec::ExecToLog 'netsh advfirewall firewall delete rule name="DeskPort Browser Media" program="$INSTDIR\host\deskport-host.exe"'
   Pop $0
-  ExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" restore-config' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" restore-config'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "The virtual display configuration changed outside DeskPort. Its files were retained (error $0)." /SD IDOK
     SetErrorLevel 1
     Abort
   ${EndIf}
-  ExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" remove-package' $0
+  !insertmacro CheckedExecWait '$\"$INSTDIR\deskport-driver-setup.exe$\" remove-package'
   ${If} $0 != 0
     MessageBox MB_ICONSTOP "Windows retained the DeskPort driver package (error $0). The ownership record and uninstaller remain available for retry." /SD IDOK
     SetErrorLevel 1

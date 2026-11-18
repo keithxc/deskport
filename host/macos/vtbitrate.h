@@ -96,4 +96,44 @@ inline bool applyQualityRange(VTCompressionSessionRef s, int minQp, int maxQp) {
     return applyQualityCeiling(s, 51) && applyQualityFloor(s, minQp) &&
            (maxQp == 51 || applyQualityCeiling(s, maxQp));
 }
+
+// The three properties are independent native calls. Snapshot all of them
+// before mutation and restore the previous settings on a partial failure.
+// NULL restores the default (VTSession.h). Caller disables live capability on
+// failure, including a failed restore, so the viewer can reconnect safely.
+inline bool apply(VTCompressionSessionRef s, std::int64_t bps, int minQp, std::int64_t previousLimitBps, int burst = 1, int maxQp = -1, double fps = 0) {
+    if (!s || bps <= 0 || minQp < 0 || minQp > 51) return false;
+    const CFStringRef keys[] = {kVTCompressionPropertyKey_AverageBitRate,
+        kVTCompressionPropertyKey_DataRateLimits, kVTCompressionPropertyKey_MinAllowedFrameQP,
+        kVTCompressionPropertyKey_MaxAllowedFrameQP, kVTCompressionPropertyKey_ExpectedFrameRate};
+    const bool selected[] = {true, true, true, maxQp >= 0, fps > 0};
+    CFTypeRef previous[5] {};
+    bool copied = true;
+    for (int i = 0; i < 5; ++i) {
+        if (!selected[i]) continue;
+        if (VTSessionCopyProperty(s, keys[i], nullptr, &previous[i]) == noErr) continue;
+        // Some hardware accepts DataRateLimits but cannot read it back. The
+        // pinned FFmpeg host initializes rc_max_rate as a one-second limit;
+        // after success the owner retains our last limit. Do not guess for an
+        // arbitrary encoder whose initial limit is unknown.
+        if (i != 1 || previousLimitBps <= 0) { copied = false; continue; }
+        const std::int64_t bytes = previousLimitBps / 8;
+        const double seconds = 1.0;
+        CFNumberRef values[] = {CFNumberCreate(nullptr, kCFNumberSInt64Type, &bytes),
+            CFNumberCreate(nullptr, kCFNumberDoubleType, &seconds)};
+        previous[i] = CFArrayCreate(nullptr, reinterpret_cast<const void**>(values), 2, &kCFTypeArrayCallBacks);
+        for (auto value : values) CFRelease(value);
+    }
+    bool success = false;
+    if (copied) {
+        success = (fps <= 0 || applyExpectedFrameRate(s, fps)) &&
+            applyRate(s, bps, burst) &&
+            (maxQp < 0 ? applyQualityFloor(s, minQp) : applyQualityRange(s, minQp, maxQp));
+        if (!success) {
+            for (int i = 0; i < 5; ++i) if (selected[i]) VTSessionSetProperty(s, keys[i], previous[i]);
+        }
+    }
+    for (auto value : previous) if (value) CFRelease(value);
+    return success;
+}
 }

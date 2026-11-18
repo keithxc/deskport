@@ -161,7 +161,7 @@ QVariantMap MultiSessions::states() const {
     return result;
 }
 void MultiSessions::open(QString id, QString name, QString address, QString app) {
-    if (m_Shutdown || id.isEmpty()) return;
+    if (m_Shutdown || m_Sleeping || m_Locked || id.isEmpty()) return;
     id = id.toLower();
     auto entry = m_Entries.value(id);
     if (entry && (entry->state == "starting" || (entry->process && entry->process->state() != QProcess::NotRunning))) { select(id); return; }
@@ -245,6 +245,7 @@ void MultiSessions::accept() {
                     if (canvasEnabled()) initialize["canvas"] = m_CanvasState;
                     send(*owner, initialize);
                     if ((*owner)->state == "stopping") send(*owner,{{"command","disconnect"}});
+                    send(*owner, {{"command","lifecycle"},{"sleeping",m_Sleeping},{"locked",m_Locked}});
                     present();
                 } else if ((*owner)->socket == socket) receive(*owner, message);
                 else { socket->abort(); return; }
@@ -357,7 +358,9 @@ void MultiSessions::receive(Entry* entry, const QJsonObject& message) {
         if (awaited) entry->exposed = false;
         if (m_Visible == entry->id) m_Visible.clear();
         present(awaited);
-    } else if (type == "devices") { showDevices(); emit devicesRequested(); }
+    } else if (type == "devices") {
+        if (!entry->quietLifecycle && !m_Sleeping && !m_Locked) { showDevices(); emit devicesRequested(); }
+    }
     else if (type == "focus") {
         entry->focused = message.value("focused").toBool();
         if (!entry->focused) entry->focusLost.start();
@@ -380,10 +383,11 @@ void MultiSessions::receive(Entry* entry, const QJsonObject& message) {
 }
 void MultiSessions::select(QString id) {
     id = id.toLower();
-    if (!m_Entries.contains(id) || m_Shutdown) return;
+    if (!m_Entries.contains(id) || m_Shutdown || m_Sleeping || m_Locked) return;
     if (!m_ActivationTarget.isEmpty() && m_ActivationTarget != id) setActivationToken({});
     const auto selected=m_Entries.value(id);
     if (selected->state != "starting" && selected->state != "connected") { emit devicesRequested(); return; }
+    selected->quietLifecycle = false;
     m_Selected = id; m_Wanted = id;
     emit canvasChanged();
     // The shell owns its window. Showing the connecting page must not wait for
@@ -423,7 +427,7 @@ bool MultiSessions::viewerInFront(bool trayClick) const {
     return false;
 }
 bool MultiSessions::recall() {
-    if (m_Shutdown) { setActivationToken({}); return false; }
+    if (m_Shutdown || m_Sleeping || m_Locked) { setActivationToken({}); return false; }
     const auto recallEntry = [this](const QString& id) {
         // An activation waiting for another viewer to hide belongs only to
         // this target. Cancellation or a later selection cannot transfer it.
@@ -442,7 +446,7 @@ void MultiSessions::hide(Entry* entry) {
     const bool pending = m_Hiding.contains(entry->id);
     m_Hiding.insert(entry->id); entry->hideEpoch = m_Epoch;
     send(entry, {{"command","hide"},{"epoch",double(m_Epoch)}});
-    if (pending || !entry->process) return;
+    if (pending || !entry->process || m_Sleeping) return;
     auto process = entry->process;
     const auto request = ++entry->hideRequest;
     QTimer::singleShot(2000, process, [this, entry, process, request] {
@@ -453,7 +457,7 @@ void MultiSessions::hide(Entry* entry) {
     });
 }
 void MultiSessions::present(bool raise) {
-    if (m_Shutdown || !m_Hiding.isEmpty() || m_Wanted.isEmpty()) return;
+    if (m_Shutdown || m_Sleeping || m_Locked || !m_Hiding.isEmpty() || m_Wanted.isEmpty()) return;
     auto entry = m_Entries.value(m_Wanted);
     if (entry && entry->socket && entry->state != "stopping" && entry->state != "error") {
         entry->exposed = true;
@@ -528,7 +532,25 @@ void MultiSessions::fullscreen(QString id) {
         select(entry->id);
     }
 }
-void MultiSessions::suspend() { for (auto entry : m_Entries) disconnectSession(entry->id); }
+void MultiSessions::setLifecycleBlocked(bool sleeping, bool locked) {
+    if (m_Sleeping == sleeping && m_Locked == locked) return;
+    const bool wasSleeping = m_Sleeping;
+    m_Sleeping = sleeping; m_Locked = locked;
+    // OS suspension must not turn an elapsed hide deadline into a worker kill
+    // on wake, before its queued input-release acknowledgement can be delivered.
+    if (sleeping && !wasSleeping) for (auto entry : m_Entries) ++entry->hideRequest;
+    // Forget presentation, not connection intent. Unlock/wake never raises a viewer.
+    if (sleeping || locked) {
+        for (auto entry : m_Entries) entry->quietLifecycle = true;
+        showDevices();
+    }
+    if (wasSleeping && !sleeping) for (const auto& id : m_Hiding.values()) {
+        m_Hiding.remove(id);
+        hide(m_Entries.value(id)); // Fresh deadline after wake, without presentation.
+    }
+    for (auto entry : m_Entries)
+        send(entry, {{"command","lifecycle"},{"sleeping",sleeping},{"locked",locked}});
+}
 void MultiSessions::shutdown() { m_Shutdown=true; setActivationToken({}); for (auto entry : m_Entries) disconnectSession(entry->id); }
 void MultiSessions::ended(Entry* entry, const QString& error) {
     if (m_ActivationTarget == entry->id) setActivationToken({});
@@ -540,6 +562,7 @@ void MultiSessions::ended(Entry* entry, const QString& error) {
     entry->state=error.isEmpty() ? "disconnected" : "error"; entry->error=error;
     entry->stopError.clear();
     const bool awaited = m_Hiding.remove(entry->id); entry->exposed=false;
+    const bool foreground = !entry->quietLifecycle && !m_Shutdown && !m_Sleeping && !m_Locked;
     // A worker can exit before acknowledging hide. Its old visible record must
     // not reopen the shell after the user hid it or selected another desktop.
     const bool showDevices = m_CanvasWindow
@@ -547,7 +570,7 @@ void MultiSessions::ended(Entry* entry, const QString& error) {
         : m_Visible == entry->id || m_Wanted == entry->id;
     if (m_Visible==entry->id) m_Visible.clear();
     if (m_Wanted==entry->id) m_Wanted.clear();
-    if (showDevices) emit devicesRequested();
+    if (showDevices && foreground) emit devicesRequested();
     if (m_Selected==entry->id) emit canvasChanged();
     present(awaited); emit changed();
 }

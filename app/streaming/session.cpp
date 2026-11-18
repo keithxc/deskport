@@ -5,6 +5,8 @@
 #include "connectionwait.h"
 #include "resumewatchdog.h"
 #include "resizetrace.h"
+#include "windowvisibility.h"
+#include "vieweractivity.h"
 #include <QElapsedTimer>
 #include <QHostInfo>
 #include "session.h"
@@ -16,9 +18,7 @@
 #ifdef Q_OS_MACOS
 #include "backend/macdock.h"
 #endif
-#ifdef Q_OS_LINUX
 #include "backend/sleepmonitor.h"
-#endif
 #include "backend/peerstore.h"
 #include "backend/streambudget.h"
 #include "backend/sessionwindowstate.h"
@@ -147,7 +147,7 @@ void Session::clStageFailed(int stage, int errorCode)
     if (s_ActiveSession->m_RecoveryDeadline) s_ActiveSession->scheduleNetworkRecovery();
     // Perform the port test now, while we're on the async connection thread and not blocking the UI.
     unsigned int portFlags = LiGetPortFlagsFromStage(stage);
-    if (!s_ActiveSession->m_NetworkRetry) s_ActiveSession->m_PortTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
+    if (!s_ActiveSession->m_NetworkRetry && !s_ActiveSession->m_SystemSleep) s_ActiveSession->m_PortTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
 
     char failingPorts[128];
     LiStringifyPortFlags(portFlags, ", ", failingPorts, sizeof(failingPorts));
@@ -188,7 +188,7 @@ void Session::clConnectionTerminated(int errorCode)
         errorCode != ML_ERROR_PROTECTED_CONTENT && errorCode != ML_ERROR_FRAME_CONVERSION &&
         errorCode != ML_ERROR_UNEXPECTED_EARLY_TERMINATION)
         session->scheduleNetworkRecovery();
-    if (!takenOver && !session->m_NetworkRetry) session->m_PortTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
+    if (!takenOver && !session->m_NetworkRetry && !session->m_SystemSleep) session->m_PortTestResults = LiTestClientConnectivity(CONN_TEST_SERVER, 443, portFlags);
     if (takenOver) {
         session->m_UnexpectedTermination = true;
         emit session->displayLaunchError(tr("This connection was taken over by another device."));
@@ -830,6 +830,8 @@ bool Session::initialize()
         const int cap = std::min(m_StreamConfig.bitrate, DeskPortStream::dataSaverBitrate(m_StreamConfig.width, m_StreamConfig.height));
         if (cap < m_StreamConfig.bitrate) m_RateCapKbps = cap;
     }
+    if (m_AdaptiveDisplay)
+        m_AdaptiveDisplay->beginRateStream(m_RateCapKbps, m_Preferences->dataSaver);
 
 #ifndef STEAM_LINK
     // Opt-in to all encryption features if we detect that the platform
@@ -1337,6 +1339,12 @@ bool Session::validateLaunch(SDL_Window* testWindow)
         emitLaunchWarning(tr("An attached gamepad has no mapping and won't be usable. Visit the Moonlight help to resolve this."));
     }
 
+    // Extended profiles require the host's exact profile bit. Main8 support
+    // does not imply Main10, and one HDR codec does not qualify another one.
+    const int knownHostProfiles = SCM_MASK_H264 | SCM_MASK_HEVC | SCM_MASK_AV1;
+    const int hostProfiles = m_SupportedVideoFormats.maskByServerCodecModes(m_Computer->serverCodecModeSupport & knownHostProfiles);
+    m_SupportedVideoFormats.removeByMask((VIDEO_FORMAT_MASK_10BIT | VIDEO_FORMAT_MASK_YUV444 | VIDEO_FORMAT_MASK_AV1) & ~hostProfiles);
+
     // If we removed all codecs with the checks above, use H.264 as the codec of last resort.
     if (m_SupportedVideoFormats.empty()) {
         m_SupportedVideoFormats.append(VIDEO_FORMAT_H264);
@@ -1369,22 +1377,27 @@ bool Session::validateLaunch(SDL_Window* testWindow)
         }
     }
 
-    if (m_Preferences->videoDecoderSelection == StreamingPreferences::VDS_FORCE_HARDWARE &&
-            !(m_SupportedVideoFormats & VIDEO_FORMAT_MASK_10BIT) && // HDR was already checked for hardware decode support above
-            getDecoderAvailability(testWindow,
-                                   m_Preferences->videoDecoderSelection,
-                                   m_SupportedVideoFormats.front(),
-                                   m_StreamConfig.width,
-                                   m_StreamConfig.height,
-                                   m_StreamConfig.fps) != DecoderAvailability::Hardware) {
-        if (m_Preferences->videoCodecConfig == StreamingPreferences::VCC_AUTO) {
-            emit displayLaunchError(tr("Your selection to force hardware decoding cannot be satisfied due to missing hardware decoding support on this PC's GPU."));
+    // Probe the exact final profile, including HDR/4:4:4 and SDR fallback.
+    // Earlier preference probes can describe another codec (notably AV1 after
+    // HEVC Main10 fails); a capability bit cannot substitute for a real decoder.
+    const bool qualified = m_SupportedVideoFormats.qualify([&](int format) {
+        const auto availability = getDecoderAvailability(testWindow,
+            m_Preferences->videoDecoderSelection, format,
+            m_StreamConfig.width, m_StreamConfig.height, m_StreamConfig.fps);
+        if (availability != DecoderAvailability::None &&
+            (m_Preferences->videoDecoderSelection != StreamingPreferences::VDS_FORCE_HARDWARE ||
+             availability == DecoderAvailability::Hardware)) {
+            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                "Qualified video profile: 0x%x, decoder=%s, requested_hdr=%d (active HDR follows host metadata)",
+                format, availability == DecoderAvailability::Hardware ? "hardware" : "software",
+                m_Preferences->enableHdr);
+            return true;
         }
-        else {
-            emit displayLaunchError(tr("Your codec selection and force hardware decoding setting are not compatible. This PC's GPU lacks support for decoding your chosen codec."));
-        }
-
-        // Fail the launch, because we won't manage to get a decoder for the actual stream
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Rejecting unavailable video decoder profile: 0x%x", format);
+        return false;
+    });
+    if (!qualified) {
+        emit displayLaunchError(tr("Unable to initialize video decoder. Please check your streaming settings and try again."));
         return false;
     }
 
@@ -1417,6 +1430,7 @@ private:
         // Only quit the running app if our session terminated gracefully
         bool shouldQuit =
                 !m_Session->adaptiveRestartPending() &&
+                !m_Session->m_SystemSleep &&
                 !m_Session->m_UnexpectedTermination &&
                 m_Session->m_Preferences->quitAppAfter;
 
@@ -1983,6 +1997,17 @@ public:
 void Session::exec(QWindow* qtWindow)
 {
     if (m_ExecRequested) return;
+    // Preserve the session object and cancellation while no transport is active.
+    // The recovery budget begins after wake/unlock, never during a long sleep.
+    if (!m_RecoveryCancelled && (m_ClientBlocked || SleepMonitor::asleep() || ScreenLockMonitor::locked())) {
+        m_LifecycleQuiet = true;
+        m_ViewerRequested = false;
+        if (m_RecoveryDeadline) { m_SystemResume = true; m_RecoveryAttempt = 0; }
+        QPointer<QWindow> window(qtWindow);
+        QTimer::singleShot(100, this, [this, window] { exec(window); });
+        return;
+    }
+    if (m_SystemResume) { m_RecoveryDeadline = QDateTime::currentMSecsSinceEpoch() + 30000; m_SystemResume = false; }
     m_ExecRequested = true;
     // The SDL owner pumps a retained window from here on.
     if (m_TransitionTimer) { m_TransitionTimer->stop(); m_TransitionTimer->deleteLater(); m_TransitionTimer = nullptr; }
@@ -2045,11 +2070,12 @@ void Session::execInternal()
     deskportResizeStage("initialize-begin");
     const bool initialized = !m_RecoveryCancelled && (!m_RecoveryDeadline || QDateTime::currentMSecsSinceEpoch() < m_RecoveryDeadline) && (!m_TransitionWindow || !m_TransitionWindow->cancelled()) && initialize();
     if (!initialized || (m_TransitionWindow && m_TransitionWindow->cancelled())) {
+        const bool continueSleep = m_SystemSleep && adaptiveRestartPending();
         if (initialized) SDL_QuitSubSystem(SDL_INIT_VIDEO);
         m_TransitionWindow.reset();
         releaseRetainedInputSubsystems();
         m_AdaptiveNextSize = {};
-        m_AdaptiveDisplay.reset();
+        if (!continueSleep) m_AdaptiveDisplay.reset();
         emit sessionFinished(0);
         emit transportCleanupFinished();
         return;
@@ -2308,7 +2334,8 @@ void Session::execInternal()
     const auto showControlCenter = [this] {
         m_ViewerRequested = false;
         if (m_QtWindow) QMetaObject::invokeMethod(m_QtWindow, "showDevicesDuringSession", Qt::AutoConnection);
-        m_InputHandler->setCaptureActive(false);
+        m_InputHandler->suspendInput();
+        reportViewerFocus(false);
         hideViewerWindow();
         m_Clipboard.reset();
     };
@@ -2317,8 +2344,12 @@ void Session::execInternal()
     // Pause the host's video only after the viewer has stayed hidden for a
     // while. Hiding and showing it again in quick succession, such as repeated
     // tray clicks, then never waits for the stream to resume.
-    QElapsedTimer viewerHidden;
+    ViewerActivity activity;
+    WindowVisibility visibility(m_Window);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Viewer visibility: %s", visibility.capability());
+    QElapsedTimer activityClock; activityClock.start();
     ResumeWatchdog resumeWatchdog;
+    bool initialRateChecked = false;
     for (;;) {
         CanvasBridge::synchronize(m_Window);
         if (CanvasBridge::owns(m_Window)) m_IsFullScreen = CanvasBridge::fullscreen();
@@ -2327,15 +2358,36 @@ void Session::execInternal()
             serviceEvents.restart();
         }
         // Hidden from the tray or closed, or the screen is locked.
-#ifdef Q_OS_LINUX
-        const bool screenLocked = ScreenLockMonitor::locked();
-#else
-        const bool screenLocked = false;
-#endif
-        if (m_ViewerRequested && !screenLocked) viewerHidden.invalidate();
-        else if (!viewerHidden.isValid()) viewerHidden.start();
+        const bool screenLocked = m_ClientBlocked || ScreenLockMonitor::locked() || SleepMonitor::asleep();
+        if (screenLocked && m_ViewerRequested.exchange(false)) {
+            m_InputHandler->raiseAllKeys();
+            m_InputHandler->suspendInput();
+            m_Clipboard.reset();
+            hideViewerWindow();
+            emit presentationHidden();
+        }
+        activity.update(m_ViewerRequested, screenLocked || visibility.unavailable(),
+                        CanvasBridge::flags(m_Window) & SDL_WINDOW_INPUT_FOCUS, activityClock.elapsed());
+        if (activity.takeInputChange()) {
+            if (!activity.available()) {
+                m_InputHandler->suspendInput();
+                reportViewerFocus(false);
+                m_ResizeSettler.reset();
+            } else {
+                m_InputHandler->resumeInput();
+                const bool focused = CanvasBridge::flags(m_Window) & SDL_WINDOW_INPUT_FOCUS;
+                reportViewerFocus(focused);
+                if (focused) m_InputHandler->notifyFocusGained();
+            }
+        }
+        m_AudioMuted = activity.audioMuted(m_Preferences->remoteAudio, m_Preferences->muteOnFocusLoss);
+        CanvasBridge::inputEnabled(activity.available());
         if (m_AdaptiveDisplay && LiHasVideoKeyFrame()) {
-            const bool paused = viewerHidden.isValid() && viewerHidden.elapsed() >= 5000;
+            const bool paused = activity.videoPaused(activityClock.elapsed());
+            if (!initialRateChecked) {
+                initialRateChecked = true;
+                m_AdaptiveDisplay->markRateStreamReady();
+            }
             m_AdaptiveDisplay->setVideoPaused(paused);
             switch (resumeWatchdog.update(paused, m_VideoUnitsSubmitted, QDateTime::currentMSecsSinceEpoch())) {
             case ResumeWatchdog::Action::RequestKeyFrame:
@@ -2370,7 +2422,7 @@ void Session::execInternal()
         }
         if (m_AdaptiveDisplay && m_AdaptiveDisplay->takeLeaveFullscreen()) leaveFullscreen();
         if (applyPendingDesktopAdjustment()) goto DispatchDeferredCleanup;
-        if (checkAdaptiveResize()) goto DispatchDeferredCleanup;
+        if (activity.available() && checkAdaptiveResize()) goto DispatchDeferredCleanup;
 #if SDL_VERSION_ATLEAST(2, 0, 18) && !defined(STEAM_LINK)
         // SDL 2.0.18 has a proper wait event implementation that uses platform
         // support to block on events rather than polling on Windows, macOS, X11,
@@ -2405,7 +2457,7 @@ void Session::execInternal()
 #if SDL_VERSION_ATLEAST(2, 0, 22)
         // EXT owns heap text, even when a hidden viewer discards the event.
         if (event.type == SDL_TEXTEDITING_EXT) {
-            if (m_ViewerRequested) m_InputHandler->handleTextEvent(event);
+            if (m_ViewerRequested && activity.available()) m_InputHandler->handleTextEvent(event);
             SDL_free(event.editExt.text);
             continue;
         }
@@ -2417,7 +2469,7 @@ void Session::execInternal()
         }
         // Background viewers keep media/transport alive but cannot forward
         // physical input, including globally delivered controller events.
-        if (!m_ViewerRequested && ((event.type >= SDL_KEYDOWN && event.type <= SDL_MOUSEWHEEL) ||
+        if ((!m_ViewerRequested || screenLocked || visibility.unavailable()) && ((event.type >= SDL_KEYDOWN && event.type <= SDL_MOUSEWHEEL) ||
             (event.type >= SDL_CONTROLLERAXISMOTION && event.type <= SDL_CONTROLLERBUTTONUP) ||
             (event.type >= SDL_FINGERDOWN && event.type <= SDL_MULTIGESTURE)
 #if SDL_VERSION_ATLEAST(2, 0, 14)
@@ -2435,6 +2487,9 @@ void Session::execInternal()
 
         case SDL_USEREVENT:
             switch (event.user.code) {
+            case DeskPortVisibilityChanged:
+                // Native observers only wake this owner; state is sampled above.
+                break;
             case DeskPortFullscreen:
                 recallDesktopWindow(m_Window);
                 toggleFullscreen();
@@ -2450,7 +2505,8 @@ void Session::execInternal()
             case DeskPortTransportEnded:
                 goto DispatchDeferredCleanup;
             case DeskPortHideWindow:
-                m_InputHandler->setCaptureActive(false);
+                m_InputHandler->suspendInput();
+                reportViewerFocus(false);
                 m_Clipboard.reset();
                 hideViewerWindow();
                 emit presentationHidden();
@@ -2485,7 +2541,10 @@ void Session::execInternal()
                 // others is brought forward rather than hidden.
                 if (desktopWindowInFront(m_Window, event.user.code == DeskPortToggleWindow)) {
                     WindowActivation::setPending({});
-                    m_InputHandler->setCaptureActive(false);
+                    m_InputHandler->suspendInput();
+                    activity.inputSuspended();
+                    reportViewerFocus(false);
+                    m_ResizeSettler.reset();
                     SDL_HideWindow(m_Window);
                 } else {
                     if (m_QtWindow) QMetaObject::invokeMethod(m_QtWindow, "prepareViewerRecall", Qt::QueuedConnection);
@@ -2530,6 +2589,7 @@ void Session::execInternal()
             break;
 
         case SDL_WINDOWEVENT:
+            if (event.window.windowID != SDL_GetWindowID(m_Window)) break;
             // Early handling of some events
             switch (event.window.event) {
             case SDL_WINDOWEVENT_CLOSE:
@@ -2539,12 +2599,12 @@ void Session::execInternal()
             case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_FOCUS_LOST:
                 m_InputHandler->resetShortcutChord();
-                if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
-                    noteDesktopWindowFocusLost();
-                    reportViewerFocus(false);
-                }
-                if (m_Preferences->muteOnFocusLoss) {
-                    m_AudioMuted = true;
+                noteDesktopWindowFocusLost();
+                reportViewerFocus(false);
+                if (event.window.event != SDL_WINDOWEVENT_FOCUS_LOST) {
+                    m_InputHandler->suspendInput();
+                    activity.inputSuspended();
+                    m_ResizeSettler.reset();
                 }
                 m_InputHandler->notifyFocusLost();
                 break;
@@ -2552,17 +2612,14 @@ void Session::execInternal()
             case SDL_WINDOWEVENT_RESTORED:
                 // Win32 can preserve focus across hide/show without another
                 // FOCUS_GAINED event. Reattach the native IME when visible.
-                if (m_Preferences->localTextInput && m_ViewerRequested &&
+                if (m_Preferences->localTextInput && m_ViewerRequested && !screenLocked && !visibility.unavailable() &&
                     (CanvasBridge::flags(m_Window) & SDL_WINDOW_INPUT_FOCUS))
                     m_InputHandler->notifyFocusGained();
                 break;
             case SDL_WINDOWEVENT_FOCUS_GAINED:
+                if (!m_ViewerRequested || screenLocked || visibility.unavailable()) { reportViewerFocus(false); break; }
                 reportViewerFocus(true);
-                if (!m_ViewerRequested) break;
                 m_InputHandler->notifyFocusGained();
-                if (m_Preferences->muteOnFocusLoss) {
-                    m_AudioMuted = false;
-                }
                 break;
             case SDL_WINDOWEVENT_ENTER:
                 if (!m_ViewerRequested) break;
@@ -2742,7 +2799,7 @@ void Session::execInternal()
                 // is set up, this ensures the window re-creation is already done.
                 if (needsPostDecoderCreationCapture) {
                     const auto flags = CanvasBridge::flags(m_Window);
-                    if (m_ViewerRequested && (flags & SDL_WINDOW_INPUT_FOCUS) && !(flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)))
+                    if (m_ViewerRequested && activity.available() && (flags & SDL_WINDOW_INPUT_FOCUS) && !(flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)))
                         m_InputHandler->setCaptureActive(true);
                     needsPostDecoderCreationCapture = false;
                 }
@@ -2826,7 +2883,7 @@ DispatchDeferredCleanup:
     if (!adaptiveRestartPending()) rememberAdaptiveWindow();
     // Uncapture the mouse and hide the window immediately,
     // so we can return to the Qt GUI ASAP.
-    m_InputHandler->setCaptureActive(false);
+    m_InputHandler->suspendInput();
     SDL_EnableScreenSaver();
     SDL_SetHint(SDL_HINT_TIMER_RESOLUTION, "0");
     if (QGuiApplication::platformName() == "eglfs") {
@@ -2887,9 +2944,10 @@ DispatchDeferredCleanup:
     // Network recovery keeps the window too, so reconnecting never maps a new
     // one that the compositor would raise and focus.
     if (m_Window && adaptiveRestartPending() && !m_ManualReconnect) {
+        if (m_SystemSleep) SDL_HideWindow(m_Window);
         m_TransitionWindow = std::make_shared<TransitionWindow>(m_Window,
             m_NetworkRetry ? tr("Connection interrupted. Reconnecting…") : tr("Adjusting resolution…"),
-            StreamSnapshot::take());
+            m_SystemSleep ? QImage{} : StreamSnapshot::take());
         qInfo() << "Adaptive display keeping client window:" << SDL_GetWindowID(m_Window);
     }
     else { StreamSnapshot::clear(); SDL_DestroyWindow(m_Window); }

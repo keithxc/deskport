@@ -439,10 +439,16 @@ ApplicationWindow {
         // Very narrow windows drop the traffic chip so the right-hand buttons always fit.
         readonly property bool narrow: window.width < 720
         RowLayout {
-            anchors.fill: parent; anchors.rightMargin: 12; spacing: 8
+            objectName: "titlebarContent"
+            readonly property bool rtl: Qt.application.layoutDirection === Qt.RightToLeft
+            readonly property real windowButtonsInset: window.unifiedTitleBar && window.visibility !== Window.FullScreen ? window.windowButtonsEnd + 16 : 12
+            anchors.fill: parent; spacing: 8
             // Room for the close, minimize and zoom buttons, which full screen hides,
             // with the same gap as between the window edge and the close button.
-            anchors.leftMargin: window.unifiedTitleBar && window.visibility !== Window.FullScreen ? window.windowButtonsEnd + 16 : 12
+            // Anchor margins mirror too; keep native Mac buttons' clearance on
+            // the physical left while the toolbar content follows RTL.
+            anchors.leftMargin: rtl ? 12 : windowButtonsInset
+            anchors.rightMargin: rtl ? windowButtonsInset : 12
             Image {
                 source: "qrc:/res/deskport.svg"; fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: 28; Layout.preferredHeight: 28

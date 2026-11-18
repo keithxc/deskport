@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import https from 'node:https';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { launchTrustedChromium, chromiumSandboxStatus } from './browser-test-context.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.DESKPORT_PLAYWRIGHT_MODULE || 'playwright-core');
@@ -43,7 +44,11 @@ const output = process.env.DESKPORT_FRONTEND_TEST_OUTPUT || path.join(process.en
 await mkdir(output, { recursive: true });
 const cert = path.join(output, 'fixture-cert.pem');
 const key = path.join(output, 'fixture-key.pem');
-execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=localhost'], { stdio: 'ignore' });
+const certutil = process.env.DESKPORT_TEST_CERTUTIL;
+assert.ok(certutil && process.platform === 'linux', 'Supply DESKPORT_TEST_CERTUTIL for private Linux NSS trust; TLS bypass is not supported.');
+execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1',
+  '-subj', '/CN=DeskPort isolated test root', '-addext', 'subjectAltName=IP:127.0.0.1',
+  '-addext', 'basicConstraints=critical,CA:TRUE', '-addext', 'keyUsage=critical,keyCertSign,digitalSignature,keyEncipherment'], { stdio: 'ignore' });
 const resources = new Map(await Promise.all(['index.html', 'app.js', 'i18n.js', 'i18n-data.js', 'style.css'].map(async name => [name, await readFile(path.join(repo, 'app/browser', name))])));
 resources.set('index.html', Buffer.from(resources.get('index.html').toString().replace('@DESKPORT_VERSION@', '0.7.0-test')));
 resources.set('icon.svg', await readFile(path.join(repo, 'app/res/deskport.svg')));
@@ -56,9 +61,13 @@ const server = https.createServer({ key: await readFile(key), cert: await readFi
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const origin = `https://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true, ...(process.env.DESKPORT_TEST_CHROME ? { executablePath: process.env.DESKPORT_TEST_CHROME } : {}) });
-// Trust override is confined to this disposable test context. Production has no bypass.
-const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1180, height: 820 }, hasTouch: true, locale: 'zh-CN' });
+let trusted, browser;
+try {
+  trusted = await launchTrustedChromium({ chromium, executablePath: process.env.DESKPORT_TEST_CHROME,
+    certutil, certificate: cert, output });
+  browser = trusted.browser;
+} catch (error) { await new Promise(resolve => server.close(resolve)); throw error; }
+const context = await browser.newContext({ ignoreHTTPSErrors: false, viewport: { width: 1180, height: 820 }, hasTouch: true, locale: 'zh-CN' });
 await context.grantPermissions(['local-network-access'], { origin });
 const page = await context.newPage();
 await context.addInitScript(() => {
@@ -93,6 +102,7 @@ let signalDirectory;
 let nativeOutput = '';
 let heldStop = null;
 const checks = [];
+let sandboxStatus = null;
 const check = (name, value = true) => { assert.ok(value, name); checks.push(name); };
 
 await context.route('**/api/**', async route => {
@@ -180,7 +190,25 @@ async function prepareHost() {
 }
 
 try {
+  {
+    const sandbox = await chromiumSandboxStatus(context);
+    sandboxStatus = { namespace: sandbox.namespace, seccomp: sandbox.seccomp };
+    await writeFile(path.join(output, 'sandbox-status.txt'), sandbox.text);
+    check('Chromium namespace and seccomp sandboxes remain enabled', sandbox.namespace && sandbox.seccomp);
+    check('browser command has no TLS, sandbox, web-security or autoplay-policy bypass', sandbox.noBypassFlags);
+    const rogueKey = path.join(output, 'untrusted-key.pem'), rogueCert = path.join(output, 'untrusted-cert.pem');
+    execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', rogueKey, '-out', rogueCert,
+      '-days', '1', '-subj', '/CN=Untrusted fixture', '-addext', 'subjectAltName=IP:127.0.0.1'], { stdio: 'ignore' });
+    const rogue = https.createServer({ key: await readFile(rogueKey), cert: await readFile(rogueCert) }, (_, response) => response.end('untrusted fixture'));
+    await new Promise(resolve => rogue.listen(0, '127.0.0.1', resolve));
+    const probe = await context.newPage();
+    try {
+      await assert.rejects(probe.goto(`https://127.0.0.1:${rogue.address().port}`), /ERR_CERT_AUTHORITY_INVALID/);
+      check('untrusted certificate fails with browser TLS validation enabled');
+    } finally { await probe.close(); await new Promise(resolve => rogue.close(resolve)); }
+  }
   await page.goto(origin);
+  check('fixture loads using its private NSS trust anchor', await page.evaluate(() => isSecureContext));
   await page.waitForFunction(() => document.getElementById('connection-status').dataset.state === 'idle');
   check('first visit checks pairing without starting media', requests.some(request => request.endpoint === '/api/resume') && !requests.some(request => request.endpoint === '/api/session/start'));
   check('remember browser is off by default (7 days when chosen)', !(await page.locator('#remember-browser').isChecked()) &&
@@ -323,6 +351,16 @@ try {
   await page.selectOption('#session-zoom', '1.2');
   for (let i = 0; i < 20 && resizeRequests().length === resizesBeforeZoom; ++i) await new Promise(resolve => setTimeout(resolve, 100));
   check('in-session content size applies through live resize', resizeRequests().at(-1)?.body.zoom === 1.2);
+  const beforeDensity = resizeRequests().length;
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: false });
+  await page.waitForFunction(() => devicePixelRatio === 2);
+  // CDP changes the sampled DPR but does not emulate a physical monitor's
+  // resolution media-query event. Supply that resize notification explicitly;
+  // the query's rearming is covered by test-browser-compat.mjs.
+  await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+  for (let i = 0; i < 30 && resizeRequests().length === beforeDensity; ++i) await new Promise(resolve => setTimeout(resolve, 100));
+  check('emulated DPR reaches live resize after browser notification', resizeRequests().at(-1)?.body.viewport.ratio === 2);
+  await cdp.send('Emulation.clearDeviceMetricsOverride');
   await page.waitForFunction(() => document.getElementById('connection-status').dataset.state === 'streaming');
   await new Promise(resolve => setTimeout(resolve, 5200));
   check('static sessions send authenticated heartbeat', requests.some(request => request.endpoint === '/api/session/heartbeat'));
@@ -465,23 +503,49 @@ try {
   await page.locator('#disconnect').click();
   await page.waitForFunction(() => document.getElementById('connection-status').dataset.state === 'idle');
   check('after disconnect a Tailscale device can connect again without the code', !(await page.locator('#credential-fields').isVisible()));
+  // Inject only the documented play() rejection. The subsequent gesture uses
+  // the real browser decoder/transport and leaves browser autoplay policy on.
+  await page.evaluate(() => {
+    window.fixtureNativePlay = HTMLMediaElement.prototype.play;
+    window.fixtureBlockPlay = true;
+    HTMLMediaElement.prototype.play = function() {
+      if (this.srcObject && window.fixtureBlockPlay) return Promise.reject(new DOMException('Fixture gesture required', 'NotAllowedError'));
+      return window.fixtureNativePlay.call(this);
+    };
+  });
+  if (!await page.locator('.connection-options').evaluate(element => element.open)) await page.locator('.connection-options summary').click();
+  await page.locator('#request-audio').uncheck();
+  await prepareHost();
+  await page.locator('#connect').click();
+  await waitVisible('#resume-audio');
+  check('silent autoplay rejection exposes a manual video gesture', (await page.locator('#resume-audio').textContent()).includes('播放画面'));
+  await page.evaluate(() => { window.fixtureBlockPlay = false; });
+  await page.locator('#resume-audio').click();
+  await page.waitForFunction(() => document.getElementById('connection-status').dataset.state === 'streaming', null, { timeout: 25000 });
+  check('manual gesture resumes real video in an audio-free session', await page.locator('#desktop-video').evaluate(video => !video.paused && video.muted && video.videoWidth > 0));
+  await page.locator('#disconnect').click();
+  await page.waitForFunction(() => document.getElementById('connection-status').dataset.state === 'idle');
+  await page.evaluate(() => { HTMLMediaElement.prototype.play = window.fixtureNativePlay; });
   tailnetOwner = false;
   check('browser reports no uncaught application errors', errors.length === 0);
-  const report = { browser: browser.version(), checks, count: checks.length, fixtureProbe, media: 'Real production RtcSession/libdatachannel Constrained Baseline H.264/Opus and DataChannel with a verified test pattern; mocked authentication/server HTTP API. No native capture/input injection or physical iPad validation.', mediaStats, errors };
+  const report = { browser: browser.version(), checks, count: checks.length, fixtureProbe,
+    sandboxStatus,
+    certificateValidation: 'Enabled; short-lived fixture root in private HOME NSS only; untrusted certificate rejected',
+    media: 'Real production RtcSession/libdatachannel Constrained Baseline H.264/Opus and DataChannel with a verified test pattern; mocked authentication/server HTTP API. No native capture/input injection or physical iPad validation.', mediaStats, errors };
   await writeFile(path.join(output, 'frontend-test-results.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));
 } catch (error) {
   console.error(JSON.stringify({ checks, errors, browserState: await page.evaluate(() => ({
-    status: document.getElementById('connection-status').textContent,
-    notice: document.getElementById('notice').textContent,
-    peers: window.fixturePeers.map(peer => ({ states: peer.fixtureStates, local: peer.localDescription?.sdp, remote: peer.remoteDescription?.sdp })),
-    video: { width: document.getElementById('desktop-video').videoWidth, paused: document.getElementById('desktop-video').paused }
-  })), endpoints: requests.map(request => request.endpoint) }, null, 2));
+    status: document.getElementById('connection-status')?.textContent,
+    notice: document.getElementById('notice')?.textContent,
+    peers: (window.fixturePeers || []).map(peer => ({ states: peer.fixtureStates, signalingState: peer.signalingState })),
+    video: { width: document.getElementById('desktop-video')?.videoWidth, paused: document.getElementById('desktop-video')?.paused }
+  })).catch(() => ({ unavailable: true })), endpoints: requests.map(request => request.endpoint) }, null, 2));
   await page.screenshot({ path: path.join(output, 'failure.png') });
   throw error;
 } finally {
   if (native) native.kill('SIGTERM');
   await context.close();
-  await browser.close();
+  await trusted.close();
   await new Promise(resolve => server.close(resolve));
 }

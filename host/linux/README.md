@@ -72,8 +72,9 @@ LGPL-2.1-or-later for screencast; see COPYING.LIB). Regenerate with
 `wayland-scanner client-header` and `wayland-scanner private-code`.
 
 On GNOME, `gnome-display.cpp` owns a Mutter ScreenCast session and a PipeWire
-sizing stream. It verifies pixel modes and applies temporary virtual-output scale
-while preserving the other logical monitor configurations. See
+sizing stream. It verifies owned pixels/scale, implements the shared policies
+within Mutter's matching-mode/adjacency limits, and uses an independent recovery
+guardian. Other clients' virtual outputs are never takeover targets. See
 [Linux adaptive display](../../docs/LINUX_ADAPTIVE_DISPLAY.md).
 
 2026-09-17: Failed local restoration releases the old lease and retains its
@@ -97,3 +98,10 @@ ScreenCast and temporary DisplayConfig transactions. Its independent guardian
 restores attached original monitors, preserves foreign outputs, and retains
 failed recovery journals. See [GNOME display compatibility](../../docs/GNOME_DISPLAY.md)
 for version evidence and the matching-mode mirror restriction.
+
+The Mutter topology adapter and independent `--restore-mutter` guardian are in
+`gnome-topology.cpp`. The existing shared policy IDs are unchanged. GNOME mirror
+requests are deliberately restricted to the physical monitors' existing mode,
+scale and rotation, because a Mutter clone group cannot express arbitrary-size
+letterboxing while preserving those modes. See the candidate and native-test
+boundaries in [Linux adaptive display](../../docs/LINUX_ADAPTIVE_DISPLAY.md).

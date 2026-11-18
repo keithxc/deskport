@@ -57,7 +57,7 @@ UiPage {
                 RowLayout {
                     id: headerRow
                     Layout.fillWidth: true; spacing: 12
-                    UiIconTile { source: page.iconFor(modelData.id); Layout.alignment: Qt.AlignVCenter }
+                    UiIconTile { objectName: "chapterIcon" + index; source: page.iconFor(modelData.id); Layout.alignment: Qt.AlignVCenter }
                     ColumnLayout {
                         Layout.fillWidth: true; spacing: 2
                         Label { text: modelData.title; textFormat: Text.PlainText; color: ui.text; font.pixelSize: 16; font.weight: Font.DemiBold; Layout.fillWidth: true; elide: Text.ElideRight }
@@ -70,20 +70,23 @@ UiPage {
                         }
                     }
                     IconImage {
+                        objectName: "chapterChevron" + index
                         source: "qrc:/res/ui/chevron.svg"; color: ui.muted
                         sourceSize.width: 16; sourceSize.height: 16
-                        rotation: card.open ? 90 : 0
+                        rotation: card.open ? 90 : Qt.application.layoutDirection === Qt.RightToLeft ? 180 : 0
                         Behavior on rotation { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
                     }
                 }
                 ColumnLayout {
                     visible: card.open; spacing: 10; Layout.fillWidth: true
+                    // The layout mirrors this margin automatically in RTL.
                     Layout.leftMargin: 44; Layout.bottomMargin: 2
                     Repeater {
                         model: modelData.steps
                         RowLayout {
                             Layout.fillWidth: true; spacing: 10
                             Rectangle {
+                                objectName: "chapterStep" + index
                                 Layout.alignment: Qt.AlignTop
                                 implicitWidth: 22; implicitHeight: 22; radius: 11
                                 color: ui.accent

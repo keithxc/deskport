@@ -394,6 +394,10 @@ checking an updated application while another remote-access service is in use.
 
 ## Safe development validation
 
+See [macOS lifecycle acceptance](MACOS_LIFECYCLE_ACCEPTANCE.md) for synthetic
+physical-topology fixtures, the opt-in native extended-display harness and the
+separate install/upgrade/rollback/privacy/recovery approval window.
+
 Run `python3 tests/test-host-lifecycle.py` with native Qt available to exercise
 startup cancellation, failure cleanup, retries and forced termination. This harness
 uses fake helper/host executables, temporary state and loopback-only TCP/UDP

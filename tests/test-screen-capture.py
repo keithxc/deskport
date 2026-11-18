@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix="deskport-sck-test-") as temp:
     binary = pathlib.Path(temp) / "test"
     subprocess.run(["xcrun", "clang", "-I", str(source), "-c", str(source / "src/platform/macos/av_video.m"), "-o", str(legacy)], check=True)
     subprocess.run(["xcrun", "clang", "-fobjc-arc", "-Wall", "-Werror", "-I", str(root), "-I", str(source),
-                    str(root / "tests/screen-capture.m"), str(legacy), "-o", str(binary),
+                    str(root / "tests/screen-capture.m"), str(root / "host/macos/color-conversion.m"), str(legacy), "-o", str(binary),
                     "-framework", "ScreenCaptureKit", "-framework", "AVFoundation", "-framework", "CoreMedia",
-                    "-framework", "CoreVideo", "-framework", "CoreGraphics", "-framework", "Foundation", "-framework", "QuartzCore"], check=True)
+                    "-framework", "CoreVideo", "-framework", "Metal", "-framework", "VideoToolbox", "-framework", "AppKit", "-framework", "CoreGraphics", "-framework", "Foundation", "-framework", "QuartzCore"], check=True)
     subprocess.run([str(binary)], check=True)

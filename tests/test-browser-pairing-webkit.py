@@ -84,7 +84,8 @@ try:
     pair_id=login['data']['pairing']['id']
     cookies=command('GET','/cookie')
     cookie=next(row for row in cookies if row['name']=='__Host-deskport-pairing')
-    check('WebKit stores Secure HttpOnly persistent cookie',cookie.get('secure') and cookie.get('httpOnly') and cookie.get('expiry',0)>time.time()+30000000)
+    remaining=cookie.get('expiry',0)-time.time()
+    check('WebKit stores Secure HttpOnly seven-day cookie',cookie.get('secure') and cookie.get('httpOnly') and 6*86400<remaining<8*86400)
     check('WebKit script cannot read auth cookies',execute("return !document.cookie.includes('deskport') && localStorage.length===0 && sessionStorage.length===0"))
     command('POST','/refresh',{});ready(True)
     check('WebKit frontend resume does not stream',execute("return document.getElementById('desktop-video').srcObject===null"))
@@ -98,6 +99,7 @@ try:
     denied=fetch('/api/resume',{})
     check('WebKit revoked cookie cannot authorize',denied.get('status')==401 and denied['data'].get('code')=='unpaired')
     result={'ok':True,'checks':checks,'capabilities':capabilities,
+        'certificateValidation':'Legacy isolated automation bypass; not certificate-trust acceptance',
         'scope':'WebKitGTK MiniBrowser on isolated Xvfb with a private persistent cookie database and real production HTTPS/frontend. No Safari/iPad or native-media claim.'}
 except Exception as error:
     result={'ok':False,'error':str(error),'checks':checks,'scope':'WebKitGTK attempt only; not physical Safari/iPad'}

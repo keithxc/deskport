@@ -6,6 +6,15 @@ Windows uses a native delayed OLE provider and pipe transport; it does not use
 the X11/Wayland Qt provider. The original protocol checkpoint below predates
 Windows integration. Current three-platform native acceptance remains scoped in
 the [PC matrix](PC_SUPPORT_MATRIX.md); browser explicit text/paste is separate.
+## Native macOS marker regression (2026-10-17)
+
+AppKit provider types require valid UTIs. The macOS adapter maps the agent's
+internal MIME marker to a private reverse-DNS UTI and back; peers keep the same
+protocol. A new production-agent round trip on two named pasteboards covers both
+directions with real PNG pixels, chunked file/directory content, repeated reads,
+echo-marker presence and stop-time revocation. The prior provider-only tests did
+not expose AppKit's rejection of the raw MIME marker. See
+[PC core regression](PC_CORE_REGRESSION.md) for fixtures, evidence and open physical gates.
 
 ## 0.3.2 prerelease (2026-09-15)
 

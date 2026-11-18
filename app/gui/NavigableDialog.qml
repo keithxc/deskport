@@ -14,6 +14,26 @@ Dialog {
     // Replaces the accepting button's text, e.g. "Remove" instead of "Yes".
     property string acceptText: ""
     property bool showClose: title.length > 0
+    property Item focusBodyItem: null
+    // Only callers that register the COMPLETE body traversal may opt in.
+    // Forms/options use Qt's full chain, including all text fields.
+    property bool explicitFocusCycle: false
+    // Explicit traversal keeps message actions reachable with macOS text-only Tab.
+    function cycleFocus(current, backwards) {
+        if (!explicitFocusCycle) return
+        var controls = []
+        if (focusBodyItem && focusBodyItem.visible && focusBodyItem.enabled) controls.push(focusBodyItem)
+        if (closeButton.visible && closeButton.enabled) controls.push(closeButton)
+        for (var i = 0; footer && i < footer.count; ++i) {
+            var button = footer.itemAt(i)
+            if (button && button.visible && button.enabled) controls.push(button)
+        }
+        if (controls.length === 0) return
+        var index = controls.indexOf(current)
+        var next = index < 0 ? (backwards ? controls.length - 1 : 0)
+                            : (index + (backwards ? -1 : 1) + controls.length) % controls.length
+        controls[next].forceActiveFocus(Qt.TabFocusReason)
+    }
     readonly property real maximumHeight: Math.round((parent ? parent.height : 640) * 0.82)
     modal: true
     padding: 20
@@ -43,6 +63,14 @@ Dialog {
             source: "qrc:/res/ui/close.svg"
             Accessible.name: qsTranslate("NavigableDialog", "Close")
             onClicked: panel.reject()
+            Keys.onTabPressed: function(event) {
+                event.accepted = panel.explicitFocusCycle
+                if (event.accepted) panel.cycleFocus(closeButton, false)
+            }
+            Keys.onBacktabPressed: function(event) {
+                event.accepted = panel.explicitFocusCycle
+                if (event.accepted) panel.cycleFocus(closeButton, true)
+            }
         }
     }
     footer: DialogButtonBox {
@@ -53,11 +81,20 @@ Dialog {
         padding: 20; topPadding: 4
         background: Item {}
         delegate: UiButton {
+            id: panelButton
             objectName: accepting ? "dialogAcceptButton" : "dialogRejectButton"
             readonly property bool accepting: DialogButtonBox.buttonRole === DialogButtonBox.AcceptRole
                                               || DialogButtonBox.buttonRole === DialogButtonBox.YesRole
             filled: accepting
             destructive: accepting && panel.destructive
+            Keys.onTabPressed: function(event) {
+                event.accepted = panel.explicitFocusCycle
+                if (event.accepted) panel.cycleFocus(panelButton, false)
+            }
+            Keys.onBacktabPressed: function(event) {
+                event.accepted = panel.explicitFocusCycle
+                if (event.accepted) panel.cycleFocus(panelButton, true)
+            }
         }
     }
 
@@ -67,6 +104,15 @@ Dialog {
     y: Math.round(((parent ? parent.height : height) - height) / 2)
 
     onAboutToShow: {
+        // Qt's standard-button text is assigned when the buttons are created.
+        // A retained, unopened panel may predate a live language switch.
+        // Refresh the footer only, preserving the caller's standardButtons binding.
+        if (footer && footer.standardButtons !== undefined) {
+            var buttons = panel.standardButtons
+            footer.standardButtons = Dialog.NoButton
+            footer.standardButtons = buttons
+            footer.standardButtons = Qt.binding(function() { return panel.standardButtons })
+        }
         if (acceptText.length === 0 || !standardButton) return
         var button = standardButton(Dialog.Ok) || standardButton(Dialog.Yes)
         if (button) button.text = acceptText

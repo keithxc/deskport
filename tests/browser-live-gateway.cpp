@@ -16,7 +16,8 @@
 #include <QPointer>
 #include <QRegularExpression>
 #include <QSocketNotifier>
-#include <QSslError>
+#include <QSslConfiguration>
+#include <QSslSocket>
 #include <QUrl>
 #include <QVector>
 #include <unistd.h>
@@ -48,18 +49,15 @@ public:
     void post(QJsonObject body, Completion done) {
         const auto action = body.value("action").toString();
         QNetworkRequest request(endpoint);
+        auto trust = QSslConfiguration::defaultConfiguration();
+        trust.setCaCertificates({certificate});
+        trust.setPeerVerifyMode(QSslSocket::VerifyPeer);
+        request.setSslConfiguration(trust);
         request.setTransferTimeout(15000);
         request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         request.setRawHeader("Authorization", basic);
         auto reply = manager.post(request, QJsonDocument(body).toJson(QJsonDocument::Compact));
-        QObject::connect(reply, qOverload<const QList<QSslError>&>(&QNetworkReply::sslErrors), reply,
-            [this, reply](const QList<QSslError>& errors) {
-            if (reply->sslConfiguration().peerCertificate() != certificate) return;
-            for (const auto& error : errors)
-                if (error.error() != QSslError::SelfSignedCertificate && error.error() != QSslError::HostNameMismatch) return;
-            reply->ignoreSslErrors(errors);
-        });
         QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, done, action] {
             const auto bytes = reply->readAll();
             const auto document = QJsonDocument::fromJson(bytes);
@@ -140,6 +138,8 @@ int main(int argc, char** argv) {
     parser.addHelpOption();
     parser.addOption({"fixture", "Private JSON with loopback URL, certificate path, username and password.", "file"});
     parser.addOption({"state", "Isolated gateway state directory.", "directory"});
+    parser.addOption({"certificate", "Synthetic HTTPS certificate for explicit test trust.", "file"});
+    parser.addOption({"key", "Matching private synthetic HTTPS key.", "file"});
     parser.addOption({"bind", "Explicit loopback or LAN address for this fixture.", "address", "127.0.0.1"});
     parser.addOption({"port", "HTTPS fixture port (0 selects an unused port).", "port", "0"});
     parser.process(application);
@@ -165,6 +165,8 @@ int main(int argc, char** argv) {
     bridge.basic = "Basic " + (username + ':' + password).toUtf8().toBase64();
     BrowserGateway::Options options;
     options.stateDirectory = parser.value("state");
+    options.certificatePath = parser.value("certificate");
+    options.privateKeyPath = parser.value("key");
     options.listenAddresses = {QHostAddress(parser.value("bind"))};
     bool portOkay;
     const int port = parser.value("port").toInt(&portOkay);

@@ -62,8 +62,8 @@ int runCanvasSelfTest(int argc, char** argv);
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
-#ifdef Q_OS_LINUX
 #include "backend/sleepmonitor.h"
+#ifdef Q_OS_LINUX
 #include "backend/serviceconfig.h"
 #endif
 
@@ -781,10 +781,25 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#ifdef Q_OS_LINUX
-    // Streaming sessions pause video while the screen is locked.
+    // Every worker also subscribes: shell IPC is not the only input safety path.
     ScreenLockMonitor screenLock;
-#endif
+    SleepMonitor sleepMonitor;
+    QObject::connect(&screenLock, &ScreenLockMonitor::changed, &app, [](bool locked) {
+        if (locked && Session::get()) Session::get()->releaseForClientLock();
+    });
+    QTimer sleepReleaseTimer;
+    QElapsedTimer sleepWait;
+    QObject::connect(&sleepReleaseTimer, &QTimer::timeout, &app, [&] {
+        if (Session::get() && Session::get()->inputDispatching() && sleepWait.elapsed() < 3000) return;
+        sleepReleaseTimer.stop(); sleepMonitor.release();
+    });
+    // Cancel the old deadline on wake; it must never close the newly acquired
+    // awake inhibitor or interfere with a subsequent quick suspend.
+    QObject::connect(&sleepMonitor, &SleepMonitor::resumed, &sleepReleaseTimer, &QTimer::stop);
+    QObject::connect(&sleepMonitor, &SleepMonitor::sleeping, &app, [&] {
+        if (Session::get()) Session::get()->endForSystemSleep();
+        sleepWait.start(); sleepReleaseTimer.start(20);
+    });
     if (app.arguments().value(1) == "--session-worker") {
         const auto endpoint = qEnvironmentVariable("DESKPORT_SESSION_ENDPOINT");
         const auto token = qEnvironmentVariable("DESKPORT_SESSION_TOKEN");
@@ -1026,25 +1041,6 @@ int main(int argc, char *argv[])
         sigaction(SIGINT, &action, nullptr);
     }
 #endif
-#ifdef Q_OS_LINUX
-    SleepMonitor sleepMonitor;
-    QObject::connect(&sleepMonitor, &SleepMonitor::sleeping, &app, [&sleepMonitor, &app, &multiSessions] {
-        if (multiSessions) multiSessions->suspend();
-        if (!Session::get() && (!multiSessions || !multiSessions->busy())) { sleepMonitor.release(); return; }
-        qInfo() << "System is going to sleep; ending the remote session";
-        if (Session::get()) Session::get()->endForSystemSleep();
-        QElapsedTimer waited; waited.start();
-        auto timer = new QTimer(&app);
-        QObject::connect(timer, &QTimer::timeout, &app, [timer, waited, &sleepMonitor, &multiSessions] {
-            // Also reaches a session crossing an adaptive restart. logind caps
-            // the delay (5 s by default), so never hold sleep longer than that.
-            if (Session::get() && waited.elapsed() < 3000) { Session::get()->endForSystemSleep(); return; }
-            if (multiSessions && multiSessions->busy() && waited.elapsed() < 3000) return;
-            timer->stop(); timer->deleteLater(); sleepMonitor.release();
-        });
-        timer->start(50);
-    });
-#endif
     PeerManager peerManager(&hostManager, IdentityManager::get()->getCertificate(), IdentityManager::get()->getPrivateKey(),
         inputTestProfile.isEmpty() ? QString() : inputTestProfile + "/data/binding", 48991, QHostAddress::AnyIPv4,
         inputTestProfile.isEmpty() ? PeerManager::Mode::PlatformDefault : PeerManager::Mode::ClientOnly);
@@ -1067,6 +1063,13 @@ int main(int argc, char *argv[])
     });
     QObject::connect(&managedSessions, &MultiSessions::shortcutRequested, &globalShortcut, &GlobalShortcut::fallbackActivated);
     multiSessions = &managedSessions;
+    auto lifecycleChanged = [&] {
+        managedSessions.setLifecycleBlocked(SleepMonitor::asleep(), ScreenLockMonitor::locked());
+    };
+    QObject::connect(&sleepMonitor, &SleepMonitor::sleeping, &managedSessions, lifecycleChanged);
+    QObject::connect(&sleepMonitor, &SleepMonitor::resumed, &managedSessions, lifecycleChanged);
+    QObject::connect(&screenLock, &ScreenLockMonitor::changed, &managedSessions, lifecycleChanged);
+    lifecycleChanged();
     QObject::connect(&Diagnostics::instance(), &Diagnostics::changed, &managedSessions, [&managedSessions] {
         managedSessions.setDiagnosticsEnabled(Diagnostics::instance().enabled());
     });

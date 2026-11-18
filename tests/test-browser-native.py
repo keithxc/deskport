@@ -33,12 +33,19 @@ parser.add_argument('--pulse-prefix', type=Path, required=True)
 parser.add_argument('--node', type=Path, required=True)
 parser.add_argument('--playwright-module', type=Path, required=True)
 parser.add_argument('--openssl', type=Path, default=shutil.which('openssl') or 'openssl')
+parser.add_argument('--certutil', type=Path, default=shutil.which('certutil'), help='NSS certutil for the default strict browser driver')
+parser.add_argument('--fixture-certificate', type=Path, help='Caller-owned synthetic loopback certificate for native platform trust')
+parser.add_argument('--fixture-key', type=Path, help='Matching private synthetic key; requires --fixture-certificate')
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--runtime-root', type=Path, default=Path.home()/'mygit/build/deskport/t')
 parser.add_argument('--driver', type=Path, help='Optional real-browser driver; defaults to test-browser-native.mjs')
 parser.add_argument('--pairing-control', action='store_true', help='Enable a private test-only gateway restart/revocation control socket')
 parser.add_argument('--webkit-driver', type=Path, help='Optional existing WebKitGTK WebDriver for an additional pairing probe')
 args = parser.parse_args()
+if bool(args.fixture_certificate) != bool(args.fixture_key):
+    parser.error('--fixture-certificate and --fixture-key must be supplied together')
+if args.driver is None and not args.certutil:
+    parser.error('The default browser driver requires --certutil for private NSS trust; TLS bypass is not supported')
 if args.webkit_driver and not args.pairing_control:
     parser.error('--webkit-driver requires the pairing fixture/control socket')
 if sys.platform != 'linux':
@@ -104,7 +111,7 @@ def free_family():
 
 summary = {'fixture':'Xvfb + private PulseAudio + bundled Sunshine + production HTTPS gateway',
            'nativeInputEnabled':False,'installedServicesModified':False,
-           'browserCertificateValidation':'Automation bypass for isolated self-signed HTTPS only; no system trust changes',
+           'browserCertificateValidation':'Enabled with private NSS fixture trust and Chromium sandbox' if args.driver is None else 'Custom driver: consult its certificate-validation result',
            'upstreamCertificateValidation':'Exact fixture certificate pin'}
 gateway = None
 control_server = control_thread = None
@@ -140,9 +147,14 @@ for frame in range(10000):
     tone.stdout.close()
     base = free_family()
     key, cert = output/'host-key.pem', output/'host-cert.pem'
-    subprocess.run([str(args.openssl),'req','-x509','-newkey','rsa:2048','-nodes','-days','1',
-                    '-subj','/CN=DeskPort browser isolated fixture','-addext','subjectAltName=IP:127.0.0.1',
-                    '-keyout',str(key),'-out',str(cert)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    if args.fixture_certificate:
+        shutil.copyfile(args.fixture_certificate, cert)
+        shutil.copyfile(args.fixture_key, key)
+    else:
+        subprocess.run([str(args.openssl),'req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+                        '-subj','/CN=DeskPort browser isolated fixture','-addext','subjectAltName=IP:127.0.0.1',
+                        '-addext','basicConstraints=critical,CA:TRUE',
+                        '-keyout',str(key),'-out',str(cert)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     apps = output/'apps.json'; apps.write_text(json.dumps({'env':{},'apps':[{'name':'Desktop'}]}))
     config = output/'sunshine.conf'
     config.write_text('\n'.join([
@@ -173,7 +185,7 @@ for frame in range(10000):
     private = output/'gateway-upstream.json'
     private.write_text(json.dumps({'url':endpoint,'certificate':str(cert),'username':'deskport',
                                   'password':password,'forceInputDisabled':True}))
-    gateway = spawn('gateway',[args.gateway,'--fixture',private,'--state',output/'gateway-state',
+    gateway = spawn('gateway',[args.gateway,'--fixture',private,'--state',output/'gateway-state','--certificate',cert,'--key',key,
                                '--bind','127.0.0.1','--port','0'],stdout=subprocess.PIPE,stdin=subprocess.PIPE)
     ready = json.loads(line(gateway))
     if not ready.get('code') or not ready.get('port'): raise RuntimeError('Real HTTPS gateway failed to start')
@@ -207,6 +219,8 @@ for frame in range(10000):
     browser_fixture = output/'browser.json'
     browser_fixture.write_text(json.dumps({'url':f'https://127.0.0.1:{ready["port"]}/',
         'code':ready['code'],'chromium':str(args.chromium),'outputDir':str(output),
+        'isolatedSynthetic':True,'nativeInputEnabled':False,
+        'certificate':str(cert),'certutil':str(args.certutil) if args.certutil else None,
         'controlSocket':str(control_path)}))
     driver_env = dict(environment,DESKPORT_PLAYWRIGHT_MODULE=str(args.playwright_module))
     driver = spawn('browser-driver',[args.node,args.driver or repo/'tests/test-browser-native.mjs','--fixture',browser_fixture],env=driver_env)

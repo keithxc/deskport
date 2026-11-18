@@ -74,7 +74,7 @@ public:
         m_ActivationToken = token; m_ShortcutRecall = shortcut; m_ActivationTarget.clear();
     }
     void shutdown();
-    void suspend();
+    void setLifecycleBlocked(bool sleeping, bool locked);
 signals:
     void changed();
     void canvasChanged();
@@ -97,6 +97,8 @@ private:
         bool tuningLimited = false;
         // The viewer has been on screen before, so later shows are recovery.
         bool presented = false;
+        // Lifecycle recovery, including failure, cannot summon the shell.
+        bool quietLifecycle = false;
         // False only after the worker acknowledged hiding at the current epoch.
         // Workers start hidden; a hidden worker never owns input.
         bool exposed = false;
@@ -132,7 +134,7 @@ private:
     QString m_ActivationTarget;
     bool m_ShortcutRecall = false;
     quint64 m_Epoch = 0;
-    bool m_Shutdown = false;
+    bool m_Shutdown = false, m_Sleeping = false, m_Locked = false;
     bool m_ShortcutEnabled = false;
     QString m_ShortcutSequence = QStringLiteral("Meta+'");
 };

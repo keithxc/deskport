@@ -9,6 +9,8 @@
 #ifdef Q_OS_LINUX
 #include "clipboard/linuxmime.h"
 #endif
+#include <QBuffer>
+#include <QImage>
 
 class MemoryClipboard : public ClipboardNative {
 public:
@@ -163,6 +165,94 @@ private slots:
         native->reader = {}; messages.clear(); agent.observe();
         QVERIFY(!messages.isEmpty()); QCOMPARE(messages.last()["kind"].toString(), QString("text"));
         QCOMPARE(QByteArray::fromBase64(messages.last()["text"].toString().toLatin1()), QByteArray("latest"));
+    }
+    void nativeMacAgentRoundTrip() {
+#ifdef Q_OS_MACOS
+        if (QGuiApplication::platformName() != "cocoa") QSKIP("Requires named Cocoa pasteboards.");
+        const auto leftName = "io.github.keithxc.deskport.test." + QUuid::createUuid().toString();
+        const auto rightName = "io.github.keithxc.deskport.test." + QUuid::createUuid().toString();
+        auto left = makeMacClipboardNative(leftName), right = makeMacClipboardNative(rightName);
+        auto l = left.get(), r = right.get();
+        ClipboardAgent* a = nullptr; ClipboardAgent* b = nullptr;
+        int dataFrames = 0, offers = 0;
+        auto deliver = [&](ClipboardAgent* destination, QJsonObject message) {
+            if (message["type"] == "clipboard-v2-status") return;
+            if (message["type"] == "clipboard-v2-data") ++dataFrames;
+            if (message["type"] == "clipboard-v2-offer") ++offers;
+            QTimer::singleShot(0, destination, [destination, message] { destination->receive(message); });
+        };
+        ClipboardAgent first(std::move(left), [&](const QJsonObject& m) { deliver(b, m); }, true); a = &first;
+        ClipboardAgent second(std::move(right), [&](const QJsonObject& m) { deliver(a, m); }); b = &second;
+        a->observe(); b->observe();
+        auto external = [&](const QString& board, const QString& mime) {
+            QProcess reader;
+            reader.start(QCoreApplication::applicationFilePath(), {"--native-reader", board, "read", mime});
+            QElapsedTimer elapsed; elapsed.start();
+            while (reader.state() != QProcess::NotRunning && elapsed.elapsed() < 10000) QTest::qWait(5);
+            if (reader.state() != QProcess::NotRunning) { reader.kill(); reader.waitForFinished(); return QByteArray("TIMEOUT"); }
+            return reader.readAllStandardOutput();
+        };
+        // Both native directions, through production agents and an external reader.
+        for (int direction = 0; direction < 2; ++direction) {
+            auto source = direction ? r : l;
+            auto destination = direction ? l : r;
+            auto agent = direction ? b : a;
+            const auto targetName = direction ? leftName : rightName;
+            const auto text = QString("Synthetic native copy %1 中文 😀\nsecond line").arg(direction).toUtf8();
+            source->publish({"text/plain;charset=utf-8"}, [text](const QString&) { return text; });
+            agent->observe();
+            QTRY_VERIFY(destination->formats().contains("application/x-deskport-clipboard"));
+            QCOMPARE(external(targetName, "text/plain"), text);
+            QImage image(64, 32, QImage::Format_RGB32); image.fill(Qt::red);
+            image.setPixelColor(63, 31, Qt::blue);
+            QByteArray png; QBuffer buffer(&png); QVERIFY(buffer.open(QIODevice::WriteOnly));
+            QVERIFY(image.save(&buffer, "PNG"));
+            source->publish({"image/png"}, [png](const QString&) { return png; });
+            const int before = dataFrames;
+            agent->observe(); QTRY_VERIFY(destination->formats().contains("image/png"));
+            QCOMPARE(dataFrames, before);
+            const auto pastedImage = external(targetName, "image/png");
+            QCOMPARE(QImage::fromData(pastedImage), image);
+            QVERIFY(dataFrames > before);
+            const int cached = dataFrames;
+            QCOMPARE(external(targetName, "image/png"), pastedImage); QCOMPARE(dataFrames, cached);
+            QTemporaryDir files; QVERIFY(files.isValid());
+            const auto folder = files.path() + "/folder with spaces";
+            QVERIFY(QDir().mkpath(folder + "/empty"));
+            const QByteArray payload(3 * ClipboardV2::Chunk + 13, 'n');
+            QFile file(folder + "/中文.bin"); QVERIFY(file.open(QIODevice::WriteOnly));
+            QCOMPARE(file.write(payload), qint64(payload.size())); file.close();
+            QFile hidden(folder + "/.hidden"); QVERIFY(hidden.open(QIODevice::WriteOnly));
+            QCOMPARE(hidden.write("synthetic"), qint64(9)); hidden.close();
+            QFile zero(files.path() + "/zero"); QVERIFY(zero.open(QIODevice::WriteOnly)); zero.close();
+            const auto urls = QUrl::fromLocalFile(folder).toEncoded() + "\r\n"
+                + QUrl::fromLocalFile(zero.fileName()).toEncoded() + "\r\n";
+            source->publish({"text/uri-list"}, [urls](const QString&) { return urls; }, 2);
+            agent->observe(); QTRY_VERIFY(destination->formats().contains("text/uri-list"));
+            const int beforeFiles = dataFrames;
+            const auto copiedUrls = external(targetName, "text/uri-list");
+            const auto top = copiedUrls.trimmed().split('\n'); QCOMPARE(top.size(), 2);
+            const auto copiedFolder = QUrl::fromEncoded(top[0].trimmed()).toLocalFile();
+            QVERIFY(copiedFolder != folder); QVERIFY(QFileInfo(copiedFolder + "/empty").isDir());
+            QFile copied(copiedFolder + "/中文.bin"); QVERIFY(copied.open(QIODevice::ReadOnly));
+            QCOMPARE(copied.readAll(), payload);
+            QFile copiedHidden(copiedFolder + "/.hidden"); QVERIFY(copiedHidden.open(QIODevice::ReadOnly));
+            QCOMPARE(copiedHidden.readAll(), QByteArray("synthetic"));
+            const QFileInfo copiedZero(QUrl::fromEncoded(top[1].trimmed()).toLocalFile());
+            QVERIFY(copiedZero.isFile()); QCOMPARE(copiedZero.size(), qint64(0));
+            QVERIFY(dataFrames > beforeFiles);
+            const int cachedFiles = dataFrames;
+            QCOMPARE(external(targetName, "text/uri-list"), copiedUrls); QCOMPARE(dataFrames, cachedFiles);
+            const int stableOffers = offers;
+            QTest::qWait(600); QCOMPARE(offers, stableOffers);
+        }
+        a->stop(); b->stop();
+        // Stop revokes only the still-owned remote board, never the local copy.
+        QVERIFY(!l->formats().contains("application/x-deskport-clipboard"));
+        QVERIFY(!r->formats().contains("application/x-deskport-clipboard"));
+#else
+        QSKIP("macOS only");
+#endif
     }
     void manifestValidation() {
         auto file = [](QString p, qint64 size = 1, bool dir = false) { return QJsonObject{{"path", p}, {"size", QString::number(size)}, {"directory", dir}}; };

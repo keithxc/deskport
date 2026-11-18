@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>DeskPort synthetic PC fixture</title>
+<style>
+body { background:#101621; color:#eef; font:18px system-ui; margin:24px; }
+canvas { max-width:100%; border:2px solid white; } button { padding:12px; margin:8px; }
+pre { white-space:pre-wrap; max-height:180px; overflow:auto; background:#202937; padding:12px; }
+textarea { display:block; width:90%; height:70px; font:20px system-ui; }
+</style>
+<h1>DeskPort synthetic PC fixture</h1>
+<p>Use only synthetic input. This page sends no network requests and does not read the clipboard.
+Keep this window alone on the test display. A moving counter proves motion, not frame rate or latency.</p>
+<canvas id="video" width="960" height="360"></canvas>
+<p><button id="play">Play stereo sequence</button><button id="save">Save input events</button>
+<button id="reset">Clear events</button></p>
+<audio id="audio" src="stereo.wav" controls></audio>
+<p>8 s sequence: silence → left 440 Hz → right 880 Hz → both → silence → left → right → both.
+Select the playback route in the OS; record the receiving output separately.</p>
+<label>Synthetic typing target (text itself is never logged)<textarea spellcheck="false"></textarea></label>
+<p>Exercise modifiers, shortcuts, both wheel axes and trackpad. Save events before disconnecting.
+Browser-reserved shortcuts and missing key-up after focus loss need a native key-state probe.</p>
+<pre id="events"></pre>
+<script>
+'use strict';
+const events = [], start = performance.now(), output = document.querySelector('#events');
+function log(value) {
+  if (events.length === 10000) events.shift();
+  events.push({ms:Math.round(performance.now()-start), ...value});
+  output.textContent = JSON.stringify(events.slice(-8), null, 1);
+}
+for (const type of ['keydown','keyup']) window.addEventListener(type, e => log({type,
+  code:e.code, repeat:e.repeat, shift:e.shiftKey, ctrl:e.ctrlKey, alt:e.altKey, meta:e.metaKey}));
+for (const type of ['pointerdown','pointerup','pointercancel']) window.addEventListener(type,
+  e => log({type, button:e.button, buttons:e.buttons, pointer:e.pointerType, x:e.clientX,y:e.clientY}));
+window.addEventListener('wheel', e => log({type:'wheel',x:e.deltaX,y:e.deltaY,mode:e.deltaMode}), {passive:true});
+for (const type of ['focus','blur']) window.addEventListener(type, () => log({type}));
+document.addEventListener('visibilitychange', () => log({type:'visibility',state:document.visibilityState}));
+document.querySelector('#play').onclick = () => {
+  const audio = document.querySelector('#audio'); audio.currentTime = 0;
+  audio.play().then(() => log({type:'audio-start'})).catch(e => log({type:'audio-error',name:e.name}));
+};
+document.querySelector('#reset').onclick = () => { events.length=0; output.textContent=''; };
+document.querySelector('#save').onclick = () => {
+  const url=URL.createObjectURL(new Blob([JSON.stringify({schema:1,events},null,2)],{type:'application/json'}));
+  const a=document.createElement('a'); a.href=url; a.download='synthetic-input-events.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+};
+const canvas=document.querySelector('#video'), ctx=canvas.getContext('2d');
+function draw(now) {
+  const colors=['#f33','#3f3','#36f','#ff3','#f3f','#3ff'];
+  colors.forEach((color,i) => {ctx.fillStyle=color;ctx.fillRect(i*160,0,160,360);});
+  ctx.fillStyle='#101621';ctx.fillRect(0,100,960,160);
+  ctx.fillStyle='white';ctx.font='40px monospace';
+  ctx.fillText('Synthetic motion '+Math.floor((now-start)/100),24,156);
+  ctx.fillText('Time '+((now-start)/1000).toFixed(2)+' s',24,214);
+  ctx.fillStyle='white';ctx.fillRect(((now-start)/4)%920,290,40,40);
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script></html>

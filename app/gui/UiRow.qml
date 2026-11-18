@@ -117,10 +117,11 @@ ItemDelegate {
             onClicked: row.clicked()
         }
         IconImage {
+            objectName: "rowChevron"
             visible: row.showChevron
             source: "qrc:/res/ui/chevron.svg"; color: ui.muted
             sourceSize.width: 16; sourceSize.height: 16
-            rotation: row.expanded ? 90 : 0
+            rotation: row.expanded ? 90 : row.mirrored ? 180 : 0
             Behavior on rotation { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
         }
     }

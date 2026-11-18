@@ -163,6 +163,10 @@ private:
 inline std::atomic<int> requestedKbps {0};
 inline std::atomic<int> liveCeilingPermille {0};
 inline std::atomic<int> liveEncoder {-1};
+// -1 until the encode thread acknowledges the current viewer ceiling. The API
+// must not acknowledge a queued request using the previous capability alone.
+inline std::atomic<int> appliedCeilingPermille {-1};
+inline std::atomic<int> appliedSaver {-1};
 // Viewer's data saver state: from the launch request, then from video-rate.
 inline std::atomic<int> liveSaver {0};
 

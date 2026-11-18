@@ -4886,3 +4886,46 @@ a null SDL3 event for pushed SDL_TEXTINPUT. Canvas text now uses bounded inline
 user-event envelopes, decoded before visibility/input dispatch. Queue flushes
 require no heap cleanup. The native SDL2 adapter fixture passes on macOS; the
 Linux SDL2 compatibility adapter, local-text fixture and Nix package build pass.
+
+
+## Development branch integration candidate — 2026-11-18
+
+This source candidate reconciles the independent PC development chains with the
+current canvas/session split. Desktop Mode remains the default. Seamless remains
+an explicit experiment; its standalone SSH lab and supervisor tests do not deliver
+the admitted M3 product transport. Existing GNOME recovery, session sender fencing,
+saver ownership, encoder quality and cadence remain part of the baseline.
+
+- PC clipboard marker and repeatable synthetic acceptance tools:
+  [PC core regression](PC_CORE_REGRESSION.md).
+- RTL navigation, keyboard focus and isolated typography fixtures:
+  [Desktop typography](DESKTOP_TYPOGRAPHY.md).
+- Checked installer helper launches and Windows lifecycle audits:
+  [Windows installation](WINDOWS_INSTALL_LIFECYCLE.md).
+- Additional macOS topology, recovery and opt-in native acceptance fixtures:
+  [macOS lifecycle](MACOS_LIFECYCLE_ACCEPTANCE.md).
+- Browser playback recovery, density/viewport updates and isolated compatibility
+  tools: [Browser compatibility](BROWSER_COMPATIBILITY.md). English localization,
+  current one-time-code behavior and private fixture trust remain in place.
+- Encoder acknowledgment, fixed-backend reconnect and rollback adapters:
+  [Live encoder rate](LIVE_ENCODER_RATE.md). VT transactions preserve the current
+  saver cadence, burst and quality bounds; equal-rate saver changes require an
+  encoder acknowledgment as well.
+- Exact codec/profile negotiation and native ten-bit color conversion:
+  [HDR qualification](HDR_CODEC_QUALIFICATION.md). Utility fixtures do not establish
+  physical HDR output, cross-platform presentation or end-to-end stream acceptance.
+- Retained viewer availability and fenced input timers:
+  [Background sessions](BACKGROUND_SESSIONS.md). Canvas workers use authenticated
+  shell visibility rather than their intentionally hidden SDL decoder window;
+  native occlusion is available only for native SDL presentation on supported OSes.
+- Normalized sleep/lock events and authenticated quiet recovery:
+  [Client power recovery](CLIENT_POWER_RECOVERY.md). Unlock/wake never raises a
+  viewer, changes saved settings or initiates an unauthenticated host session.
+
+Branch-specific validation records linked above are historical. Native macOS and
+NixOS application builds, current physical acceptance and review of the combined
+candidate are separate integration gates. The coordinated core pin includes the
+22-language browser recovery messages; see the current
+[integration ledger](PC_TASK_INTEGRATION.md) for the reviewed scope. Historical
+"retain branch" decisions describe older checkpoints and do not prevent source
+consolidation; their outstanding hardware acceptance gates remain in force.

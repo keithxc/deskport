@@ -522,38 +522,182 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertEqual(result.stdout, "")
 
-    def test_nix_result_link_is_disposable_work_and_smoke_tmp_is_removed(self):
+    def fake_nix(self, stdout, stderr="", exit_code=0, delay=0):
+        """Use real child IO/exit handling; never invoke an installed Nix."""
         paths, args = self.fresh_build()
-        store = self.base / "store-result"
-        store.mkdir()
-        (store / "application").write_bytes(b"retained Nix result")
-        scratch = []
+        fakebin = self.base / "fakebin"
+        fakebin.mkdir()
+        fixture = self.base / "nix-fixture.json"
+        fixture.write_text(json.dumps(dict(stdout=stdout, stderr=stderr, exit_code=exit_code, delay=delay)))
+        nix = fakebin / "nix"
+        nix.write_text(f'''#!{sys.executable}
+import json,os,pathlib,sys,time
+fixture = pathlib.Path(os.environ["DESKPORT_TEST_NIX_FIXTURE"])
+data = json.loads(fixture.read_text())
+fixture.with_name("nix-arguments.json").write_text(json.dumps(sys.argv[1:]))
+fixture.with_name("nix-pid.txt").write_text(str(os.getpid()))
+sys.stderr.write(data["stderr"])
+sys.stderr.flush()
+sys.stdout.write(data["stdout"])
+sys.stdout.flush()
+time.sleep(data["delay"])
+sys.exit(data["exit_code"])
+''')
+        nix.chmod(0o755)
+        env = {**os.environ, "PATH": str(fakebin) + os.pathsep + os.environ["PATH"],
+               "DESKPORT_TEST_NIX_FIXTURE": str(fixture)}
+        return paths, args, env
 
-        def command(command, actual_paths, env, phase):
+    def run_fake_nix(self, paths, args, env, *, existing=True, smoke_failure=False):
+        # Only /nix/store directory availability is simulated. Argument creation,
+        # child execution, stdout validation, logs and records all run normally.
+        output = Path("/nix/store/" + "0" * 32 + "-deskport-test")
+        is_dir = Path.is_dir
+        self.nix_smoke_tmp = []
+        logged = package.run_logged
+
+        def command(command, actual_paths, child_env, phase, **kwargs):
+            if phase != "smoke":
+                return logged(command, actual_paths, child_env, phase, **kwargs)
+            self.assertEqual(command, [sys.executable, "scripts/deskport-smoke.py", output])
             self.assertEqual(actual_paths, paths)
-            if phase == "build":
-                self.assertEqual(command[-1], paths["work"] / "result")
-                command[-1].symlink_to(store)
-            elif phase == "smoke":
-                self.assertEqual(command[-1], paths["work"] / "result")
-                temporary = Path(env["TMPDIR"])
-                self.assertEqual(temporary.parent, paths["base"].parent / "t")
-                (temporary / "fixture").write_text("test data")
-                scratch.append(temporary)
+            self.assertEqual(json.loads((paths["record"] / "run.json").read_text())["nix_output"], str(output))
+            temporary = Path(child_env["TMPDIR"])
+            self.assertEqual(temporary.parent, paths["base"].parent / "t")
+            (temporary / "fixture").write_text("test data")
+            self.nix_smoke_tmp.append(temporary)
+            if smoke_failure:
+                raise w.Refused("fake smoke failure")
 
         with patch.object(package, "host_check"), patch.object(package, "tool_check"), \
                 patch.object(runs, "capacity"), patch.object(common, "privacy"), \
                 patch.object(common, "git_state", return_value=self.source), \
+                patch.object(Path, "is_dir", lambda path: existing if path == output else is_dir(path)), \
                 patch.object(package, "run_logged", side_effect=command), redirect_stdout(io.StringIO()):
-            w.build(args, paths, {})
-            self.assertEqual(len(scratch), 1)
-            self.assertFalse(scratch[0].exists())
-            self.assertFalse(paths["dist"].exists())
-            args.work_only, args.apply = True, True
-            record = w.read_record(paths, args)
-            with patch.object(cleanup, "inactive"):
-                w.clean(args, paths, record)
+            w.build(args, paths, env)
+
+    def test_nix_stdout_record_and_smoke_without_store_links(self):
+        output = "/nix/store/" + "0" * 32 + "-deskport-test"
+        # More than a pipe buffer of stderr, including a plausible but unrelated
+        # path. Mixed-log parsing and sequential pipe draining both fail here.
+        stderr = "building dependency\n" * 8192 + "/nix/store/" + "1" * 32 + "-dependency\n"
+        paths, args, env = self.fake_nix(output + "\n", stderr)
+        self.run_fake_nix(paths, args, env)
+        arguments = json.loads((self.base / "nix-arguments.json").read_text())
+        self.assertEqual(arguments, ["build", "-L", "--cores", "4", "--max-jobs", "1",
+                                     "--no-link", "--print-out-paths"])
+        record = w.read_record(paths, args)
+        self.assertEqual(record["status"], "built")
+        self.assertFalse(record.get("failed", False))
+        self.assertEqual(record["nix_output"], output)
+        stdout_path = paths["record"] / "nix-outputs.txt"
+        self.assertEqual(stdout_path.read_text(), output + "\n")
+        self.assertEqual((paths["logs"] / "build.log").read_text(), stderr)
+        step, = json.loads((paths["record"] / "steps.json").read_text())
+        self.assertEqual(step["exit_code"], 0)
+        self.assertEqual(step["stdout_sha256"], w.digest(stdout_path))
+        self.assertEqual(step["log_sha256"], w.digest(paths["logs"] / "build.log"))
+        self.assertFalse(any(p.is_symlink() for p in self.base.rglob("*")))
+        self.assertEqual(len(self.nix_smoke_tmp), 1)
+        self.assertFalse(self.nix_smoke_tmp[0].exists())
+        self.assertFalse(paths["dist"].exists())
+        args.work_only, args.apply = True, True
+        with patch.object(common, "git_state", return_value=self.source), \
+                patch.object(cleanup, "inactive"), redirect_stdout(io.StringIO()):
+            w.clean(args, paths, record)
         self.assertFalse(paths["target"].exists())
+        self.assertEqual(stdout_path.read_text(), output + "\n")
+        self.assertEqual(w.read_record(paths, args)["nix_output"], output)
+
+    def test_nix_nonzero_exit_never_accepts_valid_stdout(self):
+        stdout = "/nix/store/" + "0" * 32 + "-deskport-test\n"
+        paths, args, env = self.fake_nix(stdout, "build failed\n", 17)
+        with self.assertRaisesRegex(w.Refused, r"build failed \(17\)"):
+            self.run_fake_nix(paths, args, env)
+        self.assertEqual(self.nix_smoke_tmp, [])
+        record = w.read_record(paths, args)
+        self.assertTrue(record["failed"])
+        self.assertNotIn("nix_output", record)
+        step, = json.loads((paths["record"] / "steps.json").read_text())
+        self.assertEqual(step["exit_code"], 17)
+        self.assertEqual((paths["record"] / "nix-outputs.txt").read_text(), stdout)
+        self.assertEqual((paths["logs"] / "build.log").read_text(), "build failed\n")
+
+    def test_nix_rejects_empty_multiple_or_invalid_stdout(self):
+        output = "/nix/store/" + "0" * 32 + "-deskport-test"
+        for stdout in ("", "\n", output + "\n" + output + "\n", output + "\n" + output + "-other\n", output + "\n\n",
+                       "building...\n" + output + "\n", output + "/bin\n",
+                       output + "/../escape\n", "/tmp/deskport\n",
+                       "/nix/store/invalid-hash-deskport\n", output + "é\n"):
+            with self.subTest(stdout=stdout), tempfile.TemporaryDirectory(dir=self.base) as temporary:
+                original_base = self.base
+                self.base = Path(temporary)
+                try:
+                    # Even a valid path on stderr must never rescue stdout.
+                    paths, args, env = self.fake_nix(stdout, output + "\n")
+                    with self.assertRaises(w.Refused):
+                        self.run_fake_nix(paths, args, env)
+                    self.assertEqual(self.nix_smoke_tmp, [])
+                    record = w.read_record(paths, args)
+                    self.assertTrue(record["failed"])
+                    self.assertNotIn("nix_output", record)
+                    step, = json.loads((paths["record"] / "steps.json").read_text())
+                    self.assertEqual(step["exit_code"], 0)
+                finally:
+                    self.base = original_base
+
+    def test_nix_rejects_missing_store_directory(self):
+        paths, args, env = self.fake_nix("/nix/store/" + "0" * 32 + "-deskport-test\n")
+        with self.assertRaisesRegex(w.Refused, "existing store directory"):
+            self.run_fake_nix(paths, args, env, existing=False)
+        self.assertEqual(self.nix_smoke_tmp, [])
+        self.assertTrue(w.read_record(paths, args)["failed"])
+
+    def test_nix_stdout_capture_preserves_space_guard_and_stops_child(self):
+        paths, args, env = self.fake_nix("", "waiting\n", delay=60)
+        with patch.object(package.shutil, "disk_usage", return_value=types.SimpleNamespace(free=0)), \
+                self.assertRaisesRegex(w.Refused, "free-space reserve"):
+            self.run_fake_nix(paths, args, env)
+        pid = int((self.base / "nix-pid.txt").read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(pid, 0)
+        self.assertEqual(self.nix_smoke_tmp, [])
+        self.assertTrue(w.read_record(paths, args)["failed"])
+        self.assertEqual((paths["logs"] / "build.log").read_text(), "waiting\n")
+
+    def test_run_logged_existing_api_keeps_combined_log(self):
+        command = [sys.executable, "-c",
+                   "import sys; print('stdout', flush=True); print('stderr', file=sys.stderr, flush=True)"]
+        with redirect_stdout(io.StringIO()):
+            w.run_logged(command, self.paths, os.environ.copy(), "compatibility")
+        self.assertEqual((self.paths["logs"] / "compatibility.log").read_text(), "stdout\nstderr\n")
+        step, = json.loads((self.paths["record"] / "steps.json").read_text())
+        self.assertEqual(step["exit_code"], 0)
+        self.assertNotIn("stdout_path", step)
+
+    def test_nix_smoke_failure_removes_short_tmp_and_retains_output_record(self):
+        output = "/nix/store/" + "0" * 32 + "-deskport-test"
+        paths, args, env = self.fake_nix(output + "\n")
+        with self.assertRaisesRegex(w.Refused, "fake smoke failure"):
+            self.run_fake_nix(paths, args, env, smoke_failure=True)
+        self.assertEqual(len(self.nix_smoke_tmp), 1)
+        self.assertFalse(self.nix_smoke_tmp[0].exists())
+        record = w.read_record(paths, args)
+        self.assertTrue(record["failed"])
+        self.assertEqual(record["nix_output"], output)
+
+    def test_legacy_nix_result_link_cleanup_preserves_store_contents(self):
+        # A legacy run fixture points at a local fake store, never /nix/store.
+        store = self.base / "store-result"
+        store.mkdir()
+        (store / "application").write_bytes(b"retained Nix result")
+        (self.paths["work"] / "result").symlink_to(store)
+        w.freeze(self.paths, self.record)
+        self.args.work_only = True
+        with patch.object(common, "git_state", return_value=self.source), \
+                patch.object(cleanup, "inactive"), redirect_stdout(io.StringIO()):
+            w.clean(self.args, self.paths, self.record)
+        self.assertFalse(self.paths["work"].exists())
         self.assertEqual((store / "application").read_bytes(), b"retained Nix result")
 
     def test_process_level_github_upload_download_and_cleanup(self):

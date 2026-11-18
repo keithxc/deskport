@@ -32,12 +32,15 @@ public:
     QString warning();
     QString topologyError();
     void release();
-    void cancel();
+    // A sleep stop may retain retry permission for an existing admitted token.
+    void cancel(bool keepRecovery = false);
     bool wasTakenOver(int timeoutMs = 0);
     bool admissionRequired();
     void setVideoPaused(bool paused);
-    // Live bitrate ceiling (protocol/VIDEO_RATE.md). Known after the host hello.
+    // Hello enables the protocol; a rejected backend stays fixed for this controller.
     bool liveRateSupported();
+    void beginRateStream(int initialKbps, bool saver);
+    void markRateStreamReady();
     // saver tells the host that data saver is on (optional field of the contract).
     void setRateCeiling(int kbps, bool saver);
     // True once if the host recorded a ceiling but cannot apply it live; the
@@ -63,7 +66,8 @@ private:
     bool m_GraphReserved = false;
     bool m_AdmissionRequired = true, m_ConfirmationNeeded = false, m_ConfirmationReady = false, m_Confirmed = false;
     bool m_VideoPaused = false;
-    bool m_RateSupported = false, m_RateFallback = false;
+    bool m_RateSupported = false, m_RateFallback = false, m_RateReady = false;
+    quint64 m_RateGeneration = 0;
     int m_RateCeiling = 0;
     bool m_RateSaver = false;
     bool m_Pending = false, m_Complete = false, m_Result = false, m_Failed = false;

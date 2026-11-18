@@ -34,7 +34,7 @@ QString AdaptiveDisplay::topologyError() { QMutexLocker lock(&m_Mutex); return m
 bool AdaptiveDisplay::retryable() { QMutexLocker lock(&m_Mutex); return m_Retryable && !m_TakenOver; }
 QString AdaptiveDisplay::warning() { QMutexLocker lock(&m_Mutex); return m_Warning; }
 QString AdaptiveDisplay::resumeToken() { QMutexLocker lock(&m_Mutex); return m_ResumeToken; }
-void AdaptiveDisplay::cancel() { QMutexLocker lock(&m_Mutex); m_TopologyError = "cancelled"; m_Failed = true; m_Retryable = false; requestInterruption(); m_Wake.wakeAll(); }
+void AdaptiveDisplay::cancel(bool keepRecovery) { QMutexLocker lock(&m_Mutex); m_TopologyError = "cancelled"; m_Failed = true; m_Retryable = m_Retryable && keepRecovery && !m_ResumeToken.isEmpty(); requestInterruption(); m_Wake.wakeAll(); }
 void AdaptiveDisplay::release() { QMutexLocker lock(&m_Mutex); m_Release = true; requestInterruption(); m_Wake.wakeAll(); }
 QSize AdaptiveDisplay::selectedSize(QSize requested) {
     QMutexLocker lock(&m_Mutex);
@@ -52,6 +52,18 @@ int AdaptiveDisplay::selectedScale(int requested) { QMutexLocker lock(&m_Mutex);
 QSize AdaptiveDisplay::negotiatedSize() { QMutexLocker lock(&m_Mutex); return m_NegotiatedSize; }
 bool AdaptiveDisplay::admissionRequired() { QMutexLocker lock(&m_Mutex); return m_AdmissionRequired; }
 bool AdaptiveDisplay::liveRateSupported() { QMutexLocker lock(&m_Mutex); return m_RateSupported; }
+void AdaptiveDisplay::beginRateStream(int initialKbps, bool saver) {
+    QMutexLocker lock(&m_Mutex);
+    m_RateReady = false;
+    ++m_RateGeneration;
+    m_RateCeiling = initialKbps > 0 ? qBound(DP_VIDEO_RATE_MIN_KBPS, initialKbps, DP_VIDEO_RATE_MAX_KBPS) : 0;
+    m_RateSaver = saver;
+}
+void AdaptiveDisplay::markRateStreamReady() {
+    QMutexLocker lock(&m_Mutex);
+    m_RateReady = true;
+    m_Wake.wakeAll();
+}
 void AdaptiveDisplay::setRateCeiling(int kbps, bool saver) {
     QMutexLocker lock(&m_Mutex);
     m_RateCeiling = qBound(DP_VIDEO_RATE_MIN_KBPS, kbps, DP_VIDEO_RATE_MAX_KBPS);
@@ -224,6 +236,7 @@ void AdaptiveDisplay::run() {
     }
     int sequence = 0, videoSequence = 0, rateSequence = 0, rateSent = 0;
     bool rateSaverSent = false;
+    quint64 rateGenerationSent = 0;
     bool videoPaused = false;
     QElapsedTimer heartbeat; heartbeat.start();
     QElapsedTimer resizeRetry;
@@ -290,10 +303,14 @@ void AdaptiveDisplay::run() {
             // rather than silently treating a paused server as a running one.
             if (!connected) { QMutexLocker lock(&m_Mutex); m_Retryable = false; }
             heartbeat.restart();
-        } else if ([&] { QMutexLocker lock(&m_Mutex); return m_RateSupported && m_RateCeiling > 0 &&
-                (m_RateCeiling != rateSent || m_RateSaver != rateSaverSent); }()) {
-            int desired; bool saver;
-            { QMutexLocker lock(&m_Mutex); desired = m_RateCeiling; saver = m_RateSaver; }
+        } else if ([&] { QMutexLocker lock(&m_Mutex); return m_RateSupported && m_RateReady && m_RateCeiling > 0 &&
+                (m_RateCeiling != rateSent || m_RateSaver != rateSaverSent || m_RateGeneration != rateGenerationSent); }()) {
+            int desired; bool saver; quint64 generation;
+            { QMutexLocker lock(&m_Mutex);
+              // A new stream can begin between the pending check and this lock.
+              if (!m_RateSupported || !m_RateReady || m_RateCeiling <= 0) continue;
+              desired = m_RateCeiling; saver = m_RateSaver; generation = m_RateGeneration;
+            }
             send({{"type", DP_MESSAGE_VIDEO_RATE}, {"seq", ++rateSequence}, {"ceilingKbps", desired}, {"saver", saver}});
             const auto reply = receive(12000);
             // Hosts predating the saver field omit its echo; that is still applied.
@@ -302,8 +319,14 @@ void AdaptiveDisplay::run() {
                 reply["live"].isBool() && !reply.contains("error") &&
                 (!reply.contains("saver") || reply["saver"] == saver);
             if (connected) {
-                rateSent = desired; rateSaverSent = saver;
-                if (!reply["live"].toBool()) { QMutexLocker lock(&m_Mutex); m_RateFallback = true; }
+                rateSent = desired; rateSaverSent = saver; rateGenerationSent = generation;
+                if (!reply["live"].toBool()) {
+                    QMutexLocker lock(&m_Mutex);
+                    // Keep the discovered fixed-backend result across the
+                    // retained controller's reconnect; negotiate a real cap.
+                    m_RateSupported = false;
+                    m_RateFallback = true;
+                }
             }
             // Same rule as video-state: an unacknowledged change is not applied.
             if (!connected) { QMutexLocker lock(&m_Mutex); m_Retryable = false; }

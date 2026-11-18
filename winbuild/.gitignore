@@ -8,5 +8,6 @@ scripts/*
 !scripts/*.cmake
 !scripts/*.txt
 !scripts/*.nsi
+!scripts/*.nsh
 !scripts/*.json
 !scripts/*.nix

@@ -14,6 +14,8 @@ SOURCES += gui/sessioncanvas.cpp streaming/canvasbridge.cpp
 HEADERS += gui/sessioncanvas.h streaming/canvasbridge.h
 HEADERS += streaming/video/framesource.h streaming/video/encodedframe.h streaming/video/queuedframesource.h streaming/video/frameloss.h
 HEADERS += streaming/video/ffmpeg-renderers/pacer/pacingclock.h
+SOURCES += streaming/input/inputrelease.cpp
+HEADERS += streaming/input/inputrelease.h streaming/input/gamepadstate.h
 SOURCES += backend/multisessions.cpp backend/sessionworker.cpp backend/trafficbudget.cpp
 SOURCES += backend/globalshortcut.cpp
 HEADERS += backend/globalshortcut.h backend/shortcutbinding.h streaming/shortcutstate.h
@@ -62,11 +64,14 @@ SOURCES += backend/hostmanager.cpp backend/hostmanager-startup.cpp backend/hostm
     backend/peermanager.cpp backend/peermanager-session.cpp backend/peermanager-devices.cpp backend/seamlesshostmanager.cpp
 HEADERS += backend/hostcaretmonitor.h backend/hostmanager.h backend/hostports.h backend/peermanager.h backend/peermanager-link.h backend/peerstore.h
 HEADERS += backend/seamlesshostmanager.h backend/sessionmode.h
-linux {
-    QT += dbus
-    SOURCES += backend/sleepmonitor.cpp
-    HEADERS += backend/sleepmonitor.h
+SOURCES += backend/sleepmonitor.cpp
+HEADERS += backend/sleepmonitor.h
+linux: QT += dbus
+win32 {
+    SOURCES += backend/sleepmonitor_win.cpp
+    LIBS += -lwtsapi32
 }
+macx: OBJECTIVE_SOURCES += backend/sleepmonitor_mac.mm
 CONFIG += c++11
 
 unix:!macx {
@@ -336,6 +341,7 @@ HEADERS += \
     settings/streamingpreferences.h \
     streaming/input/input.h \
     streaming/input/localtextinput.h \
+    streaming/videoformats.h \
     streaming/session.h \
     streaming/audio/renderers/renderer.h \
     streaming/audio/renderers/sdl.h \
@@ -507,12 +513,14 @@ macx {
     message(VideoToolbox renderer selected)
 
     SOURCES += \
+        streaming/video/ffmpeg-renderers/vt-hardware.c \
         streaming/video/ffmpeg-renderers/vt_base.mm \
         streaming/video/ffmpeg-renderers/vt_avsamplelayer.mm \
         streaming/video/ffmpeg-renderers/vt_metal.mm
 
     HEADERS += \
-        streaming/video/ffmpeg-renderers/vt.h
+        streaming/video/ffmpeg-renderers/vt.h \
+        streaming/video/ffmpeg-renderers/vt-hardware.h
 }
 soundio {
     message(libsoundio audio renderer selected)
@@ -780,3 +788,7 @@ SOURCES += streaming/waylandloading.cpp
 HEADERS += streaming/waylandloading.h
 SOURCES += streaming/windowactivation.cpp
 HEADERS += streaming/windowactivation.h
+
+SOURCES += streaming/windowvisibility.cpp
+HEADERS += streaming/windowvisibility.h streaming/vieweractivity.h streaming/input/inputtimergate.h
+macx: OBJECTIVE_SOURCES += streaming/windowvisibility_mac.mm

@@ -1,4 +1,5 @@
 #include "streaming/canvasbridge.h"
+#include "inputrelease.h"
 #include <Limelight.h>
 #include "../../../host/common/keyrepeat.h"
 #include <SDL.h>
@@ -21,6 +22,7 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
           [](const QString& text, int start, int length) {
               Session::get()->getOverlayManager().updateTextInput(text, start, length);
           }),
+      m_InputTimerGate(this),
       m_RemoteInputEnabled(prefs.remoteInput),
       m_MultiController(prefs.multiController),
       m_GamepadMouse(prefs.gamepadMouse),
@@ -229,6 +231,7 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
 SdlInputHandler::~SdlInputHandler()
 {
     m_LocalTextInput.setActive(false);
+    m_InputTimerGate.suspend();
     for (int i = 0; i < MAX_GAMEPADS; i++) {
         if (m_GamepadState[i].mouseEmulationTimer != 0) {
             Session::get()->notifyMouseEmulationMode(false);
@@ -318,6 +321,29 @@ void SdlInputHandler::releaseRemoteInput(bool cancelText)
     m_ButtonsDown.clear();
     SDL_CaptureMouse(SDL_FALSE);
     m_PendingMouseButtonsAllUpOnVideoRegionLeave = false;
+}
+
+void SdlInputHandler::suspendInput()
+{
+    m_InputTimerGate.suspend();
+    for (auto timer : {m_LongPressTimer, m_LeftButtonReleaseTimer, m_RightButtonReleaseTimer, m_DragTimer})
+        if (timer) SDL_RemoveTimer(timer);
+    m_LongPressTimer = m_LeftButtonReleaseTimer = m_RightButtonReleaseTimer = m_DragTimer = 0;
+    setCaptureActive(false);
+    if (m_RemoteInputEnabled) {
+        // Touch and controller mouse emulation also send buttons outside the
+        // keyboard/mouse pressed-state sets. Release those after fencing timers.
+        for (int button : {BUTTON_LEFT, BUTTON_RIGHT, BUTTON_MIDDLE, BUTTON_X1, BUTTON_X2})
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, button);
+        if (LiGetHostFeatureFlags() & LI_FF_PEN_TOUCH_EVENTS) {
+            LiSendTouchEvent(LI_TOUCH_EVENT_CANCEL_ALL, 0, 0, 0, 0, 0, 0, LI_ROT_UNKNOWN);
+            LiSendPenEvent(LI_TOUCH_EVENT_CANCEL, LI_TOOL_TYPE_UNKNOWN, 0, 0, 0, 0, 0, 0, LI_ROT_UNKNOWN, LI_TILT_UNKNOWN);
+        }
+    }
+    SDL_zero(m_LastTouchDownEvent); SDL_zero(m_LastTouchUpEvent); SDL_zero(m_TouchDownEvent);
+    m_NumFingersDown = 0; m_DragButton = 0;
+    const int stopped = releaseGamepadInput(m_GamepadState, m_GamepadMask, m_RemoteInputEnabled);
+    for (int i=0; i<stopped; ++i) if (auto session = Session::get()) session->notifyMouseEmulationMode(false);
 }
 
 bool SdlInputHandler::keyboardRoutingActive()

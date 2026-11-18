@@ -9,18 +9,25 @@ import { createRequire } from 'node:module';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import net from 'node:net';
+import { launchTrustedChromium, chromiumSandboxStatus } from './browser-test-context.mjs';
 
 const fixtureIndex = process.argv.indexOf('--fixture');
 assert.ok(fixtureIndex >= 0 && process.argv[fixtureIndex + 1], 'Pass --fixture with an isolated browser.json file.');
 const fixture = JSON.parse(await readFile(process.argv[fixtureIndex + 1], 'utf8'));
 assert.ok(new URL(fixture.url).protocol === 'https:', 'The fixture must serve production HTTPS.');
+assert.ok(['127.0.0.1', 'localhost'].includes(new URL(fixture.url).hostname), 'The supervised fixture must use loopback.');
 assert.match(fixture.code, /^[0-9]{6}$/, 'Fixture access code must contain six digits.');
 assert.ok(fixture.chromium && fixture.outputDir, 'Fixture must include chromium and outputDir.');
+assert.ok(fixture.isolatedSynthetic === true && fixture.nativeInputEnabled === false && fixture.controlSocket,
+  'Only a supervised synthetic fixture with native input disabled and a private TOTP control socket is supported.');
+assert.ok(fixture.certificate && fixture.certutil, 'The native fixture requires its private certificate and NSS certutil.');
 await mkdir(fixture.outputDir, { recursive: true });
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.DESKPORT_PLAYWRIGHT_MODULE || 'playwright-core');
-const browser = await chromium.launch({ executablePath: fixture.chromium, headless: true });
-const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1280, height: 890 }, hasTouch: true });
+const trusted = await launchTrustedChromium({ chromium, executablePath: fixture.chromium,
+  certificate: fixture.certificate, certutil: fixture.certutil, output: fixture.outputDir });
+const browser = trusted.browser;
+const context = await browser.newContext({ ignoreHTTPSErrors: false, viewport: { width: 1280, height: 890 }, hasTouch: true });
 // This grants only the disposable test origin; it does not change the user's profile.
 await context.grantPermissions(['local-network-access'], { origin: new URL(fixture.url).origin }).catch(() => {});
 const page = await context.newPage();
@@ -164,6 +171,9 @@ async function disconnect(number) {
 
 let result;
 try {
+  const sandbox = await chromiumSandboxStatus(context);
+  check('namespace and seccomp sandbox remain enabled', sandbox.namespace && sandbox.seccomp);
+  check('no TLS or browser policy bypass flags', sandbox.noBypassFlags);
   await page.goto(fixture.url);
   check('real gateway serves secure context', await page.evaluate(() => isSecureContext));
   await connectAndMeasure(1);
@@ -173,7 +183,7 @@ try {
   check('no uncaught browser errors', errors.length === 0);
   check('both sessions use real successful login requests', apiStatuses.filter(response => response.path === '/api/login' && response.status === 200).length === 2);
   result = { ok: true, browser: browser.version(), checks, sessions, apiStatuses, errors,
-    scope: 'Production HTTPS gateway and native capture/encoding/transport with isolated Xvfb/Pulse fixture. No HTTP mocks. Input is disabled by the fixture gateway. Self-signed certificate is trusted only in the disposable browser context. Physical iPad and OS input are not exercised.' };
+    scope: 'Production HTTPS gateway and native capture/encoding/transport with isolated Xvfb/Pulse fixture. No HTTP mocks or TLS/policy bypass. Input is disabled by the fixture gateway. The synthetic root is trusted in a disposable HOME NSS database only. Physical Safari, Windows and OS input are not exercised.' };
   console.log(JSON.stringify({ ok: true, checks: checks.length, output: path.join(fixture.outputDir, 'browser-result.json') }));
 } catch (error) {
   let state = {};
@@ -188,5 +198,5 @@ try {
 } finally {
   await writeFile(path.join(fixture.outputDir, 'browser-result.json'), JSON.stringify(result, null, 2));
   await context.close();
-  await browser.close();
+  await trusted.close();
 }

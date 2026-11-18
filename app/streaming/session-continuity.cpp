@@ -18,9 +18,7 @@
 #ifdef Q_OS_MACOS
 #include "backend/macdock.h"
 #endif
-#ifdef Q_OS_LINUX
 #include "backend/sleepmonitor.h"
-#endif
 #include "backend/peerstore.h"
 #include "backend/streambudget.h"
 #include "backend/sessionwindowstate.h"
@@ -56,6 +54,14 @@
 #include <QWindow>
 #include <QScreen>
 
+bool Session::adaptiveRestartPending() const {
+    // Sleep is only resumable for an already authenticated lifecycle session.
+    // Never launch a legacy host, request sharing, or offer takeover on wake.
+    if (m_SystemSleep) return (!m_TransitionWindow || !m_TransitionWindow->cancelled()) &&
+        m_AdaptiveDisplay && m_AdaptiveDisplay->retryable() &&
+        m_AdaptiveDisplay->admissionRequired() && !m_AdaptiveDisplay->resumeToken().isEmpty();
+    return !m_RecoveryCancelled && (m_NetworkRetry || m_ManualReconnect || m_AdaptiveNextSize.isValid());
+}
 bool Session::scheduleNetworkRecovery() {
     if (m_RecoveryCancelled || !m_AdaptiveDisplay || !m_AdaptiveDisplay->retryable() ||
         (!m_RecoveryDeadline && !m_AdaptiveDisplay->admissionRequired())) return false;
@@ -79,15 +85,17 @@ Session* Session::adaptiveContinuation() {
 }
 
 Session* Session::continuationSession() {
-    if (m_NetworkRetry) {
+    if (m_NetworkRetry || m_SystemSleep) {
         auto next = new Session(m_Computer, m_App, m_Preferences);
-        next->m_RecoveryDeadline = m_RecoveryDeadline.load();
-        next->m_RecoveryAttempt = m_RecoveryAttempt + 1;
-        next->m_ResumeToken = m_ResumeToken;
+        next->m_SystemResume = m_SystemSleep.load();
+        next->m_RecoveryDeadline = next->m_SystemResume ? 0 : m_RecoveryDeadline.load();
+        next->m_RecoveryAttempt = next->m_SystemResume ? 0 : m_RecoveryAttempt + 1;
+        next->m_ResumeToken = next->m_SystemResume ? m_AdaptiveDisplay->resumeToken() : m_ResumeToken;
         next->m_ManualResume = true;
         next->m_AdaptiveGeometry = m_AdaptiveGeometry;
         next->m_IsFullScreen = m_IsFullScreen;
         next->m_ViewerRequested = m_ViewerRequested.load();
+        next->m_LifecycleQuiet = m_LifecycleQuiet.load();
         next->m_TrafficReceivedBase = m_TrafficReceivedBase;
         next->m_TrafficSentBase = m_TrafficSentBase;
         // Keep the retained window responsive through the retry delay.
@@ -95,7 +103,7 @@ Session* Session::continuationSession() {
         next->m_TransitionWindow = std::move(m_TransitionWindow);
         if (next->m_TransitionWindow) next->pumpTransitionWindowBetweenSessions();
         // A media-only interruption may retain its authenticated controller.
-        if (m_AdaptiveDisplay && !m_AdaptiveDisplay->failed()) next->m_AdaptiveDisplay = std::move(m_AdaptiveDisplay);
+        if (!next->m_SystemResume && m_AdaptiveDisplay && !m_AdaptiveDisplay->failed()) next->m_AdaptiveDisplay = std::move(m_AdaptiveDisplay);
         else m_AdaptiveDisplay.reset();
         SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
         return next;
@@ -104,6 +112,7 @@ Session* Session::continuationSession() {
         // Read the saved device profile only after the old transport is stopped.
         auto next = new Session(m_Computer, m_App);
         next->m_ViewerRequested = m_ViewerRequested.load();
+        next->m_LifecycleQuiet = m_LifecycleQuiet.load();
         next->m_TrafficReceivedBase = m_TrafficReceivedBase;
         next->m_TrafficSentBase = m_TrafficSentBase;
         next->m_ManualResume = true;
@@ -114,6 +123,7 @@ Session* Session::continuationSession() {
     }
     auto next = new Session(m_Computer, m_App, m_Preferences);
     next->m_ViewerRequested = m_ViewerRequested.load();
+    next->m_LifecycleQuiet = m_LifecycleQuiet.load();
     if (m_TransitionTimer) m_TransitionTimer->stop();
     // The old transport has stopped; discard its queued decoder/rumble callbacks.
     SDL_FlushEvents(SDL_USEREVENT, SDL_LASTEVENT);
@@ -156,10 +166,26 @@ void Session::requestReconnect() {
     SDL_PushEvent(&event);
 }
 
+void Session::releaseForClientLock() {
+    m_LifecycleQuiet = true;
+    m_ViewerRequested = false;
+    // Windows/Cocoa dispatch native notifications on the SDL/UI thread. Release
+    // before returning to the OS, which may freeze us before another event turn.
+#if !defined(Q_OS_LINUX)
+    if (m_InputHandler) m_InputHandler->suspendInput();
+    m_Clipboard.reset();
+    if (m_Window) hideViewerWindow();
+#endif
+    SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortHideWindow;
+    SDL_PushEvent(&event);
+}
 void Session::endForSystemSleep() {
-    // Not a user disconnect: never honor "quit app after streaming".
+    // A continuation parked before exec already waits on the normalized state.
+    if (!m_ExecRequested || m_RecoveryCancelled.exchange(true)) return;
+    m_SystemSleep = true;
+    releaseForClientLock();
     m_UnexpectedTermination = true;
-    SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
+    SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortTransportEnded;
     SDL_PushEvent(&event);
 }
 

@@ -6,12 +6,20 @@
 #include <QTimer>
 #include <QSettings>
 #include <QQuickWindow>
+#include <QLockFile>
 #include "multisessions.h"
 #include "peermanager.h"
 #include "peerstore.h"
 #include "sessiongraph.h"
 #include "windowframe.h"
 static QByteArray credential(const char* name) { QFile f(qEnvironmentVariable(name)); if (!f.open(QIODevice::ReadOnly)) return {}; return f.readAll(); }
+
+// Keep JSON/host fixtures in the managed test run even when Unix sockets need
+// a shorter TMPDIR. QTemporaryDir's default template otherwise follows TMPDIR.
+static QString fixtureTemplate() {
+    return QDir(qEnvironmentVariable("DESKPORT_TEST_FIXTURE_ROOT", QDir::tempPath()))
+        .filePath("multi-sessions-XXXXXX");
+}
 
 // Real child processes and local sockets; synthetic media never contacts a host
 // or touches physical input. Slow hide acknowledgements test ownership ordering.
@@ -22,6 +30,9 @@ static int worker(QApplication& app) {
     int shortcutShows = 0, tokenShows = 0;
     int frameReleases = 0, frameHides = 0;
     bool presenting = false;
+    std::unique_ptr<QLockFile> inputLease;
+    if (!qEnvironmentVariableIsEmpty("TEST_SESSION_INPUT_LEASE"))
+        inputLease.reset(new QLockFile(qEnvironmentVariable("TEST_SESSION_INPUT_LEASE")));
     const QString id=app.arguments().value(2);
     const auto mode=app.arguments().value(3);
     const bool connecting = mode.startsWith("connecting-");
@@ -57,6 +68,10 @@ static int worker(QApplication& app) {
                     QCoreApplication::exit(8); // Recovery must not inherit an old user action.
                 shortcutShows += o.value("shortcut").toBool();
                 tokenShows += !o.value("activationToken").toString().isEmpty();
+                if (!presenting && inputLease && !inputLease->tryLock()) {
+                    send({{"type","error"},{"message","fixture input ownership overlapped"}});
+                    QCoreApplication::exit(9); return;
+                }
                 presenting=true; ++(o.value("raise").toBool(true) ? raisedShows : quietShows);
                 send({{"type","shown"}});
                 if (mode.startsWith("activation")) send({{"type","traffic"},{"received",shortcutShows},{"sent",tokenShows}});
@@ -75,7 +90,7 @@ static int worker(QApplication& app) {
                 // Models a busy background viewer: it only answers while presenting.
                 if (mode=="lazy" && !presenting) continue;
                 presenting=false;
-                QTimer::singleShot(mode.endsWith("slow") ? 300 : 0,&app,[&,o] { send({{"type","hidden"},{"epoch",o.value("epoch")}}); });
+                QTimer::singleShot(mode.endsWith("slow") ? 300 : 0,&app,[&,o] { if (inputLease) inputLease->unlock(); send({{"type","hidden"},{"epoch",o.value("epoch")}}); });
             } else if(action=="disconnect") {
                 if (mode == "error-on-disconnect") {
                     send({{"type","connected"}});
@@ -105,8 +120,71 @@ static int worker(QApplication& app) {
 class MultiSessionsTest : public QObject {
     Q_OBJECT
 private slots:
+    void initTestCase() {
+        QVERIFY2(QSslSocket::supportsSsl(), "The fixture requires a working Qt SSL backend");
+        QVERIFY2(!QSslCertificate(credential("TEST_CERT_A")).isNull(), "Local fixture certificate is unavailable");
+        QVERIFY2(!QSslCertificate(credential("TEST_CERT_B")).isNull(), "Remote fixture certificate is unavailable");
+        QTemporaryDir dir(fixtureTemplate());
+        QVERIFY2(dir.isValid(), qPrintable("Fixture directory is not writable: " + fixtureTemplate()));
+        QLocalServer server;
+        server.setSocketOptions(QLocalServer::UserAccessOption);
+        const auto name = "deskport-sessions-" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+        QVERIFY2(server.listen(name), qPrintable(QString("Private session socket unavailable (%1 bytes): %2")
+            .arg(QFile::encodeName(QDir::tempPath() + '/' + name).size()).arg(server.errorString())));
+    }
+    void launchRejectsIncompleteBinding_data() {
+        QTest::addColumn<QString>("missing");
+        for (auto field : {"ready", "granted", "clientCert", "bindingPort", "address"})
+            QTest::newRow(field) << QString::fromLatin1(field);
+    }
+    void launchRejectsIncompleteBinding() {
+        QFETCH(QString, missing);
+        QTemporaryDir dir(fixtureTemplate());
+        const auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
+        QJsonObject record{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
+                           {"bindingPort",48991},{"ready",true},{"granted",true}};
+        if (missing != "address") record.remove(missing);
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",
+            {{"version",1},{"peers",QJsonObject{{"a",record}}}}));
+        HostManager host(nullptr,dir.path()+"/host");
+        PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
+        MultiSessions manager(&peers,cert,key);
+        manager.open("a","Fixture",missing == "address" ? QString() : QString("127.0.0.1"));
+        QTRY_COMPARE(manager.states().value("a").toString(),QString("error"));
+        QVERIFY(!manager.busy());
+        QVERIFY(manager.sessions().first().toMap().value("error").toString().contains("binding"));
+    }
+    void blockedRecallDiscardsActivation() {
+        QTemporaryDir dir(fixtureTemplate());
+        const auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",{{"version",1},{"peers",QJsonObject{
+            {"a",QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
+                             {"bindingPort",48991},{"ready",true},{"granted",true}}}}}}));
+        HostManager host(nullptr,dir.path()+"/host");
+        PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
+        MultiSessions manager(&peers,cert,key);
+        manager.open("a","Fixture","127.0.0.1","activation");
+        QTRY_COMPARE(manager.states().value("a").toString(),QString("connected"));
+        QTRY_VERIFY(manager.sessions().first().toMap().value("visible").toBool());
+        for (bool sleeping : {false, true}) {
+            manager.setLifecycleBlocked(sleeping,!sleeping);
+            QTRY_VERIFY(!manager.sessions().first().toMap().value("visible").toBool());
+            manager.setActivationToken("blocked-token",true);
+            QVERIFY(!manager.recall());
+            manager.setLifecycleBlocked(false,false);
+            QSignalSpy traffic(&manager,&MultiSessions::trafficChanged);
+            manager.select("a");
+            QTRY_VERIFY(manager.sessions().first().toMap().value("visible").toBool());
+            QTRY_VERIFY(!traffic.isEmpty());
+            QTRY_COMPARE(manager.selectedTraffic().value("received").toInt(),0);
+            QTRY_COMPARE(manager.selectedTraffic().value("sent").toInt(),0);
+        }
+        manager.shutdown(); QTRY_VERIFY(!manager.busy());
+    }
     void presentationFailureSurvivesWorkerShutdown() {
-        QTemporaryDir dir;
+        QTemporaryDir dir(fixtureTemplate());
         const auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A"), remote=credential("TEST_CERT_B");
         QDir().mkpath(dir.path()+"/binding");
         QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",{{"version",1},{"peers",QJsonObject{
@@ -131,7 +209,7 @@ private slots:
         QVERIFY(manager.sessions().first().toMap().value("error").toString().isEmpty());
     }
     void connectingCanvasAndTrayStayResponsive() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         QJsonObject records;
         for (auto id : {"a","b"}) records[id]=QJsonObject{{"hostId",id},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
@@ -238,7 +316,7 @@ private slots:
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
     void presentingCanvasPreservesWindowState() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         const QJsonObject records{{"a", QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
             {"bindingPort",48991},{"ready",true},{"granted",true}}}};
@@ -269,7 +347,7 @@ private slots:
         QVERIFY(!manager.presentation());
     }
     void explicitFrameRefreshRetainsCanvasAndReleasesInput() {
-        QTemporaryDir dir; HostManager host(nullptr, dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr, dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
         const QJsonObject records{{"a", QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
             {"bindingPort",48991},{"ready",true},{"granted",true}}}};
@@ -343,7 +421,7 @@ private slots:
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
     void shortcutConfigurationReachesNewAndExistingWorkers() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         const QJsonObject records{{"a", QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
             {"bindingPort",48991},{"ready",true},{"granted",true}}}};
@@ -363,7 +441,7 @@ private slots:
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
     void concurrentWorkersAndInputHandoff() {
-        QTemporaryDir dir;
+        QTemporaryDir dir(fixtureTemplate());
         auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
         auto remote=credential("TEST_CERT_B");
         QJsonObject records;
@@ -378,7 +456,7 @@ private slots:
         auto row=[&](QString id) { for(const auto& item:manager.sessions()) if(item.toMap().value("id")==id)return item.toMap(); return QVariantMap{}; };
         QSignalSpy shown(&manager,&MultiSessions::viewerShown);
         manager.open("a","First","127.0.0.1","slow");
-        QTRY_COMPARE(row("a").value("state").toString(),QString("connected"));
+        QTRY_VERIFY2(row("a").value("state").toString()=="connected", qPrintable(row("a").value("error").toString()));
         QTRY_VERIFY(row("a").value("visible").toBool());
         manager.open("b","Second","127.0.0.1","crash");
         int ticks=0; QTimer heartbeat; heartbeat.setInterval(10); connect(&heartbeat,&QTimer::timeout,this,[&]{++ticks;}); heartbeat.start();
@@ -425,7 +503,7 @@ private slots:
         QCOMPARE(SessionGraph::branches(identity).first.size(),0);
     }
     void unresponsiveWorkerDoesNotBlockShellOrNextViewer() {
-        QTemporaryDir dir;
+        QTemporaryDir dir(fixtureTemplate());
         auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
         auto remote=credential("TEST_CERT_B");
         QJsonObject records;
@@ -455,7 +533,7 @@ private slots:
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
     void hiddenViewersDoNotDelaySwitchingAndNextCycles() {
-        QTemporaryDir dir;
+        QTemporaryDir dir(fixtureTemplate());
         auto cert=credential("TEST_CERT_A"), key=credential("TEST_KEY_A");
         auto remote=credential("TEST_CERT_B");
         QJsonObject records;
@@ -509,7 +587,7 @@ private slots:
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
     void backgroundRecoveryNeverRaisesTheViewer() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         QJsonObject records{{"a",QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
             {"bindingPort",48991},{"ready",true},{"granted",true}}}};
@@ -530,8 +608,97 @@ private slots:
         QCOMPARE(manager.selectedTraffic().value("received").toInt(),2);
         manager.shutdown(); QTRY_VERIFY(!manager.busy());
     }
+    void repeatedHideRecallKeepsOneInputOwnerAndAllConnections() {
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
+        const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
+        QJsonObject records;
+        for (auto id : {"a","b"}) records[id]=QJsonObject{{"hostId",id},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
+            {"bindingPort",48991},{"ready",true},{"granted",true}};
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",{{"version",1},{"peers",records}}));
+        const auto lease=dir.path()+"/synthetic-input-owner";
+        qputenv("TEST_SESSION_INPUT_LEASE",lease.toUtf8());
+        PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
+        MultiSessions manager(&peers,cert,key);
+        auto visible=[&](QString id) { for(auto item:manager.sessions()) if(item.toMap().value("id")==id) return item.toMap().value("visible").toBool(); return false; };
+        manager.open("a","Fixture A","127.0.0.1","slow"); QTRY_VERIFY(visible("a"));
+        manager.open("b","Fixture B","127.0.0.1","slow"); QTRY_VERIFY(visible("b"));
+        for (int i=0;i<10;++i) {
+            const QString target=i%2 ? "b":"a";
+            manager.showDevices(); manager.showDevices();
+            manager.select(target); manager.select(target);
+            QTRY_VERIFY(visible(target));
+            QCOMPARE(manager.states().value("a").toString(),QString("connected"));
+            QCOMPARE(manager.states().value("b").toString(),QString("connected"));
+        }
+        manager.showDevices(); QTRY_VERIFY(!visible("a") && !visible("b"));
+        QVERIFY(manager.busy()); // Closing the last viewer retains both workers.
+        QVERIFY(manager.recall()); QTRY_VERIFY(visible("b"));
+        manager.shutdown(); QTRY_VERIFY(!manager.busy());
+        QVERIFY(!QFile::exists(lease)); // All fixture input leases released on Quit.
+        qunsetenv("TEST_SESSION_INPUT_LEASE");
+    }
+    void suspensionParksWorkerHideDeadline() {
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
+        const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
+        QJsonObject records{{"a",QJsonObject{{"hostId","a"},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
+            {"bindingPort",48991},{"ready",true},{"granted",true}}}};
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",{{"version",1},{"peers",records}}));
+        PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
+        MultiSessions manager(&peers,cert,key);
+        manager.open("a","Frozen fixture","127.0.0.1","hung");
+        QTRY_COMPARE(manager.states().value("a").toString(),QString("connected"));
+        QTRY_VERIFY(manager.sessions().first().toMap().value("visible").toBool());
+        QSignalSpy devices(&manager,&MultiSessions::devicesRequested);
+        manager.setLifecycleBlocked(true,false);
+        QTest::qWait(2300);
+        QCOMPARE(manager.states().value("a").toString(),QString("connected"));
+        manager.setLifecycleBlocked(false,false);
+        QTest::qWait(200);
+        QCOMPARE(manager.states().value("a").toString(),QString("connected"));
+        // A genuinely unresponsive worker still has a bounded deadline after wake.
+        QTRY_COMPARE_WITH_TIMEOUT(manager.states().value("a").toString(),QString("error"),3000);
+        QCOMPARE(devices.count(),0); // Failure on wake also stays in the background.
+        manager.shutdown(); QTRY_VERIFY(!manager.busy());
+    }
+    void powerAndLockKeepConnectionIntentWithoutPresentation() {
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
+        const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
+        QJsonObject records;
+        for (auto id : {"a","b"}) records[id]=QJsonObject{{"hostId",id},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},
+            {"bindingPort",48991},{"ready",true},{"granted",true}};
+        QDir().mkpath(dir.path()+"/binding");
+        QVERIFY(PeerStore::write(dir.path()+"/binding/peers.json",{{"version",1},{"peers",records}}));
+        PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
+        MultiSessions manager(&peers,cert,key);
+        auto visible=[&] { for(auto item:manager.sessions()) if(item.toMap().value("visible").toBool())return true; return false; };
+        manager.open("a","First","127.0.0.1");
+        QTRY_COMPARE(manager.states().value("a").toString(),QString("connected"));
+        manager.open("b","Second","127.0.0.1");
+        QTRY_COMPARE(manager.states().value("b").toString(),QString("connected"));
+        QTRY_VERIFY(visible());
+        QSignalSpy shown(&manager,&MultiSessions::viewerShown);
+        for (int i=0;i<3;++i) manager.setLifecycleBlocked(true,true);
+        QTRY_VERIFY(!visible());
+        manager.select("b"); manager.open("c","Blocked","127.0.0.1");
+        QVERIFY(!manager.states().contains("c"));
+        manager.disconnectSession("a");
+        QTRY_COMPARE(manager.states().value("a").toString(),QString("disconnected"));
+        manager.setLifecycleBlocked(false,true); // Wake still locked.
+        manager.select("b"); QTest::qWait(100); QVERIFY(!visible());
+        manager.setLifecycleBlocked(false,false);
+        QTest::qWait(100); QVERIFY(!visible()); QCOMPARE(shown.count(),0);
+        QCOMPARE(manager.states().value("b").toString(),QString("connected"));
+        QCOMPARE(manager.states().value("a").toString(),QString("disconnected"));
+        manager.select("b"); QTRY_VERIFY(visible()); // Explicit recall only.
+        manager.setLifecycleBlocked(true,false);
+        manager.shutdown(); QTRY_VERIFY(!manager.busy());
+        manager.setLifecycleBlocked(false,false); QTest::qWait(100);
+        QVERIFY(!manager.busy()); QVERIFY(!visible());
+    }
     void cancellationBeforeLaunch() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         PeerManager peers(&host,cert,key,dir.path()+"/binding",0,QHostAddress::LocalHost);
         MultiSessions manager(&peers,cert,key);
@@ -540,7 +707,7 @@ private slots:
         QCOMPARE(manager.sessions().first().toMap().value("state").toString(),QString("disconnected"));
     }
     void shortcutActivationIsOneShotAndCancelledByDevices() {
-        QTemporaryDir dir; HostManager host(nullptr,dir.path()+"/host");
+        QTemporaryDir dir(fixtureTemplate()); HostManager host(nullptr,dir.path()+"/host");
         const auto cert=credential("TEST_CERT_A"),key=credential("TEST_KEY_A");
         QJsonObject records;
         for (auto id : {"a","b"}) records[id]=QJsonObject{{"hostId",id},{"clientCert",QString::fromUtf8(credential("TEST_CERT_B"))},

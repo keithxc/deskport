@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shlex
 import shutil
 import signal
@@ -47,7 +48,7 @@ def local_signing(env, filename=None):
             raise Refused(f"Replace the placeholder for {key} in your private configuration")
 
 
-def run_logged(command, paths, env, phase):
+def run_logged(command, paths, env, phase, *, stdout_path=None):
     paths["logs"].mkdir(parents=True, exist_ok=True)
     log = paths["logs"] / (phase + ".log")
     if log.exists():
@@ -55,9 +56,15 @@ def run_logged(command, paths, env, phase):
     print(f"{phase}: {log}", flush=True)
     # Do not log the environment or command arguments containing signing values.
     started = datetime.now(timezone.utc).isoformat()
-    with log.open("wb") as stream:
+    with contextlib.ExitStack() as stack:
+        stream = stack.enter_context(log.open("wb"))
+        output = stream
+        if stdout_path is not None:
+            no_links(stdout_path)
+            stdout_path.parent.mkdir(parents=True, exist_ok=True)
+            output = stack.enter_context(stdout_path.open("xb"))
         child = subprocess.Popen([str(x) for x in command], cwd=common.ROOT, env=env,
-                                 stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                                 stdout=output, stderr=stream, start_new_session=True)
         try:
             while True:
                 try:
@@ -79,11 +86,29 @@ def run_logged(command, paths, env, phase):
             raise
     record_path = paths["record"] / "steps.json"
     steps = json.loads(record_path.read_text()) if record_path.exists() else []
-    steps.append({"phase": phase, "exit_code": code, "started_at": started,
-                  "finished_at": datetime.now(timezone.utc).isoformat(), "log_sha256": digest(log)})
+    step = {"phase": phase, "exit_code": code, "started_at": started,
+            "finished_at": datetime.now(timezone.utc).isoformat(), "log_sha256": digest(log)}
+    if stdout_path is not None:
+        step.update(stdout_path=str(stdout_path), stdout_sha256=digest(stdout_path))
+    steps.append(step)
     write_json(record_path, steps)
     if code:
         raise Refused(f"{phase} failed ({code}); inspect the private log above")
+
+
+def nix_output(stdout_path):
+    """Accept exactly one existing package directory from Nix's stdout only."""
+    try:
+        outputs = stdout_path.read_text(encoding="ascii").splitlines()
+    except UnicodeError as exc:
+        raise Refused("Nix stdout is not an ASCII store path") from exc
+    if len(outputs) != 1 or not re.fullmatch(
+            r"/nix/store/[0-9abcdfghijklmnpqrsvwxyz]{32}-[A-Za-z0-9+._?=-]+", outputs[0]):
+        raise Refused("Nix stdout must contain exactly one absolute store output path")
+    output = Path(outputs[0])
+    if output.is_symlink() or not output.is_dir():
+        raise Refused("Nix output must be an existing store directory")
+    return output
 
 
 def host_check(target):
@@ -181,7 +206,7 @@ def build(args, paths, env):
         if args.target == "macos":
             command = ["nix", "develop", "-c", "bash", "scripts/package-macos.sh"]
         elif args.target == "linux-nix":
-            command = ["nix", "build", "-L", "--cores", "4", "--max-jobs", "1", "--out-link", paths["work"] / "result"]
+            command = ["nix", "build", "-L", "--cores", "4", "--max-jobs", "1", "--no-link", "--print-out-paths"]
         elif args.target == "linux-portable":
             env["DESKPORT_LINUX_FORMAT"] = args.format
             command = ["bash", "scripts/package-linux.sh"]
@@ -189,7 +214,14 @@ def build(args, paths, env):
             mode = "build" if args.command == "build" else "package"
             command = ["nix-shell", "winbuild/scripts/shell.nix", "--run",
                        f"bash winbuild/scripts/bootstrap.sh --mode {mode}"]
-        run_logged(command, paths, env, "build")
+        if args.target == "linux-nix":
+            stdout_path = paths["record"] / "nix-outputs.txt"
+            run_logged(command, paths, env, "build", stdout_path=stdout_path)
+            output = nix_output(stdout_path)
+            record["nix_output"] = str(output)
+            write_json(paths["record"] / "run.json", record)
+        else:
+            run_logged(command, paths, env, "build")
         if args.target == "linux-nix":
             # Unix-domain socket limits include every byte of TMPDIR. Keep
             # socket fixtures short while retaining them under the build root.
@@ -198,7 +230,7 @@ def build(args, paths, env):
             short_base.mkdir(parents=True, exist_ok=True)
             with tempfile.TemporaryDirectory(prefix="dp-", dir=short_base) as temporary:
                 smoke_env = {**env, "TMPDIR": temporary}
-                run_logged([sys.executable, "scripts/deskport-smoke.py", paths["work"] / "result"], paths, smoke_env, "smoke")
+                run_logged([sys.executable, "scripts/deskport-smoke.py", output], paths, smoke_env, "smoke")
         record["status"] = "built"
         if args.command == "package" and args.target != "linux-nix":
             if args.target == "linux-portable" and args.format == "all":

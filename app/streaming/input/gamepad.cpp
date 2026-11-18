@@ -155,37 +155,39 @@ void SdlInputHandler::sendGamepadBatteryState(GamepadState* state, SDL_JoystickP
 
 Uint32 SdlInputHandler::mouseEmulationTimerCallback(Uint32 interval, void *param)
 {
-    auto gamepad = reinterpret_cast<GamepadState*>(param);
+    const bool active = InputTimerGate::dispatch(param, [&](void* owner, unsigned slot) {
+        auto me = static_cast<SdlInputHandler*>(owner);
+        const auto gamepad = &me->m_GamepadState[slot];
+        int rawX;
+        int rawY;
 
-    int rawX;
-    int rawY;
+        // Determine which analog stick is currently receiving the strongest input
+        if (abs(gamepad->lsX) + abs(gamepad->lsY) > abs(gamepad->rsX) + abs(gamepad->rsY)) {
+            rawX = gamepad->lsX;
+            rawY = -gamepad->lsY;
+        }
+        else {
+            rawX = gamepad->rsX;
+            rawY = -gamepad->rsY;
+        }
 
-    // Determine which analog stick is currently receiving the strongest input
-    if (abs(gamepad->lsX) + abs(gamepad->lsY) > abs(gamepad->rsX) + abs(gamepad->rsY)) {
-        rawX = gamepad->lsX;
-        rawY = -gamepad->lsY;
-    }
-    else {
-        rawX = gamepad->rsX;
-        rawY = -gamepad->rsY;
-    }
+        float deltaX;
+        float deltaY;
 
-    float deltaX;
-    float deltaY;
+        // Produce a base vector for mouse movement with increased speed as we deviate further from center
+        deltaX = qPow(rawX / 32766.0f * MOUSE_EMULATION_MOTION_MULTIPLIER, 3);
+        deltaY = qPow(rawY / 32766.0f * MOUSE_EMULATION_MOTION_MULTIPLIER, 3);
 
-    // Produce a base vector for mouse movement with increased speed as we deviate further from center
-    deltaX = qPow(rawX / 32766.0f * MOUSE_EMULATION_MOTION_MULTIPLIER, 3);
-    deltaY = qPow(rawY / 32766.0f * MOUSE_EMULATION_MOTION_MULTIPLIER, 3);
+        // Enforce deadzones
+        deltaX = qAbs(deltaX) > MOUSE_EMULATION_DEADZONE ? deltaX - MOUSE_EMULATION_DEADZONE : 0;
+        deltaY = qAbs(deltaY) > MOUSE_EMULATION_DEADZONE ? deltaY - MOUSE_EMULATION_DEADZONE : 0;
 
-    // Enforce deadzones
-    deltaX = qAbs(deltaX) > MOUSE_EMULATION_DEADZONE ? deltaX - MOUSE_EMULATION_DEADZONE : 0;
-    deltaY = qAbs(deltaY) > MOUSE_EMULATION_DEADZONE ? deltaY - MOUSE_EMULATION_DEADZONE : 0;
+        if (deltaX != 0 || deltaY != 0) {
+            LiSendMouseMoveEvent((short)deltaX, (short)deltaY);
+        }
 
-    if (deltaX != 0 || deltaY != 0) {
-        LiSendMouseMoveEvent((short)deltaX, (short)deltaY);
-    }
-
-    return interval;
+    });
+    return active ? interval : 0;
 }
 
 void SdlInputHandler::handleControllerAxisEvent(SDL_ControllerAxisEvent* event)
@@ -320,10 +322,13 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
         }
     }
     else {
+        const bool startWasDown = (state->buttons & PLAY_FLAG) != 0;
         state->buttons &= ~k_ButtonMap[event->button];
 
         if (event->button == SDL_CONTROLLER_BUTTON_START) {
-            if (SDL_GetTicks() - state->lastStartDownTime > MOUSE_EMULATION_LONG_PRESS_TIME) {
+            // A release queued before hide/lock must not restart mouse emulation
+            // after suspendInput() cleared the controller's held state.
+            if (startWasDown && SDL_GetTicks() - state->lastStartDownTime > MOUSE_EMULATION_LONG_PRESS_TIME) {
                 if (state->mouseEmulationTimer != 0) {
                     SDL_RemoveTimer(state->mouseEmulationTimer);
                     state->mouseEmulationTimer = 0;
@@ -336,7 +341,7 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
                     // Send the start button up event to the host, since we won't do it below
                     sendGamepadState(state);
 
-                    state->mouseEmulationTimer = SDL_AddTimer(MOUSE_EMULATION_POLLING_INTERVAL, SdlInputHandler::mouseEmulationTimerCallback, state);
+                    state->mouseEmulationTimer = SDL_AddTimer(MOUSE_EMULATION_POLLING_INTERVAL, SdlInputHandler::mouseEmulationTimerCallback, m_InputTimerGate.context(unsigned(state-m_GamepadState)));
 
                     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                                 "Mouse emulation active");

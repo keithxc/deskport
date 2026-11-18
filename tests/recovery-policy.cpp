@@ -44,5 +44,28 @@ int main() {
     { Fake f; f.loaded = false; f.failure = true; assert(f.check() == 1 && f.bootstraps == 1 && !f.starts); }
     { Fake f; f.noPid = true; assert(f.check() == 1 && f.health == "error"); }
     { Fake f; f.queryFailure = true; assert(f.check() == 1 && !f.starts); }
-    std::cout << "PASS: 13 recovery scenarios, PID parsing, disabled-job isolation\n";
+    {
+        // One persistent account across opt-in, app crash, pause, reopen,
+        // upgrade/rollback process overlap, opt-out and login-item removal.
+        Fake f; f.enabled = false;
+        assert(f.check() == 0 && !f.starts);
+        f.enabled = true;
+        assert(f.check() == 0 && f.starts == 1);
+        f.running = false; // Crash: exactly one recovery start.
+        assert(f.check() == 0 && f.starts == 2);
+        f.paused = true; f.running = false;
+        assert(f.check() == 0 && f.starts == 2);
+        f.paused = false; // User reopened the app; an existing app wins.
+        f.external = true;
+        assert(f.check() == 0 && f.starts == 2);
+        f.loaded = false; // Replacement/rollback binary is already running.
+        assert(f.check() == 0 && f.starts == 2 && !f.bootstraps);
+        f.external = false;
+        assert(f.check() == 0 && f.starts == 3 && f.bootstraps == 1);
+        f.enabled = false; f.running = false;
+        assert(f.check() == 0 && f.starts == 3);
+        f.enabled = true; f.login = false;
+        assert(f.check() == 0 && f.health == "missing-login-item" && f.starts == 3);
+    }
+    std::cout << "PASS: 13 recovery scenarios, persistent lifecycle sequence, PID parsing, disabled-job isolation\n";
 }

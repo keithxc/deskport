@@ -5,6 +5,7 @@
 #include "sessionlifetime.h"
 #include "resizesettler.h"
 #include "streamsnapshot.h"
+#include "videoformats.h"
 
 #include <QSemaphore>
 #include <QMutex>
@@ -22,84 +23,6 @@
 #include "video/decoder.h"
 #include "audio/renderers/renderer.h"
 #include "video/overlaymanager.h"
-
-class SupportedVideoFormatList : public QList<int>
-{
-public:
-    operator int() const
-    {
-        int value = 0;
-
-        for (const int & v : *this) {
-            value |= v;
-        }
-
-        return value;
-    }
-
-    void
-    removeByMask(int mask)
-    {
-        int i = 0;
-        while (i < this->length()) {
-            if (this->value(i) & mask) {
-                this->removeAt(i);
-            }
-            else {
-                i++;
-            }
-        }
-    }
-
-    void
-    deprioritizeByMask(int mask)
-    {
-        QList<int> deprioritizedList;
-
-        int i = 0;
-        while (i < this->length()) {
-            if (this->value(i) & mask) {
-                deprioritizedList.append(this->takeAt(i));
-            }
-            else {
-                i++;
-            }
-        }
-
-        this->append(std::move(deprioritizedList));
-    }
-
-    int maskByServerCodecModes(int serverCodecModes)
-    {
-        int mask = 0;
-
-        const QMap<int, int> mapping = {
-            {SCM_H264, VIDEO_FORMAT_H264},
-            {SCM_H264_HIGH8_444, VIDEO_FORMAT_H264_HIGH8_444},
-            {SCM_HEVC, VIDEO_FORMAT_H265},
-            {SCM_HEVC_MAIN10, VIDEO_FORMAT_H265_MAIN10},
-            {SCM_HEVC_REXT8_444, VIDEO_FORMAT_H265_REXT8_444},
-            {SCM_HEVC_REXT10_444, VIDEO_FORMAT_H265_REXT10_444},
-            {SCM_AV1_MAIN8, VIDEO_FORMAT_AV1_MAIN8},
-            {SCM_AV1_MAIN10, VIDEO_FORMAT_AV1_MAIN10},
-            {SCM_AV1_HIGH8_444, VIDEO_FORMAT_AV1_HIGH8_444},
-            {SCM_AV1_HIGH10_444, VIDEO_FORMAT_AV1_HIGH10_444},
-        };
-
-        for (QMap<int, int>::const_iterator it = mapping.cbegin(); it != mapping.cend(); ++it) {
-            if (serverCodecModes & it.key()) {
-                mask |= it.value();
-                serverCodecModes &= ~it.key();
-            }
-        }
-
-        // Make sure nobody forgets to update this for new SCM values
-        SDL_assert(serverCodecModes == 0);
-
-        int val = *this;
-        return val & mask;
-    }
-};
 
 class Session : public QObject
 {
@@ -123,7 +46,8 @@ public:
 
     bool viewerReady() const { return m_ViewerReady.load(); }
     bool inputDispatching() const { return m_InputDispatching.load(); }
-    Q_INVOKABLE void setViewerRequested(bool visible) { m_ViewerRequested = visible; }
+    Q_INVOKABLE void setViewerRequested(bool visible) { m_ViewerRequested = visible; if (visible) m_LifecycleQuiet = false; }
+    Q_INVOKABLE bool quietRecovery() const { return m_LifecycleQuiet.load(); }
     QString hostId() const;
     QString hostName() const;
     Q_INVOKABLE QVariantMap traffic() const;
@@ -131,13 +55,15 @@ private:
     quint64 m_TrafficReceivedBase = 0, m_TrafficSentBase = 0;
 public:
     Q_INVOKABLE void exec(QWindow* qtWindow);
-    Q_INVOKABLE bool adaptiveRestartPending() const { return !m_RecoveryCancelled && (m_NetworkRetry || m_ManualReconnect || m_AdaptiveNextSize.isValid()); }
+    Q_INVOKABLE bool adaptiveRestartPending() const;
     Q_INVOKABLE Session* adaptiveContinuation();
 private:
     Session* continuationSession();
 public:
     // The transport cannot survive client sleep; stop without quitting the host app.
     void endForSystemSleep();
+    void releaseForClientLock();
+    void setClientBlocked(bool blocked) { m_ClientBlocked = blocked; }
     Q_INVOKABLE void requestReconnect();
     // Applies the global data saver live when only its video ceiling changes;
     // audio capture or smart-cadence changes require launch/resume negotiation.
@@ -147,9 +73,13 @@ public:
     void requestNextViewer();
     void requestShortcutToggle();
     Q_INVOKABLE int retryDelay() const { return m_RecoveryDeadline ? qMin(4000, 1000 << qMin(m_RecoveryAttempt, 2)) : 0; }
-    Q_INVOKABLE void cancelRecovery() { m_RecoveryCancelled = true; m_NetworkRetry = false; }
+    Q_INVOKABLE void cancelRecovery() { m_SystemSleep = false; m_RecoveryCancelled = true; m_NetworkRetry = false; }
 private:
     bool scheduleNetworkRecovery();
+    std::atomic<bool> m_LifecycleQuiet{false};
+    std::atomic<bool> m_ClientBlocked{false};
+    std::atomic<bool> m_SystemSleep{false};
+    bool m_SystemResume = false;
     std::atomic<bool> m_NetworkRetry{false};
     std::atomic<bool> m_RecoveryCancelled{false};
     std::atomic<qint64> m_RecoveryDeadline{0}, m_StreamStartedAt{0};
@@ -382,11 +312,11 @@ private:
     // Decode units handed to the decoder; the resume watchdog reads it.
     std::atomic<quint64> m_VideoUnitsSubmitted{0};
     bool m_AudioDisabled;
-    bool m_AudioMuted;
+    std::atomic<bool> m_AudioMuted;
     Uint32 m_FullScreenFlag;
     QWindow* m_QtWindow;
     bool m_ThreadedExec;
-    bool m_UnexpectedTermination;
+    std::atomic<bool> m_UnexpectedTermination;
     std::atomic<bool> m_TerminationReported {false};
     SdlInputHandler* m_InputHandler;
     int m_MouseEmulationRefCount;

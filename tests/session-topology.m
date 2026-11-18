@@ -20,7 +20,11 @@ static void *symbol(void *h,const char *name) {
     if (!strcmp(name,"CGSGetDisplayList")) return (void *)listScreens;
     return NULL;
 }
-static CFUUIDRef fakeUuid(unsigned i) { if ([screen(i)[@"noUuid"] boolValue]) return NULL; return CFUUIDCreateFromString(NULL,(__bridge CFStringRef)[NSString stringWithFormat:@"00000000-0000-0000-0000-%012u",i]); }
+static CFUUIDRef fakeUuid(unsigned i) {
+    if (!screen(i) || [screen(i)[@"noUuid"] boolValue]) return NULL;
+    unsigned stable=[screen(i)[@"identity"] unsignedIntValue] ?: i;
+    return CFUUIDCreateFromString(NULL,(__bridge CFStringRef)[NSString stringWithFormat:@"00000000-0000-0000-0000-%012u",stable]);
+}
 static CGDisplayModeRef fakeMode(unsigned i) { return screen(i) ? (CGDisplayModeRef)CFBridgingRetain([screen(i) copy]) : NULL; }
 static NSDictionary *modeData(CGDisplayModeRef m) { return (__bridge NSDictionary *)m; }
 static CFArrayRef fakeModes(unsigned i, CFDictionaryRef opts) {
@@ -45,7 +49,17 @@ static CGError setMode(CGDisplayConfigRef c,unsigned i,CGDisplayModeRef m,CFDict
 }
 static CGError selectMode(unsigned i,CGDisplayModeRef m,CFDictionaryRef opts) { return 0; }
 static unsigned mainDisplay(void) { for (NSNumber *n in screens) if ([screen(n.unsignedIntValue)[@"main"] boolValue]) return n.unsignedIntValue; return 0; }
-static CGError complete(CGDisplayConfigRef c,CGConfigureOption option) { if (rejectCommit) return kCGErrorFailure; screens=pending; pending=nil; return 0; }
+static CGError complete(CGDisplayConfigRef c,CGConfigureOption option) {
+    if (rejectCommit) return kCGErrorFailure;
+    // Mirrored sinks share the source's origin but do not become the main source.
+    for (NSNumber *ident in pending) {
+        unsigned source=[pending[ident][@"mirror"] unsignedIntValue];
+        if (source && [pending[ident][@"main"] boolValue]) {
+            pending[ident][@"main"]=@NO; pending[@(source)][@"main"]=@YES;
+        }
+    }
+    screens=pending; pending=nil; return 0;
+}
 static CGError cancel(CGDisplayConfigRef c) { pending=nil; return 0; }
 static CGRect fakeBounds(unsigned i) { return CGRectMake([screen(i)[@"x"] intValue],[screen(i)[@"y"] intValue],1920,1080); }
 #define dlsym symbol
@@ -117,7 +131,66 @@ static void reset(void) {
     screens=[@{@1:entry(YES,YES,0),@2:entry(YES,NO,1920),@3:entry(NO,NO,3840),@9:entry(YES,NO,5760)} mutableCopy];
     [NSFileManager.defaultManager removeItemAtPath:topologyPath() error:nil];
 }
-int main(void) { @autoreleasepool {
+static void topologyFixtures(NSString *path) {
+    NSData *data=[NSData dataWithContentsOfFile:path]; assert(data);
+    NSArray *fixtures=[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    assert([fixtures isKindOfClass:NSArray.class] && fixtures.count);
+    for (NSDictionary *fixture in fixtures) for (int policy=0;policy<=2;policy++) {
+        reset(); sessionDisplayPolicy=policy;
+        [screens removeAllObjects];
+        for (NSDictionary *item in fixture[@"screens"]) {
+            NSMutableDictionary *value=[item mutableCopy]; NSNumber *ident=value[@"id"];
+            [value removeObjectForKey:@"id"]; screens[ident]=value;
+        }
+        screens[@9]=entry(YES,NO,12000);
+        assert(snapshotTopology(9));
+        NSArray *original=savedTopology;
+        assert(applySessionTopology(9) && sessionTopologyReady(9));
+        // Resize/takeover may capture again, but must retain the first lease's baseline.
+        assert(snapshotTopology(9) && savedTopology==original);
+        // Simulate WindowServer assigning fresh transient IDs after reconnect.
+        NSMutableDictionary *renumbered=[NSMutableDictionary new];
+        for (NSNumber *ident in screens) {
+            NSMutableDictionary *value=screens[ident];
+            if (ident.unsignedIntValue==9) { renumbered[ident]=value; continue; }
+            value[@"identity"]=value[@"identity"] ?: ident;
+            unsigned source=[value[@"mirror"] unsignedIntValue];
+            if (source && source!=9) value[@"mirror"]=@(source+100);
+            renumbered[@(ident.unsignedIntValue+100)]=value;
+        }
+        screens=renumbered;
+        // Extend can already match the baseline: perturb an origin to exercise
+        // an actual rejected recovery transaction in every policy.
+        screen(101)[@"x"]=@111;
+        // A newly attached screen is outside the saved lease and stays untouched.
+        screens[@200]=entry(YES,NO,14000); NSDictionary *hotplug=[screen(200) copy];
+        rejectCommit=YES; assert(!recover());
+        assert(savedTopology==original && [NSFileManager.defaultManager fileExistsAtPath:topologyPath()]);
+        rejectCommit=NO;
+        // Reload the exact on-disk journal, as after a helper crash.
+        savedTopology=[NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:topologyPath()] options:0 error:nil];
+        assert(recover() && !savedTopology && restoredTopologyReady());
+        assert([screen(200) isEqual:hotplug]);
+        for (NSDictionary *item in original) {
+            unsigned ident=findDisplay(item[@"uuid"]); assert(ident);
+            assert((BOOL)(CGDisplayIsActive(ident) || CGDisplayMirrorsDisplay(ident))==wasEnabled(item));
+            if (!wasEnabled(item)) continue;
+            assert(CGDisplayMirrorsDisplay(ident)==findDisplay(item[@"mirror"]));
+            assert([screen(ident)[@"width"] isEqual:item[@"width"]]);
+            assert([screen(ident)[@"height"] isEqual:item[@"height"]]);
+            if ([item[@"main"] boolValue]) assert(CGDisplayIsMain(ident));
+            assert([(screen(ident)[@"pixelsW"] ?: screen(ident)[@"width"]) isEqual:item[@"pixelsW"]]);
+            assert([(screen(ident)[@"pixelsH"] ?: screen(ident)[@"height"]) isEqual:item[@"pixelsH"]]);
+            if (![item[@"mirror"] length]) {
+                assert([screen(ident)[@"x"] isEqual:item[@"x"]]);
+                assert([screen(ident)[@"y"] isEqual:item[@"y"]]);
+            }
+        }
+        assert(![NSFileManager.defaultManager fileExistsAtPath:topologyPath()]);
+        printf("PASS fixture: %s policy=%d, UUID reconnect, hotplug, failed transaction and journal reload\n",[fixture[@"name"] UTF8String],policy);
+    }
+}
+int main(int argc, const char *argv[]) { @autoreleasepool {
     testHome=[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     if (isolatedDisplay()) {
         reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR;
@@ -136,6 +209,7 @@ int main(void) { @autoreleasepool {
         puts("PASS: isolated helper only changes its own extended display, no shared journal or physical restore");
         return 0;
     }
+    assert(argc==2); topologyFixtures([NSString stringWithUTF8String:argv[1]]);
     for (int policy=0;policy<=2;policy++) {
         reset(); sessionDisplayPolicy=policy;
         assert(snapshotTopology(9)); NSArray *before=savedTopology;

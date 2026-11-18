@@ -86,6 +86,14 @@ for repair. Uninstall removes only the exact owned service before existing drive
 cleanup. Ordinary maintenance `stop` remains app-only; `stop-installation` is the
 installer barrier. User identity/peers are not moved or promoted to SYSTEM.
 
+All installer/uninstaller helper calls check NSIS launch errors separately from
+child exit codes. Missing or quarantined maintenance/driver components abort
+before subsequent registration or deletion. Partial payload copying and an
+unwritable uninstaller also stop installation before registration. This is a
+fail-closed repair path, not an automatic transactional binary rollback. See
+[installation lifecycle](WINDOWS_INSTALL_LIFECYCLE.md) for the executable audit,
+production SCM fault tests, rollback procedure and remaining native gates.
+
 ## Owned virtual-output DPI
 
 Independent virtual sessions (exclusive and extended desktop) apply the existing

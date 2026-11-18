@@ -98,5 +98,10 @@ jobs:
           nix develop -c python3 tests/test-seamless-host-manager.py
           nix develop -c python3 tests/test-host-lifecycle.py --binding
 
+      - name: Retained viewer activity and input ownership (isolated fixtures)
+        run: |
+          nix develop -c python3 tests/test-viewer-activity.py
+          nix develop -c python3 tests/test-host-lifecycle.py --sessions
+
       - name: VM disk guard checks (no virtual machine required)
         run: python3 tests/test-macos-vm-guard.py

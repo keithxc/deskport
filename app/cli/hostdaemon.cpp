@@ -94,13 +94,7 @@ int DeskPortCli::runHostDaemon(int& argc, char** argv) {
                               [&browserHost](const QString& id) { return browserHost.revokeBrowser(id); });
     if (sessionMode == DeskPortSession::Mode::Seamless) {
         control.setStatusExtension([&seamless] {
-            return QJsonObject{{"running", seamless.running()}, {"ready", seamless.ready()},
-                               {"available", seamless.available()},
-                               {"changing", seamless.running() && !seamless.ready()},
-                               {"readiness", seamless.ready() ? "experimental" : "unavailable"},
-                               {"displayWarning", QString()}, {"hostPort", 0},
-                               {"status", seamless.status()}, {"windows", seamless.windowCount()},
-                               {"waylandSocket", seamless.socketName()}};
+            return seamless.localStatus();
         });
     }
     if (!control.listen()) {

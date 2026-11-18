@@ -57,6 +57,7 @@ Item {
 
     function displayLaunchWarning(text)
     {
+        if (session && session.quietRecovery()) return;
         // Toast lifetime is independent of connection progress.
         var toast = Qt.createQmlObject('import QtQuick.Controls 2.2; ToolTip {}', parent, '')
         toast.text = text
@@ -79,6 +80,7 @@ Item {
     {
         if (typeof session === 'undefined' || !session) return
         if (session.adaptiveRestartPending()) return
+        var quiet = session.quietRecovery()
         if (portTestResult !== 0 && portTestResult !== -1 && streamSegueErrorDialog.text) {
             streamSegueErrorDialog.text += "\n\n" + qsTr("This PC's Internet connection is blocking Moonlight. Streaming over the Internet may not work while connected to this network.")
         }
@@ -87,6 +89,7 @@ Item {
         SdlGamepadKeyNavigation.enable()
 
         if (quitAfter) {
+            if (quiet) { Qt.quit(); return }
             if (streamSegueErrorDialog.text) {
                 // Quit when the error dialog is acknowledged
                 streamSegueErrorDialog.quitAfter = quitAfter
@@ -103,14 +106,14 @@ Item {
             if (stackView.currentItem !== streamPage) stackView.pop(streamPage, StackView.Immediate)
             stackView.pop(StackView.Immediate)
 
-            // Show the Qt window again after streaming
-            window.visible = true
+            // Lifecycle recovery and its failures must not summon the shell.
+            if (!quiet) window.visible = true
 
             // Display any launch errors. We do this after
             // the Qt UI is visible again to prevent losing
             // focus on the dialog which would impact gamepad
             // users.
-            if (streamSegueErrorDialog.text) {
+            if (streamSegueErrorDialog.text && !quiet) {
                 streamSegueErrorDialog.quitAfter = quitAfter
                 streamSegueErrorDialog.open()
             }
@@ -127,6 +130,8 @@ Item {
         if (session.adaptiveRestartPending()) {
             var previous = session
             var next = previous.adaptiveContinuation()
+            // Admission can be revoked between the pending check and cloning.
+            if (!next) { sessionFinished(0); return }
             // Keep the navigation stack intact: Devices may be above this page.
             // Transport replacement must not dismiss it or steal window focus.
             previous.stageStarting.disconnect(stageStarting)
@@ -178,7 +183,7 @@ Item {
         if (session.retryDelay() > 0) {
             streamSegueErrorDialog.text = ""
             stageText = qsTr("Connection interrupted. Reconnecting…")
-            if (stackView.currentItem === streamPage) window.visible = true
+            if (!session.quietRecovery() && stackView.currentItem === streamPage) window.visible = true
             retryTimer.interval = session.retryDelay()
             retryTimer.start()
         } else streamLoader.active = true

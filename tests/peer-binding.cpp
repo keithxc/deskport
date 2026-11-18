@@ -1349,6 +1349,8 @@ private slots:
         {
             AdaptiveDisplay unknown("127.0.0.1", server.port(), QSslCertificate(bCert), cCert, credential("TEST_KEY_C"));
             QVERIFY(!resize(unknown, QSize(1920, 1080)));
+            unknown.cancel(true);
+            QVERIFY(!unknown.retryable()); // Sleep cannot create an admission.
         }
         QTRY_VERIFY(!server.busy());
         QCOMPARE(resized.size(), 0); QCOMPARE(approval.size(), 0);
@@ -1406,6 +1408,12 @@ private slots:
         int clientReplies = 0;
         for (const auto& reply : resized) if (reply[0].toInt() > 0) ++clientReplies;
         QCOMPARE(clientReplies, 6);
+        const auto resumeToken = next.resumeToken();
+        QVERIFY(!resumeToken.isEmpty());
+        next.cancel(true); // Interrupting negotiation for sleep retains intent.
+        QVERIFY(next.retryable()); QCOMPARE(next.resumeToken(), resumeToken);
+        next.cancel(); // Explicit disconnect remains terminal after a sleep stop.
+        QVERIFY(!next.retryable());
         host.stop(); QTRY_VERIFY_WITH_TIMEOUT(!host.changing(), 5000);
     }
     void preparationFailureCodes_data() {

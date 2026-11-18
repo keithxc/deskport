@@ -17,9 +17,7 @@
 #ifdef Q_OS_MACOS
 #include "backend/macdock.h"
 #endif
-#ifdef Q_OS_LINUX
 #include "backend/sleepmonitor.h"
-#endif
 #include "backend/peerstore.h"
 #include "backend/streambudget.h"
 #include "backend/sessionwindowstate.h"
@@ -165,7 +163,7 @@ void Session::pumpTransitionWindow() {
     if (!self) return;
     if (window->takePresentationShown() && m_ViewerRequested) emit presentationShown();
     // The connecting window is the viewer too: the tray hides it when in front.
-    if (window->window()) reportViewerFocus(CanvasBridge::flags(window->window()) & SDL_WINDOW_INPUT_FOCUS);
+    if (window->window()) reportViewerFocus(m_ViewerRequested && desktopWindowVisible(window->window()) && (CanvasBridge::flags(window->window()) & SDL_WINDOW_INPUT_FOCUS));
     if (window->takeShortcutRequested() && m_ViewerRequested) requestShortcutToggle();
 }
 
@@ -232,7 +230,7 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
     m_AdaptiveDisplay->setFullScreen(m_IsFullScreen);
     if (m_AdaptiveDisplay->resize(target, m_AdaptiveScale, [this] {
             if (m_RecoveryCancelled || (m_RecoveryDeadline && QDateTime::currentMSecsSinceEpoch() >= m_RecoveryDeadline))
-                m_AdaptiveDisplay->cancel();
+                m_AdaptiveDisplay->cancel(m_SystemSleep.load());
             if (m_TransitionWindow) pumpTransitionWindow();
             if (!m_ThreadedExec) QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
         }, [this, window] {
@@ -283,7 +281,7 @@ void Session::initializeAdaptiveDisplay(SDL_Window* window) {
         m_SessionAdmissionFailed = m_RecoveryDeadline || m_AdaptiveDisplay->admissionRequired();
         m_SessionTopologyError = m_AdaptiveDisplay->topologyError();
         if (m_RecoveryDeadline) scheduleNetworkRecovery();
-        m_AdaptiveDisplay.reset();
+        if (!m_SystemSleep || !adaptiveRestartPending()) m_AdaptiveDisplay.reset();
         qWarning() << "Using fixed-resolution streaming; adaptive display negotiation was unavailable";
     }
 }
@@ -390,6 +388,6 @@ void Session::rememberAdaptiveWindow()
 bool Session::leaveFullscreen() {
     if (!m_Window || !(CanvasBridge::flags(m_Window) & SDL_WINDOW_FULLSCREEN)) return false;
     toggleFullscreen();
-    if (m_InputHandler) { m_InputHandler->raiseAllKeys(); m_InputHandler->setCaptureActive(false); }
+    if (m_InputHandler) { m_InputHandler->raiseAllKeys(); m_InputHandler->suspendInput(); }
     return true;
 }

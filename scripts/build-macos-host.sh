@@ -10,6 +10,10 @@ build_dir="$build_root/sunshine-vendored-build"
 python3 "$repo/scripts/prepare-host-source.py" "$source_dir"
 # Every DeskPort host change is listed, in order, in host/series.
 python3 "$repo/scripts/apply-host-patches.py" --platform macos "$source_dir"
+if [ "${DESKPORT_HOST_PREPARE_ONLY:-0}" = 1 ]; then
+    printf 'Prepared macOS host overlays: %s\n' "$source_dir"
+    exit 0
+fi
 sdk=$(xcrun --sdk macosx --show-sdk-path)
 pc="$build_root/host-pkgconfig"
 mkdir -p "$pc"

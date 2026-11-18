@@ -16,7 +16,11 @@ NavigableDialog {
     function labelAt(index) { var o = model[index]; return o === undefined ? "" : typeof o === "string" ? o : o.label }
     function detailAt(index) { var o = model[index]; return o === undefined || typeof o === "string" ? "" : (o.detail || "") }
     padding: 0; topPadding: 0; bottomPadding: 12
-    onOpened: list.positionViewAtIndex(Math.max(0, currentIndex), ListView.Contain)
+    onOpened: {
+        list.currentIndex = Math.max(0, currentIndex)
+        list.positionViewAtIndex(list.currentIndex, ListView.Contain)
+        list.forceActiveFocus()
+    }
     contentItem: ColumnLayout {
         spacing: 0
         Label {
@@ -35,6 +39,10 @@ NavigableDialog {
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             model: options.model.length
+            keyNavigationEnabled: true
+            activeFocusOnTab: true
+            Keys.onReturnPressed: if (currentIndex >= 0) options.choose(currentIndex)
+            Keys.onEnterPressed: if (currentIndex >= 0) options.choose(currentIndex)
             ScrollIndicator.vertical: ScrollIndicator {}
             delegate: ItemDelegate {
                 id: option
@@ -46,7 +54,11 @@ NavigableDialog {
                 Accessible.role: Accessible.RadioButton
                 Accessible.checked: current
                 onClicked: options.choose(index)
-                background: Rectangle { color: option.down || option.hovered ? ui.raised : option.current ? ui.tint : "transparent" }
+                background: Rectangle {
+                    color: option.down || option.hovered ? ui.raised : option.current ? ui.tint : "transparent"
+                    border.width: list.activeFocus && index === list.currentIndex ? 2 : 0
+                    border.color: ui.accent
+                }
                 contentItem: RowLayout {
                     spacing: 12
                     ColumnLayout {

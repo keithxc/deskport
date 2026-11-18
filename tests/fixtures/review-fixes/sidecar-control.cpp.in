@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Production control methods are inserted by the runner. No compositor is
+// linked. Each QProcess below is an owned, inert pipe-reader fixture.
+#include <QCoreApplication>
+#include <QProcess>
+#include <QVariant>
+#include <cassert>
+#include <cstdio>
+#include <memory>
+#include <vector>
+class SidecarHost {
+public:
+    QProcess m_Child;
+    std::vector<std::unique_ptr<QProcess>> m_Apps;
+    void requestOwnedShutdown();
+    bool ownedChildrenRunning() const;
+};
+@PRODUCTION_METHODS@
+int main(int argc, char** argv) {
+    QCoreApplication app(argc, argv);
+    if (app.arguments().contains("--owned-pipe-fixture"))
+        return std::getc(stdin) == 'T' ? 0 : 1;
+    SidecarHost sidecar;
+    assert(!sidecar.ownedChildrenRunning());
+    const auto launch = [](QProcess& process) {
+        process.start(QCoreApplication::applicationFilePath(), {"--owned-pipe-fixture"});
+        assert(process.waitForStarted(1000));
+    };
+    launch(sidecar.m_Child);
+    for (int i = 0; i < 2; ++i) {
+        sidecar.m_Apps.push_back(std::make_unique<QProcess>());
+        launch(*sidecar.m_Apps.back());
+    }
+    assert(sidecar.ownedChildrenRunning());
+    sidecar.requestOwnedShutdown();
+    sidecar.requestOwnedShutdown(); // idempotent, no write to a closed channel
+    assert(sidecar.m_Child.property("ownedStopRequested").toBool());
+    if (sidecar.m_Child.state() != QProcess::NotRunning) assert(sidecar.m_Child.waitForFinished(1500));
+    assert(sidecar.m_Child.exitCode() == 0);
+    for (auto& process : sidecar.m_Apps) {
+        if (process->state() != QProcess::NotRunning) assert(process->waitForFinished(1500));
+        assert(process->exitCode() == 0);
+    }
+    assert(!sidecar.ownedChildrenRunning());
+    sidecar.requestOwnedShutdown(); // No retained numeric handle after completion.
+    std::puts("PASS: production Sidecar pipe control, 3 exact owned QProcess fixtures, repeat stop and completed state");
+}

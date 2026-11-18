@@ -1,0 +1,122 @@
+[
+  {
+    "name": "mixed-hidpi-negative-origin",
+    "screens": [
+      {
+        "enabled": true,
+        "main": true,
+        "mirror": 0,
+        "x": 0,
+        "y": 0,
+        "width": 2560,
+        "height": 1440,
+        "id": 1,
+        "pixelsW": 5120,
+        "pixelsH": 2880
+      },
+      {
+        "enabled": true,
+        "main": false,
+        "mirror": 0,
+        "x": -1920,
+        "y": -160,
+        "width": 1920,
+        "height": 1080,
+        "id": 2
+      },
+      {
+        "enabled": false,
+        "main": false,
+        "mirror": 0,
+        "x": 2560,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 3
+      },
+      {
+        "enabled": false,
+        "main": false,
+        "mirror": 0,
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 5,
+        "noUuid": true
+      }
+    ]
+  },
+  {
+    "name": "physical-mirror-and-disabled-panel",
+    "screens": [
+      {
+        "enabled": true,
+        "main": true,
+        "mirror": 0,
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 1
+      },
+      {
+        "enabled": true,
+        "main": false,
+        "mirror": 1,
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 2
+      },
+      {
+        "enabled": false,
+        "main": false,
+        "mirror": 0,
+        "x": 1920,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 3
+      }
+    ]
+  },
+  {
+    "name": "portrait-three-display",
+    "screens": [
+      {
+        "enabled": true,
+        "main": true,
+        "mirror": 0,
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "id": 1
+      },
+      {
+        "enabled": true,
+        "main": false,
+        "mirror": 0,
+        "x": 1920,
+        "y": -300,
+        "width": 1080,
+        "height": 1920,
+        "id": 2,
+        "pixelsW": 2160,
+        "pixelsH": 3840
+      },
+      {
+        "enabled": true,
+        "main": false,
+        "mirror": 0,
+        "x": -1920,
+        "y": 1080,
+        "width": 1920,
+        "height": 1080,
+        "id": 3
+      }
+    ]
+  }
+]

@@ -4,6 +4,9 @@
 
 namespace {
 NSString* nativeType(const QString& mime) {
+    // AppKit rejects slash-containing MIME names as provider UTIs. Keep this
+    // local marker reversible so the agent can suppress echoes and revoke it.
+    if (mime == "application/x-deskport-clipboard") return @"io.github.keithxc.deskport.clipboard-marker";
     if (mime == "text/plain" || mime == "text/plain;charset=utf-8") return NSPasteboardTypeString;
     if (mime == "image/png") return NSPasteboardTypePNG;
     if (mime == "image/tiff") return NSPasteboardTypeTIFF;
@@ -11,6 +14,7 @@ NSString* nativeType(const QString& mime) {
     return [NSString stringWithUTF8String:mime.toUtf8().constData()];
 }
 QString mimeType(NSString* type) {
+    if ([type isEqualToString:@"io.github.keithxc.deskport.clipboard-marker"]) return "application/x-deskport-clipboard";
     if ([type isEqualToString:NSPasteboardTypeString]) return "text/plain;charset=utf-8";
     if ([type isEqualToString:NSPasteboardTypePNG]) return "image/png";
     if ([type isEqualToString:NSPasteboardTypeTIFF]) return "image/tiff";

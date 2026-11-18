@@ -69,6 +69,13 @@ with tempfile.TemporaryDirectory(prefix='deskport-worker-test-') as temp:
             assert receive(old, 'hidden')['epoch'] == epoch
             send(sockets[foreground], {'command':'show'})
             assert all(p.poll() is None for p in children)
+        # The production IPC gate is independently injectable; no OS event is
+        # broadcast and no host/physical input is used by these workers.
+        for sleeping, locked in [(True, True), (True, True), (False, True), (False, False)]:
+            for connection in sockets:
+                send(connection, {'command':'lifecycle','sleeping':sleeping,'locked':locked})
+                assert receive(connection, 'lifecycle')['blocked'] == (sleeping or locked)
+            assert all(p.poll() is None for p in children)
         send(sockets[0], {'command':'disconnect'})
         assert children[0].wait(timeout=8) == 0
         assert children[1].poll() is None
@@ -78,7 +85,7 @@ with tempfile.TemporaryDirectory(prefix='deskport-worker-test-') as temp:
         for index in range(2):
             settings = (root/str(index)/'DeskPort/DeskPort.ini').read_text()
             assert 'hosts\\' not in settings and 'certificate=' not in settings
-        print('PASS: two real workers, 20 presentation switches while connecting, independent cancellation and IPC-loss exit; no server connection')
+        print('PASS: two real workers, 20 presentation switches while connecting, duplicate sleep/lock/wake gates, independent cancellation and IPC-loss exit; no server connection')
     finally:
         for process in children:
             if process.poll() is None: process.kill()

@@ -6,11 +6,14 @@
 #include <QProcess>
 #include <QSettings>
 #include <QSignalSpy>
+#include <QScopeGuard>
 #include <QTemporaryDir>
 #include <QUrlQuery>
 #include <QtTest>
 #include "cli/hostcontrol.h"
 #include "hostmanager.h"
+#include "seamlesshostmanager.h"
+#include <QStandardPaths>
 #include "peermanager.h"
 #include "peerstore.h"
 #ifdef Q_OS_UNIX
@@ -40,6 +43,76 @@ static void send(QLocalSocket& socket, const QStringList& args) {
 class HostControl : public QObject {
     Q_OBJECT
 private slots:
+    void seamlessWindowStatesReachLocalStatus() {
+        QTemporaryDir dir;
+        const auto python = QStandardPaths::findExecutable(QStringLiteral("python3"));
+        QVERIFY(!python.isEmpty());
+        const auto path = dir.path() + "/fake-seamless-host";
+        QFile helper(path);
+        QVERIFY(helper.open(QIODevice::WriteOnly));
+        helper.write("#!" + QFile::encodeName(python) + R"PY(
+import json, time
+events = [
+    dict(version=1, type="ready", socket="deskport-test-1", width=1280, height=720),
+    dict(version=1, type="window-create", id=1, width=320, height=200, title="Terminal", appId="org.example.Terminal"),
+    dict(version=1, type="window-damage", id=1, sequence=1, bufferType="wl_shm", rectangles=[], rectanglesTruncated=False),
+    dict(version=1, type="frame-metadata", id=1, sequence=1, width=320, height=200, pixelFormat="rgba8888-premultiplied", sha256="a"*64, damage=[], damageTruncated=False),
+]
+for event in events:
+    print(json.dumps(event), flush=True)
+time.sleep(30)
+)PY");
+        helper.close();
+        QVERIFY(helper.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner));
+        qputenv("DESKPORT_SEAMLESS_HOST_BINARY", QFile::encodeName(path));
+        // Clear the fixture override even when a QtTest assertion returns early.
+        const auto reset = qScopeGuard([] { qunsetenv("DESKPORT_SEAMLESS_HOST_BINARY"); });
+        SeamlessHostManager seamless;
+        QSignalSpy events(&seamless, &SeamlessHostManager::eventReceived);
+        QVERIFY(seamless.start());
+        QTRY_COMPARE_WITH_TIMEOUT(events.size(), 4, 5000);
+        HostManager host(nullptr, dir.path()+"/host", false);
+        PeerManager peers(&host, credential("TEST_CERT_A"), credential("TEST_KEY_A"), dir.path()+"/binding", 0,
+                          QHostAddress::LocalHost, PeerManager::Mode::SeamlessHost);
+        DeskPortCli::ControlServer server(&host, &peers, nullptr, QString(), QStringLiteral("seamless"));
+        server.setStatusExtension([&] {
+            return seamless.localStatus();
+        });
+        QVERIFY(server.listen());
+        QLocalSocket query; send(query, {"status"});
+        QTRY_VERIFY(query.canReadLine());
+        const auto response = reply(query);
+        QVERIFY(response["ok"].toBool());
+        const auto state = response["data"].toObject();
+        QCOMPARE(state["mode"].toString(), QString("seamless"));
+        QVERIFY(state["ready"].toBool());
+        QCOMPARE(state["readiness"].toString(), QString("experimental"));
+        QCOMPARE(state["waylandSocket"].toString(), QString("deskport-test-1"));
+        QCOMPARE(state["windows"].toInt(), 1);
+        const auto windows = state["windowStates"].toArray();
+        QCOMPARE(windows, seamless.windowStates());
+        QCOMPARE(windows.first().toObject()["title"].toString(), QString("Terminal"));
+        QCOMPARE(windows.first().toObject()["lastFrame"].toObject()["sha256"].toString(), QString(64, 'a'));
+        QProcess client;
+        auto environment = QProcessEnvironment::systemEnvironment();
+        environment.insert("QT_QPA_PLATFORM", "does-not-exist");
+        environment.remove("DISPLAY"); environment.remove("WAYLAND_DISPLAY");
+        client.setProcessEnvironment(environment);
+        client.start(QCoreApplication::applicationFilePath(), {"--control-client", "status", "--json"});
+        QTRY_COMPARE_WITH_TIMEOUT(client.state(), QProcess::NotRunning, 5000);
+        QCOMPARE(client.exitCode(), 0);
+        const auto cli = QJsonDocument::fromJson(client.readAllStandardOutput()).object();
+        QVERIFY(cli["ok"].toBool());
+        QCOMPARE(cli["data"].toObject()["windowStates"].toArray(), windows);
+        QSignalSpy stopped(&seamless, &SeamlessHostManager::stopped);
+        seamless.stop();
+        QTRY_COMPARE_WITH_TIMEOUT(stopped.size(), 1, 7000);
+        QLocalSocket ended; send(ended, {"status"}); QTRY_VERIFY(ended.canReadLine());
+        const auto endedState = reply(ended)["data"].toObject();
+        QCOMPARE(endedState["windows"].toInt(), 0);
+        QVERIFY(endedState["windowStates"].toArray().isEmpty());
+    }
+
     void browserPairingsCanBeListedAndRemovedByExactId() {
         QTemporaryDir dir;
         HostManager host(nullptr, dir.path()+"/host", false);

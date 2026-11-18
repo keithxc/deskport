@@ -4,8 +4,9 @@ Current decision (2026-10-17): deferred and excluded from the PC alignment
 commitment. The design/checkpoints below are historical experimental material;
 this decision schedules no development, experiment or native acceptance.
 
-Status: experimental server-side M1/M2 skeleton; native Linux verification and
-the remote client/media path remain incomplete, 2026-10-05.
+Status: experimental server-side M1/M2 skeleton. Local supervisor hardening is
+covered by isolated regressions as of 2026-10-11; the remote client/media path
+and stricter native compatibility gates remain incomplete.
 
 Seamless Mode is a second Linux hosting mode in which each remote Wayland
 top-level surface is represented by a real top-level window on a Linux Wayland
@@ -171,10 +172,11 @@ The shared protocol version starts at:
 
 The detailed wire contract and bounds live in
 `shared/deskport-core/protocol/SEAMLESS_MODE.md`. Its version 1 constants and
-fixtures are implemented in the current shared-core working tree, but that core
-revision is not yet published or pinned by the desktop flake. Most reserved
-lifecycle messages are intentionally disabled until admission and media
-milestones land.
+fixtures are included in published core revision `108ca7d`, pinned identically
+by the Git submodule and desktop flake. Most reserved lifecycle messages are
+intentionally disabled until admission and media milestones land. The local
+sidecar event validator is an internal process boundary, not a second remote
+wire protocol or an admission mechanism.
 
 ### Control channel
 
@@ -253,7 +255,7 @@ skeleton settles, but the process and authority boundary should not.
 The sidecar skeleton also contains a known-pixel `wl_shm` self-test client. It
 checks local create/damage/capture/hash/destroy behavior without a network
 transport. On 2026-10-05 the package and this probe passed on the native x86_64
-Linux host `wmn`, including exact child and Wayland-socket cleanup. That host has
+native Linux test host, including exact child and Wayland-socket cleanup. That host has
 a render device, so the stricter no-`/dev/dri` VPS condition remains unverified.
 
 For M2, a successful local result is limited to:
@@ -310,7 +312,7 @@ surface callback is not remote streaming acceptance.
 | --- | --- | --- |
 | M0 | Repository audit, architecture, dependencies, risks | **Complete in design.** This document records the chosen boundaries. |
 | M1 | Explicit `desktop\|seamless` mode plumbing and versioned negotiation; no pixels | **Partially implemented on the server.** The shared-core contract/fixtures and an approved-peer, one-shot preflight exist. A production Linux client emitter/consumer and a cross-mode exclusive Seamless lease do not. Preflight acceptance does not admit a session. |
-| M2 | Headless Wayland sidecar, launch one test application, discover one top-level, lifecycle and capture skeleton | **Local skeleton implemented and verified on one native Linux host.** The packaged sidecar passed its known-pixel `wl_shm` lifecycle/capture/hash/cleanup probe on `wmn`. An external terminal and a no-`/dev/dri` VPS remain compatibility gates. This is not encoding, authenticated transport, remote rendering, or input. |
+| M2 | Headless Wayland sidecar, launch one test application, discover one top-level, lifecycle and capture skeleton | **Local skeleton implemented and verified on one native Linux host.** The packaged sidecar passed its known-pixel `wl_shm` lifecycle/capture/hash/cleanup probe on the test host. An external terminal and a no-`/dev/dri` VPS remain compatibility gates. This is not encoding, authenticated transport, remote rendering, or input. |
 | M3 | Capture, transmit, and display one surface in one native client window | **Future/TODO.** Requires the authenticated media channel and client renderer. |
 | M4 | Window-scoped keyboard, pointer, focus, and close | **Future/TODO.** Existing global `LiSend*` input is not reused directly. |
 | M5 | Local resize to remote XDG configure/ack and redraw | **Future/TODO.** Temporary local scaling may hide round-trip latency. |
@@ -394,13 +396,12 @@ After building the helper on native Linux, the local M2 probe is:
 deskport-seamless-host --self-test --width 320 --height 200
 ```
 
-That probe passed from the Nix package on native x86_64 Linux (`wmn`) on
+That probe passed from the Nix package on native x86_64 Linux (the test host) on
 2026-10-05. The known-pixel hash proves only local `wl_shm` lifecycle/capture and
 cleanup; it sends no pixels over a DeskPort connection.
 
-The sidecar target is wired into the qmake/Nix path. Until the changed shared-core
-revision is published and pinned, validate the complete working tree with an
-explicit local input override:
+The sidecar target is wired into the qmake/Nix path. For shared-core development,
+validate an unpublished working-tree change with an explicit local input override:
 
 ```sh
 nix build --no-write-lock-file \
@@ -408,9 +409,40 @@ nix build --no-write-lock-file \
   .#packages.x86_64-linux.default
 ```
 
-That override build passed on `wmn` on 2026-10-05. The normal locked build is not
-a release gate until the core commit is published and both the submodule and
-`flake.lock` are advanced together.
+That override build passed on the test host on 2026-10-05. The current published core pin
+no longer requires that override. New changes still require the normal locked
+`nix build` and relevant native checks before release.
+
+### Local supervisor regression coverage — 2026-10-11
+
+The isolated fake-sidecar suite now covers the production supervisor's startup,
+shutdown, event validation, and restart boundaries:
+
+- A helper has ten seconds to report a valid `ready`; timeout stops only the
+  owned child. Cancellation during process startup, failed exec, repeated stop,
+  and synchronous signal-handler restarts each have explicit terminal behavior.
+- Shutdown immediately withdraws readiness. Late or partially received `ready`
+  and window events cannot reactivate the host or enter a newer run. Valid
+  cleanup errors are still retained, and an unsolicited nonzero helper exit
+  is not reported as a normal stop.
+- The first failure remains visible after cleanup until a new start. Each run
+  emits one `stopped` notification; an unresponsive helper is forcibly terminated
+  after the existing five-second grace period.
+- Parsing copies at most one 32 KiB record at a time, including its newline.
+  Fragmented/coalesced input, oversized records, truncated EOF, strict integer
+  fields, UTF-8 metadata limits, socket syntax, and unknown event types are tested.
+- Window IDs increase within a run and cannot be reused after destruction.
+  Metadata/frame events must reference a live window. Damage, optional capture
+  file errors, and frame completion share one pending sequence; duplicate,
+  stale, mismatched, and out-of-bounds frame events are rejected.
+
+These tests use a fake process, not a remote session or a live compositor. The
+2026-10-11 cloud check compiled the real sidecar with Qt 6.8.2, but its Wayland
+self-test could not create an AF_UNIX socket in that sandbox (`EPERM`). The core
+fixtures and Qt workspace adapter passed with ASan/UBSan and leak detection
+explicitly disabled because LeakSanitizer cannot operate in that environment.
+The locked Nix build, full host-binding regression, native no-GPU compositor,
+and physical client checks remain separate verification gates.
 
 Remaining targeted coverage for M1/M2 includes:
 
@@ -469,6 +501,165 @@ working yet. Do not present `deskport connect`, `deskport run`, per-window input
 or remote frame delivery as implemented until their actual parser, protocol, and
 integration tests exist.
 
+## Local window diagnostics — 2026-10-12
+
+While an experimental Linux Seamless host is running, `deskport status --json`
+includes `windows` and a `windowStates` array in ascending session window-ID order.
+Each detached snapshot contains bounded title/app ID, `initialWidth`/`initialHeight`
+(the create-time configure proposal), `lastSequence`, `pendingSequence`, and
+`lastFrame` with the most recent successful capture's sequence, dimensions and
+SHA-256. It contains no pixels or capture file paths.
+
+`captureError` describes the latest failed capture and clears after a successful
+capture. That failure advances `lastSequence` but preserves `lastFrame` with its
+own older sequence. `captureFileError` describes the most recent local PNG-save
+failure; a new damage attempt clears it. A save failure does not invalidate
+successfully captured frame metadata. Snapshot capture/save diagnostics
+retain at most 512 UTF-16 code units each, keeping all 64 windows within the local
+management response budget even with JSON-escaped text; forwarded events retain
+their validated original messages. A destroyed window disappears from the array; final teardown and a new run clear the registry. During stopping,
+the remaining snapshots are diagnostic state, not evidence of readiness.
+
+The manager updates these snapshots before forwarding each accepted event. Queries
+use the existing local management socket; this adds no remote wire message or
+shared-core contract. Isolated macOS fake-sidecar and local-socket tests verify
+snapshot ordering, capture failure/recovery, destruction and restart. Native Linux
+daemon/compositor integration remains a separate acceptance gate.
+
+## Experimental SSH debug stream and Seamless Lab — 2026-10-16
+
+To exercise the M3-M5 client/server path before the admitted DeskPort media
+channel exists, the sidecar has an opt-in `--stream` mode. It is meant only to
+be started by an already-authenticated SSH login and never opens a listener:
+
+```text
+SeamlessLab (local)  --ssh -T-->  deskport-seamless-host --stream --scale N -- app
+        stdin  : ClientHello, ClientInput (JSON), ClientFrameAck
+        stdout : ServerHello, ServerEvent (sidecar JSON schema), Frame (binary)
+```
+
+The record framing lives in `app/seamless/seamlessstream.h` and is
+transport-agnostic, so a future admitted media channel can reuse it. Each
+record has a 16-byte little-endian header (magic, version, type, window ID,
+bounded length). Frames carry damaged rectangles of premultiplied ARGB32
+pixels, zlib-compressed per rectangle; the first frame after a size change
+is a full frame. The server keeps at most two unacknowledged frames and
+withholds Wayland frame callbacks while the client is behind, so a fast
+application slows down instead of growing a queue.
+
+Stream mode additionally provides:
+
+- up to 16 concurrent XDG top-levels and popups, each with its own session ID;
+- `xdg-decoration` with server-side preference, so the local native frame is
+  the only title bar;
+- integer output scale (`--scale`) for HiDPI clients; damage is converted from
+  surface to buffer coordinates;
+- window-scoped pointer motion/buttons/axis, keyboard (Linux evdev codes from
+  physical keys, Qt key fallback), focus with release of held keys/buttons on
+  focus loss or window destruction, close requests, and local resize to XDG
+  configure; and
+- `window-unmap` events when an application removes a surface's buffer; and
+- `window-geometry` events carrying the `xdg_surface` window geometry in
+  surface-local logical coordinates. XDG configure sizes refer to this
+  rectangle, so the client sizes its native window to it, crops client-side
+  shadows outside it and offsets pointer coordinates by its origin. Sizing to
+  the buffer instead let each configure round trip grow a CSD client such as
+  `weston-terminal` by its shadow margins until capture hit the size limit;
+- `xdg_popup` windows (menus, combo lists, tooltips). A popup is announced
+  with `window-create` carrying `popup: true` and its `parent` ID, followed by
+  `popup-position` with the offset from the parent's window geometry. The
+  client shows it as a frameless, non-focusable tool window at that offset.
+  Because each popup is a separate local window, there is no output edge to
+  constrain against and the unconstrained position is configured as final. A
+  press on a root top-level while it has popups, or that top-level losing
+  focus, sends `popup_done` to its popups (innermost first) and consumes the
+  press, approximating an xdg_popup grab; and
+- a launcher. `--app ID=PROGRAM` (repeatable, stream mode only) defines an
+  allowlist that the server hello advertises as `apps`. The client sends a
+  session-scoped (window ID 0) `{"type":"launch","app":ID}` request and can
+  never supply a command. Each launched application runs in its own owned
+  process group, reported with `app-start`/`app-exit` or `launch-rejected`;
+  shutdown terminates every owned group. With a catalog, the session no
+  longer ends when the optional initial application exits; it ends when the
+  client closes the stream.
+
+The client side is `SeamlessClientSession`, `SeamlessWindowRegistry` and one
+`SeamlessWindow : QWindow` per remote top-level, as planned above, rendered
+with `QBackingStore`. On macOS, physical key positions are translated from
+`kVK_*` codes; Control stays Control and Command becomes Super.
+
+`tools/seamless-lab.noindex/` wraps these in a standalone debug application,
+SeamlessLab, with its own bundle identifier and settings domain. It does not
+touch DeskPort/Moonlight settings, pairing data or services. Build the
+self-contained, ad-hoc signed bundle under the build root with:
+
+```sh
+nix develop -c bash scripts/package-seamless-lab-macos.sh
+```
+
+The Linux side builds without the full DeskPort client, natively on the Linux
+host:
+
+```sh
+nix build --out-link <build-root>/seamless-lab.noindex/server .#seamless-lab-server
+```
+
+or on a macOS host through its nix-darwin linux-builder, then copied to the
+Linux host (the sidecar alone; full DeskPort and Sunshine Linux builds stay on
+native Linux build hosts):
+
+```sh
+bash scripts/deploy-seamless-lab-server.sh <ssh-host> aarch64-linux
+```
+
+The script keeps one local `--out-link` per system under the checkout build
+root and one remote GC root at `~/mygit/build/deskport/seamless-lab.noindex/server`, so
+repeated deploys reuse the cached dependency closure and release the previous
+build to the remote garbage collector. The remote nix-daemon must trust the
+SSH user, because locally built paths are unsigned.
+
+`seamless-lab-server` is the sidecar with a launcher catalog of `wl_shm`
+applications (`terminal` = weston-terminal, `editor` = mousepad, `calculator` =
+galculator); the catalog is added only for `--stream`, so `--self-test` runs as
+before. Run the lab client once with `--host <ssh-destination> --server <remote
+path>` (both are remembered). The launcher window, the global Apps menu and the
+Dock menu start catalog applications; `--launch ID` (repeatable) starts them
+on connect for scripted checks, and an application argv after `--` remains
+available. Every remote window is a separate native window, so switching uses
+the local window manager. The client log is
+`~/Library/Logs/SeamlessLab/seamless-lab.log`.
+
+Popup limitations in this harness: keyboard focus stays with the root
+top-level, so keyboard navigation inside menus does not reach the popup;
+popups without a grab (tooltips) are treated like menus, so a press while a
+tooltip is open only dismisses it; press-drag-release menu selection is not
+mapped across native windows (click, then click an item); and an open popup
+does not follow a moved parent.
+
+QtWaylandCompositor 6.11 advertises `wl_seat` version 4 (hard-coded in
+`QWaylandSeat::initialize()`), and its data-device manager is not bound in
+stream mode. Clients that require `wl_seat` v5, such as `foot`, therefore exit
+at startup. Advertising v5 without emitting `wl_pointer.frame` would violate
+the protocol, so this needs a compositor-side change, not a version bump.
+`weston-terminal` always draws client-side decorations (it does not bind
+`xdg-decoration`), so its frame appears inside the native macOS frame.
+
+On 2026-10-29 the SSH lab path rendered `weston-terminal` from the aarch64
+NixOS host (a headless Raspberry Pi 4, software `wl_shm`) into one native macOS window.
+The same day, one session on that host ran weston-terminal, mousepad and
+galculator as separate native macOS windows; opened, dismissed and selected
+GTK 3 menu popups; created a second mousepad top-level from its menu; typed
+into it; launched an application from the launcher list; and closed a window,
+ending only that application. Every run ended with no remaining sidecar,
+application process or Wayland socket on the host, and the non-stream M2
+self-test still passed. These are debugging-harness results only; they are
+not M3/M7 product acceptance.
+
+This route is a debugging harness, not the product transport: it relies on
+SSH for authentication, has no cross-mode lease, and does not interact with a
+running Desktop Mode host. Moving the same records onto the admitted
+DeskPort channel remains the M3 product gate.
+
 ## Known risks and limitations
 
 - **Buffer compatibility:** the first proof is `wl_shm` only. Modern browsers and
@@ -516,3 +707,60 @@ starting M3, all of the following must be true:
 9. failure and cancellation leave no owned child, socket, or lease; and
 10. source, package, deployment, and physical acceptance remain reported as
     separate states.
+
+## Experimental Lab ownership and frame limits
+
+The explicit Lab path remains independent of the product application and does
+not admit an M3 session or change Desktop Mode defaults. Each Linux application
+launch now owns a live `--owned-supervisor` process and a private QProcess stdin
+pipe. The sidecar requests shutdown through that pipe; EOF also requests shutdown
+when the sidecar dies. It never stores a PGID for subsequent signalling.
+
+The supervisor creates a private process session and pins its own process group,
+ignores TERM itself, and uses Linux
+`PR_SET_CHILD_SUBREAPER` to retain orphan descendants after the application leader
+exits. It exits naturally only after `waitpid` reports ECHILD. It requires procfs
+before launching. On shutdown it sends TERM to its own pinned group and directly
+owned children, allows three seconds, then sends KILL only to unreaped direct
+children, adopting and reaping further descendants for up to one second. This
+also covers descendants that called setsid. `/proc/self/task/<tid>/children` is
+used only to enumerate direct children; `waitpid(pid, WNOHANG) == 0` with a single
+reaper establishes ownership before each individual signal. Exit leaves a zombie
+reserving that PID until this same reaper consumes it, so there is no PID reuse
+window between the check and signal. No global process scan or `kill(-pgid, 0)`
+is an ownership guarantee. The leader identity is retired when reaped.
+
+A setup/cleanup failure is explicit (helper status 125), and failure to reap
+within the hard budget is status 124; these statuses are reserved for diagnostic
+purposes and also logged if an application itself returns them. An externally
+blocked/uninterruptible process is a cleanup failure, not successful teardown.
+The sidecar waits for supervisors within a bounded shared destructor deadline;
+application exit events now describe completion of that owned descendant tree.
+
+Compressed Lab rectangles retain the qCompress four-byte big-endian size prefix
+and zlib payload. The client checks the prefix against geometry, then gives
+`inflate` one fixed output buffer. Dimensions are at most 16384 per axis, with
+at most 64 Mi pixels (256 MiB decoded bytes); multiplication widens before checking
+limits. The decoder requires exactly the expected bytes, Z_STREAM_END and no
+unused input. Forged prefixes, over-expansion, truncation, wrong output sizes,
+concatenated streams and trailing bytes are rejected without growing the output
+buffer. Only the standalone Lab qmake target links zlib; the product application
+does not link the Lab client.
+
+Focused offline verification, with outputs in a managed build directory:
+
+```sh
+python3 tests/test-seamless-review-fixes.py --output "$TEST_OUTPUT/primitives"
+python3 tests/test-desktop-typography.py --output "$TEST_OUTPUT/qml" --focus-only
+# Linux only, owned process fixtures; no compositor, hosts, SSH or input:
+python3 tests/test-seamless-review-fixes.py --output "$TEST_OUTPUT/native" --native-supervisor
+```
+
+The macOS/Linux supervisor tests use the production state machine and Linux
+syscall adapter with API doubles. Native Linux fixtures are separate acceptance;
+macOS API-double/QML-offscreen results do not establish Linux UI, Wayland, SSH,
+HDR, signing or deployed behavior. The QML regression uses actual production
+Dialog/TextField/ListView controls with inert content, forward/Shift-Tab, multiple
+inputs, disabled/hidden items, footer/no-footer, and both Qt Tab preferences.
+Only message boxes opt into the explicit complete body/action cycle; forms keep
+Qt's full focus chain.

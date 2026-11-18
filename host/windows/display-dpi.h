@@ -86,7 +86,9 @@ inline DWORD set(Source source,int value) {
     // CCD can report the requested step even when Windows clamps the effective
     // UI DPI to a lower value. A real per-monitor-aware window must agree too.
     for(int i=0;i<30;++i) {Range actual{};UINT dpi=0;rc=query(source,actual);
-        if(!rc&&actual.current==value&&!effectiveDpi(source,dpi)&&dpi==UINT(percent(actual)*96/100))return 0;Sleep(50);}
+        if(!rc&&actual.current==value&&!effectiveDpi(source,dpi)&&dpi==UINT(percent(actual)*96/100))return 0;
+        Sleep(50);
+    }
     return rc?rc:ERROR_INVALID_STATE;
 }
 }

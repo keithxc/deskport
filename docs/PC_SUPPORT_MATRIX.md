@@ -1,31 +1,15 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-11-04 against source `37cfd10bac67b1ee89cd50ccabec64e326c5f287` and pinned core
-`f75afe8da4d0f109330aa34b7aea1273565756fc`. This is a source snapshot, not an installed version.
-Seven tested task branches are integrated with their scoped acceptance records;
-the remaining ten tasks retain explicit gates in [the integration ledger](PC_TASK_INTEGRATION.md).
-Historical package and hardware results retain their exact source identities.
+Reviewed 2026-11-18 from integration base `37fabe160dcafcb5f2f35fe9560b8ee4a9df3b5b` and pinned core
+`44f228995f23435d2aa93b661d2f105d3664b338`. This is a source snapshot, not an installed version.
+The development branches are being consolidated with their scoped acceptance records.
+Historical package and hardware results below retain their exact source identities;
+this review does not advance their acceptance to the integrated candidate.
 
-This snapshot regenerates the Qt catalogs from the pinned core. The core
-follow-ups translate the remaining offline manual steps into all 22 primary
-locales, use one device-binding term per locale, correct the Polish UI text and
-remove two stale clipboard notes; display arithmetic and wire contracts are
-unchanged. See the
-[shared core notes](SHARED_CORE.md#manual-translations--2026-11-04).
-This review updates the source inventory, without advancing historical package,
-hardware or hosted-CI evidence to the newer revision.
-
-The GNOME display row was updated separately on 2026-10-26 against `21ab78c0`
-and core `505ae0cc`; its versioned evidence is recorded below. Other rows retain
-their original review scope.
-The recovery follow-up `4f37c146` corrects the 50.1 fixture diagnosis and adds an
-explicit Mutter 51 compositor patch; application installation alone does not apply it.
-The 51.1 follow-up adds full-desktop scaling and native loopback reconnection
-evidence, with fixture `1160e6dd`; it does not advance physical-hardware evidence.
-
-This page is the current PC scope index. Dated release notes and roadmap entries
-retain their original environment and result. A later implementation supersedes
-an old limitation without retroactively completing its acceptance checklist.
+The core update reconciles the keyboard guidance and portable sizing contracts,
+and adds four browser playback recovery messages in all 22 UI languages.
+The public wire contracts are unchanged. Translation drafts still need native-speaker review.
+See the [shared core notes](SHARED_CORE.md#browser-recovery-messages-and-integrated-core--2026-11-18).
 
 ## Reading the matrix
 

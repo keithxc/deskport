@@ -19,3 +19,11 @@ jobs:
       - run: nix develop -c python3 tests/test-host-lifecycle.py
       - run: nix develop -c python3 tests/test-host-macos-shutdown.py --work-dir "${{ runner.temp }}/host-macos-shutdown"
       - run: nix develop -c python3 tests/test-session-topology.py
+      - name: Recovery opt-in lifecycle policy
+        run: |
+          work="$(bash scripts/build-paths.sh checkout)/recovery-policy"
+          mkdir -p "$work"
+          export TMPDIR="$work"
+          nix develop -c xcrun clang++ -std=c++17 -Wall -Wextra -Werror \
+            -fsanitize=address,undefined tests/recovery-policy.cpp -o "$work/recovery-policy"
+          "$work/recovery-policy"

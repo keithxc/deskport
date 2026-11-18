@@ -1,4 +1,29 @@
-# PC task integration — 2026-10-18
+# PC task integration
+
+## Development consolidation — 2026-11-18
+
+The current candidate incorporates the remaining desktop development chains on
+top of main `37fabe160dcafcb5f2f35fe9560b8ee4a9df3b5b`. The earlier "Retain branch"
+decisions below describe the October checkpoint and no longer determine source
+integration. Existing main behavior is retained where an older implementation has
+already been superseded; overlapping session, input and encoder changes are
+adapted to the current owners. The reviewed source is consolidated without
+publishing local development notes from the old branch histories.
+
+The candidate includes background recall, power recovery, desktop typography,
+browser recovery, live encoder rate, HDR negotiation, Windows lifecycle and macOS
+lifecycle work. GNOME production changes already present on main are retained.
+Seamless sources and the standalone lab remain experimental, outside the default
+desktop transport and the admitted M3 product contract.
+
+Current integration checks cover native macOS session/binding contracts (22
+passing cases), native clipboard demand, shutdown sanitizers with meaningful
+negative controls, capture/color fixtures, generated translations and 71 isolated
+Chromium UI checks. These are local contract and fixture results. Package builds,
+platform-specific hardware acceptance and manual activation are separate gates;
+the historical physical results below are not promoted to this candidate.
+
+## Historical integration — 2026-10-18
 
 Seven tested implementation/documentation slices are eligible for this batch.
 This does not declare every platform, GPU, input device or installed build accepted.
