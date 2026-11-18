@@ -50,7 +50,10 @@ with tempfile.TemporaryDirectory(prefix="export-", dir=base) as temporary:
     (repo / "scripts").mkdir()
     (repo / "app").mkdir()
     (repo / "app/version.txt").write_text("1.2.3\n")
-    for name in ("build-paths.sh", "generate-src.sh", "check-build-privacy.py"):
+    # Include the resolver's runtime dependencies, just as a real source export
+    # does. Keep the storage adapter active in the disposable checkout.
+    resolver_files = ("build-paths.sh", "build-storage.sh", "build_storage.py")
+    for name in (*resolver_files, "generate-src.sh", "check-build-privacy.py"):
         shutil.copy2(ROOT / "scripts" / name, repo / "scripts" / name)
     shutil.copy2(ROOT / ".gitignore", repo / ".gitignore")
     git(repo, "-c", "protocol.file.allow=always", "submodule", "add", "--quiet", str(core), "shared/deskport-core")
@@ -71,11 +74,15 @@ with tempfile.TemporaryDirectory(prefix="export-", dir=base) as temporary:
                               env=env, capture_output=True, text=True)
 
     result = export(target)
-    check(result.returncode == 0 and target.is_file(), "clean source export must succeed")
+    check(result.returncode == 0 and target.is_file(),
+          f"clean source export must succeed (exit {result.returncode})\n"
+          f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}")
     check(sentinel.read_text() == "retain earlier output\n", "source export must preserve neighboring outputs")
     with tarfile.open(target) as archive:
         names = archive.getnames()
         check("DeskPort-1.2.3/shared/deskport-core/public.txt" in names, "pinned shared core must be exported")
+        check(all(f"DeskPort-1.2.3/scripts/{name}" in names for name in resolver_files),
+              "source export must retain the resolver and its storage dependencies")
         check(not any("build-signing.env" in name or name.endswith("/.git") for name in names),
               "local signing config and Git metadata must not enter source material")
     checksum = hashlib.sha256(target.read_bytes()).digest()

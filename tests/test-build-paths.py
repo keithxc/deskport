@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -71,6 +72,26 @@ class BuildPathsTests(unittest.TestCase):
                                      DESKPORT_TARGET='macos',
                                      DESKPORT_DEPENDENCY_CACHE_DIR=str(cache)).stdout.strip(), str(cache))
 
+    def test_sourced_resolver_reuses_exported_environment(self):
+        environment = dict(self.environment, DESKPORT_RUN_ID='inherited',
+                           DESKPORT_TARGET='windows', DESKPORT_WINDOWS_DEPENDENCY_BUILD='1')
+        result = subprocess.run([
+            'bash', '-c',
+            'for pass in first second; do source "$1" || exit $?; '
+            'printf "%s\\n" "$DESKPORT_BUILD_ROOT" "$DESKPORT_CHECKOUT_BUILD_ROOT" '
+            '"$DESKPORT_WORK_DIR" "$DESKPORT_DEPENDENCY_CACHE_DIR"; '
+            'bash "$1" work || exit $?; done',
+            'test', str(ROOT / 'scripts/build-paths.sh'),
+        ], env=environment, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        lines = result.stdout.splitlines()
+        self.assertEqual(len(lines), 10, result.stdout)
+        self.assertEqual(lines[:5], lines[5:])
+        self.assertEqual(lines[0], environment['DESKPORT_BUILD_ROOT'])
+        self.assertTrue(lines[2].endswith('/runs.noindex/inherited/windows/work'))
+        self.assertEqual(lines[2], lines[4], 'Child resolver must inherit the same output root')
+        self.assertFalse((self.directory / 'outputs').exists())
+
     def test_legacy_paths_and_host_variable_are_compatible(self):
         result = self.resolve('macos-build', DESKPORT_NIX_DEPS='1')
         self.assertTrue(result.stdout.strip().endswith('/macos-arm64.noindex/nix/build'))
@@ -118,7 +139,9 @@ class BuildPathsTests(unittest.TestCase):
         podman.chmod(0o755)
         environment = {**self.environment,
                        'PATH': str(binary) + os.pathsep + os.environ['PATH']}
-        completed = subprocess.run(['/bin/bash', str(ROOT / 'scripts/package-linux.sh')],
+        bash = '/bin/bash' if Path('/bin/bash').exists() else shutil.which('bash', path=environment['PATH'])
+        self.assertIsNotNone(bash, 'Bash is required: /bin/bash is absent and bash was not found in PATH')
+        completed = subprocess.run([bash, str(ROOT / 'scripts/package-linux.sh')],
                                    env=environment, text=True, capture_output=True)
         self.assertEqual(completed.returncode, 0, completed.stderr)
 

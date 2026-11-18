@@ -82,6 +82,26 @@ class StorageTests(unittest.TestCase):
             self.assertTrue(values['TMPDIR'].startswith('/private/tmp/'))
             self.assertTrue(values['MYGIT_CACHE_DIR'].startswith('/private/tmp/'))
 
+    def test_windows_dependency_mode_is_not_an_output_path(self):
+        with patch.dict(os.environ, self.env, clear=True), patch.object(build_storage, 'shared_helper', return_value=LegacyHelper()), patch.object(build_storage, 'on_mm4', return_value=False):
+            storage = build_storage.Storage()
+            for mode in ('0', '1'):
+                with self.subTest(mode=mode), patch.dict(os.environ, {
+                    'DESKPORT_WINDOWS_DEPENDENCY_BUILD': mode,
+                    'DESKPORT_WINDOWS_BUILD_ROOT': str(storage.paths['work']),
+                }), patch.object(storage, 'validate', wraps=storage.validate) as validate:
+                    storage.environment()
+                    self.assertNotIn(mode, [str(call.args[0]) for call in validate.call_args_list])
+                    self.assertIn(str(storage.paths['work']),
+                                  [str(call.args[0]) for call in validate.call_args_list])
+
+    def test_windows_dependency_mode_keeps_source_output_rejection(self):
+        env = dict(self.env, DESKPORT_WINDOWS_DEPENDENCY_BUILD='1',
+                   DESKPORT_WINDOWS_BUILD_ROOT=str(ROOT / 'runs.noindex/first/windows/work'))
+        with patch.dict(os.environ, env, clear=True), patch.object(build_storage, 'shared_helper', return_value=LegacyHelper()), patch.object(build_storage, 'on_mm4', return_value=False):
+            with self.assertRaisesRegex(ValueError, 'Output inside a source repository'):
+                build_storage.Storage().environment()
+
     def test_explicit_internal_output_is_rejected_before_mkdir(self):
         helper = Helper(self.root)
         with patch.dict(os.environ, self.env, clear=True), patch.object(build_storage, 'shared_helper', return_value=helper), patch.object(build_storage, 'on_mm4', return_value=True), patch.object(Path, 'mkdir', side_effect=AssertionError('created output')):

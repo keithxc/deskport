@@ -29,7 +29,14 @@ class WindowsPaths(unittest.TestCase):
         test_root.mkdir(parents=True, exist_ok=True)
         self.temporary = tempfile.TemporaryDirectory(dir=test_root)
         self.root = Path(self.temporary.name)
+        # Retain host storage policy and temporary-output routing while clearing
+        # inherited DeskPort build overrides for each fixture.
+        inherited = {key: os.environ[key] for key in (
+            'HOME', 'PATH', 'MYGIT_BUILD_ROOT', 'MYGIT_PATH_RESOLVER',
+            'TMPDIR', 'TMP', 'TEMP', 'PYTHONDONTWRITEBYTECODE',
+        ) if key in os.environ}
         self.environment = patch.dict(os.environ, {
+            **inherited,
             'DESKPORT_BUILD_ROOT': str(self.root / 'build'),
             'DESKPORT_DEPENDENCY_CACHE_DIR': str(self.root / 'dependencies'),
             'DESKPORT_RUN_ID': 'first',
@@ -145,12 +152,25 @@ class WindowsPaths(unittest.TestCase):
         env = dict(os.environ, DESKPORT_WINDOWS_CACHE_LOCK_HELD='1')
         result = subprocess.run([
             'bash', '-c',
-            'export DESKPORT_WINDOWS_DEPENDENCY_BUILD=1; source "$1"; printf "%s\\n" "$WB" "$PREFIX" "$WORK" "$LOGS"',
+            # The second source inherits every export from the first recipe.
+            'export DESKPORT_WINDOWS_DEPENDENCY_BUILD=1; '
+            'for pass in first second; do source "$1"; '
+            'printf "%s\\n" "$WB" "$PREFIX" "$WORK" "$LOGS"; done',
             'test', str(SCRIPTS / 'env.sh'),
         ], env=env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), [str(config['cache']), str(config['cache'] / 'prefix'),
-                                                     str(config['cache'] / 'work'), str(config['logs'])])
+                                                     str(config['cache'] / 'work'), str(config['logs'])] * 2)
+
+    def test_common_resolver_failure_is_propagated(self):
+        # A failed source must not be masked by successful printf commands or
+        # replaced with relative defaults under the caller's source checkout.
+        os.environ['DESKPORT_BUILD_ROOT'] = str(build_paths.SOURCE)
+        with self.assertRaises(subprocess.CalledProcessError) as failure:
+            build_paths.common_paths()
+        self.assertEqual(failure.exception.returncode, 2)
+        self.assertIn(b'Output', failure.exception.stderr)
+        self.assertEqual(failure.exception.stdout, b'')
 
     def test_python_cache_lock_excludes_a_second_writer(self):
         config = build_paths.initialize(build_paths.paths())

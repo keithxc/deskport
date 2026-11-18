@@ -97,7 +97,7 @@ def compatible_cache(cache_base):
 def common_paths():
     names = ('DESKPORT_CHECKOUT_BUILD_ROOT', 'DESKPORT_RUN_ID', 'DESKPORT_WORK_DIR',
              'DESKPORT_DIST_DIR', 'DESKPORT_LOG_DIR', 'DESKPORT_DEPENDENCY_CACHE_DIR')
-    script = 'export DESKPORT_TARGET=windows; source "$1"; ' + ''.join(
+    script = 'export DESKPORT_TARGET=windows; source "$1" || exit $?; ' + ''.join(
         'printf "%s\\0" "${' + name + ':-}"; ' for name in names)
     env = dict(os.environ)
     env.setdefault('DESKPORT_RUN_ID', 'dev')

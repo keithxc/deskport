@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 scripts/check-build-privacy.py
           python3 tests/test-build-paths.py
+          python3 tests/test-build-storage.py
           python3 tests/test-prepare-host-source.py
           python3 tests/test-apply-host-patches.py
           python3 tests/test-build-workflow.py

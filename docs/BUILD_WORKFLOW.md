@@ -238,6 +238,7 @@ called through their module, so one replacement covers every caller.
 ```sh
 python3 tests/test-build-workflow.py
 python3 tests/test-build-paths.py
+python3 tests/test-build-storage.py
 python3 tests/test-prepare-host-source.py
 python3 tests/test-build-privacy.py
 python3 tests/test-source-export.py
@@ -250,6 +251,14 @@ server-digest and explicit download verification, and destructive-cleanup
 refusal/preservation cases. Platform
 compilation, signing/notarization and physical streaming/input acceptance are
 separate checks.
+
+Source-export fixtures must copy `build-paths.sh`, `build-storage.sh` and
+`build_storage.py` together so the disposable checkout enforces the real storage
+policy. A failed export includes captured stdout and stderr in its assertion.
+Windows dependency mode (`DESKPORT_WINDOWS_DEPENDENCY_BUILD=1`) is a boolean
+selector; actual output overrides still undergo path validation. Resolver
+failures must stop callers before they consume assignments, including when a
+recipe sources its environment repeatedly or inherits earlier exports.
 
 ## Checked workspace outputs
 
