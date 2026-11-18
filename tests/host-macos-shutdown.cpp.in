@@ -8,6 +8,33 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <utility>
+
+namespace fixture {
+// These workers stop through the real mailbox protocol, never a stop token.
+// Keep automatic joining without depending on newer libc++ jthread support.
+class Thread {
+public:
+  Thread() noexcept = default;
+  template<class Function>
+  explicit Thread(Function &&function): worker_(std::forward<Function>(function)) {}
+  Thread(const Thread &) = delete;
+  Thread &operator=(const Thread &) = delete;
+  Thread(Thread &&) noexcept = default;
+  Thread &operator=(Thread &&other) noexcept {
+    if (this != &other) {
+      if (worker_.joinable()) worker_.join();
+      worker_ = std::move(other.worker_);
+    }
+    return *this;
+  }
+  ~Thread() { if (worker_.joinable()) worker_.join(); }
+  void join() { worker_.join(); }
+
+private:
+  std::thread worker_;
+};
+} // namespace fixture
 using namespace std::chrono_literals;
 using namespace std::literals;
 static std::ostringstream output;
@@ -33,8 +60,13 @@ namespace audio { using packet_t = std::tuple<void *, std::shared_ptr<Marker>, b
 struct Socket { void close() {} };
 struct Io { void stop() {} };
 struct broadcast_ctx_t {
+  // Keep mailbox channels alive until end_broadcast joins every sender. This
+  // isolates the payload-lifetime control from the independently tested expired
+  // weak-mailbox lookup bug; it does not retain a session or its payload.
+  safe::mail_raw_t::queue_t<video::packet_t> video_packets;
+  safe::mail_raw_t::queue_t<audio::packet_t> audio_packets;
   std::shared_ptr<safe::queue_t<int>> message_queue_queue;
-  std::jthread recv_thread, video_thread, audio_thread, control_thread;
+  fixture::Thread recv_thread, video_thread, audio_thread, control_thread;
   Io io_context;
   Socket video_sock, audio_sock;
 };
@@ -71,16 +103,18 @@ void audio_sender() {
 }
 @END_BROADCAST@
 int start_broadcast(broadcast_ctx_t &ctx) {
+  ctx.video_packets = mail::man->queue<video::packet_t>(mail::video_packets);
+  ctx.audio_packets = mail::man->queue<audio::packet_t>(mail::audio_packets);
   ctx.message_queue_queue = std::make_shared<safe::queue_t<int>>();
   auto listener = [] {
     auto stop = mail::man->event<bool>(mail::broadcast_shutdown);
     ++ready;
     stop->view();
   };
-  ctx.recv_thread = std::jthread(listener);
-  ctx.control_thread = std::jthread(listener);
-  ctx.video_thread = std::jthread(video_sender);
-  ctx.audio_thread = std::jthread(audio_sender);
+  ctx.recv_thread = fixture::Thread(listener);
+  ctx.control_thread = fixture::Thread(listener);
+  ctx.video_thread = fixture::Thread(video_sender);
+  ctx.audio_thread = fixture::Thread(audio_sender);
   while (ready.load() != 4) std::this_thread::yield();
   return 0;
 }
@@ -90,7 +124,7 @@ struct Payload {
   ~Payload() { marker->alive = false; }
 };
 struct session_t {
-  std::jthread videoThread {[] {}}, audioThread {[] {}};
+  fixture::Thread videoThread {[] {}}, audioThread {[] {}};
   safe::shared_t<broadcast_ctx_t>::ptr_t broadcast_ref;
   Payload payload; // Upstream payload is destroyed before broadcast_ref.
   safe::signal_t controlEnd;
@@ -147,7 +181,7 @@ int retirement(bool overlap) {
   // The join cannot pass its retirement lock until this barrier is released.
   std::promise<void> entered;
   retire_started = &entered;
-  std::jthread joining([&] { session::join(*retiring); retiring.reset(); });
+  fixture::Thread joining([&] { session::join(*retiring); retiring.reset(); });
   entered.get_future().wait();
   retire_started = nullptr;
   release->arrive_and_wait();
@@ -206,7 +240,7 @@ int dequeue_gap() {
   std::unique_lock held {mutex};
   queue.raise(1);
   std::promise<void> started;
-  std::jthread worker([&] {
+  fixture::Thread worker([&] {
     std::unique_lock lock {mutex, std::defer_lock};
     started.set_value();
     auto value = queue.pop(lock);
@@ -251,7 +285,7 @@ template<bool Queue> bool expired_lookup() {
   std::promise<void> entered, proceed;
   auto post = std::make_shared<Retiring<Base>>(box, entered, proceed.get_future().share());
   box->id_to_post.emplace("retired", post);
-  std::jthread retire([post = std::move(post)]() mutable { post.reset(); });
+  fixture::Thread retire([post = std::move(post)]() mutable { post.reset(); });
   entered.get_future().wait();
   auto replacement = [&] {
     if constexpr (Queue) return box->queue<int>("retired");
@@ -295,7 +329,7 @@ int main(int argc, char **argv) {
   safe::event_t<int> event;
   safe::queue_t<int> queue;
   std::barrier start(2);
-  std::jthread writer([&] {
+  fixture::Thread writer([&] {
     start.arrive_and_wait();
     for (int i = 0; i < 20000; ++i) {
       event.raise(i); event.reset(); event.stop(); event.reset();
