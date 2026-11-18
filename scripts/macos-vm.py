@@ -11,6 +11,8 @@ import signal
 import subprocess
 import sys
 import time
+sys.dont_write_bytecode = True
+import build_storage
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / 'scripts/macos-vm-lock.json').read_text())
@@ -21,6 +23,17 @@ ENV = dict(os.environ, TART_HOME=str(LAB / 'tart'), TART_NO_AUTO_PRUNE='1', DO_N
 GIB = 2**30
 MIN_FREE = 80 * GIB
 MAX_USED = 65 * GIB
+
+
+def test_directories():
+    """Keep VM disks/locks in the lab; share only checked test outputs."""
+    storage = build_storage.Storage(task=os.environ.get('DESKPORT_VM_RUN', 'vm-test'),
+                                    target='macos-arm64')
+    env = storage.environment()
+    shared = storage.validate(storage.paths['work'] / 'vm-shared.noindex')
+    os.environ.update(env)
+    storage.prepare(env)
+    return shared / 'input', shared / 'results', storage.paths['cache'] / 'swift-modules'
 
 
 def status():
@@ -64,6 +77,7 @@ def supervised(args):
 
 
 def package_test(arguments):
+    inputs, results, swift_cache = test_directories()
     guard()
     version = LOCK['package_version']
     if arguments:
@@ -76,14 +90,14 @@ def package_test(arguments):
         raise RuntimeError('Pass the published ZIP path to the test command')
     if hashlib.sha256(package.read_bytes()).hexdigest() != LOCK['package_sha256']:
         raise RuntimeError('Release ZIP checksum does not match the test lock')
-    inputs = LAB / 'input'; inputs.mkdir(exist_ok=True)
-    results = LAB / 'results'; results.mkdir(exist_ok=True)
+    inputs.mkdir(parents=True, exist_ok=True)
+    results.mkdir(parents=True, exist_ok=True)
     (inputs / 'DESKPORT_VM_TEST_ONLY').write_text('Disposable VM inputs only.\n')
     shutil.copy2(package, inputs / 'DeskPort.zip')
     shutil.copy2(ROOT / 'tests/test-macos-vm-guest.sh', inputs / 'test.sh')
     (inputs / 'package.sha256').write_text(LOCK['package_sha256'] + '  DeskPort.zip\n')
     (inputs / 'expected-version.txt').write_text(version + '\n')
-    subprocess.run(['xcrun', 'swiftc', '-O', '-target', 'arm64-apple-macos26.0',
+    subprocess.run(['xcrun', 'swiftc', '-module-cache-path', str(swift_cache), '-O', '-target', 'arm64-apple-macos26.0',
                     str(ROOT / 'tests/macos-vm-window.swift'), '-o', str(inputs / 'window-check')], check=True)
     for filename in ('STATUS.txt', 'desktop.png'):
         (results / filename).unlink(missing_ok=True)
@@ -128,6 +142,7 @@ def main():
     parser.add_argument('action', choices=['status', 'bootstrap', 'start', 'stop', 'exec', 'prune', 'test'])
     parser.add_argument('arguments', nargs=argparse.REMAINDER)
     args = parser.parse_args()
+    shared_directories = test_directories() if args.action == 'start' else None
     if args.action == 'status':
         print(json.dumps(status(), indent=2)); return
     if args.action == 'test':
@@ -181,14 +196,15 @@ def main():
         disk = LAB / 'tart/vms' / NAME / 'disk.img'
         if not disk.is_file() or disk.stat().st_size > LOCK['virtual_disk_bytes']:
             raise RuntimeError('Missing VM disk or disk enlarged beyond the locked 50 GB limit')
-        for directory in ('input', 'results'):
-            (LAB / directory).mkdir(exist_ok=True)
+        inputs, results, _ = shared_directories
+        inputs.mkdir(parents=True, exist_ok=True)
+        results.mkdir(parents=True, exist_ok=True)
         # Boot uses Tart's NAT; the guest test disables Ethernet before app launch.
         # No host microphone, clipboard, home directory or credentials exposed.
         graphics = [] if '--graphics' in args.arguments else ['--no-graphics']
         supervised(['run', NAME, *graphics, '--no-audio', '--no-clipboard',
-                    '--dir', 'input:' + str(LAB / 'input') + ':ro',
-                    '--dir', 'results:' + str(LAB / 'results')])
+                    '--dir', 'input:' + str(inputs) + ':ro',
+                    '--dir', 'results:' + str(results)])
     elif args.action == 'exec':
         if not args.arguments:
             parser.error('exec requires a guest command')

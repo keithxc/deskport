@@ -5,6 +5,15 @@ Uses Safari's native WebDriver or a W3C-compatible Chrome/Edge driver. It never
 changes trust, browser permissions, installed apps or native host input. The
 caller owns the canonical GUI lock and must provision certificate trust first.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import base64
 import json

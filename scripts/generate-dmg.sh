@@ -11,11 +11,14 @@ if [ "$BUILD_CONFIG" != "Debug" ] && [ "$BUILD_CONFIG" != "Release" ]; then
   fail "Invalid build configuration - expected 'Debug' or 'Release'"
 fi
 
-# Default outside the source tree; CI may opt back in explicitly.
+# Default outside the source tree; CI may opt back in explicitly on other hosts.
+source "$PWD/scripts/build-storage.sh" || fail "Cannot resolve the DeskPort build root"
 if [ -z "$DESKPORT_LEGACY_BUILD_ROOT" ]; then
   source "$PWD/scripts/build-paths.sh" || fail "Cannot resolve the DeskPort build root"
   DESKPORT_LEGACY_BUILD_ROOT=$DESKPORT_CHECKOUT_BUILD_ROOT/legacy-macos.noindex
 fi
+DESKPORT_LEGACY_BUILD_ROOT=$(python3 -B "$PWD/scripts/build_storage.py" validate-legacy-app "$DESKPORT_LEGACY_BUILD_ROOT") || fail "Invalid legacy output"
+storage_prepare || fail "Cannot prepare checked temporary output"
 BUILD_ROOT=$DESKPORT_LEGACY_BUILD_ROOT
 SOURCE_ROOT=$PWD
 BUILD_FOLDER=$BUILD_ROOT/build-$BUILD_CONFIG

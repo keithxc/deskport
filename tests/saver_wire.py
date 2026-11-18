@@ -8,6 +8,15 @@ The formulas follow fec::encode() and videoBroadcastThread() in both vendored
 src/stream.cpp revisions. Supply post-rewrite elementary sizes for exactness;
 raw AVPacket sizes omit any later SPS/VPS replacement-size differences.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import csv
 from dataclasses import dataclass

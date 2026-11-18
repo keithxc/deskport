@@ -4,6 +4,15 @@
 This is a feature-absence simulation, not acceptance of an older Apple SDK.
 The negative compile control must fail before any contract results are trusted.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import json
 import os

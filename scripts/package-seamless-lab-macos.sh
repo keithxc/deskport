@@ -6,7 +6,9 @@ set -euo pipefail
 
 repo=$(cd "$(dirname "$0")/.." && pwd)
 cd "$repo"
-checkout_root=$(bash scripts/build-paths.sh checkout)
+source "$repo/scripts/build-paths.sh"
+storage_prepare
+checkout_root=$DESKPORT_CHECKOUT_BUILD_ROOT
 run_id=${SEAMLESS_LAB_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}
 case "$run_id" in
     ''|.|..|*[!A-Za-z0-9_.-]*) echo "Invalid Seamless lab run ID" >&2; exit 2 ;;

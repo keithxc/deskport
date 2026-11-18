@@ -5,6 +5,15 @@ Requires the locked devShell. Output must be an explicit build-workspace path.
 --build-only also supports cross qmake via DESKPORT_TYPOGRAPHY_QMAKE_ARGS.
 The resulting work/ directory is self-contained for a native Windows run.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import json
 import os

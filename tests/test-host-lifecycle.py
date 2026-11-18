@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Test host supervision with fake children and loopback-only port reservations."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import json
 import os
 from pathlib import Path
@@ -322,7 +331,7 @@ commonName = supplied
         override = os.environ.get("DESKPORT_TEST_SOCKET_ROOT")
         build_root = Path(subprocess.check_output(
             ["bash", str(root / "scripts/build-paths.sh"), "root"], text=True).strip())
-        candidates = [Path(override)] if override else [build_root / "sockets", build_root]
+        candidates = [Path(override)] if override else [build_root / "t", build_root / "sockets", build_root]
         longest_name = "deskport-sessions-" + "x" * 36
         # Qt reserves two NUL bytes on Linux, one on Darwin (sun_path[104]).
         limit = 103 if sys.platform == "darwin" else 106

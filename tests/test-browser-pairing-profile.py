@@ -5,6 +5,15 @@ This fixture intentionally has no capture host. It never changes the user's
 browser profile, desktop, native input, or services; Linux native capture is
 covered separately by test-browser-pairing.py.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import json
 import os
@@ -25,7 +34,7 @@ parser.add_argument('--openssl',type=Path,default=shutil.which('openssl') or '/u
 args = parser.parse_args()
 os.umask(0o077)
 output=args.output.resolve(); output.mkdir(parents=True,exist_ok=False)
-runtime_root=Path.home()/'mygit/build/deskport/t'; runtime_root.mkdir(parents=True,exist_ok=True)
+runtime_root=_build_storage.Storage().paths['root']/'t'; runtime_root.mkdir(parents=True,exist_ok=True)
 runtime=Path(tempfile.mkdtemp(prefix='pair-',dir=runtime_root))
 processes=[]; logs=[]; gateway=None; server=None; thread=None
 summary={'fixture':'Real installed browser + production HTTPS gateway, auth-only','passed':False}

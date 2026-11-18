@@ -5,6 +5,15 @@ Uses disposable identities, the production HostManager and Session, and loopback
 GameStream. Never run against a personal desktop: the fault injection restarts
 the guest's PipeWire service. Invoke through the lab's locked VM runner.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import hashlib
 import json

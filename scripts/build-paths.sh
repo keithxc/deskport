@@ -1,6 +1,7 @@
 #!/bin/bash
 # Resolve checkout-specific build paths without creating files or directories.
 # Source this file from Bash, or pass a path name to print it for other callers.
+source "$(dirname "${BASH_SOURCE[0]}")/build-storage.sh" || { return 2 2>/dev/null || exit 2; }
 deskport_checkout=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
 deskport_checkout_name=$(printf '%s' "${deskport_checkout##*/}" | LC_ALL=C tr -c '[:alnum:]_.-' '-')
 deskport_checkout_hash=$(printf '%s' "$deskport_checkout" | cksum | awk '{print $1}')
@@ -33,9 +34,9 @@ deskport_output_path() {
             echo 'Build outputs must be outside the source checkout and /nix/store.' >&2
             return 2 ;;
     esac
-    printf '%s\n' "$prefix"
+    storage_validate "$prefix"
 }
-DESKPORT_BUILD_ROOT=${DESKPORT_BUILD_ROOT:-$HOME/mygit/build/deskport}
+DESKPORT_BUILD_ROOT=${DESKPORT_BUILD_ROOT:-$MYGIT_ROOT_DIR}
 DESKPORT_BUILD_ROOT=$(deskport_output_path "$DESKPORT_BUILD_ROOT") || { return 2 2>/dev/null || exit 2; }
 DESKPORT_CHECKOUT_BUILD_ROOT="$DESKPORT_BUILD_ROOT/$deskport_checkout_name-$deskport_checkout_hash"
 if [ "${DESKPORT_RUN_ID+x}" = x ]; then

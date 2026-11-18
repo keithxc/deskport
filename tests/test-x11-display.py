@@ -5,6 +5,15 @@ Run inside the locked devShell. DESKPORT_X11_MODULE_PATH must contain the dummy
 and Xorg server module directories. Caller reserves the shared host's compilation/test lock for this headless server.
 All state uses TMPDIR; preserve the log by setting DESKPORT_X11_TEST_OUTPUT.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import ctypes
 import json
 import os

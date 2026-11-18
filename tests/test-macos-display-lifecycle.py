@@ -4,6 +4,15 @@
 Requires an idle, explicitly available GUI session. Physical displays are only
 observed. UUIDs and process paths in the output are private acceptance evidence.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import json
 import os
@@ -33,7 +42,9 @@ def main():
         parser.error('--output must be a new directory under the DeskPort build root')
     if not args.helper.resolve().is_relative_to(build_root):
         parser.error('use a separate candidate helper under the DeskPort build root')
-    lock = build_root / 'locks/local-ui.lock'
+    # This host-wide ownership lock is shared with the other GUI acceptance
+    # harness, and does not follow per-run build-output placement.
+    lock = Path.home() / 'mygit/build/deskport/locks/local-ui.lock'
     lock.parent.mkdir(parents=True, exist_ok=True)
     lock.mkdir()  # Atomic reservation; never adopt or remove another owner's lock.
     owner = dict(thread=args.thread_id, pid=os.getpid(), started=time.time(), output=str(output))

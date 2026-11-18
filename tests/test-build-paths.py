@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Check managed desktop paths and portable mounts without starting a build."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import os
 from pathlib import Path
 import subprocess
@@ -65,7 +74,7 @@ class BuildPathsTests(unittest.TestCase):
     def test_legacy_paths_and_host_variable_are_compatible(self):
         result = self.resolve('macos-build', DESKPORT_NIX_DEPS='1')
         self.assertTrue(result.stdout.strip().endswith('/macos-arm64.noindex/nix/build'))
-        override = str(self.directory / 'legacy-build')
+        override = str(self.directory / 'legacy-build.noindex')
         self.assertEqual(self.resolve('macos-build', DESKPORT_MACOS_BUILD_DIR=override).stdout.strip(), override)
         result = subprocess.run(['bash', '-c', 'source "$1"; test -z "${DESKPORT_HOST_SOURCE_DIR+x}"',
                                  'test', str(ROOT / 'scripts/build-paths.sh')], env=self.environment)

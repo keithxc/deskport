@@ -17,8 +17,10 @@ See the [upstream quick start](https://tart.run/quick-start/) and the
 
 ## Disk and resource budget
 
-Everything is under `~/Library/DeskPortVM.noindex`, including the pinned local
-Tart tool, its private `TART_HOME`, guest disk, public package inputs and results.
+The pinned Tart tool, private `TART_HOME`, guest disk and ownership lock remain
+under `~/Library/DeskPortVM.noindex`. New package-test inputs and results use
+the checked build workspace; the guest still sees its existing `input` and
+`results` shared-directory names. `DESKPORT_VM_RUN` selects a stable run name.
 It is not installed into `/Applications`, and does not use or prune `~/.tart`.
 
 - Keep at least **80 GiB free** on the host volume.

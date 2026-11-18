@@ -250,3 +250,17 @@ server-digest and explicit download verification, and destructive-cleanup
 refusal/preservation cases. Platform
 compilation, signing/notarization and physical streaming/input acceptance are
 separate checks.
+
+## Checked workspace outputs
+
+The maintained build and test entry points resolve output with the local
+`build_storage.py` adapter and the installed shared mygit resolver. On mm4 the
+verified external volume and its reserve are required before creating output;
+explicit output paths are checked too. The desktop project's existing run and
+checkout layout remains unchanged. The short socket workspace is scoped by
+project, physical checkout and task. The host-wide GUI ownership lock remains
+separate from build output.
+
+Direct `cmake`, `xcodebuild`, `swift`, `cargo`, Gradle and GUI invocations bypass
+these entry-point checks; configure their output and disk validation explicitly
+or use a maintained wrapper. This does not move or remove earlier outputs.

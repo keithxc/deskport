@@ -3,6 +3,9 @@
 set -euo pipefail
 repo=$(cd "$(dirname "$0")/.." && pwd)
 output=${1:?Usage: compile-macos-icon.sh OUTPUT_DIRECTORY}
+source "$repo/scripts/build-storage.sh"
+output=$(storage_validate "$output")
+storage_prepare
 export DEVELOPER_DIR=${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}
 mkdir -p "$output/tmp"
 export TMPDIR="$output/tmp"

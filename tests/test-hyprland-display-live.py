@@ -6,6 +6,15 @@ Uses a private D-Bus bus and XDG directories. DRM seat access is disabled for
 this nested test. Set DESKPORT_TEST_HOST to include actual WLR/software encoder
 probing and refusal to capture a lost output. It never injects live input.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 from contextlib import contextmanager
 import json

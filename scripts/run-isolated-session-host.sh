@@ -7,6 +7,8 @@ if [ "$#" -ne 1 ]; then
 fi
 app=$1
 [[ "$app" = /* && -x "$app/Contents/MacOS/DeskPort" ]] || { echo 'Expected an absolute app bundle path' >&2; exit 2; }
+source "$(dirname "$0")/build-storage.sh"
+storage_prepare
 test_dir=$(mktemp -d "${TMPDIR:-/tmp}/deskport-session-test.XXXXXX")
 chmod 700 "$test_dir"
 printf 'DeskPort isolated session test\n' > "$test_dir/SESSION_TEST_ONLY"

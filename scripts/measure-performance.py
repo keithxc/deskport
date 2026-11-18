@@ -2,6 +2,15 @@
 """Read-only CPU intervals for explicit PIDs, or summarize resize stage logs.
 No host discovery, input injection, screen capture, or configuration changes.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import json
 import re

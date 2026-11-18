@@ -4,6 +4,10 @@ set -euo pipefail
 appdir=${1:?Usage: package-flatpak.sh APPDIR OUTPUT_DIR VERSION}
 output=${2:?Output directory required}
 version=${3:?Version required}
+repo=$(cd "$(dirname "$0")/.." && pwd -P)
+source "$repo/scripts/build-storage.sh"
+output=$(python3 -B "$repo/scripts/build_storage.py" validate-legacy "$output")
+storage_prepare
 id=io.github.keithxc.DeskPort
 mkdir -p "$output"
 output=$(cd "$output" && pwd)

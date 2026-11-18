@@ -6,6 +6,7 @@ cd "$repo"
 export DESKPORT_TARGET=macos
 source "$repo/scripts/build-paths.sh"
 DESKPORT_HOST_SOURCE_DIR=$(deskport_output_path "${DESKPORT_HOST_SOURCE_DIR:-$DESKPORT_MACOS_BUILD_DIR/sunshine-vendored-source}")
+storage_prepare
 export DESKPORT_HOST_SOURCE_DIR
 version=$(cat app/version.txt)
 : "${DESKPORT_SIGN_IDENTITY:?Set a stable local code-signing identity; use - only for disposable development builds}"

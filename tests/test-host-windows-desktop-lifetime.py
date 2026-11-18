@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Check desktop ownership against Windows' cannot-close-attached contract."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 from pathlib import Path
 import os
 import json

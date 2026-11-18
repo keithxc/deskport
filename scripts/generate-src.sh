@@ -18,6 +18,7 @@ case "$version" in
 esac
 prefix="DeskPort-$version"
 output=${1:-$DESKPORT_DIST_DIR/$prefix-source.tar.gz}
+storage_validate "$DESKPORT_WORK_DIR" "$output" >/dev/null
 case "$output" in
     *.tar.gz) ;;
     *) fail 'Source output must end in .tar.gz.' ;;

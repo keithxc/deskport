@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Reject runtime references to the build machine, including nested components."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import os
 import pathlib
 import plistlib
@@ -12,7 +21,8 @@ root = pathlib.Path(sys.argv[1]).resolve()
 errors = []
 scratch = (pathlib.Path(os.environ['DESKPORT_TEST_DIR']) if os.environ.get('DESKPORT_TEST_DIR')
            else pathlib.Path(os.environ.get(
-               'DESKPORT_BUILD_ROOT', pathlib.Path.home() / 'mygit/build/deskport'))) / 'bundle-checks'
+               'DESKPORT_BUILD_ROOT', _build_storage.Storage().paths['root']))) / 'bundle-checks'
+scratch = _build_storage.output(scratch)
 scratch.mkdir(parents=True, exist_ok=True)
 with (root / 'Contents/Info.plist').open('rb') as stream:
     info = plistlib.load(stream)

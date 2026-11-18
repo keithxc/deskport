@@ -5,6 +5,7 @@ repo=$(cd "$(dirname "$0")/.." && pwd)
 export DESKPORT_TARGET=macos
 source "$repo/scripts/build-paths.sh"
 source_dir=$(deskport_output_path "${DESKPORT_HOST_SOURCE_DIR:-$DESKPORT_MACOS_BUILD_DIR/sunshine-vendored-source}")
+storage_prepare
 build_root="$DESKPORT_MACOS_BUILD_DIR"
 build_dir="$build_root/sunshine-vendored-build"
 python3 "$repo/scripts/prepare-host-source.py" "$source_dir"

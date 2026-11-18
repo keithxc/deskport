@@ -11,11 +11,14 @@ if [ "$STEAMLINK_SDK_PATH" == "" ]; then
   fail "You must set STEAMLINK_SDK_PATH to build for Steam Link"
 fi
 
-# Default outside the source tree; CI may opt back in explicitly.
+# Default outside the source tree; CI may opt back in explicitly on other hosts.
+source "$PWD/scripts/build-storage.sh" || fail "Cannot resolve the DeskPort build root"
 if [ -z "$DESKPORT_LEGACY_BUILD_ROOT" ]; then
   source "$PWD/scripts/build-paths.sh" || fail "Cannot resolve the DeskPort build root"
   DESKPORT_LEGACY_BUILD_ROOT=$DESKPORT_CHECKOUT_BUILD_ROOT/legacy-steamlink.noindex
 fi
+DESKPORT_LEGACY_BUILD_ROOT=$(python3 -B "$PWD/scripts/build_storage.py" validate-legacy "$DESKPORT_LEGACY_BUILD_ROOT") || fail "Invalid legacy output"
+storage_prepare || fail "Cannot prepare checked temporary output"
 BUILD_ROOT=$DESKPORT_LEGACY_BUILD_ROOT
 SOURCE_ROOT=$PWD
 BUILD_FOLDER=$BUILD_ROOT/build-$BUILD_CONFIG

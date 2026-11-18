@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Build and exercise the actual SCK bridge with synthetic frames, no capture."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import os, pathlib, subprocess, tarfile, tempfile
 root = pathlib.Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix="deskport-sck-test-") as temp:

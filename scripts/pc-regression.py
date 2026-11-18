@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Synthetic PC acceptance fixtures and evidence ledger. No network/clipboard access."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import array
 import hashlib
@@ -34,7 +43,7 @@ def read_json(path):
 
 def write_json(path, value):
     # All generated files belong in an explicitly selected, private build path.
-    Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _build_storage.output(path).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def png():
@@ -49,7 +58,7 @@ def png():
 
 
 def fixture(output):
-    root = Path(output).resolve()
+    root = _build_storage.output(output)
     root.mkdir(parents=True, exist_ok=False, mode=0o700)
     payload = root / "payload"
     payload.mkdir()

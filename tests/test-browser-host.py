@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """Exercise real BrowserHost policy with a fake HostManager, never a deployed host."""
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import os
 from pathlib import Path
@@ -9,7 +18,7 @@ import tempfile
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument("--output", type=Path, default=Path.home() / "mygit/build/deskport/browser-client/gateway")
+parser.add_argument("--output", type=Path, default=_build_storage.Storage().paths["tests"] / "browser-client/gateway")
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 work = Path(tempfile.mkdtemp(prefix="host-test-", dir=args.output))

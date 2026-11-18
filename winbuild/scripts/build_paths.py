@@ -14,6 +14,8 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+import build_storage
 from host_boost import source_path as boost_source_path
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -105,6 +107,7 @@ def common_paths():
 
 
 def paths():
+    storage = build_storage.Storage()
     common = common_paths()
     checkout = Path(common['DESKPORT_CHECKOUT_BUILD_ROOT']).resolve()
     run_id = common.get('DESKPORT_RUN_ID') or 'dev'
@@ -121,6 +124,7 @@ def paths():
     cache = compatible_cache(cache_base) or cache
     downloads = Path(os.environ.get('DESKPORT_WINDOWS_INPUT_CACHE') or cache_base / 'downloads').resolve()
     for label, path in (('work', work), ('dist', dist), ('logs', logs), ('dependency cache', cache_base), ('input cache', downloads)):
+        storage.validate(path)
         if path == SOURCE or SOURCE in path.parents:
             raise SystemExit(f'Windows {label} must be outside the source checkout: {path}')
     run_parent = checkout / 'runs.noindex'

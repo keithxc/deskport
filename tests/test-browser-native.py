@@ -5,6 +5,15 @@ Owns Xvfb, a private PulseAudio null sink, a test Sunshine instance, and a real
 HTTPS BrowserGateway. Never installs/restarts services, uses the user's display,
 or enables native input. Only subprocesses created by this script are terminated.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import base64
 import json
@@ -37,7 +46,7 @@ parser.add_argument('--certutil', type=Path, default=shutil.which('certutil'), h
 parser.add_argument('--fixture-certificate', type=Path, help='Caller-owned synthetic loopback certificate for native platform trust')
 parser.add_argument('--fixture-key', type=Path, help='Matching private synthetic key; requires --fixture-certificate')
 parser.add_argument('--output', type=Path, required=True)
-parser.add_argument('--runtime-root', type=Path, default=Path.home()/'mygit/build/deskport/t')
+parser.add_argument('--runtime-root', type=Path, default=_build_storage.Storage().paths['root']/'t')
 parser.add_argument('--driver', type=Path, help='Optional real-browser driver; defaults to test-browser-native.mjs')
 parser.add_argument('--pairing-control', action='store_true', help='Enable a private test-only gateway restart/revocation control socket')
 parser.add_argument('--webkit-driver', type=Path, help='Optional existing WebKitGTK WebDriver for an additional pairing probe')

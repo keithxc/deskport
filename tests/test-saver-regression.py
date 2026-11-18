@@ -5,6 +5,15 @@ No GUI, capture permission, live host, network session or input is used. Outputs
 are immutable per run. A failing quality or estimated video-IP budget check
 returns nonzero and retains the bitstream, source snapshots and frame metrics.
 """
+
+# Guard direct test/build entrypoints before local imports or output creation.
+import sys as _storage_sys
+_storage_sys.dont_write_bytecode = True
+_storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
+import build_storage as _build_storage
+if __name__ == '__main__':
+    _build_storage.bootstrap()
+
 import argparse
 import contextlib
 import json

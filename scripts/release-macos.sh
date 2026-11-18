@@ -8,6 +8,13 @@ export DEVELOPER_DIR=${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer
 mode=${1:?Usage: release-macos.sh prepare SOURCE_APP OUTPUT_DIR | notarize OUTPUT_DIR}
 : "${DESKPORT_SIGN_IDENTITY:?Set the exact Developer ID Application certificate SHA-1}"
 : "${DESKPORT_SIGN_TEAM:?Set the Developer ID team}"
+case "$mode" in
+    prepare) [ "$#" -eq 3 ] || { echo 'Usage: release-macos.sh prepare SOURCE_APP OUTPUT_DIR' >&2; exit 2; }; output=$3 ;;
+    notarize) [ "$#" -eq 2 ] || { echo 'Usage: release-macos.sh notarize OUTPUT_DIR' >&2; exit 2; }; output=$2 ;;
+    *) echo "Unknown mode: $mode" >&2; exit 2 ;;
+esac
+python3 -B "$repo/scripts/build_storage.py" validate-app "$output" >/dev/null
+storage_prepare
 scratch_root="$DESKPORT_MACOS_BUILD_DIR/release-scratch.noindex"
 mkdir -p "$scratch_root"
 stage=

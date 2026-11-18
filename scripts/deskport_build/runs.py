@@ -12,6 +12,7 @@ import platform
 import shutil
 
 from . import common
+import build_storage
 from .common import NAME, OWNERSHIP, Refused, SCHEMA, check, no_links, write_json
 
 
@@ -37,6 +38,10 @@ def layout(target, run, dependency_cache=None):
     cache = base / "dependencies.noindex" / target
     if dependency_cache is not None:
         cache = Path(dependency_cache).expanduser().absolute()
+        try:
+            build_storage.Storage().validate(cache)
+        except (OSError, ValueError) as error:
+            raise Refused(str(error)) from error
         no_links(cache)
         # Borrow an existing retained cache in place. Never adopt a run or move
         # CMake/qmake trees whose configured paths belong to another checkout.
@@ -66,6 +71,8 @@ def layout(target, run, dependency_cache=None):
                DESKPORT_WINDOWS_SOURCE_ROOT=str(common.ROOT),
                PACKAGE_OUT=str(paths["dist"]), PACKAGE_STAGE=str(paths["work"] / "stage"),
                PYTHONDONTWRITEBYTECODE="1")
+    env["DESKPORT_BUILD_ROOT"] = str(base.parent)
+    env.update(build_storage.Storage(task=run, target=target).environment(env))
     return paths, env
 
 
