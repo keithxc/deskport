@@ -4,7 +4,7 @@
 - [x] Keep stopped packet queues alive through worker shutdown and synchronize event/queue state reads. Replace expired mailbox entries safely.
 - [x] Verify the production shutdown paths with overlapping sessions, queued packets, dequeue/retirement contention, AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer. Retain the existing ten-second watchdog.
 - [x] Verify a signed host test copy through eight rotation rounds and eight rapid bursts on each of two simulator sizes. The helper process stays unchanged, no new crash report appears, and fresh displayed buffers match the requested sizes. An additional eight rounds pass after a display-wake assertion.
-- [ ] Verify installed live behavior after the owner activates the signed host test build through the consuming Nix configuration. Temporary-copy screenshots contain black video, so visible desktop edges remain unverified.
+- [x] Verify installed live behavior after owner activation through the consuming Nix configuration on 2026-11-18. Each of two simulator sizes passes eight rotation rounds and eight rapid bursts with the same host process, no new crash report, and fresh displayed buffers matching every accepted size. Normal client input wakes the sleeping display; visible desktop edges fill the intended video bounds. Preferences, stream disconnect, and simulator teardown are verified.
 
 ## Client-driven key repeat — 2026-11-10
 
