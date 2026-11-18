@@ -32,6 +32,39 @@ off.
   build, and not checked live: held-key repeat on Windows, KDE Wayland and
   macOS clients, and the absence of repeats under a delayed release.
 
+## Planned desktop streaming modes — 2026-11-07
+
+Replace the global leaf toggle beside the traffic counter with one streaming
+mode selector for all devices and open sessions. Show the current mode and
+offer three mutually exclusive choices.
+
+| Mode | Intended session behavior |
+| --- | --- |
+| Standard (default) | Use the current saver-off path and the device's saved picture, audio and workspace preferences. |
+| Game | Prioritize responsive input and even frame delivery during continuous motion. Target the negotiated frame rate, respect the device's frame-rate and bitrate limits, and keep its audio preference. |
+| Data saver | Keep the office profile, including the 1x workspace, up to 8 fps for changing content on compatible hosts, the resolution-aware bitrate cap and muted remote audio. |
+
+1. Persist one global mode. Migrate an enabled legacy saver setting to Data
+   saver and a disabled or absent setting to Standard. Keep per-device picture
+   presets and manual overrides intact. Label the existing 30 fps / 5 Mbps
+   device preset by its limits so it is distinguishable from the global mode.
+   Preserve the daily budget's once-per-day transition to Data saver from either
+   other mode and allow a subsequent manual selection.
+2. Define shared mode semantics and any new host capability in deskport-core.
+   Start Game with continuous capture at the negotiated cadence and measure
+   client presentation queues before changing encoder or input behavior. On
+   congestion, target a lower bitrate within the available bandwidth. When
+   required host support is absent, show the effective fallback for that session.
+3. Route launch, resume and live changes through the same policy. Apply
+   supported live changes in place. Renegotiate once when capture cadence,
+   backing scale or audio requires it, releasing held input before reconnecting.
+4. Cover migration, all six directed mode changes, budget-triggered changes,
+   concurrent sessions and older hosts. Compare Game with Standard on a KDE
+   Wayland / AMD client connected to a macOS host at the same resolution and
+   frame rate. Record input-to-display latency, p95 frame interval, dropped
+   frames and bitrate during a repeatable moving scene on LAN and a constrained
+   link. Verify key releases and preserve the existing office saver regressions.
+
 ## Desktop 0.7.8 formal release — 2026-11-03
 
 Published [v0.7.8](https://github.com/keithxc/deskport/releases/tag/v0.7.8) as
