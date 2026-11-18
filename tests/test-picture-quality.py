@@ -14,7 +14,7 @@ def compile_run(path, source):
     path.write_text(source)
     binary = path.with_suffix('')
     subprocess.run([CXX, '-std=c++17', '-Wall', '-Wextra', '-Werror', '-pthread',
-                    '-I', str(ROOT), str(path), '-o', str(binary)], check=True)
+                    '-I', str(path.parent / 'c-api'), '-I', str(ROOT), str(path), '-o', str(binary)], check=True)
     subprocess.run([str(binary)], check=True)
 
 
@@ -37,41 +37,8 @@ constexpr int AV_FRAME_FLAG_KEY = 1;
 constexpr int EOF_CODE = -12;
 #define AVERROR(value) (-(value))
 #define AVERROR_EOF EOF_CODE
-using Writes = std::vector<std::pair<char, int>>;
-struct Rational { int num = 60, den = 1; };
-double av_q2d(Rational value) { return double(value.num) / value.den; }
-struct Context {
-    int min = 0, max = 51, fail = -1, rateCalls = 0, width = 2040, height = 1228;
-    double expected = 30; bool expectedAccepted = true;
-    Rational framerate; Writes writes; std::vector<char> operations;
-};
-namespace deskport::vt {
-using VTCompressionSessionRef = Context*;
-using CFNumberRef = double*;
-using OSStatus = int;
-constexpr int kCFNumberDoubleType = 0, kVTCompressionPropertyKey_ExpectedFrameRate = 0, noErr = 0;
-CFNumberRef CFNumberCreate(std::nullptr_t, int, const double* value) { return new double(*value); }
-void CFRelease(CFNumberRef value) { delete value; }
-OSStatus VTSessionSetProperty(Context* ctx, int, CFNumberRef value) {
-    ctx->operations.push_back('F');
-    if (!ctx->expectedAccepted) return -1;
-    ctx->expected = *value; return noErr;
-}
-__EXPECTED__
-Context* session(Context* ctx) { return ctx; }
-bool applyRate(Context* ctx, std::int64_t, int = 1) { ++ctx->rateCalls; ctx->operations.push_back('R'); return true; }
-bool applyQualityFloor(Context* ctx, int minimum) {
-    ctx->writes.push_back({'m', minimum});
-    if (minimum > ctx->max) return false;
-    ctx->min = minimum; return true;
-}
-bool applyQualityCeiling(Context* ctx, int maximum) {
-    ctx->writes.push_back({'M', maximum});
-    if (ctx->fail == maximum || maximum < ctx->min) return false;
-    ctx->max = maximum; return true;
-}
-__RANGE__
-}
+#include "tests/picture-vt-double.h"
+#include "host/macos/vtbitrate.h"
 struct Base {
     virtual ~Base() = default;
     virtual bool deskport_set_bitrate(int, bool, bool) = 0;
@@ -79,6 +46,8 @@ struct Base {
 struct avcodec_encode_session_t : Base {
     std::unique_ptr<Context> avcodec_ctx = std::make_unique<Context>();
     deskport::PictureQuality deskport_quality;
+    int deskport_initial_kbps = 0;
+    std::int64_t deskport_previous_limit_bps = 0;
     bool deskport_saver_configured = false;
     deskport::vt::FrameClock deskport_clock;
 __SETTER__
@@ -117,13 +86,18 @@ int main() {
     assert(ptr->deskport_set_bitrate(992, false, true));
     assert(ctx.min == 22 && ctx.max == 51);
     assert(ctx.expected == 8 && ctx.framerate.num == 60 && ctx.framerate.den == 1);
-    assert((ctx.operations == std::vector<char>{'F', 'R'}));
+    assert((ctx.operations == std::vector<char>{'F', 'R', 'L'}));
     const auto propertyCalls = ctx.operations.size();
     for (const double invalid : {0.0, -1.0, 1001.0, std::numeric_limits<double>::infinity(),
                                  -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
         assert(!deskport::vt::applyExpectedFrameRate(&ctx, invalid));
         assert(ctx.expected == 8 && ctx.operations.size() == propertyCalls);
     }
+    assert(ctx.average == 992000 && ctx.limitBytes == 992000 * 3 / 8 && ctx.limitSeconds == 1);
+    assert(ptr->deskport_initial_kbps == 15000 && ptr->deskport_previous_limit_bps == 992000 * 3);
+    const auto callsBeforeInvalid = ctx.propertyCalls;
+    for (int invalid : {0, -1, 15001, 200001}) assert(!ptr->deskport_set_bitrate(invalid, false, true));
+    assert(ctx.propertyCalls == callsBeforeInvalid && ctx.average == 992000);
     ctx.writes.clear();
     Call idle {0}; assert(before(*ptr, idle) == 0 && ctx.writes.empty());
     assert(finish(*ptr, idle) == 0);
@@ -174,10 +148,10 @@ int main() {
     assert(finish(*ptr, ordinary) == 0);
 
     // Without data saver only the original rate and QP-floor writes occur:
-    // no cadence hint and no QP ceiling.
+    // no cadence hint and no QP ceiling after the saver-off transition.
     const auto plainOps = ctx.operations.size(); const auto plainWrites = ctx.writes.size();
     assert(ptr->deskport_set_bitrate(499, false, false));
-    assert(ctx.operations.size() == plainOps + 1 && ctx.operations.back() == 'R');
+    assert(ctx.operations.size() == plainOps + 2 && ctx.operations[plainOps] == 'R' && ctx.operations.back() == 'L');
     assert(ctx.writes.size() == plainWrites + 1 && ctx.writes.back() == std::make_pair('m', 0));
     assert(ptr->deskport_set_bitrate(499, true, false) && ctx.min == 32 && ctx.max == 51);
     assert(ptr->deskport_set_bitrate(499, false, false) && ctx.min == 0);
@@ -186,10 +160,13 @@ int main() {
     assert(ptr->deskport_set_bitrate(992, false, true));
     assert(ptr->deskport_set_bitrate(499, false, false));
     assert(std::abs(ctx.expected - 60000.0 / 1001) < 1e-9); // restore the negotiated rational, not rounded 60
-    const auto rateCalls = ctx.rateCalls;
+    const auto averageBeforeHintFailure = ctx.average;
     ctx.expectedAccepted = false;
     assert(!ptr->deskport_set_bitrate(992, false, true));
-    assert(ctx.rateCalls == rateCalls); // a failed hint cannot silently claim complete policy success
+    assert(ctx.average == averageBeforeHintFailure && ctx.expected == 60000.0 / 1001);
+    assert(!ptr->deskport_saver_configured && ptr->deskport_previous_limit_bps == 499000);
+    // A failed hint cannot silently claim complete policy success; rollback may
+    // write the old rate even though the new rate was never attempted.
     ctx.expectedAccepted = true;
 
     assert(ptr->deskport_set_bitrate(499, false, true));
@@ -212,6 +189,43 @@ int main() {
     Call rejected {14}; assert(before(*ptr, rejected) == -1);
     assert(ctx.max == 51); // rejected setter never enters the applied cache
     assert(ptr->deskport_quality.needsMaximum(26));
+
+    // Run the extracted production setter through each independent native
+    // failure, with readable limits and FFmpeg's unreadable-limit fallback.
+    // Failed transactions must retain both native values and owner caches.
+    for (bool readable : {true, false}) {
+        for (int stage = 1; stage <= 5; ++stage) {
+            avcodec_encode_session_t transaction;
+            auto& state = *transaction.avcodec_ctx;
+            assert(transaction.deskport_set_bitrate(992, false, true));
+            state.max = 26; // previous fresh picture's strict bound
+            transaction.deskport_quality.appliedMaximum(26);
+            state.limitsReadable = readable;
+            state.propertyCalls = 0; state.failAt = stage;
+            assert(!transaction.deskport_set_bitrate(499, true, false));
+            assert(state.average == 992000 && state.limitBytes == 992000 * 3 / 8 && state.limitSeconds == 1);
+            assert(state.min == 22 && state.max == 26 && state.expected == 8);
+            assert(transaction.deskport_previous_limit_bps == 992000 * 3 && transaction.deskport_saver_configured);
+            assert(!transaction.deskport_quality.needsMaximum(26));
+            state.failAt = 0;
+            assert(transaction.deskport_set_bitrate(499, true, false));
+            assert(state.average == 499000 && state.limitBytes == 499000 / 8 && state.limitSeconds == 1);
+            assert(state.min == 32 && state.max == 51 && state.expected == 60);
+            assert(transaction.deskport_previous_limit_bps == 499000 && !transaction.deskport_saver_configured);
+            assert(liveCFValues == 0);
+        }
+    }
+    avcodec_encode_session_t failedSnapshot;
+    auto& snapshot = *failedSnapshot.avcodec_ctx;
+    snapshot.copyFailKey = kVTCompressionPropertyKey_AverageBitRate;
+    assert(!failedSnapshot.deskport_set_bitrate(992, false, true));
+    assert(snapshot.propertyCalls == 0 && !failedSnapshot.deskport_saver_configured &&
+           failedSnapshot.deskport_previous_limit_bps == 0);
+    snapshot.copyFailKey = 0; snapshot.limitsReadable = false; snapshot.rc_max_rate = 0;
+    assert(!failedSnapshot.deskport_set_bitrate(992, false, true));
+    assert(snapshot.propertyCalls == 0);
+    assert(liveCFValues == 0);
+
 }
 '''
 
@@ -247,13 +261,12 @@ with tempfile.TemporaryDirectory(prefix='deskport-picture-', dir=directory) as t
         assert video.index('av_packet->pts = *identity;') < video.index('if (*identity == frame_nr) deskport_current_produced = true;') < video.index('av_packet->pts -= session.deskport_pts_shift;')
         begin = video.index('      if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {')
         drain = video[begin:video.index('      } else if (ret < 0)', begin) + len('      }')]
-        header = (ROOT / 'host/macos/vtbitrate.h').read_text()
-        begin = header.index('inline bool applyQualityRange(')
-        quality_range = header[begin:header.index('\n}', begin) + len('\n}')]
-        begin = header.index('inline bool applyExpectedFrameRate(')
-        expected = header[begin:header.index('\n}', begin) + len('\n}')]
+        for name in ('CoreFoundation/CoreFoundation.h', 'VideoToolbox/VideoToolbox.h', 'libavcodec/avcodec.h'):
+            stub = target / 'c-api' / name
+            stub.parent.mkdir(parents=True, exist_ok=True)
+            stub.write_text('// Declarations supplied by tests/picture-vt-double.h\n')
         source = HARNESS.replace('__SETTER__', setter).replace('__CAPTURE__', capture)
         source = source.replace('__BEFORE__', before).replace('__OUTPUT__', output)
-        source = source.replace('__DRAIN__', drain).replace('__RANGE__', quality_range).replace('__EXPECTED__', expected)
+        source = source.replace('__DRAIN__', drain)
         compile_run(target / 'picture.cpp', '#define __APPLE__ 1\n' + source)
         print(f'PASS: actual capture/MaxQP/logical output/drain/rate adapter blocks: {archive}')

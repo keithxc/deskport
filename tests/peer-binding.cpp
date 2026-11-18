@@ -1622,7 +1622,14 @@ private slots:
         QTRY_VERIFY_WITH_TIMEOUT(result.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready,5000);
         QVERIFY(result.get());
         QCOMPARE(channel.liveRateSupported(), scenario != "legacy");
+        // Session starts the rate generation before video has a key frame.
+        // Merely completing display resize must not send an encoder command.
+        channel.beginRateStream(0, false);
         channel.setRateCeiling(12000, true);
+        QTest::qWait(300); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed());
+        // Mirror Session's first-key-frame event. The worker polls the socket
+        // for up to 100ms between commands; no production timeout is shortened.
+        channel.markRateStreamReady();
         if (scenario == "legacy") {
             // Older hosts never receive the message; the session reconnects instead.
             QTest::qWait(300); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed()); return;
@@ -1638,9 +1645,28 @@ private slots:
         QJsonObject reply{{"type","video-rate-result"},{"seq",1},{"ceilingKbps",12000},{"live",scenario != "recorded"}};
         if (scenario == "error") reply["error"] = "unavailable";
         server.send(reply);
-        if (scenario == "error") { QTRY_VERIFY_WITH_TIMEOUT(channel.failed(),5000); return; }
+        if (scenario == "error") {
+            QTRY_VERIFY_WITH_TIMEOUT(channel.failed(),5000);
+            QVERIFY(!channel.retryable()); QVERIFY(!channel.takeRateFallback()); return;
+        }
+        if (scenario == "recorded") {
+            // A fixed backend records the first cap, then withdraws live
+            // capability. Pending changes must be negotiated by reconnecting,
+            // never sent as another live request on this retained controller.
+            QTRY_VERIFY_WITH_TIMEOUT(!channel.liveRateSupported(),1500);
+            QVERIFY(channel.takeRateFallback());
+            QVERIFY(!channel.takeRateFallback());
+            QTest::qWait(300); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed());
+            channel.beginRateStream(56000, false);
+            channel.markRateStreamReady();
+            channel.setRateCeiling(56000, true);
+            QTest::qWait(300); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed());
+            QVERIFY(!channel.liveRateSupported()); QVERIFY(!channel.takeRateFallback());
+            return;
+        }
         QTRY_VERIFY_WITH_TIMEOUT(!server.messages.isEmpty(),1500);
         request = server.messages.takeFirst();
+        QCOMPARE(request["type"].toString(),QString("video-rate"));
         QCOMPARE(request["seq"].toInt(),2); QCOMPARE(request["ceilingKbps"].toInt(),56000);
         QCOMPARE(request["saver"].toBool(),false);
         QCOMPARE(channel.takeRateFallback(), scenario == "recorded");
@@ -1652,8 +1678,22 @@ private slots:
         channel.setRateCeiling(56000, true);
         QTRY_VERIFY_WITH_TIMEOUT(!server.messages.isEmpty(),1500);
         request = server.messages.takeFirst();
+        QCOMPARE(request["type"].toString(),QString("video-rate"));
+        QCOMPARE(request["ceilingKbps"].toInt(),56000);
         QCOMPARE(request["seq"].toInt(),3); QCOMPARE(request["saver"].toBool(),true);
         server.send({{"type","video-rate-result"},{"seq",3},{"ceilingKbps",56000},{"live",true}});
+        QTest::qWait(150); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed());
+        // A new stream needs the same policy reapplied, but only after its
+        // own key frame. Equal bitrate/saver values cannot hide the generation.
+        channel.beginRateStream(56000, true);
+        QTest::qWait(300); QVERIFY(server.messages.isEmpty());
+        channel.markRateStreamReady();
+        QTRY_VERIFY_WITH_TIMEOUT(!server.messages.isEmpty(),1500);
+        request = server.messages.takeFirst();
+        QCOMPARE(request["type"].toString(),QString("video-rate"));
+        QCOMPARE(request["seq"].toInt(),4); QCOMPARE(request["ceilingKbps"].toInt(),56000);
+        QCOMPARE(request["saver"].toBool(),true);
+        server.send({{"type","video-rate-result"},{"seq",4},{"ceilingKbps",56000},{"live",true},{"saver",true}});
         QTest::qWait(150); QVERIFY(server.messages.isEmpty()); QVERIFY(!channel.failed());
     }
     void adaptiveDisplayNegotiatesFiniteModes() {
