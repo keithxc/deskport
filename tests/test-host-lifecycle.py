@@ -106,6 +106,13 @@ if mode in ("stubborn", "stubborn-slow-display"): signal.signal(signal.SIGTERM, 
 print("Connection started 192.0.2.99 token=fixture-secret", flush=True)
 # Loopback-only, certificate-pinned management fixture; never a personal host.
 if (state / "credentials/cert.pem").exists():
+    if (state / "management-start-gated").exists():
+        deadline = time.monotonic() + 4
+        while not (state / "management-release").exists():
+            if time.monotonic() >= deadline:
+                (state / "management-gate-timed-out").touch()
+                sys.exit(19)
+            time.sleep(0.01)
     import base64, http.server, json, ssl
     config = dict(line.split(" = ", 1) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if " = " in line)
     session_file = state / "test-sessions.json"
@@ -166,6 +173,7 @@ if (state / "credentials/cert.pem").exists():
     tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     tls.load_cert_chain(state / "credentials/cert.pem", state / "credentials/key.pem")
     server.socket = tls.wrap_socket(server.socket, server_side=True)
+    (state / "management-ready").touch()
     server.serve_forever()
 else:
     while True: time.sleep(1)

@@ -1329,17 +1329,53 @@ private slots:
             {fp, QJsonObject{{"ready", true}, {"granted", true}}}}}}));
         HostManager host(nullptr, dir.path()+"/host");
         PeerManager server(&host, bCert, credential("TEST_KEY_B"), dir.path()+"/binding", 0, QHostAddress::LocalHost);
+        const auto hostPath = dir.path()+"/host/";
+        QFile gate(hostPath+"management-start-gated");
+        QVERIFY(gate.open(QIODevice::WriteOnly)); gate.close();
         host.start(2560, 1440);
-        QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable(), 5000);
+        QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable() && QFile::exists(hostPath+"host-started"), 5000);
+        // QProcess::started advertises display availability before the fake
+        // host's pinned HTTPS management endpoint can admit a controller.
+        QVERIFY(!QFile::exists(hostPath+"management-ready"));
+        QJsonObject management;
+        bool managementFinished = false;
+        auto inspectManagement = [&] {
+            managementFinished = false;
+            host.sessionControl({}, &host, [&](QJsonObject reply) {
+                management = std::move(reply); managementFinished = true;
+            });
+        };
+        inspectManagement();
+        QTRY_VERIFY_WITH_TIMEOUT(managementFinished, 5000);
+        QVERIFY(!management["status"].toBool());
+        QCOMPARE(management["code"].toString(), QString("unavailable"));
+        QFile release(hostPath+"management-release");
+        QVERIFY(release.open(QIODevice::WriteOnly)); release.close();
+        QTRY_VERIFY_WITH_TIMEOUT(QFile::exists(hostPath+"management-ready"), 5000);
+        QVERIFY(!QFile::exists(hostPath+"management-gate-timed-out"));
+        inspectManagement();
+        QTRY_VERIFY_WITH_TIMEOUT(managementFinished, 5000);
+        QVERIFY(management["status"].toBool());
+        QCOMPARE(management["version"].toInt(), 1);
+        QCOMPARE(management["snapshot"].toString(), QString("0:0"));
+        QVERIFY(management["sessions"].isDouble());
+        QCOMPARE(management["sessions"].toInt(), 0);
+        QVERIFY(management["reserved"].isBool());
+        QVERIFY(!management["reserved"].toBool());
         QSignalSpy resized(&host, &HostManager::displayResized), approval(&server, &PeerManager::incomingRequest);
-        auto resize = [this](AdaptiveDisplay& channel, QSize size, bool takeover = false) {
+        int progressCalls = 0;
+        auto resize = [&](AdaptiveDisplay& channel, QSize size, bool takeover = false) {
             std::atomic<int> frames {0};
             auto result = std::async(std::launch::async, [&] { return channel.resize(size, 2, [&] { ++frames; }, [takeover] { return takeover; }); });
             QElapsedTimer timer; timer.start();
             while (result.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready && timer.elapsed() < 11000) QTest::qWait(10);
             const bool connected = result.get();
-            if (connected && frames == 0) return false; // Waiting must keep the loading UI alive.
+            progressCalls = frames.load();
             return connected;
+        };
+        auto resizeFailure = [](AdaptiveDisplay& channel) {
+            return QString("Resize failed: topologyError=%1, failed=%2")
+                .arg(channel.topologyError()).arg(channel.failed());
         };
         {
             AdaptiveDisplay wrongPin("127.0.0.1", server.port(), QSslCertificate(cCert), aCert, credential("TEST_KEY_A"));
@@ -1356,11 +1392,13 @@ private slots:
         QCOMPARE(resized.size(), 0); QCOMPARE(approval.size(), 0);
         {
             AdaptiveDisplay channel("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
-            QVERIFY(resize(channel, QSize(1920, 1080)));
+            QVERIFY2(resize(channel, QSize(1920, 1080)), qPrintable(resizeFailure(channel)));
+            QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
             QCOMPARE(resized.size(), 1); QVERIFY(host.running()); QVERIFY(!server.busy());
             QVERIFY(!server.canReleaseClientFullscreen()); // a windowed client has nothing to leave
             channel.setFullScreen(true);
-            QVERIFY(resize(channel, QSize(1600, 900)));
+            QVERIFY2(resize(channel, QSize(1600, 900)), qPrintable(resizeFailure(channel)));
+            QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
             QVERIFY(server.canReleaseClientFullscreen());
             server.releaseClientFullscreen();
             bool receivedWindowCommand = false;
@@ -1374,7 +1412,8 @@ private slots:
             const int nextEntry=newEntry.serverPort(); newEntry.close();
             QVERIFY(server.setConnectionPort(nextEntry));
             // The existing authenticated display-control channel survives a port change.
-            QVERIFY(resize(channel, QSize(2560, 1440)));
+            QVERIFY2(resize(channel, QSize(2560, 1440)), qPrintable(resizeFailure(channel)));
+            QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
             QCOMPARE(resized.size(), 3); QVERIFY(host.running());
             QVERIFY(wakeLatency.elapsed() < 2000); // Must wake on work, not the 5 s heartbeat.
             // Geometry is opt-in. Legacy desktop leases must still receive a
@@ -1388,7 +1427,8 @@ private slots:
                 QCOMPARE(competing.topologyError(), QString("cancelled"));
             }
             QTRY_VERIFY(!server.busy());
-            QVERIFY(resize(channel, QSize(1600, 1000)));
+            QVERIFY2(resize(channel, QSize(1600, 1000)), qPrintable(resizeFailure(channel)));
+            QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
             QCOMPARE(resized.size(), 4);
             QVERIFY(!host.resizeDisplay(99999, 1000, 2, 99));
             QVERIFY(!host.resizeDisplay(1600, 1000, 9, 99));
@@ -1396,7 +1436,8 @@ private slots:
             // A real admitted client must consume unsolicited takeover before
             // its five-second heartbeat, even when the host closes immediately.
             AdaptiveDisplay incoming("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
-            QVERIFY(resize(incoming, QSize(1920,1080), true));
+            QVERIFY2(resize(incoming, QSize(1920,1080), true), qPrintable(resizeFailure(incoming)));
+            QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
             QTRY_VERIFY_WITH_TIMEOUT(channel.failed(), 1500);
             QVERIFY(channel.wasTakenOver());
             QVERIFY(!incoming.wasTakenOver());
@@ -1404,7 +1445,8 @@ private slots:
         // A released controller cannot prevent the next connection taking over.
         QTest::qWait(100);
         AdaptiveDisplay next("127.0.0.1", server.port(), QSslCertificate(bCert), aCert, credential("TEST_KEY_A"));
-        QVERIFY(resize(next, QSize(2560, 1440)));
+        QVERIFY2(resize(next, QSize(2560, 1440)), qPrintable(resizeFailure(next)));
+        QVERIFY2(progressCalls > 0, "Resize wait must keep the loading UI alive");
         int clientReplies = 0;
         for (const auto& reply : resized) if (reply[0].toInt() > 0) ++clientReplies;
         QCOMPARE(clientReplies, 6);
