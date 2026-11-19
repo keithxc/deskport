@@ -1,3 +1,8 @@
+#ifndef DP_DISABLE_LOCAL_INPUT_ALIASES
+#define DP_DISABLE_LOCAL_INPUT_ALIASES
+#endif
+#include "../../../shared/deskport-core/portable/include/deskport/input.h"
+
 #include "streaming/session.h"
 #include "streaming/canvasbridge.h"
 
@@ -218,7 +223,8 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
         // Hosts cannot all synthesize Meta from a packet flag. Explicit command
         // modifiers also preserve held chords until release/focus loss.
         const struct { int mask; short key; } commandMods[] = {
-            {KMOD_CTRL, 0xA2}, {KMOD_SHIFT, 0xA0}, {KMOD_ALT, 0xA4}, {KMOD_GUI, 0x5B}
+            {KMOD_CTRL, DP_VK_LCONTROL}, {KMOD_SHIFT, DP_VK_LSHIFT},
+            {KMOD_ALT, DP_VK_LMENU}, {KMOD_GUI, DP_VK_LWIN}
         };
         for (const auto& modifier : commandMods) {
             if ((event->keysym.mod & modifier.mask) && !m_KeysDown.contains(modifier.key)) {
@@ -245,6 +251,8 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
         }
     }
 
+    // Reuse matching portable WinVK constants only. Keep the full SDL mapping;
+    // the portable validity whitelist is narrower than desktop keyboard support.
     // Set keycode. We explicitly use scancode here because GFE will try to correct
     // for AZERTY layouts on the host but it depends on receiving VK_ values matching
     // a QWERTY layout to work.
@@ -268,53 +276,53 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     else {
         switch (event->keysym.scancode) {
             case SDL_SCANCODE_BACKSPACE:
-                keyCode = 0x08;
+                keyCode = DP_VK_BACK;
                 break;
             case SDL_SCANCODE_TAB:
-                keyCode = 0x09;
+                keyCode = DP_VK_TAB;
                 break;
             case SDL_SCANCODE_CLEAR:
                 keyCode = 0x0C;
                 break;
             case SDL_SCANCODE_KP_ENTER: // FIXME: Is this correct?
             case SDL_SCANCODE_RETURN:
-                keyCode = 0x0D;
+                keyCode = DP_VK_RETURN;
                 break;
             case SDL_SCANCODE_PAUSE:
-                keyCode = 0x13;
+                keyCode = DP_VK_PAUSE;
                 break;
             case SDL_SCANCODE_CAPSLOCK:
-                keyCode = 0x14;
+                keyCode = DP_VK_CAPITAL;
                 break;
             case SDL_SCANCODE_ESCAPE:
-                keyCode = 0x1B;
+                keyCode = DP_VK_ESCAPE;
                 break;
             case SDL_SCANCODE_SPACE:
-                keyCode = 0x20;
+                keyCode = DP_VK_SPACE;
                 break;
             case SDL_SCANCODE_PAGEUP:
-                keyCode = 0x21;
+                keyCode = DP_VK_PRIOR;
                 break;
             case SDL_SCANCODE_PAGEDOWN:
-                keyCode = 0x22;
+                keyCode = DP_VK_NEXT;
                 break;
             case SDL_SCANCODE_END:
-                keyCode = 0x23;
+                keyCode = DP_VK_END;
                 break;
             case SDL_SCANCODE_HOME:
-                keyCode = 0x24;
+                keyCode = DP_VK_HOME;
                 break;
             case SDL_SCANCODE_LEFT:
-                keyCode = 0x25;
+                keyCode = DP_VK_LEFT;
                 break;
             case SDL_SCANCODE_UP:
-                keyCode = 0x26;
+                keyCode = DP_VK_UP;
                 break;
             case SDL_SCANCODE_RIGHT:
-                keyCode = 0x27;
+                keyCode = DP_VK_RIGHT;
                 break;
             case SDL_SCANCODE_DOWN:
-                keyCode = 0x28;
+                keyCode = DP_VK_DOWN;
                 break;
             case SDL_SCANCODE_SELECT:
                 keyCode = 0x29;
@@ -323,13 +331,13 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
                 keyCode = 0x2B;
                 break;
             case SDL_SCANCODE_PRINTSCREEN:
-                keyCode = 0x2C;
+                keyCode = DP_VK_SNAPSHOT;
                 break;
             case SDL_SCANCODE_INSERT:
-                keyCode = 0x2D;
+                keyCode = DP_VK_INSERT;
                 break;
             case SDL_SCANCODE_DELETE:
-                keyCode = 0x2E;
+                keyCode = DP_VK_DELETE;
                 break;
             case SDL_SCANCODE_HELP:
                 keyCode = 0x2F;
@@ -361,43 +369,43 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
                 keyCode = 0x6F;
                 break;
             case SDL_SCANCODE_NUMLOCKCLEAR:
-                keyCode = 0x90;
+                keyCode = DP_VK_NUMLOCK;
                 break;
             case SDL_SCANCODE_SCROLLLOCK:
-                keyCode = 0x91;
+                keyCode = DP_VK_SCROLL;
                 break;
             case SDL_SCANCODE_LSHIFT:
-                keyCode = 0xA0;
+                keyCode = DP_VK_LSHIFT;
                 break;
             case SDL_SCANCODE_RSHIFT:
-                keyCode = 0xA1;
+                keyCode = DP_VK_RSHIFT;
                 break;
             case SDL_SCANCODE_LCTRL:
-                keyCode = 0xA2;
+                keyCode = DP_VK_LCONTROL;
                 break;
             case SDL_SCANCODE_RCTRL:
-                keyCode = 0xA3;
+                keyCode = DP_VK_RCONTROL;
                 break;
             case SDL_SCANCODE_LALT:
-                keyCode = 0xA4;
+                keyCode = DP_VK_LMENU;
                 break;
             case SDL_SCANCODE_RALT:
-                keyCode = 0xA5;
+                keyCode = DP_VK_RMENU;
                 break;
             case SDL_SCANCODE_LGUI:
                 if (!isSystemKeyCaptureActive()) {
                     return;
                 }
-                keyCode = 0x5B;
+                keyCode = DP_VK_LWIN;
                 break;
             case SDL_SCANCODE_RGUI:
                 if (!isSystemKeyCaptureActive()) {
                     return;
                 }
-                keyCode = 0x5C;
+                keyCode = DP_VK_RWIN;
                 break;
             case SDL_SCANCODE_APPLICATION:
-                keyCode = 0x5D;
+                keyCode = DP_VK_APPS;
                 break;
             case SDL_SCANCODE_AC_BACK:
                 keyCode = 0xA6;
@@ -421,40 +429,40 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
                 keyCode = 0xAC;
                 break;
             case SDL_SCANCODE_SEMICOLON:
-                keyCode = 0xBA;
+                keyCode = DP_VK_OEM_1;
                 break;
             case SDL_SCANCODE_EQUALS:
-                keyCode = 0xBB;
+                keyCode = DP_VK_OEM_PLUS;
                 break;
             case SDL_SCANCODE_COMMA:
-                keyCode = 0xBC;
+                keyCode = DP_VK_OEM_COMMA;
                 break;
             case SDL_SCANCODE_MINUS:
-                keyCode = 0xBD;
+                keyCode = DP_VK_OEM_MINUS;
                 break;
             case SDL_SCANCODE_PERIOD:
-                keyCode = 0xBE;
+                keyCode = DP_VK_OEM_PERIOD;
                 break;
             case SDL_SCANCODE_SLASH:
-                keyCode = 0xBF;
+                keyCode = DP_VK_OEM_2;
                 break;
             case SDL_SCANCODE_GRAVE:
-                keyCode = 0xC0;
+                keyCode = DP_VK_OEM_3;
                 break;
             case SDL_SCANCODE_LEFTBRACKET:
-                keyCode = 0xDB;
+                keyCode = DP_VK_OEM_4;
                 break;
             case SDL_SCANCODE_BACKSLASH:
-                keyCode = 0xDC;
+                keyCode = DP_VK_OEM_5;
                 break;
             case SDL_SCANCODE_RIGHTBRACKET:
-                keyCode = 0xDD;
+                keyCode = DP_VK_OEM_6;
                 break;
             case SDL_SCANCODE_APOSTROPHE:
-                keyCode = 0xDE;
+                keyCode = DP_VK_OEM_7;
                 break;
             case SDL_SCANCODE_NONUSBACKSLASH:
-                keyCode = 0xE2;
+                keyCode = DP_VK_OEM_102;
                 break;
             default:
                 SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,

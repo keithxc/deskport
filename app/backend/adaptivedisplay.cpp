@@ -1,8 +1,8 @@
 #include <QJsonArray>
-#include <cmath>
-#include <limits>
+#include <QVarLengthArray>
 #include "smalltcp.h"
 #include "../../shared/deskport-core/include/deskport/protocol.h"
+#include "../../shared/deskport-core/portable/include/deskport/session.h"
 #include "adaptivedisplay.h"
 #include "sessiongraph.h"
 #include <QUuid>
@@ -39,14 +39,16 @@ void AdaptiveDisplay::release() { QMutexLocker lock(&m_Mutex); m_Release = true;
 QSize AdaptiveDisplay::selectedSize(QSize requested) {
     QMutexLocker lock(&m_Mutex);
     if(m_Modes.isEmpty() || m_Modes.contains(requested))return requested;
-    QSize best; double score=std::numeric_limits<double>::infinity();
+    // Preserve advertised order for equal scores, and keep conversion/selection
+    // inside the same lock as the empty-list and exact-match fast paths.
+    QVarLengthArray<DPWorkspace, 96> modes;
+    modes.reserve(m_Modes.size());
     for(const auto mode:m_Modes) {
-        const double x=std::log(double(mode.width())/requested.width());
-        const double y=std::log(double(mode.height())/requested.height());
-        const double candidate=x*x+y*y+4*(x-y)*(x-y);
-        if(candidate<score){score=candidate;best=mode;}
+        modes.append(DPWorkspace{mode.width(), mode.height(), 1});
     }
-    return best;
+    const auto best = dp_desktop_workspace_select_mode(
+        {requested.width(), requested.height(), 1}, modes.constData(), modes.size());
+    return best.width > 0 && best.height > 0 ? QSize(best.width, best.height) : QSize();
 }
 int AdaptiveDisplay::selectedScale(int requested) { QMutexLocker lock(&m_Mutex); return m_Modes.isEmpty()?requested:1; }
 QSize AdaptiveDisplay::negotiatedSize() { QMutexLocker lock(&m_Mutex); return m_NegotiatedSize; }
@@ -251,8 +253,10 @@ void AdaptiveDisplay::run() {
             if (windowSupported) { request["clientWindow"] = DP_CLIENT_WINDOW_VERSION; request["clientFullScreen"] = fullScreen; }
             send(request);
             auto reply = receive();
-            connected = reply.value("type").toString() == DP_MESSAGE_DISPLAY_RESULT && reply.value("seq").toInt() == sequence &&
-                reply.value("width").toInt() == size.width() && reply.value("height").toInt() == size.height() && !reply.contains("error");
+            connected = reply.value("type").toString() == DP_MESSAGE_DISPLAY_RESULT &&
+                dp_display_result_valid(sequence, reply.value("seq").toInt(),
+                    {size.width(), size.height(), scale}, reply.value("width").toInt(),
+                    reply.value("height").toInt(), reply.contains("error"));
             // Older hosts combine invalid-size and busy refusals in this exact
             // reply. Our size and policy have already been validated. Retry that
             // refusal only; helper failures, policy errors and malformed replies
@@ -296,8 +300,9 @@ void AdaptiveDisplay::run() {
             send({{"type", DP_MESSAGE_VIDEO_STATE}, {"seq", ++videoSequence}, {"paused", desired}});
             const auto reply = receive(12000);
             connected = reply["type"].toString() == DP_MESSAGE_VIDEO_RESULT &&
-                reply["seq"].toInt() == videoSequence && reply["paused"].isBool() &&
-                reply["paused"].toBool() == desired && !reply.contains("error");
+                reply["paused"].isBool() &&
+                dp_pause_result_valid(videoSequence, reply["seq"].toInt(), desired,
+                                      reply["paused"].toBool(), reply.contains("error"));
             if (connected) { videoPaused = desired; videoStateUnknown = false; }
             // A lost acknowledgment leaves remote state uncertain. End control
             // rather than silently treating a paused server as a running one.
@@ -315,9 +320,10 @@ void AdaptiveDisplay::run() {
             const auto reply = receive(12000);
             // Hosts predating the saver field omit its echo; that is still applied.
             connected = reply["type"].toString() == DP_MESSAGE_VIDEO_RATE_RESULT &&
-                reply["seq"].toInt() == rateSequence && reply["ceilingKbps"].toInt() == desired &&
-                reply["live"].isBool() && !reply.contains("error") &&
-                (!reply.contains("saver") || reply["saver"] == saver);
+                reply["live"].isBool() && (!reply.contains("saver") || reply["saver"] == saver) &&
+                dp_rate_result(rateSequence, reply["seq"].toInt(), desired,
+                    reply["ceilingKbps"].toInt(), reply["live"].toBool(),
+                    reply.contains("error")) != DP_RATE_ACK_TERMINATE;
             if (connected) {
                 rateSent = desired; rateSaverSent = saver; rateGenerationSent = generation;
                 if (!reply["live"].toBool()) {

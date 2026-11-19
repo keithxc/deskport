@@ -1,3 +1,11 @@
+## Desktop portable compatibility — 2026-11-19
+
+Use the portable core's desktop workspace and stream arithmetic and its parsed
+acknowledgment predicates. Preserve the existing desktop drawable floor, mode
+ranking, 8 fps saver bitrate, older-host recovery paths and SDL input behavior.
+The differential test compares the new production code against the pinned
+pre-migration Git sources. See [shared core](SHARED_CORE.md#desktop-portable-compatibility--2026-11-19).
+
 ## macOS streaming session shutdown — 2026-11-17
 
 - [x] Fence video and audio senders before retiring a session, discard only that session's pending packets, and join the final broadcast owner while session resources remain alive.

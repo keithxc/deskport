@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
-#include <algorithm>
+#ifndef DP_DISABLE_LOCAL_INPUT_ALIASES
+#define DP_DISABLE_LOCAL_INPUT_ALIASES
+#endif
+#include "../../shared/deskport-core/portable/include/deskport/stream_budget.h"
 #include <cstdint>
+#include <limits>
 #include <map>
 #include <string>
 
@@ -15,9 +19,12 @@ public:
         rollover(today);
         if (total < 0) return 0;
         const auto previous = last.find(session);
-        const std::int64_t delta = previous == last.end() || total < previous->second ? total : total - previous->second;
+        const std::int64_t delta = static_cast<std::int64_t>(dp_bytes_delta(
+            previous == last.end() ? 0 : static_cast<std::uint64_t>(previous->second),
+            static_cast<std::uint64_t>(total), previous != last.end()));
         last[session] = total;
-        used += delta;
+        const auto maximum = std::numeric_limits<std::int64_t>::max();
+        used = used > maximum - delta ? maximum : used + delta;
         return delta;
     }
     void rollover(const std::string& today) {
@@ -31,13 +38,14 @@ private:
     std::map<std::string, std::int64_t> last;
 };
 
-enum class Level { Normal = 0, Warning = 1, Critical = 2, Exceeded = 3 };
+enum class Level {
+    Normal = DP_BUDGET_NORMAL, Warning = DP_BUDGET_WARNING,
+    Critical = DP_BUDGET_CRITICAL, Exceeded = DP_BUDGET_EXCEEDED
+};
 // Yellow from 70%, red from 85%, exceeded at 100% of a positive daily limit.
 inline Level level(std::int64_t used, std::int64_t limit) {
     if (limit <= 0 || used < 0) return Level::Normal;
-    if (used >= limit) return Level::Exceeded;
-    if (used * 100 >= limit * 85) return Level::Critical;
-    if (used * 100 >= limit * 70) return Level::Warning;
-    return Level::Normal;
+    return static_cast<Level>(dp_budget_level(static_cast<std::uint64_t>(used),
+                                             static_cast<std::uint64_t>(limit)));
 }
 }

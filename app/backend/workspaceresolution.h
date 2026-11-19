@@ -1,12 +1,12 @@
 #pragma once
 #include <QSize>
-#include "../../shared/deskport-core/include/deskport/workspace.h"
+#include "../../shared/deskport-core/portable/include/deskport/desktop_workspace.h"
 #include <QtGlobal>
 #include <cmath>
 
 namespace DeskPortDisplay {
-constexpr int MaxWidth = DP_WORKSPACE_MAX_WIDTH;
-constexpr int MaxHeight = DP_WORKSPACE_MAX_HEIGHT;
+constexpr int MaxWidth = DP_WIDTH_MAX;
+constexpr int MaxHeight = DP_HEIGHT_MAX;
 struct Workspace {
     QSize pixels;
     int scale = 1;
@@ -27,18 +27,18 @@ inline double scaleForOutput(QSize pixels, QSize logical, double fallback) {
 // undersampling text. The size cap remains the explicit exception.
 inline Workspace forClient(QSize drawablePixels, double clientScale) {
     if (drawablePixels.isEmpty() || !std::isfinite(clientScale) || clientScale < 0.5 || clientScale > 8.0) return {};
-    const auto size = dp_workspace_from_pixels(drawablePixels.width(), drawablePixels.height(), clientScale);
+    const auto size = dp_desktop_workspace_from_pixels(drawablePixels.width(), drawablePixels.height(), clientScale);
     return {QSize(size.width, size.height), size.scale};
 }
 // Data saver streams the same logical desktop at a 1x backing store.
 inline Workspace forDataSaver(Workspace workspace) {
-    const auto size = dp_workspace_for_saver({workspace.pixels.width(), workspace.pixels.height(), workspace.scale});
+    const auto size = dp_desktop_workspace_for_saver({workspace.pixels.width(), workspace.pixels.height(), workspace.scale});
     return {QSize(size.width, size.height), size.scale};
 }
 inline Workspace adjusted(Workspace workspace, double factor) {
     const DPWorkspace base{workspace.pixels.width(), workspace.pixels.height(), workspace.scale};
-    const auto tuned = dp_workspace_adjust(base, factor);
-    const auto result = dp_workspace_for_host(tuned);
+    const auto tuned = dp_desktop_workspace_adjust(base, factor);
+    const auto result = dp_desktop_workspace_for_host(tuned);
     const bool limited = factor > 1.0 && result.width > tuned.width;
     return {QSize(result.width, result.height), result.scale, limited};
 }

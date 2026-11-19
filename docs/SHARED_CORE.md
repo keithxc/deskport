@@ -1,3 +1,13 @@
+## Desktop portable compatibility — 2026-11-19
+
+The desktop adapter uses the portable desktop workspace and stream arithmetic
+in core `49c13048b9e91b8638335a87d20cf9c545039b6d`. The desktop path preserves the
+drawable minimum, staged pixel rounding, advertised-mode scoring and 8 fps
+saver bitrate. The viewer uses portable predicates for resize, pause and rate
+acknowledgments after Qt parsing. Admission, recovery, key mapping and transport
+remain adapter-owned. Run `python3 tests/test-desktop-portable-parity.py` with
+the baseline desktop and core Git objects present to compare the two revisions.
+
 ## Browser recovery messages and integrated core — 2026-11-18
 
 Core `44f228995f23435d2aa93b661d2f105d3664b338` consolidates the existing keyboard guidance and portable

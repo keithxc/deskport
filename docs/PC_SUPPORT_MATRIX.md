@@ -1,15 +1,8 @@
 # PC implementation and acceptance matrix
 
-Reviewed 2026-11-18 from integration base `37fabe160dcafcb5f2f35fe9560b8ee4a9df3b5b` and pinned core
-`44f228995f23435d2aa93b661d2f105d3664b338`. This is a source snapshot, not an installed version.
-The development branches are being consolidated with their scoped acceptance records.
-Historical package and hardware results below retain their exact source identities;
-this review does not advance their acceptance to the integrated candidate.
-
-The core update reconciles the keyboard guidance and portable sizing contracts,
-and adds four browser playback recovery messages in all 22 UI languages.
-The public wire contracts are unchanged. Translation drafts still need native-speaker review.
-See the [shared core notes](SHARED_CORE.md#browser-recovery-messages-and-integrated-core--2026-11-18).
+Reviewed 2026-11-19 from desktop base `e96192d0e5aebd85b0d24dbd5f61e62c95d522cd` and pinned core
+`49c13048b9e91b8638335a87d20cf9c545039b6d`. This source review covers the desktop portable adapters.
+Historical package and hardware results retain the exact source identities below.
 
 ## Reading the matrix
 
