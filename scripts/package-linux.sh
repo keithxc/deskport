@@ -26,21 +26,25 @@ mkdir -p "$work"
 work=$(cd "$work" && pwd)
 mounts=(-v "$repo:/src:ro" -v "$work:/work")
 if [ -n "${DESKPORT_RUN_ID:-}" ]; then
-    mkdir -p "$DESKPORT_DEPENDENCY_CACHE_DIR" "$DESKPORT_DIST_DIR"
+    dist=$(deskport_output_path "$DESKPORT_DIST_DIR")
+    mkdir -p "$DESKPORT_DEPENDENCY_CACHE_DIR" "$dist"
     cache=$(cd "$DESKPORT_DEPENDENCY_CACHE_DIR" && pwd -P)
-    dist=$(cd "$DESKPORT_DIST_DIR" && pwd -P)
     # Preserve the container's established /work/cache and /work/output API.
-    # Refuse an older cache or an unexpected link instead of moving its data.
+    # Rootless Podman needs plain, empty destinations for these nested mounts.
+    # Refuse legacy data and links instead of moving or hiding their contents.
     for entry in cache output; do
-        if [ "$entry" = cache ]; then destination=$cache; else destination=$dist; fi
         if [ -L "$work/$entry" ]; then
-            [ "$(readlink "$work/$entry")" = "$destination" ] || {
-                echo "Unexpected $entry link in managed run: $work/$entry" >&2; exit 2;
-            }
+            echo "Refusing managed-run $entry symlink: $work/$entry" >&2; exit 2
         elif [ -e "$work/$entry" ]; then
-            echo "Refusing to replace existing managed-run $entry: $work/$entry" >&2; exit 2
+            [ -d "$work/$entry" ] || {
+                echo "Refusing existing managed-run $entry: $work/$entry" >&2; exit 2;
+            }
+            contents=$(find "$work/$entry" -mindepth 1 -maxdepth 1 -print -quit)
+            [ -z "$contents" ] || {
+                echo "Refusing nonempty managed-run $entry: $work/$entry" >&2; exit 2;
+            }
         else
-            ln -s "$destination" "$work/$entry"
+            mkdir "$work/$entry"
         fi
     done
     # Dependency helpers update extracted sources and ABI-specific prefixes.
@@ -51,7 +55,7 @@ if [ -n "${DESKPORT_RUN_ID:-}" ]; then
     }
     printf '%s\n' "$$" > "$cache_lock/pid"
     trap 'rm -f "$cache_lock/pid"; rmdir "$cache_lock"' EXIT
-    mounts+=(-v "$cache:$cache" -v "$dist:$dist")
+    mounts+=(-v "$cache:/work/cache" -v "$dist:/work/output")
 fi
 podman run \
     "${resources[@]}" \

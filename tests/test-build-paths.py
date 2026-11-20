@@ -121,10 +121,11 @@ class BuildPathsTests(unittest.TestCase):
     def test_portable_shared_cache_and_dist_mounts(self):
         completed, work = self.portable()
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertEqual((work / 'cache').resolve(), self.directory / 'dependencies')
-        self.assertEqual((work / 'output').resolve(), work.parent / 'dist')
-        arguments = (self.directory / 'podman-args').read_text()
-        self.assertIn(str(self.directory / 'dependencies'), arguments)
+        self.assertFalse((work / 'cache').is_symlink())
+        self.assertFalse((work / 'output').is_symlink())
+        arguments = (self.directory / 'podman-args').read_text().splitlines()
+        self.assertIn(f'{self.directory}/dependencies:/work/cache', arguments)
+        self.assertIn(f'{work.parent}/dist:/work/output', arguments)
         self.assertFalse((self.directory / 'dependencies/.deskport-build.lock').exists())
         # The same managed layout is reusable, including after a failed command.
         completed, _ = self.portable(result=19)
@@ -148,7 +149,7 @@ class BuildPathsTests(unittest.TestCase):
     def test_portable_rejects_wrong_cache_link(self):
         completed, work = self.portable()
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        (work / 'cache').unlink()
+        (work / 'cache').rmdir()
         (work / 'cache').symlink_to(self.directory / 'unexpected')
         completed, _ = self.portable()
         self.assertEqual(completed.returncode, 2)
