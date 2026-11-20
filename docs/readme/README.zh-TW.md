@@ -4,11 +4,6 @@
 
 <h1 align="center">DeskPort</h1>
 
-> **Current desktop release: [0.7.4 (r2)](https://github.com/keithxc/deskport/releases/tag/v0.7.4).**
-> The translated package examples and verification history below still describe
-> 0.7.3. Use the [current installation guide](../../README.md#install) and
-> [0.7.4 release notes](../releases/RELEASE_0.7.4.md) for the replacement downloads.
-
 <p align="center">
   <a href="../../README.md">English</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -34,14 +29,18 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
+> **[2.9.0 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+>
+> 請以 DeskPort 用戶端與 DeskPort 主機配對。DeskPort 裝置綁定不相容於主機端的原版 Sunshine 或用戶端的原版 Moonlight。完整桌面主機套件內建為 DeskPort 調整過的 Sunshine 主機。
+
 <p align="center">
-  以 Moonlight 與 Sunshine 為基礎的遠端桌面工作區。<br>
+  擁有自有客戶端與主機端的獨立遠端桌面工作區。<br>
   讓遠端桌面常駐背景，一個動作就把它叫到目前的工作區，
   收起時也不必重新連線。
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="授權條款" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -79,16 +78,18 @@
 
 ## 支援的平台
 
-下方為 0.7.3 正式版連結。套件檢查與執行時驗證各有範圍，結果及未驗證項目請見[驗證報告](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)。
+2.9.0 的確切 macOS 套件已通過 Developer ID、Apple 公證與 ZIP 解壓後的 Gatekeeper 檢查。Windows 已驗證 Setup 升級、啟動、服務/serverinfo 與 Defender 掃描。Linux 驗證涵蓋套件、虛擬機、容器與啟動。這些結果不代表已完整驗收實體硬體的串流、輸入、顯示器切換、HDR 或剪貼簿。
+
+[VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) · [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt) · [PC_SUPPORT_MATRIX](../PC_SUPPORT_MATRIX.md)
 
 | 平台 | 角色 | 發布狀態 | 下載 |
 | --- | --- | --- | --- |
-| macOS Apple Silicon，macOS 26+ | 檢視端 + 主機端 + 原生虛擬顯示器 | **0.7.3 正式版**；Developer ID 簽署、Apple 公證與 ZIP 解壓後的 Gatekeeper 檢查通過 | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) |
-| Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **0.7.3 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [安裝指南](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | 僅檢視端 | **0.7.3 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
+| macOS Apple Silicon，macOS 26+ | 檢視端 + 主機端 + 原生虛擬顯示器 | **2.9.0 正式版**；Developer ID 簽署、Apple 公證與 ZIP 解壓後的 Gatekeeper 檢查通過 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [安裝指南](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | 僅檢視端 | **2.9.0 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad，iOS/iPadOS 15+ | 僅用戶端 | 已在 App Store 上架；較新的版本另於 TestFlight 測試 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | 僅用戶端 | **2.7（組建 63）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **0.7.3 正式版**；安裝程式包含主機，可攜式 ZIP 僅為檢視端；未安裝狀態的套件與 CLI 驗證通過；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
+| Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **2.9.0 正式版**；Setup 包含主機端，可攜式 ZIP 僅供檢視；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未經驗證 | 沒有經過驗證的發布套件 | — |
 
 > **Windows 防毒軟體提醒：** 防毒軟體有可能將 DeskPort 的 Windows 輔助元件誤判為威脅。
@@ -104,13 +105,13 @@ AppImage 與可攜版會在開始分享時自動註冊目前顯示輔助程式�
 
 ## 安裝
 
-**macOS：** 開啟[DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg)，
+**macOS：** 開啟[DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg)，
 把 DeskPort 拖進「應用程式」後開啟。若要使用主機端功能，請授予「螢幕錄製」與
 「輔助使用」權限。不需要 Nix 或 Homebrew。
 
-**Linux：** 選擇適合你系統的 [0.7.3 套件](https://github.com/keithxc/deskport/releases/tag/v0.7.3)，
-並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run github:keithxc/deskport/v0.7.3`。
-Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)。
+**Linux：** 選擇適合你系統的 [2.9.0 套件](https://github.com/keithxc/deskport/releases/tag/v2.9.0)，
+並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run --refresh github:keithxc/deskport/v2.9.0`。
+Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)。
 
 **Android 2.7（組建 63）** · ~~$4.99~~ · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
 
@@ -120,13 +121,18 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 行動 App 為一次性付費購買，實際價格請以你所在地區的商店為準。
 桌面版永遠免費並維持開源。你的購買會用於程式碼簽署、測試硬體與後續開發。
 
-在主機上開始分享，在用戶端選擇該主機，然後在主機上核准這台裝置。兩台裝置之間的網路必須互通：
-使用區域網路或你自己的 VPN（例如 Tailscale）。DeskPort 不提供帳號服務、代管桌面、中繼
-或網路通道。傳統的 Sunshine PIN 配對仍然可用。
+在 DeskPort 主機端開始分享，於 DeskPort 客戶端選取主機，再於主機端核准裝置。請使用區域網路或 Tailscale 等自備 VPN；DeskPort 不提供帳號服務、代管桌面、轉送服務或網路通道。新增的手動位址預設使用連接埠 `48989`；若不同，請填入主機分享頁面顯示的連接埠。
+
+歷史紀錄：[0.7.3](../releases/RELEASE_0.7.3.md) 的變更與驗證範圍，以及 [0.7.4](../releases/RELEASE_0.7.4.md) 的替換紀錄，保留於原始版本說明；這些不是 2.9.0 的驗收結果。
+
+<details>
+<summary>0.7.3</summary>
 
 **0.7.3 正式版：** 本次整合了 22 種語言的共用介面目錄與瀏覽器語言切換、Windows 已登入工作階段的分享與虛擬顯示器 DPI、Linux 執行環境與 Wayland 剪貼簿、受保護的 Hyprland/X11 工作區、可選的本機輸入法，以及正方形裝置卡片的改進。 變更與驗證範圍請見 [0.7.3 版本說明](../releases/RELEASE_0.7.3.md)。
 
 **0.7.3 驗證範圍：** Windows 最終套件內容一致性、PE、原生 CLI 檢查通過，Defender 掃描零檢出；未進行安裝、GUI 連線或串流驗收。最終 AppImage 通過 Bazzite 虛擬機中的正常 FUSE 與軟體 GPU 檢查。Ubuntu 26.04 虛擬機重現了 0.7.2 DEB 的 VA 當機，並確認最終 0.7.3 DEB 已修正且升級通過。回復舊版重現了原有當機，隨後解除安裝仍保留了合成測試設定。GNOME 擷取與恢復仍未通過驗收。容器、Flatpak 結果及其他限制請見[驗證報告](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)；這些結果不代表完整的實體硬體驗收。
+
+</details>
 
 **歷史版本：0.7.2 穩定版：** [桌面版本](https://github.com/keithxc/deskport/releases/tag/v0.7.2)整合了調整大小、遠端串流、省流量與 Linux 執行環境方面的改進，並修正了 Bazzite/KDE Wayland 上的 AppImage 問題。詳見 [0.7.2 版本說明](../releases/RELEASE_0.7.2.md)；各 Linux 發行版的安裝步驟請見[英文 README](../../README.md#linux-installation-by-distribution)。
 
@@ -137,10 +143,12 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 
 ### Linux 軟體庫狀態
 
+安裝或升級 2.9.0，請依照 [Linux 指南](../LINUX_PACKAGES.md)及[英文 README 的各發行版步驟](../../README.md#linux-installation-by-distribution)。升級前請完全結束舊版應用程式，並以 [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) 核對套件。Flatpak 僅供檢視。
+
 | 管道 | 狀態 | 安裝方式 |
 | --- | --- | --- |
-| GitHub 發布套件 | 0.7.3 正式版 | 在上方下載適合你發行版的套件 |
-| 上游 Nix flake | 0.7.3 正式版 | `nix run github:keithxc/deskport/v0.7.3` |
+| GitHub 發布套件 | 2.9.0 正式版 | 在上方下載適合你發行版的套件 |
+| 上游 Nix flake | 2.9.0 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | 配方已測試；因 AUR 暫停新帳號註冊而無法發布 | [在本機建置配方](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | 已提交 [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) 等待審查；尚未合併 | 合併前請使用上游 flake |
 | Arch 官方軟體庫 / Flathub | 未收錄 | 請從發布頁面下載；Flatpak 僅為檢視端 |
@@ -174,7 +182,7 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 DeskPort 目前的平台限制列於上方；此表並不表示各作業系統的功能完全相同，
 也不代表經過量測的效能優勢。
 
-請參閱 [0.7.3 版本說明](../releases/RELEASE_0.7.3.md)、
+請參閱 [2.9.0 版本說明](../releases/RELEASE_2.9.0.md)、
 [架構說明](../ARCHITECTURE.md)與[開發藍圖](../ROADMAP.md)。
 
 ## 在 Linux 上建置與執行
@@ -193,10 +201,7 @@ nix build
 SSH 設定、本機主機管理、VPS 先決條件以及 Omarchy/Hyprland 請參閱
 [命令列指南](../CLI.md)。`deskport doctor` 會檢查主機運作的先決條件；
 `deskport status --json` 不必開啟視窗就能查看執行中的實例。
-`nix run . -- --help` 會列出命令列介面。連線前請先在主機上開始分享並綁定裝置。傳統的
-Sunshine PIN 配對同樣可用。本專案不包含、也不會從 Moonlight 匯入任何個人主機或配對憑證。
-新增的手動位址預設使用 DeskPort 的連接埠 `48989`。若不同，請輸入主機分享頁面上顯示的連接埠；
-若要明確連線到預設的獨立 Sunshine 安裝，可使用 `host:47989`。已儲存或探索到的端點會保留各自的連接埠。
+`nix run . -- --help`
 
 可編輯的原生建置：
 

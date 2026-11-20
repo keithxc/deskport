@@ -30,13 +30,17 @@
 </p>
 
 <p align="center">
-  基于 Moonlight 与 Sunshine 的远程桌面工作区。<br>
+  拥有独立客户端与主机端的远程桌面工作区。<br>
   让远程桌面常驻后台，一个动作把它带到当前工作区，
   收起时也无需重新连接。
 </p>
 
+> **请用 DeskPort 客户端与 DeskPort 主机配对。** 在 DeskPort 设备绑定中，
+> 客户端不兼容原版 Sunshine，主机不兼容原版 Moonlight。
+> 完整桌面主机包内置 DeskPort 适配过的 Sunshine 主机。
+
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.8"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-0.7.8-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="许可证" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -46,13 +50,14 @@
 
 ## 主要功能
 
-**0.7.8 正式版：** [发行说明](../releases/RELEASE_0.7.8.md)与
-[各版本下载](https://github.com/keithxc/deskport/releases/tag/v0.7.8)。
-本版加入面向办公的省流策略、有序备用地址，以及适用于所有主机系统的共享桌面下限。
-macOS 桌面输入改由独立主机进程处理。安装包检查及实测范围见发布附带的验证记录。
+**2.9.0 桌面稳定版：** [发行说明](../releases/RELEASE_2.9.0.md)与
+[指定版本下载](https://github.com/keithxc/deskport/releases/tag/v2.9.0)。
+桌面版从 0.7.x 直接调整为 2.9.0，以统一 iOS、Android 与桌面端的版本编号。
+本版整合会话与输入生命周期修复、浏览器播放恢复、编解码资格检查及共享桌面策略。
+安装包检查与实际验收范围见发布附带的验证记录。
 
-- **一个桌面应用，既能查看也能共享。** 内置 Sunshine、设备授权、独立凭据与设置；
-  macOS、Windows 与 Linux 主机安装包无需另装 Sunshine（仅查看端的 Flatpak 除外）。
+- **一个桌面应用，既能查看也能共享。** DeskPort 主机内含经过适配与修补的 Sunshine 代码，
+  提供设备授权、独立凭据与设置。macOS、Windows 与 Linux 主机包内置该主机；Flatpak 仅提供查看功能。
 - **工作区跟随你的客户端。** 在兼容的 macOS 与 KDE 主机上自适应尺寸，支持 HiDPI、
   移动端横竖屏布局与每设备尺寸设置。调整尺寸时视频会短暂重连，并非无缝的编码器切换。
 - **选择主机的显示策略。** 虚拟主屏并镜像其他屏幕、虚拟主屏并关闭其他屏幕，或在符合条件的
@@ -64,14 +69,14 @@ macOS 桌面输入改由独立主机进程处理。安装包检查及实测范�
   支持卡片、置顶、主题和多语言界面。
 - **按需共享桌面剪贴板。** 文本即时更新；在已绑定且启用该选项的桌面设备之间，
   受支持的图片与文件按需获取。见[剪贴板范围与限制](../CLIPBOARD.md)。
-- **原生移动端控制。** iPhone/iPad 与Android 客户端提供触控/触控板输入、
+- **原生移动端控制。** iPhone/iPad 与 Android 客户端提供触控/触控板输入、
   键盘控制，并可直接进入远程桌面。
 - **可选的登录启动与 macOS 恢复。** 需要处于活动的图形登录会话并获得系统授权；
   它们不会解锁 FileVault，也不会替你登录。
 
 ## 界面预览
 
-DeskPort **0.7.6** 在 macOS 上运行，2026-10-27 使用简体中文界面截取。点击可查看大图。
+历史界面预览：DeskPort **0.7.6** 在 macOS 上运行，2026-10-27 使用简体中文界面截取。点击可查看大图。
 
 [![macOS 上的 DeskPort 0.7.6 设备列表](../media/devices-macos-076.jpg)](../media/devices-macos-076.jpg)
 
@@ -87,20 +92,29 @@ macOS 客户端连接到一台 Windows 11 专业版测试机，显示 Windows「
 
 当前源码与已安装包的范围、合成器能力、历史验证记录及剩余的原生检查，见
 [PC 端实现与验收矩阵](../PC_SUPPORT_MATRIX.md)。下表的发布状态并不代表每项功能在所有 GPU
-或系统会话上都经过认证。0.7.8 的验证报告记录了确切的安装包标识与验证范围。
+或系统会话上都经过认证。2.9.0 的验证报告记录了确切的安装包标识与验证范围。
 
 | 平台 | 角色 | 发布状态 | 下载 |
 | --- | --- | --- | --- |
-| macOS Apple Silicon，macOS 26+ | 查看端 + 主机端 + 原生虚拟显示器 | **0.7.8**；Developer ID 签名与 Apple 公证 | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-macos-arm64.dmg) |
-| Linux x86_64 | 查看端 + 主机端；符合条件的 KWin、Mutter 和 Hyprland 主机支持自适应工作区 | **0.7.8**：DEB、RPM、Arch、AppImage、便携包与 Nix | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) · [安装指南](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | 仅查看端 | **0.7.8**，Freedesktop Platform 25.08 | [发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8) |
+| macOS Apple Silicon，macOS 26+ | 查看端 + 主机端 + 原生虚拟显示器 | **2.9.0**；Developer ID 签名与 Apple 公证 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | 查看端 + 主机端；符合条件的 KWin、Mutter 和 Hyprland 主机支持自适应工作区 | **2.9.0**：DEB、RPM、Arch、AppImage、便携包与 Nix | [发布页](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [安装指南](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | 仅查看端 | **2.9.0**，Freedesktop Platform 25.08 | [发布页](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad，iOS/iPadOS 15+ | 仅客户端 | 已上架 App Store；较新的版本另在 TestFlight 测试 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | 仅客户端 | **2.7（构建 63）** · Google Play 封闭测试尚未完成 | [下载 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | 查看端 + 主机端 + 虚拟显示器 | **0.7.8**；完整安装包提供主机功能，便携 ZIP 仅为查看端；应用与安装器未签名 | [安装包](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-windows-x64-setup-full.exe) |
+| Windows x64 | 查看端 + 主机端 + 虚拟显示器 | **2.9.0**；完整安装包提供主机功能，便携 ZIP 仅为查看端；应用与安装器未签名 | [安装包](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [便携查看端](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未验证 | 没有经过验证的发布包 | — |
 
+**2.9.0 安装包验证：** 确切的 macOS 产物通过 Developer ID 签名、Apple 公证，
+以及 ZIP 解压后的 Gatekeeper 检查。原生 Windows 检查覆盖确切的 Setup 升级、启动、服务、
+`serverinfo` 与 Defender 扫描；应用和安装器仍未签名，便携 ZIP 仅为查看端。
+Linux 记录覆盖安装包、虚拟机、容器与启动检查；Flatpak 仅为查看端。
+这些检查不代表已完成实体设备串流、输入、显示切换、HDR、剪贴板或所有硬件组合的验收。
+确切范围见 [VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)
+与 [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)；
+历史结果保留各自原有的版本与源码身份。
+
 > **Windows 杀毒软件提示：** 杀毒软件有可能将 DeskPort 的 Windows 辅助组件误报为威胁。
-> 我们自测时未遇到这种情况。请保持 Defender 开启；如果出现警告，
+> 请保持 Defender 开启；如果出现警告，
 > 请查看发布附带的验证报告和[样本记录](../WINDOWS_DEVELOPMENT.md#windows-antivirus-notice)。
 
 原生 Linux 包需要 glibc 2.39+：Ubuntu 24.04+/Debian 13+、Fedora 44、
@@ -112,19 +126,20 @@ AppImage 与便携版会在开始共享时自动注册当前显示助手的路�
 
 ## 安装
 
-**0.7.8：** 从 [0.7.8 发布页](https://github.com/keithxc/deskport/releases/tag/v0.7.8)
+**2.9.0：** 从 [2.9.0 发布页](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
 下载适合你平台的安装包。设备列表、连接控制与远程桌面共用一个常驻窗口。
-在「设置」中配置全局唤回快捷键。安装包检查及其范围见[发行说明](../releases/RELEASE_0.7.8.md)。
+在「设置」中配置全局唤回快捷键。安装包检查及其范围见[发行说明](../releases/RELEASE_2.9.0.md)。
 
-**macOS：** 打开 [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-macos-arm64.dmg)，
+**macOS：** 打开 [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg)，
 把 DeskPort 拖入「应用程序」后打开。如需使用主机端功能，请授予「屏幕录制」和
 「辅助功能」权限。无需 Nix 或 Homebrew。
 
-**Linux：** 选择适合你系统的 [0.7.8 安装包](https://github.com/keithxc/deskport/releases/tag/v0.7.8)，
+**Linux：** 选择适合你系统的 [2.9.0 安装包](https://github.com/keithxc/deskport/releases/tag/v2.9.0)，
 按照[下方各发行版的步骤](#各发行版的-linux-安装)操作，并完成
 [主机输入的前提设置](../LINUX_PACKAGES.md#first-connection-and-hosting)。
-使用 Nix：`nix run --refresh github:keithxc/deskport/v0.7.8`。
-Flatpak 仅提供查看功能。发布文件附有 [SHA-256 校验和](https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt)、[验证报告](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION.txt)与 [Linux 安装包验证记录](https://github.com/keithxc/deskport/releases/download/v0.7.8/VERIFICATION-linux.txt)。
+使用 Nix：`nix run --refresh github:keithxc/deskport/v2.9.0`。
+[便携 tar 包](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-linux-x86_64.tar.gz)
+同样需要 glibc 2.39+。Flatpak 仅提供查看功能。安装前请核对发布的 [SHA-256 校验和](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)、[验证报告](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)与 [Linux 安装包验证记录](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)。
 
 **Android 2.7（构建 63）** · ~~$4.99~~ · Google Play 正式上架所需的封闭测试尚未完成，目前可从 GitHub 临时下载 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。移动客户端不开源，这里仅提供安装包。
 
@@ -134,37 +149,44 @@ Flatpak 仅提供查看功能。发布文件附有 [SHA-256 校验和](https://g
 移动应用为一次性付费购买，当地价格以你所在地区的商店为准。
 桌面版始终免费并保持开源。你的购买会用于代码签名、测试设备和后续开发。
 
-在主机上开始共享，在客户端上选择该主机，然后在主机上批准该设备。两台设备之间需要网络可达：
-使用局域网或你自己的 VPN（如 Tailscale）。DeskPort 不提供账号服务、托管桌面、中继
-或网络隧道。旧版 Sunshine PIN 配对仍然可用。
+### 连接设备
 
-**浏览器访问：** 桌面主机提供 HTTPS 远程桌面，支持 30 秒登录码、可选的七天浏览器配对、
-自适应尺寸和全屏。见 [0.7.1 发行说明](../releases/RELEASE_0.7.1.md)与
-[浏览器使用指南](../BROWSER_ACCESS.md)。AppImage 内含私有的 glibc 运行时；
-原生包仍需要 glibc 2.39。
+在 **DeskPort 主机**上开始共享，在 **DeskPort 客户端**上选择该主机，然后在主机上批准该设备。
+桌面版另外保留旧式 PIN 入口。两台设备需要通过局域网或自己的 VPN（如 Tailscale）互通。
+DeskPort 不提供账号服务、托管桌面、中继
+或网络隧道。
 
-更早版本（0.7.3、0.7.2 及其候选版）的变更与验证范围，见各自的发行说明：
-[0.7.3](../releases/RELEASE_0.7.3.md)、[0.7.2](../releases/RELEASE_0.7.2.md)、
-[0.7.2-rc.1](../releases/RELEASE_0.7.2-rc.1.md)、[0.7.2-rc.2](../releases/RELEASE_0.7.2-rc.2.md)。
+**浏览器访问：** DeskPort 桌面主机提供 HTTPS 远程桌面，支持 30 秒登录码、可选的七天浏览器配对、
+自适应尺寸和全屏。功能与验收限制见[浏览器使用指南](../BROWSER_ACCESS.md)。浏览器连接的也是 DeskPort 主机。
+
+**历史版本：** 原始变更、测试身份与限制保留在各自的发行说明中：
+[0.7.8](../releases/RELEASE_0.7.8.md)、[0.7.3](../releases/RELEASE_0.7.3.md)、
+[0.7.2](../releases/RELEASE_0.7.2.md)、[0.7.2-rc.1](../releases/RELEASE_0.7.2-rc.1.md)、
+[0.7.2-rc.2](../releases/RELEASE_0.7.2-rc.2.md)与 [0.7.1](../releases/RELEASE_0.7.1.md)。
+其中的安装包、Bazzite 运行时、Windows 升级/界面与浏览器检查属于历史证据，并非 2.9.0 端到端验收。
 
 ### 各发行版的 Linux 安装
 
-以下步骤面向 **x86_64** 桌面系统与 **0.7.8** 发布下载。原生包需要 glibc 2.39 或更高版本。
+以下步骤面向 **x86_64** 桌面系统与 **2.9.0** 发布下载。原生包需要 glibc 2.39 或更高版本。
 这些是上游直接下载的文件，而非来自 DeskPort 发行版软件仓库的包；以后的版本需要重新下载并校验。
 
-完整虚拟机中的安装、升级、回滚、卸载与配置保留结果，记录在
-[桌面生命周期矩阵](../LINUX_DESKTOP_ACCEPTANCE.md)中。AppImage 的 GUI 冒烟检查不能证明原生包的
-安装操作；安装成功和能打开界面，也不能证明实时采集、硬件视频解码、远程输入、画质或延迟。
-在 0.7.7 的隔离画布测试中，Omarchy 进行到第 11 个阶段后，遇到与 0.7.6 对照组相同的全屏恢复限制；
-这不是实体输入或真实串流测试。见 [0.7.7 Linux 验证记录](https://github.com/keithxc/deskport/releases/download/v0.7.7/VERIFICATION-linux.txt)。
+[2.9.0 Linux 验证记录](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)
+说明当前确切安装包及其虚拟机、容器和启动检查的范围。完整虚拟机中的安装、升级、回滚、卸载与配置保留
+检查点，以原有版本保留在[桌面生命周期矩阵](../LINUX_DESKTOP_ACCEPTANCE.md)中。
+更早的 Bazzite 运行时与 Ubuntu VA-API 检查见 [0.7.3 说明](../releases/RELEASE_0.7.3.md#validation-boundary)。
+[0.7.7 Linux 验证记录](https://github.com/keithxc/deskport/releases/download/v0.7.7/VERIFICATION-linux.txt)
+保留了隔离 Omarchy 画布测试中与 0.7.6 对照组相同的全屏恢复限制。
+这些历史检查不能作为 2.9.0 安装包的验收。安装成功与界面启动不能证明实时采集、硬件解码、远程输入、
+显示恢复、画质或延迟。Debian 13 的 KWin 6.3 仍低于主机显示助手要求的 6.6；
+GNOME 主机能力取决于所安装的 Mutter 与采集能力。
 
 | 发行版 / 桌面 | 下载方式 |
 | --- | --- |
-| Ubuntu 26.04 GNOME | 0.7.8 DEB 或 AppImage；GNOME 采集/恢复仍有已知缺口 |
+| Ubuntu 26.04 GNOME | 2.9.0 DEB 或 AppImage；GNOME 采集/恢复仍有已知缺口 |
 | Debian 13 KDE | DEB，用 APT 安装 |
 | Fedora 44 KDE | RPM，用 DNF 安装 |
 | Arch Linux KDE | 本地 Arch 包，用 `pacman -U` 安装 |
-| Bazzite KDE | 0.7.8 AppImage |
+| Bazzite KDE | 2.9.0 AppImage |
 | Omarchy / Hyprland | 本地 Arch 包，用 `pacman -U` 安装 |
 
 在你平时使用的桌面会话中打开终端。下面每组命令都会先用该版本的 `SHA256SUMS.txt`
@@ -173,20 +195,20 @@ Flatpak 仅提供查看功能。发布文件附有 [SHA-256 校验和](https://g
 升级前，先停止共享，并通过托盘菜单等处的 **Quit** 完全退出旧的 DeskPort；仅关闭窗口可能只是隐藏。
 之后再启动新安装的版本，确保运行的是新程序。
 
-从更早的版本升级或重新安装 0.7.8 时，使用下面的下载。已有的 DeskPort 设置与配对身份会保留。
+从更早的版本升级或重新安装 2.9.0 时，使用下面的下载。已有的 DeskPort 设置与配对身份会保留。
 安装前请核对确切的文件名与校验和。
 
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — 下载、安装、更新与卸载</summary>
 
-下载 [deskport_0.7.8_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.8/deskport_0.7.8_amd64.deb)，
+下载 [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb)，
 然后在该文件所在目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.8_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_0.7.8_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -203,14 +225,14 @@ Ubuntu 24.04 同样满足原生包的 glibc 要求。Ubuntu 22.04 需要使用 A
 <details>
 <summary><strong>Debian 13 KDE</strong> — 下载、安装、更新与卸载</summary>
 
-下载 [deskport_0.7.8_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.8/deskport_0.7.8_amd64.deb)，
+下载 [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb)，
 然后在下载目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.8_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_0.7.8_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -226,16 +248,16 @@ Debian 13 的 KWin 6.3 低于主机显示助手要求的 6.6。
 <details>
 <summary><strong>Fedora 44 KDE</strong> — 下载、安装、更新与卸载</summary>
 
-下载 [deskport-0.7.8.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v0.7.8/deskport-0.7.8.x86_64.rpm)，
+下载 [deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm)，
 然后在下载目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.8.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 0.7.8 ]; then
-  sudo dnf reinstall ./deskport-0.7.8.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
+  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
 else
-  sudo dnf install ./deskport-0.7.8.x86_64.rpm
+  sudo dnf install ./deskport-2.9.0.x86_64.rpm
 fi &&
 deskport
 ```
@@ -251,13 +273,13 @@ DNF 会从已启用的 Fedora 软件源解析依赖。以后可从应用菜单�
 <summary><strong>Arch Linux KDE</strong> — 下载、安装、更新与卸载</summary>
 
 先按平时的方式完整更新 Arch 系统，然后下载
-[deskport-0.7.8-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.8/deskport-0.7.8-x86_64.pkg.tar.zst)。
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst)。
 在下载目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.8-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.8-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -272,18 +294,18 @@ deskport
 <summary><strong>Bazzite KDE</strong> — AppImage、开机启动与移除</summary>
 
 下载
-[DeskPort-0.7.8-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-x86_64.AppImage)。
+[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage)。
 先停止共享，并用 **Quit** 完全退出旧的 DeskPort；仅关闭窗口可能仍在后台运行。
 启用登录启动前，先把新的 AppImage 放到固定位置：
 
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-0.7.8-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.8-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-0.7.8-x86_64.AppImage &&
-./DeskPort-0.7.8-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.0-x86_64.AppImage &&
+./DeskPort-2.9.0-x86_64.AppImage
 ```
 
 正常启动即可，无需删除或移动其中捆绑的库。如果登录启动仍指向旧的 AppImage，
@@ -302,13 +324,13 @@ Bazzite 的 [AppImage 指南](https://docs.bazzite.gg/Installing_and_Managing_So
 <summary><strong>Omarchy / Hyprland</strong> — 本地 Arch 包与主机要求</summary>
 
 先完成 Omarchy 的常规系统更新，然后下载
-[deskport-0.7.8-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.8/deskport-0.7.8-x86_64.pkg.tar.zst)。
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst)。
 在下载目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.8-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.8-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -326,17 +348,17 @@ Hyprland 主机使用专用的无头输出。在显示器标识与运行状态�
 <details>
 <summary><strong>Flatpak 备选</strong> — 仅查看端，适用于已配置 Flatpak 的系统</summary>
 
-下载 [DeskPort-0.7.8-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-0.7.8-client-x86_64.flatpak)，
+下载 [DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak)，
 然后在下载目录打开终端：
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.8/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.8-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-0.7.8-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
-本地包可能会下载 Freedesktop Platform 25.08 运行时。它只提供查看功能，没有 Sunshine 主机功能，
+本地包可能会下载 Freedesktop Platform 25.08 运行时。它只提供查看功能，没有 DeskPort 主机功能，
 也不集成桌面登录服务。以后下载的包核对校验和后，用
 `flatpak install --user --or-update ./NEW_FILENAME.flatpak` 安装。卸载：
 `flatpak uninstall --user io.github.keithxc.DeskPort`。这是 GitHub 发布包，安装不依赖 Flathub 上架。
@@ -353,8 +375,8 @@ flatpak run io.github.keithxc.DeskPort
 
 | 渠道 | 状态 | 安装方式 |
 | --- | --- | --- |
-| GitHub 发布包 | 0.7.8 | 在上方下载适合你发行版的安装包 |
-| 上游 Nix flake | 0.7.8 | `nix run --refresh github:keithxc/deskport/v0.7.8` |
+| GitHub 发布包 | 2.9.0 | 在上方下载适合你发行版的安装包 |
+| 上游 Nix flake | 2.9.0 | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | 配方已测试；因 AUR 暂停新账号注册而无法发布 | [在本地构建配方](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | 已提交 [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) 等待审核；尚未合并 | 合并前请使用上游 flake |
 | Arch 官方仓库 / Flathub | 未收录 | 使用发布页下载；Flatpak 仅为查看端 |
@@ -388,7 +410,7 @@ flatpak run io.github.keithxc.DeskPort
 DeskPort 当前的平台限制见上文；本表并不意味着各操作系统功能完全一致，
 也不代表经过测量的性能优势。
 
-参见 [0.7.8 发行说明](../releases/RELEASE_0.7.8.md)、
+参见 [2.9.0 发行说明](../releases/RELEASE_2.9.0.md)、
 [架构说明](../ARCHITECTURE.md)与[路线图](../ROADMAP.md)。
 
 ## 在 Linux 上构建与运行
@@ -410,10 +432,10 @@ work=$(DESKPORT_RUN_ID="$run" DESKPORT_TARGET=linux-nix bash scripts/build-paths
 SSH 设置、本地主机管理、VPS 前提条件以及 Omarchy/Hyprland 请参阅
 [命令行指南](../CLI.md)。`deskport doctor` 检查主机运行的前提条件；
 `deskport status --json` 无需打开窗口即可查看正在运行的实例。
-`nix run . -- --help` 会列出命令行接口。连接前先在主机上开始共享并绑定设备。旧版
-Sunshine PIN 配对同样可用。本项目不包含、也不会从 Moonlight 导入任何个人主机或配对凭据。
-新建的手动地址默认使用 DeskPort 的端口 `48989`。如果不同，请填写主机共享页面上显示的端口；
-若要显式连接默认的独立 Sunshine 安装，可使用 `host:47989`。已保存或发现的端点保留各自的端口。
+`nix run . -- --help` 会列出命令行接口。连接前先在 DeskPort 主机上开始共享并绑定 DeskPort 客户端。
+本项目不包含、也不会从 Moonlight 导入任何个人主机或配对凭据。
+新建的手动地址默认使用 DeskPort 的端口 `48989`。如果不同，请填写 DeskPort 主机共享页面上显示的端口。
+已保存或发现的 DeskPort 端点保留各自的端口。
 
 可编辑的原生构建，编译输出放在源码目录之外：
 
@@ -436,7 +458,7 @@ macOS、Windows 与 Linux 的打包见[受管构建、签名与清理命令](../
 
 ## 与 Moonlight 有何不同？
 
-- 内置 Sunshine 主机端，支持设备授权、接管与每设备设置。
+- DeskPort 客户端与内置主机，支持设备授权、接管与每设备设置。
 - 查看端隐藏时会话保持连接；可从托盘/菜单栏唤回。
 - 桌面主机提供 HTTPS 浏览器访问。
 - 独立的 `deskport` 可执行文件、`DeskPort` Qt 设置命名空间，以及
@@ -458,10 +480,12 @@ macOS、Windows 与 Linux 的打包见[受管构建、签名与清理命令](../
 客户端平台支持与主机端支持是相互独立的：Mac 主机并不要求使用 DeskPort 的 Mac 客户端。
 硬件解码、实时输入、画质与唤回延迟都需要真实会话测试，构建成功并不能说明这些。
 
-## 下一个里程碑
+## 项目状态与剩余验收
 
-让一个会话在 **50 次隐藏/显示循环**中保持连接，把窗口显示在当前工作区，并可靠地交还本地输入。
-新画面延迟与后台资源占用要与窗口出现时间分开测量。
+桌面 **2.9.0** 是当前 PC 稳定版。功能实现与安装包检查不等于完成实体设备验收。
+在 **50 次隐藏/显示循环**中保持连接、唤回到当前工作区并可靠地释放远程输入，
+仍是针对确切客户端与主机组合的验收标准。新画面延迟与后台资源占用要与窗口出现时间分开测量；
+历史通过记录不能证明当前硬件结果。Seamless 仍属实验功能，不在稳定版支持范围内。
 
 验收标准与延后的功能见[路线图](../ROADMAP.md)，来源与维护边界见
 [上游说明](../UPSTREAM.md)。
@@ -502,9 +526,10 @@ DeskPort 不会改写任何系统快捷键配置。隔离运行时可设置 `DES
 ## 许可与致谢
 
 DeskPort 是 [Moonlight Qt](https://github.com/moonlight-stream/moonlight-qt) 的独立衍生项目，
-最初基于 v6.1.0，并非官方的 Moonlight 或 Sunshine 发行版。Moonlight 提供串流基础；
-[Sunshine](https://github.com/LizardByte/Sunshine) 被打包进 macOS、Windows 与 Linux 主机包（仅查看端的 Flatpak 除外），
-并由 Linux Nix 包提供。单独安装的 Sunshine 服务保持独立。
+最初基于 v6.1.0，并非官方的 Moonlight 或 Sunshine 发行版。串流基础继承自 Moonlight。
+DeskPort 主机使用经过适配与修补的 [Sunshine](https://github.com/LizardByte/Sunshine) 代码，
+随 macOS、Windows 与 Linux 主机包提供（仅查看端的 Flatpak 除外），并由 Linux Nix 包提供。
+单独安装的 Sunshine 服务保留各自的设置和凭据。
 
 GPL-3.0-or-later；见 [LICENSE](../../LICENSE)、保留的源码声明，以及
 [docs/VENDORED.md](../VENDORED.md) 中列出的每个内置依赖的许可证。原始文档保留在

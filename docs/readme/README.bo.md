@@ -4,11 +4,6 @@
 
 <h1 align="center">DeskPort</h1>
 
-> **Current desktop release: [0.7.4 (r2)](https://github.com/keithxc/deskport/releases/tag/v0.7.4).**
-> The translated package examples and verification history below still describe
-> 0.7.3. Use the [current installation guide](../../README.md#install) and
-> [0.7.4 release notes](../releases/RELEASE_0.7.4.md) for the replacement downloads.
-
 <p align="center">
   <a href="../../README.md">English</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -34,14 +29,18 @@
   <b>བོད་ཡིག</b>
 </p>
 
+> **[2.9.0 བརྟན་པོ](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+>
+> DeskPort མཁོ་སྤྱོད་མཐའ་སྣེ་དང་ DeskPort གཙོ་འཁོར་ཆ་སྒྲིག་བྱེད། DeskPort གི་སྒྲིག་ཆས་ཆ་སྒྲིག་ནི་གཙོ་འཁོར་ཕྱོགས་ཀྱི་མ་བཅོས་པའི་ Sunshine དང་། མཁོ་སྤྱོད་མཐའ་སྣེ་ཕྱོགས་ཀྱི་མ་བཅོས་པའི་ Moonlight གཉིས་དང་མི་མཐུན། གཙོ་འཁོར་ཐུམ་སྒྲིལ་ཆ་ཚང་ནང་ DeskPort ཆེད་བཅོས་པའི་ Sunshine གཙོ་འཁོར་ཚུད་ཡོད།
+
 <p align="center">
-  Moonlight དང་ Sunshine ཡི་གཞི་ཐོག་བཟོས་པའི་རྒྱང་རིང་ཅོག་ངོས་ཀྱི་ལས་ཀའི་ས་ཁུལ།<br>
+  རང་གི་མཁོ་སྤྱོད་མཐའ་སྣེ་དང་གཙོ་འཁོར་ཡོད་པའི་རང་རྐྱའི་རྒྱང་རིང་ཅོག་ངོས་ལས་ཀའི་ས་ཁུལ།<br>
   རྒྱང་རིང་ཅོག་ངོས་རྒྱབ་ལྗོངས་སུ་གྲ་སྒྲིག་བྱས་ནས་བཞག་ཆོག ལས་ཀ་གཅིག་གིས་ད་ལྟའི་ལས་ཀའི་ས་ཁུལ་དུ་འདྲེན་ཆོག
   ཡང་བསྐྱར་སྦྲེལ་མཐུད་མི་དགོས་པར་སྦས་ཆོག
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -83,19 +82,18 @@
 
 ## རྒྱབ་སྐྱོར་ཡོད་པའི་སྟེགས་བུ།
 
-ཁུངས་ཡིག་དང་སྒྲིག་འཇུག་བྱས་པའི་ཐུམ་སྒྲིལ་བར་གྱི་ད་ལྟའི་ཁྱབ་ཁོངས། compositor གི་ནུས་པ། ལོ་རྒྱུས་ཀྱི་བདེན་དཔང་དང་ལྷག་མའི་
-རང་བཞིན་ཞིབ་བཤེར་བཅས་ཀྱི་ཆེད་དུ་ [PC ལག་བསྟར་དང་ངོས་ལེན་རེའུ་མིག](../PC_SUPPORT_MATRIX.md) ལ་ལྟོས། གཤམ་གྱི་འགྲེམས་སྤེལ་
-གནས་སྟངས་ཀྱིས་ GPU དང་ OS མཐུད་ཚད་ཚང་མའི་ཐོག་ཁྱད་ཆོས་ཚང་མ་ར་སྤྲོད་མི་བྱེད། 0.7.3 འགྲེམས་སྤེལ་གྱིས་ཞིབ་བཤེར་སྙན་ཞུའི་ནང་
-ཐུམ་སྒྲིལ་གྱི་ངོ་བོ་ཏག་ཏག་དང་ཞིབ་བཤེར་གྱི་མཚམས་ཐོ་འགོད་བྱས་ཡོད།
+2.9.0 གི་ macOS ཐུམ་སྒྲིལ་ངེས་ཅན་གྱིས་ Developer ID དང་ Apple ར་སྤྲོད། ZIP བཤིག་རྗེས་ཀྱི་ Gatekeeper ཞིབ་བཤེར་བརྒྱུད། Windows ཐོག་ Setup གསར་སྒྱུར། འགོ་འཛུགས། ཞབས་ཞུ/serverinfo དང་ Defender ཞིབ་བཤེར་བྱས། Linux ཞིབ་བཤེར་ནང་ཐུམ་སྒྲིལ། རྟོག་བཟོའི་འཕྲུལ་འཁོར། སྣོད་དང་འགོ་འཛུགས་ཚུད། འདིས་མཁྲེགས་ཆས་ངོ་མའི་རྒྱུན་གཏོང་། ནང་འཇུག བརྙན་ཡོལ་བརྗེ་བ། HDR དང་འདྲ་བཤུས་པང་ཆ་ཚང་ཞིབ་བཤེར་བྱས་པ་མི་མཚོན།
+
+[VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) · [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt) · [PC_SUPPORT_MATRIX](../PC_SUPPORT_MATRIX.md)
 
 | སྟེགས་བུ | འགན | འགྲེམས་སྤེལ་གནས་སྟངས | ཕབ་ལེན |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Viewer + host + རང་བཞིན་རྟོག་བཟོའི་བརྙན་ཡོལ | **0.7.3 བརྟན་པོ**; Developer ID ཡིས་མིང་རྟགས་བཀོད་ཅིང་ Apple ཡིས་ར་སྤྲོད་བྱས | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) |
-| Linux x86_64 | Viewer + host; ནུས་ལྡན་ KWin, Mutter དང་ Hyprland host ཐོག་རང་འགྱུར་ལས་ཀའི་ས་ཁུལ | **0.7.3 བརྟན་པོ**: DEB, RPM, Arch, AppImage, འཁྱེར་བདེའི་ཡིག་སྣོད་དང་ Nix | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [སྒྲིག་འཇུག་ལམ་སྟོན](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Viewer ཙམ | **0.7.3 བརྟན་པོ**, Freedesktop Platform 25.08 | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
+| macOS Apple Silicon, macOS 26+ | Viewer + host + རང་བཞིན་རྟོག་བཟོའི་བརྙན་ཡོལ | **2.9.0 བརྟན་པོ**; Developer ID ཡིས་མིང་རྟགས་བཀོད་ཅིང་ Apple ཡིས་ར་སྤྲོད་བྱས | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | Viewer + host; ནུས་ལྡན་ KWin, Mutter དང་ Hyprland host ཐོག་རང་འགྱུར་ལས་ཀའི་ས་ཁུལ | **2.9.0 བརྟན་པོ**: DEB, RPM, Arch, AppImage, འཁྱེར་བདེའི་ཡིག་སྣོད་དང་ Nix | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [སྒྲིག་འཇུག་ལམ་སྟོན](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Viewer ཙམ | **2.9.0 བརྟན་པོ**, Freedesktop Platform 25.08 | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client ཙམ | App Store; པར་གཞི་གསར་པ་ TestFlight ནང་ལོགས་སུ་ཚོད་ལྟ | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Client ཙམ | **2.7 (63)** · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་བསྒྲིལ་མེད། | [APK ཕབ་ལེན།](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | Viewer + host + རྟོག་བཟོའི་བརྙན་ཡོལ | **0.7.3 བརྟན་པོ**; སྒྲིག་འཇུག་ཆས་ཆ་ཚང་གིས་ host བྱེད། འཁྱེར་བདེའི་ ZIP ལྟ་བ་ཙམ། ཉེར་སྤྱོད་དང་སྒྲིག་འཇུག་ཆས་ལ་མིང་རྟགས་མེད | [སྒྲིག་འཇུག་ཆས](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
+| Windows x64 | Viewer + host + རྟོག་བཟོའི་བརྙན་ཡོལ | **2.9.0 བརྟན་པོ**; Setup ནང་གཙོ་འཁོར་ཚུད། འཁྱེར་བདེའི་ ZIP ལྟ་བ་ཙམ། ཉེར་སྤྱོད་དང་སྒྲིག་འཇུག་ཆས་ལ་མིང་རྟགས་མེད། | [སྒྲིག་འཇུག་ཆས](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | ཚད་མ་ལོན | ཞིབ་བཤེར་བྱས་པའི་འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ་མེད | — |
 
 > **Windows ནད་དུག་འགོག་བྱེད་ཀྱི་གསལ་བརྡ།** ནད་དུག་འགོག་མཉེན་ཆས་ཀྱིས་ DeskPort གི་ Windows རོགས་རམ་ཆ་ཤས་ནོར་འཁྲུལ་ངང་ཉེན་ཁར་བརྩི་སྲིད།
@@ -111,14 +109,14 @@ AppImage དང་འཁྱེར་བདེའི་པར་གཞིས་�
 
 ## སྒྲིག་འཇུག
 
-**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) ཁ་ཕྱེ།
+**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) ཁ་ཕྱེ།
 DeskPort དེ་ Applications ནང་འཐེན་ནས་ཁ་ཕྱེ། host ཁྱད་ཆོས་སྤྱོད་པར་ Screen Recording དང་ Accessibility ཆོག་མཆན་སྤྲོད།
 Nix དང་ Homebrew མི་དགོས།
 
-**Linux:** ཁྱེད་ཀྱི་མ་ལག་ལ་འོས་པའི་ [0.7.3 ཐུམ་སྒྲིལ](https://github.com/keithxc/deskport/releases/tag/v0.7.3) འདེམས་ནས
+**Linux:** ཁྱེད་ཀྱི་མ་ལག་ལ་འོས་པའི་ [2.9.0 ཐུམ་སྒྲིལ](https://github.com/keithxc/deskport/releases/tag/v2.9.0) འདེམས་ནས
 [གཤམ་གྱི་ཁྱབ་སྤེལ་སོ་སོའི་གོ་རིམ](#ཁྱབསྤེལསོསོའི-linux-སྒྲིགའཇུག) ལྟར་བྱེད། [host ནང་འཇུག་གི་དགོས་མཁོ](../LINUX_PACKAGES.md#first-connection-and-hosting) ཡང་ཚུད།
-Nix བརྒྱུད་: `nix run github:keithxc/deskport/v0.7.3`
-Flatpak ལྟ་བ་ཙམ། འགྲེམས་སྤེལ་ནང་ [SHA-256 checksum](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) དང་ [ཞིབ་བཤེར་སྙན་ཞུ](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt) ཚུད་ཡོད།
+Nix བརྒྱུད་: `nix run --refresh github:keithxc/deskport/v2.9.0`
+Flatpak ལྟ་བ་ཙམ། འགྲེམས་སྤེལ་ནང་ [SHA-256 checksum](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) དང་ [ཞིབ་བཤེར་སྙན་ཞུ](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) ཚུད་ཡོད།
 
 **Android 2.7 (63)** · ~~$4.99~~ · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་མ་བསྒྲིལ་བར་ GitHub ནས་ [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) གནས་སྐབས་སུ་ཕབ་ལེན་བྱེད་ཐུབ། ཁ་པར་གྱི་ client ལ་ཁུངས་ཀྱི་ཨང་རྟགས་ཡོངས་གྲགས་མི་བྱེད། འདིར་སྒྲིག་འཇུག་ཡིག་ཆ་ཁོ་ན་སྤེལ་ཡོད།
 
@@ -128,9 +126,12 @@ Build 63 དང་ Google Play གཉིས་ཀྱི་མཚན་རྟག�
 ཁ་པར་ཉེར་སྤྱོད་ནི་ཐེངས་གཅིག་གི་རིན་ཅན་ཉོ་སྒྲུབ་ཡིན། ས་གནས་རིན་གོང་ཁྱེད་ཀྱི་ཚོང་ཁང་ནང་ལྟོས། ཅོག་ངོས་འགྲེམས་སྤེལ་རིན་མེད་དང་ཁུངས་ཡིག་སྒོ་ཕྱེ་བ་ཡིན།
 ཉོ་སྒྲུབ་ཀྱིས་མིང་རྟགས། ཚོད་ལྟའི་མཁྲེགས་ཆས་དང་མུ་མཐུད་གསར་སྤེལ་ལ་རྒྱབ་སྐྱོར་བྱེད།
 
-host ཐོག་མཉམ་སྤྱོད་འགོ་འཛུགས། client ཐོག་དེ་འདེམས་ནས host ཐོག་སྒྲིག་ཆས་ཆོག་མཆན་སྤྲོད། སྒྲིག་ཆས་གཉིས་བར་དྲ་རྒྱའི་ལམ་བུ་དགོས།
-LAN ཡང་ན་ Tailscale ལྟ་བུའི་རང་གི་ VPN སྤྱོད། DeskPort གིས་རྩིས་ཐོའི་ཞབས་ཞུ། བཀོད་སྒྲིག་བྱས་པའི་ཅོག་ངོས། relay དང་དྲ་རྒྱའི་ཕུག་ལམ་མཁོ་སྤྲོད་མི་བྱེད།
-Sunshine PIN རྙིང་པའི་ཆ་སྒྲིག་ད་དུང་སྤྱོད་ཆོག
+DeskPort གཙོ་འཁོར་ཐོག་མཉམ་སྤྱོད་འགོ་འཛུགས། DeskPort མཁོ་སྤྱོད་མཐའ་སྣེ་ཐོག་དེ་འདེམས་ནས་གཙོ་འཁོར་ཐོག་སྒྲིག་ཆས་ལ་ཆོག་མཆན་སྤྲོད། LAN ཡང་ན་ Tailscale ལྟ་བུའི་རང་གི་ VPN སྤྱོད། DeskPort གིས་རྩིས་ཐོའི་ཞབས་ཞུ། བཀོད་སྒྲིག་ཅོག་ངོས། བར་བརྒྱུད་དང་དྲ་རྒྱའི་ཕུག་ལམ་མཁོ་སྤྲོད་མི་བྱེད། ལག་བཀོད་ཁ་བྱང་གསར་པས་ `48989` སྤྱོད། མི་འདྲ་ན་གཙོ་འཁོར་གྱི་མཉམ་སྤྱོད་ཤོག་ངོས་ཀྱི་ port སྤྱོད།
+
+ལོ་རྒྱུས། [0.7.3](../releases/RELEASE_0.7.3.md) གི་འགྱུར་བ་དང་ཞིབ་བཤེར་ཁྱབ་ཁོངས། [0.7.4](../releases/RELEASE_0.7.4.md) གི་ཚབ་བརྗེའི་ཟིན་ཐོ་ནི་སྔར་གྱི་འགྲེམས་སྤེལ་ཟིན་ཐོར་ཉར་ཡོད། དེ་དག་ 2.9.0 གི་ཞིབ་བཤེར་འབྲས་བུ་མིན།
+
+<details>
+<summary>0.7.3 / 0.7.2</summary>
 
 **0.7.3 བརྟན་པོ:** ཅོག་ངོས་གསར་སྒྱུར་འདིས་སྐད་ཡིག ༢༢ གི་མཉམ་སྤྱོད་ UI དཀར་ཆག་དང་ཅོག་ངོས་རྙིང་པའི་ཡིག་སྒྱུར་ཁ་སྣོན། བརྡ་འཚོལ་ཆས་ནང་སྐད་ཡིག་བརྗེ་བ།
 ནང་འཛུལ་ཟིན་པའི་ Windows མཐུད་ཚད་ནང་ UAC ཡང་ཡང་མེད་པའི་མཉམ་སྤྱོད། རྟོག་བཟོའི་བརྙན་ཡོལ་གྱི་མ་ལག་ཆེ་ཆུང་། Linux runtime བཟོ་བཅོས།
@@ -151,6 +152,8 @@ Windows Setup གིས་ 0.7.1 ནས་རིམ་སྤར་ལ་སྒ�
 བྱེད་བཞིན་པའི་མཐུད་ཚད་མེད་པ། ཉར་བཞག་ lease མེད་པ་དང་བརྙན་ཡོལ་བཀོད་པ་ཐོག་མ་སླར་གསོ་བྱས་པ་ར་སྤྲོད་བྱས། དོན་རྐྱེན་འདི་རྒྱུན་བསྐུར་ངོས་ལེན་མིན་ལ།
 ནད་བརྟག་གིས་རྒྱང་རིང་ནང་འཇུག་གཅིག་ཀྱང་མ་བསྐུར་བར་ར་སྤྲོད་བྱེད་མི་ཐུབ། ཁྱབ་ཁོངས་ཏག་ཏག་ཆེད་འགྲེམས་སྤེལ་ཟིན་ཐོ་ལ་ལྟོས།
 
+</details>
+
 **སྔོན་གྱི་ candidate:** [0.7.2-rc.1](https://github.com/keithxc/deskport/releases/tag/v0.7.2-rc.1) གྱིས་ཆེ་ཆུང་བསྒྱུར་སྐབས་ཡང་བསྐྱར་སྦྲེལ་མྱུར་བ།
 རབ་རིབ་བརྗེ་སྒྱུར་དང་ macOS ཐོག་འཐེན་པ་འཇམ་པ་བཅས་ངོ་སྤྲོད། [0.7.2-rc.2](https://github.com/keithxc/deskport/releases/tag/v0.7.2-rc.2)
 གྱིས་ Bazzite ཆེད་ AppImage བཟོ་བཅོས་ཁ་སྣོན། [rc.1 ཟིན་ཐོ](../releases/RELEASE_0.7.2-rc.1.md) དང་ [rc.2 ཟིན་ཐོ](../releases/RELEASE_0.7.2-rc.2.md)
@@ -162,7 +165,7 @@ Windows Setup གིས་ 0.7.1 ནས་རིམ་སྤར་ལ་སྒ�
 
 ### ཁྱབ་སྤེལ་སོ་སོའི་ Linux སྒྲིག་འཇུག
 
-ལམ་སྟོན་འདི་དག་ **x86_64** ཅོག་ངོས་མ་ལག་དང་ **0.7.3** འགྲེམས་སྤེལ་ཕབ་ལེན་ཆེད་ཡིན། རང་བཞིན་ཐུམ་སྒྲིལ་ལ་ glibc 2.39 ཡན་དགོས།
+ལམ་སྟོན་འདི་དག་ **x86_64** ཅོག་ངོས་མ་ལག་དང་ **2.9.0** འགྲེམས་སྤེལ་ཕབ་ལེན་ཆེད་ཡིན། རང་བཞིན་ཐུམ་སྒྲིལ་ལ་ glibc 2.39 ཡན་དགོས།
 འདི་དག་ upstream ཕབ་ལེན་ཡིན་པ་ལས་ DeskPort ཁྱབ་སྤེལ་མཛོད་ཁང་གི་ཐུམ་སྒྲིལ་མིན། མ་འོངས་པའི་འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ་གསར་པ་ཡང་བསྐྱར་ཕབ་ལེན་དང་
 ཞིབ་བཤེར་བྱས་ནས་སྒྲིག་འཇུག་བྱེད།
 
@@ -185,11 +188,11 @@ GNOME པར་ལེན་འགོ་སློང་དང་རྟོག་�
 
 | ཁྱབ་སྤེལ / ཅོག་ངོས | ཕབ་ལེན་ལམ་ཕྱོགས |
 | --- | --- |
-| Ubuntu 26.04 GNOME | 0.7.3 DEB ཡང་ན་ AppImage; DEB འགོ་སློང་ regression ལེགས་གྲུབ། GNOME པར་ལེན/སླར་གསོའི་སྟོང་ཆ་ལུས |
+| Ubuntu 26.04 GNOME | 2.9.0 DEB ཡང་ན་ AppImage |
 | Debian 13 KDE | DEB, APT བརྒྱུད་སྒྲིག་འཇུག |
 | Fedora 44 KDE | RPM, DNF བརྒྱུད་སྒྲིག་འཇུག |
 | Arch Linux KDE | ས་གནས་ Arch ཐུམ་སྒྲིལ, `pacman -U` བརྒྱུད་སྒྲིག་འཇུག |
-| Bazzite KDE | 0.7.3 AppImage; གོང་གསལ་ཐུམ་སྒྲིལ་ཏག་ཏག་གི་ VM ཞིབ་བཤེར |
+| Bazzite KDE | 2.9.0 AppImage |
 | Omarchy / Hyprland | ས་གནས་ Arch ཐུམ་སྒྲིལ, `pacman -U` བརྒྱུད་སྒྲིག་འཇུག |
 
 ཁྱེད་ཀྱི་རྒྱུན་ལྡན་ཅོག་ངོས་མཐུད་ཚད་ནང་ terminal ཁ་ཕྱེ། བཀའ་བརྡའི་རིམ་པ་རེ་རེས་སྒྲིག་འཇུག་མ་བྱས་གོང་ཕབ་ལེན་བྱས་པའི་ཡིག་ཆའི་མིང་ཏག་ཏག་དེ་
@@ -201,14 +204,14 @@ GNOME པར་ལེན་འགོ་སློང་དང་རྟོག་�
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — ཕབ་ལེན། སྒྲིག་འཇུག གསར་སྒྱུར་དང་སུབ་པ</summary>
 
-[deskport_0.7.3-1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport_0.7.3-1_amd64.deb) ཕབ་ལེན་བྱས་ནས་
+[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) ཕབ་ལེན་བྱས་ནས་
 ཡིག་ཆ་དེ་ཡོད་སའི་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.3-1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install ./deskport_0.7.3-1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -224,14 +227,14 @@ Nix/ཁུངས་ཡིག་ build དགོས། GNOME ཐོག་ host �
 <details>
 <summary><strong>Debian 13 KDE</strong> — ཕབ་ལེན། སྒྲིག་འཇུག གསར་སྒྱུར་དང་སུབ་པ</summary>
 
-[deskport_0.7.3-1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport_0.7.3-1_amd64.deb) ཕབ་ལེན་བྱས་ནས་
+[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) ཕབ་ལེན་བྱས་ནས་
 ཕབ་ལེན་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.3-1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install ./deskport_0.7.3-1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -246,13 +249,17 @@ KDE ཐོག་ host བྱེད་ན་མཉམ་སྤྱོད་འག�
 <details>
 <summary><strong>Fedora 44 KDE</strong> — ཕབ་ལེན། སྒྲིག་འཇུག གསར་སྒྱུར་དང་སུབ་པ</summary>
 
-[deskport-0.7.3-1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1.x86_64.rpm) ཕབ་ལེན་བྱས་ནས་
+[deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm) ཕབ་ལེན་བྱས་ནས་
 ཕབ་ལེན་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo dnf install ./deskport-0.7.3-1.x86_64.rpm &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
+  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
+else
+  sudo dnf install ./deskport-2.9.0.x86_64.rpm
+fi &&
 deskport
 ```
 
@@ -266,13 +273,13 @@ Bazzite ཆེད་ AppImage ལམ་སྟོན་སྤྱོད། KDE ཐ
 <summary><strong>Arch Linux KDE</strong> — ཕབ་ལེན། སྒྲིག་འཇུག གསར་སྒྱུར་དང་སུབ་པ</summary>
 
 རྒྱུན་ལྡན་ལྟར་ Arch མ་ལག་ཆ་ཚང་གསར་སྒྱུར་བྱས་རྗེས་
-[deskport-0.7.3-1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1-x86_64.pkg.tar.zst) ཕབ་ལེན།
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) ཕབ་ལེན།
 ཕབ་ལེན་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.3-1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -285,18 +292,18 @@ deskport
 <details>
 <summary><strong>Bazzite KDE</strong> — AppImage, འགོ་སློང་དང་སུབ་པ</summary>
 
-[DeskPort-0.7.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-x86_64.AppImage) ཕབ་ལེན།
+[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage) ཕབ་ལེན།
 མཉམ་སྤྱོད་མཚམས་བཅད་ནས་ DeskPort རྙིང་པ་ **Quit** བརྒྱུད་ཆ་ཚང་སྒོ་རྒྱག སྒེའུ་ཁུང་སྒོ་བརྒྱབ་ན་ད་དུང་འཁོར་སྲིད། ནང་འཛུལ་འགོ་སློང་མ་ཕྱེ་གོང་
 AppImage གསར་པ་གནས་ས་བརྟན་པོར་ཉར:
 
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-0.7.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-0.7.3-x86_64.AppImage &&
-./DeskPort-0.7.3-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.0-x86_64.AppImage &&
+./DeskPort-2.9.0-x86_64.AppImage
 ```
 
 རྒྱུན་ལྡན་ལྟར་འགོ་སློང་། ནང་འདུས་ library སུབ་པའམ་སྤོ་བ་མི་དགོས། ནང་འཛུལ་འགོ་སློང་གིས་ AppImage རྙིང་པར་ཕྱོགས་ན་ཡིག་ཆ་གསར་པ་མཐའ་མའི་ལམ་ཐིག་ནས་
@@ -313,13 +320,13 @@ Gear Lever འགྲེལ་བཤད་བྱས། མཉམ་འདྲེ�
 <summary><strong>Omarchy / Hyprland</strong> — ས་གནས་ Arch ཐུམ་སྒྲིལ་དང་ host དགོས་མཁོ</summary>
 
 Omarchy ཡི་མ་ལག་རྒྱུན་ལྡན་གསར་སྒྱུར་བྱས་རྗེས་
-[deskport-0.7.3-1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1-x86_64.pkg.tar.zst) ཕབ་ལེན།
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) ཕབ་ལེན།
 ཕབ་ལེན་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.3-1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -337,17 +344,17 @@ Hyprland host གིས་ཆེད་དམིགས་ headless output ཞི�
 <details>
 <summary><strong>Flatpak གདམ་ག</strong> — ལྟ་བ་ཙམ། Flatpak སྒྲིག་འགོད་བྱས་པའི་མ་ལག་ཐོག</summary>
 
-[DeskPort-0.7.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-client-x86_64.flatpak) ཕབ་ལེན་བྱས་ནས་
+[DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak) ཕབ་ལེན་བྱས་ནས་
 ཕབ་ལེན་དཀར་ཆག་ནང་ terminal ཁ་ཕྱེ:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user ./DeskPort-0.7.3-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
-ས་གནས་ bundle གྱིས་ Freedesktop Platform 25.08 runtime ཕབ་ལེན་བྱེད་སྲིད། འདི་ལྟ་བ་ཙམ་ཡིན་ལ་ Sunshine host དང་ཅོག་ངོས་ནང་འཛུལ་ཞབས་ཞུའི་མཉམ་འདྲེས་མེད།
+ས་གནས་ bundle གྱིས་ Freedesktop Platform 25.08 runtime ཕབ་ལེན་བྱེད་སྲིད། འདི་ལྟ་བ་ཙམ་ཡིན་ལ་ DeskPort host དང་ཅོག་ངོས་ནང་འཛུལ་ཞབས་ཞུའི་མཉམ་འདྲེས་མེད།
 མ་འོངས་པའི་ bundle checksum ཞིབ་བཤེར་རྗེས་ `flatpak install --user --or-update ./NEW_FILENAME.flatpak` ཡིས་སྒྲིག་འཇུག
 `flatpak uninstall --user io.github.keithxc.DeskPort` ཡིས་སུབ། འདི་ GitHub འགྲེམས་སྤེལ་གྱི་ bundle ཡིན། སྒྲིག་འཇུག་ལ་ Flathub ཐོག་ DeskPort མི་དགོས།
 
@@ -362,8 +369,8 @@ host ཆེད་ནང་འཛུལ་ཟིན་པའི་རི་མོ
 
 | བརྒྱུད་ལམ | གནས་སྟངས | སྒྲིག་འཇུག |
 | --- | --- | --- |
-| GitHub འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ | 0.7.3 བརྟན་པོ | གོང་གི་ཁྱེད་ཀྱི་ཁྱབ་སྤེལ་གྱི་ཐུམ་སྒྲིལ་ཕབ་ལེན |
-| Upstream Nix flake | 0.7.3 བརྟན་པོ | `nix run github:keithxc/deskport/v0.7.3` |
+| GitHub འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ | 2.9.0 བརྟན་པོ | གོང་གི་ཁྱེད་ཀྱི་ཁྱབ་སྤེལ་གྱི་ཐུམ་སྒྲིལ་ཕབ་ལེན |
+| Upstream Nix flake | 2.9.0 བརྟན་པོ | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | སྦྱོར་ཐབས་ཚོད་ལྟ་བྱས; རྩིས་ཐོ་གསར་པའི་ཐོ་འགོད་མཚམས་འཇོག་པས་འགྲེམས་སྤེལ་བཀག | [སྦྱོར་ཐབས་ས་གནས་སུ་བཟོ](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) ཞིབ་དཔྱད་ཆེད་ཕུལ; མཉམ་བསྲེས་བྱས་མེད | ཚུད་བར་དུ་ upstream flake སྤྱོད |
 | Arch གཞུང་འབྲེལ་མཛོད་ཁང / Flathub | མེད | འགྲེམས་སྤེལ་ཕབ་ལེན་སྤྱོད; Flatpak ལྟ་བ་ཙམ |
@@ -395,7 +402,7 @@ Nixpkgs ནང་ `pkgs.deskport` སྤྱོད་རུང་དུ་མི�
 [Parsec Linux སྒྲིག་འགོད](https://support.parsec.app/hc/en-us/articles/32381552552340-Install-Parsec-App-on-Linux).
 DeskPort ཡི་ད་ལྟའི་སྟེགས་བུའི་ཚད་བཀག་གོང་དུ་བཀོད་ཡོད། རེའུ་མིག་འདིས་ OS ཚང་མའི་ཐོག་ཁྱད་ཆོས་མཉམ་པ་དང་ཚད་འཇལ་བྱས་པའི་ནུས་པ་ལྷག་པོ་མི་སྟོན།
 
-[0.7.3 འགྲེམས་སྤེལ་ཟིན་ཐོ](../releases/RELEASE_0.7.3.md), [གཞི་ཁྲམ](../ARCHITECTURE.md) དང་ [འཆར་གཞི་ལམ་ཐིག](../ROADMAP.md) ལ་ལྟོས།
+[2.9.0 འགྲེམས་སྤེལ་ཟིན་ཐོ](../releases/RELEASE_2.9.0.md), [གཞི་ཁྲམ](../ARCHITECTURE.md) དང་ [འཆར་གཞི་ལམ་ཐིག](../ROADMAP.md) ལ་ལྟོས།
 
 ## Linux ཐོག་བཟོ་བ་དང་འཁོར་བ།
 
@@ -411,11 +418,7 @@ nix build
 viewer གྱི་ཕྱི་ཕྱོགས་ཁུངས་ཡིག་རྟེན་གཞི་མཛོད་ཁང་ནང་ཚུད་ཡོད། མཉམ་སྤྱོད་སྙིང་པོ་དང་ Nix build ནང་འཇུག་ནི་བཙུགས་བརྟན་བྱས་པའི་ཕྱི་རོལ་རྟེན་གཞི་ཡིན།
 རང་བཞིན་ build གྱིས་ `shared/deskport-core` འགོ་འཛུགས་དགོས། [docs/VENDORED.md](../VENDORED.md) ལ་ལྟོས།
 SSH སྒྲིག་འགོད། ས་གནས་ host དོ་དམ། VPS ཆ་རྐྱེན་དང་ Omarchy/Hyprland ཆེད་ [CLI ལམ་སྟོན](../CLI.md) ལ་ལྟོས། `deskport doctor` གྱིས་ host ཆ་རྐྱེན་ཞིབ་བཤེར་བྱེད།
-`deskport status --json` གྱིས་སྒེའུ་ཁུང་མ་ཕྱེ་བར་འཁོར་བཞིན་པའི་པར་གཞི་བརྟག་དཔྱད་བྱེད། `nix run . -- --help` གྱིས་བཀའ་བརྡའི་ངོས་ལྡེབ་སྟོན།
-མ་སྦྲེལ་གོང་ host ཐོག་མཉམ་སྤྱོད་འགོ་འཛུགས་ནས་སྒྲིག་ཆས་སྦྲེལ། Sunshine PIN རྙིང་པའི་ཆ་སྒྲིག་ཀྱང་ཡོད། སྒེར་གྱི་ host དང་ཆ་སྒྲིག་ངོས་འཛིན་ཚུད་མེད་ལ་
-Moonlight ནས་ནང་འདྲེན་ཡང་མི་བྱེད།
-ལག་བཀོད་ཁ་བྱང་གསར་པས་སྔོན་སྒྲིག་ཏུ་ DeskPort གི་ port `48989` སྤྱོད། host གི་མཉམ་སྤྱོད་ཤོག་ངོས་ཐོག་སྟོན་པའི་ port མི་འདྲ་ན་དེ་ཁ་སྣོན་བྱེད། ཡང་ན་
-སྔོན་སྒྲིག་རང་རྐྱ་ Sunshine སྒྲིག་འཇུག་དང་གསལ་པོར་སྦྲེལ་བར་ `host:47989` སྤྱོད། ཉར་ཚགས/རྙེད་པའི་མཐའ་ཚིག་གིས་རང་གི་ port ཉར།
+`deskport status --json` གྱིས་སྒེའུ་ཁུང་མ་ཕྱེ་བར་འཁོར་བཞིན་པའི་པར་གཞི་བརྟག་དཔྱད་བྱེད། `nix run . -- --help`
 
 རྩོམ་སྒྲིག་རུང་བའི་རང་བཞིན་ build ཆེད:
 

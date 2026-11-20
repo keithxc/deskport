@@ -30,10 +30,14 @@
 </p>
 
 <p align="center">
-  A remote desktop workspace built on Moonlight and Sunshine.<br>
+  An independent remote desktop workspace with its own client and host.<br>
   Keep your remote desktop ready in the background, bring it onto your current
   workspace with one action, and tuck it away without reconnecting.
 </p>
+
+> **Pair a DeskPort client with a DeskPort host.** DeskPort device binding is
+> incompatible with stock Sunshine on the host side and stock Moonlight on the
+> client side. Full desktop host packages include DeskPort's patched Sunshine host.
 
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
@@ -46,15 +50,15 @@
 
 ## Main features
 
-**2.9.0 desktop release:** [release notes](docs/releases/RELEASE_2.9.0.md) and
+**2.9.0 stable desktop release:** [release notes](docs/releases/RELEASE_2.9.0.md) and
 [versioned downloads](https://github.com/keithxc/deskport/releases/tag/v2.9.0).
 Desktop numbering moves from 0.7.x to 2.9.0 to align with iOS and Android.
 This update integrates session and input lifetime fixes, browser playback
 recovery, codec qualification and shared desktop policy.
 
-- **One desktop app for viewing and sharing.** Bundled Sunshine, device approval,
-  independent credentials and settings; no separate Sunshine installation for the
-  macOS, Windows and Linux host packages (not the viewer-only Flatpak).
+- **One desktop app for viewing and sharing.** The DeskPort host includes adapted,
+  patched Sunshine code, device approval and independent credentials and settings.
+  macOS, Windows and Linux host packages include it; Flatpak provides viewing only.
 - **A workspace that follows your client.** Adaptive sizing on compatible macOS
   and KDE hosts, HiDPI, portrait/landscape mobile layouts and per-device size tuning.
   Size changes briefly reconnect video; they are not seamless encoder changes.
@@ -77,8 +81,9 @@ recovery, codec qualification and shared desktop policy.
 
 ## Interface preview
 
-DeskPort **0.7.6** running on macOS, captured on 2026-10-27 with the
-Simplified Chinese interface. Click a panel for the full-size image.
+Historical preview of DeskPort **0.7.6** running on macOS, captured on 2026-10-27
+with the Simplified Chinese interface.
+Click a panel for the full-size image.
 
 [![DeskPort 0.7.6 device list on macOS](docs/media/devices-macos-076.jpg)](docs/media/devices-macos-076.jpg)
 
@@ -105,11 +110,22 @@ does not certify every feature on every GPU or OS session. The release verificat
 | Linux x86_64 Flatpak | Viewer only | **2.9.0**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Client only | **2.7 (63)** · Google Play closed testing in progress | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | Viewer + host + virtual display | **2.9.0**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) |
+| Windows x64 | Viewer + host + virtual display | **2.9.0**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [Portable viewer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
+**2.9.0 package verification:** The exact macOS artifacts passed Developer ID
+signing, Apple notarization and Gatekeeper verification after ZIP extraction.
+Native Windows checks covered the exact Setup upgrade, startup, service,
+`serverinfo` and Defender scan; the application and installer remain unsigned,
+and the portable ZIP is viewer-only. Linux records cover package, VM, container
+and startup checks; Flatpak is viewer-only. These checks do not establish full
+physical streaming, input, display transitions, HDR, clipboard or every hardware
+combination. See [VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)
+and [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)
+for the exact scope; historical results retain their original versions and sources.
+
 > **Windows antivirus notice:** Antivirus software may flag DeskPort's Windows helper components as a false positive.
-> We have not encountered this in our own testing. Keep Defender enabled; if a warning appears,
+> Keep Defender enabled; if a warning appears,
 > see the release verification report and [sample history](docs/WINDOWS_DEVELOPMENT.md#windows-antivirus-notice).
 
 Native Linux packages require glibc 2.39+: Ubuntu 24.04+/Debian 13+, Fedora 44,
@@ -137,7 +153,8 @@ Accessibility permissions to use host features. Nix and Homebrew are not require
 for your system and follow the [distribution-specific steps below](#linux-installation-by-distribution),
 including the [host input requirements](docs/LINUX_PACKAGES.md#first-connection-and-hosting).
 With Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
-Flatpak provides viewing only. Before installing, require the published [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt), a [verification report](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt), and [Linux package verification](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt).
+The [portable tar archive](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-linux-x86_64.tar.gz)
+also requires glibc 2.39+. Flatpak provides viewing only. Before installing, require the published [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt), a [verification report](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt), and [Linux package verification](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt).
 
 **Android 2.7 (63)** · ~~$4.99~~ · Until Google Play closed testing is complete, the [signed APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) is available on GitHub. The mobile clients are closed source. GitHub temporarily provides the Android installer only.
 
@@ -148,12 +165,28 @@ The mobile app is a paid, one-time purchase; see your storefront for current loc
 pricing. Desktop releases remain free and open source. Purchases support signing,
 test hardware and continued development.
 
-Start Sharing on the host, select it on the client, and approve the device on the
-host. Both devices need a working network path: use a LAN or your own VPN such as
-Tailscale. DeskPort does not provide an account service, hosted desktops, a relay
-or a network tunnel. Legacy Sunshine PIN pairing remains available.
+### Connect your devices
 
-**0.7.3 stable (historical verification):** This desktop update brings a shared 22-locale UI
+Start Sharing on the **DeskPort host**, select it on the **DeskPort client**, and
+approve the device on the host. The desktop app retains a separate legacy PIN
+option alongside DeskPort device binding.
+Both devices need a working network path: use a LAN or your own VPN such as
+Tailscale. DeskPort does not provide an account service, hosted desktops, a relay
+or a network tunnel.
+
+**Browser access:** DeskPort desktop hosts serve an HTTPS remote desktop with a
+30-second sign-in code, optional browser pairing for seven days, adaptive sizing
+and fullscreen. See the [browser guide](docs/BROWSER_ACCESS.md) for capabilities
+and acceptance limits. This connects to the DeskPort host.
+
+<details>
+<summary>Historical desktop release notes and verification</summary>
+
+See the original release notes for [0.7.8](docs/releases/RELEASE_0.7.8.md),
+the [0.7.4 replacement](docs/releases/RELEASE_0.7.4.md) and
+[0.7.1](docs/releases/RELEASE_0.7.1.md).
+
+**0.7.3 stable (historical verification):** This desktop update introduced a shared 22-locale UI
 catalog alongside additional desktop legacy translations, browser language
 switching, Windows signed-in sharing without repeated
 UAC, virtual-display system scaling, Linux runtime repairs, guarded Hyprland/X11
@@ -164,7 +197,7 @@ native CLI and protected antivirus scanning, and Linux runtime/package scenarios
 Earlier native and integration results retain their original source identities.
 
 **0.7.2 stable (historical verification):** The [desktop release](https://github.com/keithxc/deskport/releases/tag/v0.7.2)
-combines resize, remote-streaming, data-saver and Linux runtime improvements.
+combined resize, remote-streaming, data-saver and Linux runtime improvements.
 Its 21 assets include packages, corresponding sources, relinking materials and
 verification records. See the [0.7.2 release notes](docs/releases/RELEASE_0.7.2.md).
 The final AppImage passed a fresh Bazzite KDE Wayland VM check with normal FUSE
@@ -186,11 +219,7 @@ introduced faster resize reconnects, blurred transitions and smoother macOS drag
 added the Bazzite AppImage fixes. Their [rc.1 notes](docs/releases/RELEASE_0.7.2-rc.1.md)
 and [rc.2 notes](docs/releases/RELEASE_0.7.2-rc.2.md) retain the earlier validation scope.
 
-**Browser access:** Desktop hosts serve an HTTPS remote desktop with a
-30-second sign-in code, optional browser pairing for seven days, adaptive sizing
-and fullscreen. See the [0.7.1 release notes](docs/releases/RELEASE_0.7.1.md) and
-[browser guide](docs/BROWSER_ACCESS.md). The AppImage includes a private glibc
-runtime; native packages retain their glibc 2.39 requirement.
+</details>
 
 ### Linux installation by distribution
 
@@ -199,33 +228,19 @@ release downloads. Native packages require glibc 2.39 or newer. These are upstre
 packages from a DeskPort distribution repository; install future releases by
 downloading and verifying the new package again.
 
-The 0.7.3 AppImage retains the portable-runtime, display-restoration,
-process-teardown, permission and login-startup fixes for Bazzite/KDE Wayland
-[issue #5](https://github.com/keithxc/deskport/issues/5), including the small Qt
-Wayland 6.4.2 backport. That backport is AppImage-specific; native packages and
-Flatpak retain their baseline Qt runtime. The final **0.7.3** AppImage passed normal
-FUSE startup and helper/runtime checks in a fresh Bazzite KDE Wayland VM with
-SELinux Enforcing and software graphics. This does not verify a physical GPU or
-real streaming; see the [0.7.3 verification scope](docs/releases/RELEASE_0.7.3.md#validation-boundary).
-
+The [2.9.0 Linux verification record](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)
+describes the current exact packages and their VM/container/startup checks.
 Full-VM installation, upgrade, rollback, removal and configuration-retention
-results are tracked in the [desktop lifecycle matrix](docs/LINUX_DESKTOP_ACCEPTANCE.md).
-An AppImage GUI smoke does not verify native package operations.
-Package installation and GUI launch alone do not verify live capture, hardware
-video decoding, remote input, visual quality or latency.
-
-The retained Ubuntu 26.04 GNOME VM reproduces a startup crash in the published
-0.7.2 DEB's older private VA-API Wayland library. The final 0.7.3 DEB reuses pinned
-libva 2.23.0 in both private runtime trees and isolates system utilities from host
-library overrides. It passed GUI/API and upgrade checks in a fresh overlay of
-that VM. Synthetic configuration remained intact through rollback and uninstall;
-the old-version crash was reproduced before upgrade and after rollback. Existing release assets keep
-their original hashes. GNOME capture startup and repeated virtual-output creation
-remain separate acceptance gaps. Debian 13's KWin 6.3 also remains below the host
-display-helper's 6.6 minimum. In the 0.7.7 isolated canvas test, Omarchy
-reached 11 stages before the fullscreen-restore limit also observed with the
-0.7.6 control; this is not a physical-input or real-streaming test. See the
-[0.7.7 Linux verification record](https://github.com/keithxc/deskport/releases/download/v0.7.7/VERIFICATION-linux.txt).
+checkpoints are retained in the [desktop lifecycle matrix](docs/LINUX_DESKTOP_ACCEPTANCE.md)
+with their original versions. Earlier Bazzite runtime and Ubuntu VA-API checks
+remain in the [0.7.3 notes](docs/releases/RELEASE_0.7.3.md#validation-boundary).
+The [0.7.7 Linux verification record](https://github.com/keithxc/deskport/releases/download/v0.7.7/VERIFICATION-linux.txt)
+retains the isolated Omarchy canvas limit also observed in the 0.7.6 control.
+These historical checks do not qualify the 2.9.0 packages. Installation and GUI
+launch alone do not verify live capture, hardware decoding, remote input,
+display restoration, visual quality or latency. Debian 13's KWin 6.3 remains
+below the host display-helper's 6.6 minimum; GNOME hosting depends on the
+installed Mutter/capture capabilities.
 
 | Distribution / desktop | Download route |
 | --- | --- |
@@ -233,7 +248,7 @@ reached 11 stages before the fullscreen-restore limit also observed with the
 | Debian 13 KDE | DEB, installed with APT |
 | Fedora 44 KDE | RPM, installed with DNF |
 | Arch Linux KDE | Local Arch package, installed with `pacman -U` |
-| Bazzite KDE | 2.9.0 AppImage; historical 0.7.3 VM checks are scoped above |
+| Bazzite KDE | 2.9.0 AppImage |
 | Omarchy / Hyprland | Local Arch package, installed with `pacman -U` |
 
 Open a terminal in your normal desktop session. Each command sequence verifies
@@ -405,7 +420,7 @@ the next local Arch package, then installing it with
 Omarchy's repository/AUR package menu does not make this GitHub download a
 repository package.
 
-Hyprland hosting uses a dedicated headless output. The 0.7.3 source supports
+Hyprland hosting uses a dedicated headless output. DeskPort supports
 mirror, turn-off-others and extension policies when monitor identity and runtime
 state can be restored safely; see [Hyprland display leases](docs/HYPRLAND_DISPLAY.md).
 Follow the [Omarchy/Hyprland host guide](docs/CLI.md#omarchy-and-hyprland)
@@ -430,7 +445,7 @@ flatpak run io.github.keithxc.DeskPort
 ```
 
 The local bundle may download its Freedesktop Platform 25.08 runtime. It provides
-viewing only, without Sunshine hosting or desktop login-service integration.
+viewing only, without DeskPort hosting or desktop login-service integration.
 Install future downloaded bundles with `flatpak install --user --or-update ./NEW_FILENAME.flatpak`
 after verifying their checksums. Remove with
 `flatpak uninstall --user io.github.keithxc.DeskPort`. This is a GitHub release
@@ -510,13 +525,12 @@ Nix build inputs remain pinned external dependencies. Native builds must initial
 For SSH setup, local host management, VPS prerequisites and Omarchy/Hyprland,
 see the [CLI guide](docs/CLI.md). `deskport doctor` checks hosting prerequisites;
 `deskport status --json` inspects the running instance without opening a window.
-`nix run . -- --help` lists the command-line interface. Start Sharing on the host and bind the devices before connecting. Legacy
-Sunshine PIN pairing is also available. No personal host or pairing
-credential is included or imported from Moonlight.
-New manual addresses default to DeskPort's port `48989`. Include the port shown
-on the host's sharing page if different, or use `host:47989` to connect explicitly
-to a default standalone Sunshine installation. Saved/discovered endpoints retain
-their own ports.
+`nix run . -- --help` lists the command-line interface. Start Sharing on the
+DeskPort host and [bind the DeskPort client](#connect-your-devices) before connecting.
+No personal host or pairing credential is included or imported from Moonlight.
+New manual addresses default to DeskPort's port `48989`. If different, use the
+port shown on the DeskPort host's sharing page. Saved/discovered DeskPort
+endpoints retain their own ports.
 
 For an editable native build with external compiler output:
 
@@ -540,7 +554,8 @@ and cleaned with one command. Signing examples contain placeholders only.
 
 ## What is different from Moonlight?
 
-- Bundled Sunshine host with device approval, takeover and per-device settings.
+- DeskPort client and bundled host with device approval, takeover and per-device
+  settings.
 - Sessions stay connected while the viewer is hidden; recall it from the tray/menu bar.
 - HTTPS browser access served by desktop hosts.
 - Separate `deskport` executable, `DeskPort` Qt settings namespace and
@@ -567,11 +582,15 @@ Client platform support and host support are separate: a Mac host does not requi
 a DeskPort Mac client. Hardware decode, live input, image quality and recall latency need real
 session testing; a successful build does not establish them.
 
-## Next milestone
+## Project status and remaining acceptance
 
-Keep one session connected across **50 hide/show cycles**, show the window on the
-current workspace, and reliably return local input. Measure fresh-frame latency
-and background resource use separately from window appearance.
+Desktop **2.9.0** is the current stable PC release. Implemented features and
+package checks are distinct from full physical acceptance. Repeatable
+**50 hide/show cycles**, current-workspace recall and reliable local input
+release remain acceptance criteria for the exact client/host combination.
+Measure fresh-frame latency and background resource use separately from window
+appearance; historical passes do not establish current hardware results.
+Seamless remains experimental and deferred from stable support.
 
 See [the roadmap](docs/ROADMAP.md) for acceptance criteria and deferred features,
 and [upstream notes](docs/UPSTREAM.md) for provenance and maintenance boundaries.
@@ -623,9 +642,11 @@ on a computer for unattended access.
 
 DeskPort is an independent derivative of [Moonlight Qt](https://github.com/moonlight-stream/moonlight-qt),
 initially based on v6.1.0. It is not an official Moonlight or Sunshine release.
-Moonlight provides the streaming foundation; [Sunshine](https://github.com/LizardByte/Sunshine)
-is bundled in the macOS, Windows and Linux host packages (not the viewer-only Flatpak) and supplied by the Linux Nix package.
-Separately installed Sunshine services are kept independent.
+Moonlight provides the inherited streaming foundation. The DeskPort host uses
+adapted, patched [Sunshine](https://github.com/LizardByte/Sunshine) code, bundled
+in the macOS, Windows and Linux host packages (not the viewer-only Flatpak) and
+supplied by the Linux Nix package. Separately installed Sunshine services keep
+their own settings and credentials.
 
 GPL-3.0-or-later; see [LICENSE](LICENSE), retained source notices and the
 license of each vendored dependency listed in [docs/VENDORED.md](docs/VENDORED.md). Original documentation is preserved in
