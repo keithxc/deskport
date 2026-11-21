@@ -98,8 +98,15 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
         }
     });
     connect(host, &HostManager::caretChanged, this, [this](const QJsonObject& caret) {
-        if (m_DisplayLink && m_DisplayLink->displayControl && m_DisplayLink->caretUpdates)
-            send(m_DisplayLink, {{"type", DP_MESSAGE_TEXT_CARET}, {"caret", caret}});
+        if (!m_DisplayLink || !m_DisplayLink->displayControl || !m_DisplayLink->caretUpdates) return;
+        const bool valid = caret["valid"].toBool();
+        // Suppress repeated idle {"valid":false} samples so stationary/saver
+        // sessions do not wake the TLS channel 5 times per second when no text
+        // caret is active. Active carets keep the 200 ms heartbeat for client
+        // 1 s expiry timers, and a valid -> false transition is sent once.
+        if (!valid && !m_DisplayLink->caretWasValid) return;
+        m_DisplayLink->caretWasValid = valid;
+        send(m_DisplayLink, {{"type", DP_MESSAGE_TEXT_CARET}, {"caret", caret}});
     });
     connect(host, &HostManager::displayResized, this, [this](int seq, int width, int height, const QString& error) {
         auto link = m_DisplayLink;
@@ -860,7 +867,11 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
         link->clientWindow = message["clientWindow"].toInt() == DP_CLIENT_WINDOW_VERSION;
         link->clientFullScreen = !message.contains("clientFullScreen") || message["clientFullScreen"].toBool();
         link->displayPolicy = policy;
-        link->displayControl = true; link->caretUpdates = message["textCaret"].toBool(); link->displaySequence = seq;
+        link->displayControl = true;
+        const bool subscribeCaret = message["textCaret"].toBool();
+        if (!subscribeCaret || !link->caretUpdates) link->caretWasValid = false;
+        link->caretUpdates = subscribeCaret;
+        link->displaySequence = seq;
         link->lastDisplayRequest = QDateTime::currentMSecsSinceEpoch();
         if (m_DisplayLink != link) ++m_SessionEpoch;
         m_DisplayLink = link;
