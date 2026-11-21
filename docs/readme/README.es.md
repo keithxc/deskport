@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@ Los paquetes exactos de macOS 2.9.0 superaron Developer ID, notarización de App
 | Linux x86_64 | Visor + host; espacio de trabajo virtual adaptativo en hosts KWin, Mutter y Hyprland compatibles | **2.9.0 estable**: DEB, RPM, Arch, AppImage, archivo portable y Nix | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [guía de instalación](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Solo visor | **2.9.0 estable**, Freedesktop Platform 25.08 | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Solo cliente | App Store; las compilaciones más recientes se prueban por separado en TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Solo cliente | **2.7 (63)** · Prueba cerrada de Google Play en curso | [Descargar APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Solo cliente | **2.9.0 (67)** · Prueba cerrada de Google Play en curso | [Descargar APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Visor + host + pantalla virtual | **2.9.0 estable**; Setup con host, ZIP portable solo como visor; aplicación e instalador sin firma | [Instalador](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Mac Intel | No cualificado | Sin paquete de versión verificado | — |
 
@@ -122,7 +122,7 @@ para tu sistema y sigue la [guía de instalación](../LINUX_PACKAGES.md),
 incluidos los permisos de entrada del host. Con Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak solo permite visualizar. Los recursos de la versión incluyen [sumas de verificación SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) y un [informe de verificación](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Hasta que termine la prueba cerrada de Google Play, el [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) está disponible temporalmente en GitHub. Los clientes móviles son de código cerrado. Aquí solo se distribuye el instalador.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Hasta que termine la prueba cerrada de Google Play, el [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) está disponible temporalmente en GitHub. Los clientes móviles son de código cerrado. Aquí solo se distribuye el instalador.
 
 La compilación 63 usa la misma clave de firma que Google Play. Al actualizar a una versión posterior de Play se conservan los equipos vinculados y los ajustes. Si instalaste la compilación 62 de GitHub, debes desinstalarla antes de instalar la 63. Se borrarán los ajustes locales y tendrás que volver a vincular los equipos.
 

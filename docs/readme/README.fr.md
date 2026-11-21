@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@ Les paquets exacts 2.9.0 pour macOS ont passé les contrôles Developer ID, nota
 | Linux x86_64 | Visualiseur + hôte ; espace de travail virtuel adaptatif sur les hôtes KWin, Mutter et Hyprland compatibles | **2.9.0 stable** : DEB, RPM, Arch, AppImage, archive portable et Nix | [Version](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [guide d'installation](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Visualiseur uniquement | **2.9.0 stable**, Freedesktop Platform 25.08 | [Version](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client uniquement | App Store ; les builds plus récents sont testés séparément dans TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client uniquement | **2.7 (63)** · Test fermé Google Play en cours | [Télécharger l’APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Client uniquement | **2.9.0 (67)** · Test fermé Google Play en cours | [Télécharger l’APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Visualiseur + hôte + écran virtuel | **2.9.0 stable** ; Setup avec hôte, ZIP portable réservé à la visualisation ; application et installateur non signés | [Installateur](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Mac Intel | Non qualifié | Aucun paquet de version vérifié | — |
 
@@ -122,7 +122,7 @@ adapté à votre système et suivez le [guide d'installation](../LINUX_PACKAGES.
 y compris les autorisations d'entrée de l'hôte. Avec Nix : `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak permet uniquement l'affichage. Les fichiers de la version incluent des [sommes de contrôle SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) et un [rapport de vérification](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · En attendant la fin du test fermé sur Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) est disponible temporairement sur GitHub. Le code source des clients mobiles est privé. Seul le fichier d’installation est distribué ici.
+**Android 2.9.0 (67)** · ~~$4.99~~ · En attendant la fin du test fermé sur Google Play, l’[APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) est disponible temporairement sur GitHub. Le code source des clients mobiles est privé. Seul le fichier d’installation est distribué ici.
 
 La version 63 utilise la même clé de signature que Google Play. Une mise à jour vers une version ultérieure de Play conserve les ordinateurs associés et les réglages. Si vous avez installé la version 62 de GitHub, vous devez la désinstaller avant d’installer la 63. Les réglages locaux seront effacés et il faudra associer de nouveau vos ordinateurs.
 

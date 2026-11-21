@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@ De exacte macOS-pakketten van 2.9.0 zijn gecontroleerd op Developer ID, Apple-no
 | Linux x86_64 | Viewer + host; adaptieve werkruimte op geschikte KWin-, Mutter- en Hyprland-hosts | **2.9.0 stabiel**: DEB, RPM, Arch, AppImage, draagbaar archief en Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [installatiegids](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Alleen viewer | **2.9.0 stabiel**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Alleen client | App Store; nieuwere builds apart getest in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Alleen client | **2.7 (63)** · Gesloten test op Google Play loopt | [APK downloaden](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Alleen client | **2.9.0 (67)** · Gesloten test op Google Play loopt | [APK downloaden](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Viewer + host + virtueel scherm | **2.9.0 stabiel**; Setup met host, draagbare ZIP alleen als viewer; toepassing en installatieprogramma niet ondertekend | [Installatieprogramma](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Niet gekwalificeerd | Geen geverifieerd releasepakket | — |
 
@@ -122,7 +122,7 @@ inclusief de [vereisten voor hostinvoer](../LINUX_PACKAGES.md#first-connection-a
 Met Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 De Flatpak biedt alleen bekijken. De release bevat [SHA-256-controlesommen](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) en een [verificatierapport](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Tot de gesloten test op Google Play is afgerond, is de [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tijdelijk beschikbaar op GitHub. De broncode van de mobiele apps is gesloten. Hier wordt alleen het installatiebestand aangeboden.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Tot de gesloten test op Google Play is afgerond, is de [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) tijdelijk beschikbaar op GitHub. De broncode van de mobiele apps is gesloten. Hier wordt alleen het installatiebestand aangeboden.
 
 Build 63 gebruikt dezelfde ondertekeningssleutel als Google Play. Bij een update naar een nieuwere Play-versie blijven gekoppelde computers en instellingen behouden. Heb je build 62 van GitHub geïnstalleerd, verwijder deze dan voordat je build 63 installeert. Je lokale instellingen worden gewist en je moet je computers opnieuw koppelen.
 

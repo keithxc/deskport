@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@
 | Linux x86_64 | व्यूअर + होस्ट; सक्षम KWin, Mutter और Hyprland होस्ट पर अनुकूली वर्कस्पेस | **2.9.0 स्थिर**: DEB, RPM, Arch, AppImage, पोर्टेबल आर्काइव और Nix | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [इंस्टॉलेशन गाइड](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | केवल व्यूअर | **2.9.0 स्थिर**, Freedesktop Platform 25.08 | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | केवल क्लाइंट | App Store; नए बिल्ड TestFlight में अलग से परखे जाते हैं | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | केवल क्लाइंट | **2.7 (63)** · Google Play का बंद परीक्षण जारी है | [APK डाउनलोड करें](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | केवल क्लाइंट | **2.9.0 (67)** · Google Play का बंद परीक्षण जारी है | [APK डाउनलोड करें](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | व्यूअर + होस्ट + वर्चुअल डिस्प्ले | **2.9.0 स्थिर**; Setup में होस्ट, पोर्टेबल ZIP केवल व्यूअर; ऐप और इंस्टॉलर अहस्ताक्षरित | [इंस्टॉलर](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | योग्य नहीं | कोई सत्यापित रिलीज़ पैकेज नहीं | — |
 
@@ -122,7 +122,7 @@ DeskPort को Applications में खींचें और खोलें
 Nix के साथ: `nix run --refresh github:keithxc/deskport/v2.9.0`।
 Flatpak केवल देखने की सुविधा देता है। रिलीज़ में [SHA-256 चेकसम](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) और [सत्यापन रिपोर्ट](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) शामिल हैं।
 
-**Android 2.7 (63)** · ~~$4.99~~ · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
+**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
 
 बिल्ड 63 में Google Play वाली साइनिंग कुंजी का इस्तेमाल हुआ है। आगे चलकर Play के नए संस्करण में अपडेट करने पर पेयर किए गए कंप्यूटर और सेटिंग्स बनी रहेंगी। अगर आपने GitHub से बिल्ड 62 इंस्टॉल किया था, तो 63 इंस्टॉल करने से पहले उसे अनइंस्टॉल करना होगा। इससे स्थानीय सेटिंग्स मिट जाएँगी और कंप्यूटर फिर से पेयर करने होंगे।
 

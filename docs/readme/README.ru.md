@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@
 | Linux x86_64 | Просмотр + хост; адаптивное виртуальное рабочее пространство на подходящих хостах KWin, Mutter и Hyprland | **2.9.0 стабильная**: DEB, RPM, Arch, AppImage, переносной архив и Nix | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [руководство по установке](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Только просмотр | **2.9.0 стабильная**, Freedesktop Platform 25.08 | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Только клиент | App Store; новые сборки отдельно тестируются в TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Только клиент | **2.7 (63)** · Идёт закрытое тестирование в Google Play | [Скачать APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Только клиент | **2.9.0 (67)** · Идёт закрытое тестирование в Google Play | [Скачать APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Просмотр + хост + виртуальный дисплей | **2.9.0 стабильная**; Setup с хостом, переносимый ZIP только для просмотра; приложение и установщик не подписаны | [Установщик](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Не квалифицировано | Нет проверенного пакета выпуска | — |
 
@@ -122,7 +122,7 @@ AppImage и переносные сборки автоматически рег�
 включая разрешения на ввод для хоста. Через Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak обеспечивает только просмотр. Файлы выпуска включают [контрольные суммы SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) и [отчёт о проверке](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Пока не завершено закрытое тестирование в Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) временно доступен на GitHub. Исходный код мобильных клиентов закрыт. Здесь распространяется только установочный пакет.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Пока не завершено закрытое тестирование в Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) временно доступен на GitHub. Исходный код мобильных клиентов закрыт. Здесь распространяется только установочный пакет.
 
 Сборка 63 подписана тем же ключом, что и приложение в Google Play. При обновлении до более новой версии из магазина сохраняются настройки и сопряжения с компьютерами. Если у вас установлена сборка 62 с GitHub, перед установкой сборки 63 её нужно удалить. Локальные настройки будут сброшены, а компьютеры придётся подключить заново.
 

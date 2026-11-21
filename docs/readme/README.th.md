@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -91,7 +91,7 @@
 | Linux x86_64 | ตัวแสดงผล + โฮสต์; พื้นที่ทำงานปรับขนาดได้บนโฮสต์ KWin, Mutter และ Hyprland ที่รองรับ | **2.9.0 เสถียร**: DEB, RPM, Arch, AppImage, ไฟล์พกพา และ Nix | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [คู่มือการติดตั้ง](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | ตัวแสดงผลเท่านั้น | **2.9.0 เสถียร**, Freedesktop Platform 25.08 | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | ไคลเอนต์เท่านั้น | App Store; รุ่นใหม่กว่าทดสอบแยกใน TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | ไคลเอนต์เท่านั้น | **2.7 (63)** · อยู่ระหว่างการทดสอบแบบปิดบน Google Play | [ดาวน์โหลด APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | ไคลเอนต์เท่านั้น | **2.9.0 (67)** · อยู่ระหว่างการทดสอบแบบปิดบน Google Play | [ดาวน์โหลด APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | ตัวแสดงผล + โฮสต์ + จอเสมือน | **2.9.0 เสถียร**; Setup มีโฮสต์ ZIP แบบพกพาใช้ดูเท่านั้น แอปและตัวติดตั้งไม่ได้ลงนาม | [ตัวติดตั้ง](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | ยังไม่ผ่านเกณฑ์ | ไม่มีแพ็กเกจรุ่นเผยแพร่ที่ผ่านการตรวจสอบ | — |
 
@@ -117,7 +117,7 @@ AppImage มีรันไทม์ส่วนตัวสำหรับเ�
 ใช้ Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`
 Flatpak ใช้ดูได้อย่างเดียว รุ่นเผยแพร่มี[เช็กซัม SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) และ[รายงานการตรวจสอบ](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)
 
-**Android 2.7 (63)** · ~~$4.99~~ · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
+**Android 2.9.0 (67)** · ~~$4.99~~ · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
 
 บิลด์ 63 ใช้คีย์ลงนามเดียวกับ Google Play เมื่ออัปเดตเป็นเวอร์ชันที่ใหม่กว่าจาก Play การจับคู่กับคอมพิวเตอร์และการตั้งค่าจะยังอยู่ หากติดตั้งบิลด์ 62 จาก GitHub ต้องถอนการติดตั้งก่อนติดตั้งบิลด์ 63 การถอนการติดตั้งจะล้างการตั้งค่าในเครื่องและต้องจับคู่คอมพิวเตอร์ใหม่
 

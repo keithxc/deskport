@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@
 | Linux x86_64 | 뷰어 + 호스트, 지원 KWin·Mutter·Hyprland 호스트에서 적응형 가상 작업 공간 | **2.9.0 정식 버전**: DEB, RPM, Arch, AppImage, 포터블 아카이브, Nix | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [설치 가이드](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 뷰어 전용 | **2.9.0 정식 버전**, Freedesktop Platform 25.08 | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | 클라이언트 전용 | App Store, 최신 빌드는 TestFlight에서 별도 테스트 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 클라이언트 전용 | **2.7 (63)** · Google Play 비공개 테스트 진행 중 | [APK 다운로드](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | 클라이언트 전용 | **2.9.0 (67)** · Google Play 비공개 테스트 진행 중 | [APK 다운로드](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | 뷰어 + 호스트 + 가상 디스플레이 | **2.9.0 안정판**; Setup은 호스트 포함, 휴대용 ZIP은 뷰어 전용; 앱과 설치 프로그램은 서명되지 않음 | [설치 프로그램](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 검증되지 않음 | 검증된 릴리스 패키지 없음 | — |
 
@@ -121,7 +121,7 @@ DeskPort를 응용 프로그램 폴더로 끌어다 놓은 뒤 실행합니다. 
 Nix 사용 시: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak은 보기 기능만 제공합니다. 릴리스 자산에는 [SHA-256 체크섬](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)과 [검증 보고서](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)가 포함됩니다.
 
-**Android 2.7 (63)** · ~~$4.99~~ · Google Play 비공개 테스트가 끝날 때까지 GitHub에서 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)를 임시로 제공합니다. 모바일 클라이언트의 소스 코드는 비공개이며 여기서는 설치 파일만 배포합니다.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play 비공개 테스트가 끝날 때까지 GitHub에서 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk)를 임시로 제공합니다. 모바일 클라이언트의 소스 코드는 비공개이며 여기서는 설치 파일만 배포합니다.
 
 빌드 63은 Google Play와 같은 앱 서명 키를 사용합니다. 이후 더 최신인 Play 버전으로 업데이트하면 페어링된 컴퓨터와 설정이 유지됩니다. GitHub에서 빌드 62를 설치했다면 63을 설치하기 전에 기존 앱을 삭제해야 합니다. 로컬 설정이 삭제되며 컴퓨터를 다시 페어링해야 합니다.
 

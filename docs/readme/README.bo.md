@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -92,7 +92,7 @@
 | Linux x86_64 | Viewer + host; ནུས་ལྡན་ KWin, Mutter དང་ Hyprland host ཐོག་རང་འགྱུར་ལས་ཀའི་ས་ཁུལ | **2.9.0 བརྟན་པོ**: DEB, RPM, Arch, AppImage, འཁྱེར་བདེའི་ཡིག་སྣོད་དང་ Nix | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [སྒྲིག་འཇུག་ལམ་སྟོན](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer ཙམ | **2.9.0 བརྟན་པོ**, Freedesktop Platform 25.08 | [འགྲེམས་སྤེལ](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client ཙམ | App Store; པར་གཞི་གསར་པ་ TestFlight ནང་ལོགས་སུ་ཚོད་ལྟ | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client ཙམ | **2.7 (63)** · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་བསྒྲིལ་མེད། | [APK ཕབ་ལེན།](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Client ཙམ | **2.9.0 (67)** · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་བསྒྲིལ་མེད། | [APK ཕབ་ལེན།](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Viewer + host + རྟོག་བཟོའི་བརྙན་ཡོལ | **2.9.0 བརྟན་པོ**; Setup ནང་གཙོ་འཁོར་ཚུད། འཁྱེར་བདེའི་ ZIP ལྟ་བ་ཙམ། ཉེར་སྤྱོད་དང་སྒྲིག་འཇུག་ཆས་ལ་མིང་རྟགས་མེད། | [སྒྲིག་འཇུག་ཆས](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | ཚད་མ་ལོན | ཞིབ་བཤེར་བྱས་པའི་འགྲེམས་སྤེལ་ཐུམ་སྒྲིལ་མེད | — |
 
@@ -118,7 +118,7 @@ Nix དང་ Homebrew མི་དགོས།
 Nix བརྒྱུད་: `nix run --refresh github:keithxc/deskport/v2.9.0`
 Flatpak ལྟ་བ་ཙམ། འགྲེམས་སྤེལ་ནང་ [SHA-256 checksum](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) དང་ [ཞིབ་བཤེར་སྙན་ཞུ](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) ཚུད་ཡོད།
 
-**Android 2.7 (63)** · ~~$4.99~~ · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་མ་བསྒྲིལ་བར་ GitHub ནས་ [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) གནས་སྐབས་སུ་ཕབ་ལེན་བྱེད་ཐུབ། ཁ་པར་གྱི་ client ལ་ཁུངས་ཀྱི་ཨང་རྟགས་ཡོངས་གྲགས་མི་བྱེད། འདིར་སྒྲིག་འཇུག་ཡིག་ཆ་ཁོ་ན་སྤེལ་ཡོད།
+**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play ཡི་ཚད་བཀག་ཚོད་ལྟ་མཇུག་མ་བསྒྲིལ་བར་ GitHub ནས་ [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) གནས་སྐབས་སུ་ཕབ་ལེན་བྱེད་ཐུབ། ཁ་པར་གྱི་ client ལ་ཁུངས་ཀྱི་ཨང་རྟགས་ཡོངས་གྲགས་མི་བྱེད། འདིར་སྒྲིག་འཇུག་ཡིག་ཆ་ཁོ་ན་སྤེལ་ཡོད།
 
 Build 63 དང་ Google Play གཉིས་ཀྱི་མཚན་རྟགས་ལྡེ་མིག་གཅིག་ཡིན། རྗེས་སུ་ Play ཡི་པར་གཞི་གསར་པར་རིམ་སྤོར་བྱེད་སྐབས་ཆ་སྒྲིག་བྱས་པའི་གློག་ཀླད་དང་སྒྲིག་འགོད་སོར་གནས་བྱེད། GitHub གྱི་ build 62 ནས་ 63 ལ་བརྗེ་སྐབས་སྔོན་ལ་ 62 བསུབ་དགོས། དེས་རང་སའི་སྒྲིག་འགོད་སུབ་པས་གློག་ཀླད་སླར་ཆ་སྒྲིག་བྱེད་དགོས།
 

@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@ Tam macOS 2.9.0 paketleri Developer ID, Apple noter onayı ve ZIP çıkarıldık
 | Linux x86_64 | Görüntüleyici + ana bilgisayar; uygun KWin, Mutter ve Hyprland ana bilgisayarlarında uyarlanabilir çalışma alanı | **2.9.0 kararlı**: DEB, RPM, Arch, AppImage, taşınabilir arşiv ve Nix | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [kurulum kılavuzu](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Yalnızca görüntüleyici | **2.9.0 kararlı**, Freedesktop Platform 25.08 | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Yalnızca istemci | App Store; yeni derlemeler TestFlight'ta ayrıca test edilir | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Yalnızca istemci | **2.7 (63)** · Google Play kapalı testi sürüyor | [APK indir](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Yalnızca istemci | **2.9.0 (67)** · Google Play kapalı testi sürüyor | [APK indir](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Görüntüleyici + ana bilgisayar + sanal ekran | **2.9.0 kararlı**; Setup ana bilgisayar içerir, taşınabilir ZIP yalnızca görüntüleyicidir; uygulama ve yükleyici imzasızdır | [Yükleyici](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Nitelendirilmedi | Doğrulanmış sürüm paketi yok | — |
 
@@ -122,7 +122,7 @@ seçin ve [aşağıdaki dağıtıma özel adımları](#dağıtıma-göre-linux-k
 Nix ile: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak yalnızca görüntüleme sağlar. Sürüm, [SHA-256 sağlama toplamlarını](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) ve bir [doğrulama raporunu](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) içerir.
 
-**Android 2.7 (63)** · ~~$4.99~~ · Google Play kapalı testi tamamlanana kadar [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) geçici olarak GitHub üzerinden indirilebilir. Mobil istemcilerin kaynak kodu kapalıdır. Burada yalnızca kurulum paketi dağıtılır.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play kapalı testi tamamlanana kadar [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) geçici olarak GitHub üzerinden indirilebilir. Mobil istemcilerin kaynak kodu kapalıdır. Burada yalnızca kurulum paketi dağıtılır.
 
 63 numaralı derleme Google Play ile aynı uygulama imzalama anahtarını kullanır. Play üzerinden daha yeni bir sürüme güncellediğinizde eşleştirilmiş bilgisayarlar ve ayarlarınız korunur. GitHub’dan 62 numaralı derlemeyi yüklediyseniz 63’ü yüklemeden önce uygulamayı kaldırmanız gerekir. Yerel ayarlar silinir ve bilgisayarları yeniden eşleştirmeniz gerekir.
 
