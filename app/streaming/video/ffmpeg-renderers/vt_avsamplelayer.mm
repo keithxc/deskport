@@ -18,6 +18,9 @@
 #import <dispatch/dispatch.h>
 #import <Metal/Metal.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 @interface VTView : NSView
 - (NSView *)hitTest:(NSPoint)point;
 @end
@@ -587,3 +590,5 @@ private:
 IFFmpegRenderer* VTRendererFactory::createRenderer() {
     return new VTRenderer();
 }
+
+#pragma clang diagnostic pop

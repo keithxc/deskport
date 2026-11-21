@@ -1,6 +1,9 @@
 # Support debug and release builds from command line for CI
 CONFIG += debug_and_release
 
+# Avoid noisy SDK version mismatch warnings on newer macOS SDKs
+macx: CONFIG += sdk_no_version_check
+
 # Ensure symbols are always generated
 CONFIG += force_debug_info
 

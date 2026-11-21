@@ -562,7 +562,7 @@ private slots:
         host.start(2560,1440);
         const auto statePath = dir.path()+"/host/test-sessions.json";
         QTRY_VERIFY_WITH_TIMEOUT(host.adaptiveDisplayAvailable() && QFile::exists(statePath),5000);
-        auto state = [&] { QFile file(statePath); file.open(QIODevice::ReadOnly); return QJsonDocument::fromJson(file.readAll()).object(); };
+        auto state = [&] { QFile file(statePath); (void)file.open(QIODevice::ReadOnly); return QJsonDocument::fromJson(file.readAll()).object(); };
         auto writeState = [&](QJsonObject object) { QFile file(statePath); QVERIFY(file.open(QIODevice::WriteOnly)); file.write(QJsonDocument(object).toJson()); };
         auto connectPeer = [&](QSslSocket& socket, const char* cert, const char* key) {
             socket.setLocalCertificate(QSslCertificate(credential(cert)));

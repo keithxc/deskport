@@ -11,8 +11,12 @@ void GlobalShortcut::setAvailable(bool available) {
     const bool changed = m_Available != available;
     m_Available = available;
     emit fallbackAvailabilityChanged(available && m_Backend && m_Backend->fixedChord);
-    if (!available) { m_Gate.reset(); m_Token.clear(); }
-    else m_Error.clear();
+    if (!available) {
+        m_Gate.reset();
+        m_Token.clear();
+    } else {
+        m_Error.clear();
+    }
     emit statusChanged();
     if (changed) emit availabilityChanged(available);
 }

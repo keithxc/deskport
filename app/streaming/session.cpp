@@ -1799,6 +1799,7 @@ bool Session::startConnectionAsync()
         deskportResizeStage("resume-request");
         bool resume = m_AdaptiveResume || m_ManualResume || m_Computer->currentGameId != 0;
         for (int attempt = 0; ; ++attempt) {
+            (void)attempt;
             try {
                 http.startApp(resume ? "resume" : "launch",
                               m_Computer->isNvidiaServerSoftware,

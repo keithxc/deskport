@@ -704,7 +704,7 @@ void BrowserGateway::accept(qintptr descriptor) {
     connect(socket, &QSslSocket::disconnected, connection, &QObject::deleteLater);
     connect(socket, qOverload<QAbstractSocket::SocketError>(&QSslSocket::errorOccurred), connection,
         [connection](QAbstractSocket::SocketError) { connection->deleteLater(); });
-    QTimer::singleShot(10000, connection, [this, connection] {
+    QTimer::singleShot(10000, connection, [connection] {
         if (!connection->dispatched) { connection->socket->abort(); connection->deleteLater(); }
     });
     QTimer::singleShot(45000, connection, [this, connection] {

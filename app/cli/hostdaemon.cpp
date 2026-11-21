@@ -15,7 +15,7 @@
 #include <QSettings>
 #include <QSocketNotifier>
 #include <QTimer>
-#ifdef Q_OS_UNIX
+#ifdef Q_OS_LINUX
 #include <csignal>
 #include <fcntl.h>
 #include <sys/socket.h>

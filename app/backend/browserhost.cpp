@@ -62,7 +62,8 @@ BrowserHost::BrowserHost(HostManager* host, QObject* parent, const QString& dire
           [this] { return state(); },
           [this](const QJsonObject& body, QObject* context, Completion done) {
               request(body, context, std::move(done));
-          }}, options(directory), this) {
+          },
+          {}}, options(directory), this) {
     connect(&m_Gateway, &BrowserGateway::changed, this, &BrowserHost::changed);
     connect(host, &HostManager::changed, this, [this] {
         if (!m_Host->running() && !m_Id.isEmpty()) {

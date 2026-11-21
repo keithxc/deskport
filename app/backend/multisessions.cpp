@@ -215,7 +215,7 @@ void MultiSessions::launch(const QString& id) {
         entry->process = nullptr; process->deleteLater(); emit changed();
     });
     process->start();
-    QTimer::singleShot(15000, process, [this,entry,process] {
+    QTimer::singleShot(15000, process, [entry,process] {
         if (entry->process == process && !entry->socket && process->state() != QProcess::NotRunning) {
             entry->error = tr("The desktop worker did not respond."); process->kill();
         }
