@@ -95,6 +95,9 @@ static CGRect fakeBounds(unsigned i) { return CGRectMake([screen(i)[@"x"] intVal
 #define main unusedDisplayHelperMain
 #include "../host/macos/display-helper.m"
 #undef main
+static unsigned virtualDisplayCreations;
+static CGSize lastDescriptorSizeMM;
+static BOOL rejectApplySettings;
 @interface DPTestVirtualDisplayMode ()
 @property unsigned testWidth, testHeight;
 @end
@@ -108,9 +111,16 @@ static CGRect fakeBounds(unsigned i) { return CGRectMake([screen(i)[@"x"] intVal
 @implementation DPTestVirtualDisplayDescriptor
 @end
 @implementation DPTestVirtualDisplay
-- (instancetype)initWithDescriptor:(DPTestVirtualDisplayDescriptor *)descriptor { return [super init]; }
+- (instancetype)initWithDescriptor:(DPTestVirtualDisplayDescriptor *)descriptor {
+    if ((self=[super init])) {
+        virtualDisplayCreations++;
+        lastDescriptorSizeMM = descriptor.sizeInMillimeters;
+    }
+    return self;
+}
 - (unsigned)displayID { return 9; }
 - (BOOL)applySettings:(DPTestVirtualDisplaySettings *)settings {
+    if (rejectApplySettings) return NO;
     DPTestVirtualDisplayMode *mode=settings.modes.firstObject;
     screen(9)[@"width"]=@(mode.testWidth); screen(9)[@"height"]=@(mode.testHeight);
     screen(9)[@"pixelsW"]=@(mode.testWidth*(settings.hiDPI ? 2 : 1));
@@ -127,7 +137,8 @@ static NSMutableDictionary *entry(BOOL enabled,BOOL main,int x) {
 }
 static void reset(void) {
     savedTopology=nil; preserveTopologyJournal=NO; recoveryOwnedDisplay=0; rejectCommit=NO; enableAvailable=YES; modeWrites=0;
-    display=nil; sessionActive=NO; restoreAttempt=0; ++generation;
+    discardDisplay(); sessionActive=NO; restoreAttempt=0; lastWidth=0; lastHeight=0; lastScale=1; ++generation;
+    virtualDisplayCreations=0; lastDescriptorSizeMM=CGSizeZero; rejectApplySettings=NO;
     screens=[@{@1:entry(YES,YES,0),@2:entry(YES,NO,1920),@3:entry(NO,NO,3840),@9:entry(YES,NO,5760)} mutableCopy];
     [NSFileManager.defaultManager removeItemAtPath:topologyPath() error:nil];
 }
@@ -287,13 +298,65 @@ int main(int argc, const char *argv[]) { @autoreleasepool {
     reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR; assert(snapshotTopology(9));
     display=[DPTestVirtualDisplay new]; rejectCommit=YES;
     configure(1920,1888,2,9,YES);
-    for (unsigned i=0;i<5;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
     assert(sessionActive && sessionLayoutWarning);
     assert(lastWidth==1920 && lastHeight==1888 && lastScale==2);
     NSString *events=[topologyPath().stringByDeletingLastPathComponent stringByAppendingPathComponent:@"display-layout-events.jsonl"];
     NSString *logged=[NSString stringWithContentsOfFile:events encoding:NSUTF8StringEncoding error:nil];
     assert([logged containsString:@"local display layout could not be fully applied"]);
     assert([logged containsString:@"original"] && [logged containsString:@"observed"] && [logged containsString:@"time"]);
+
+    // Physical size matches Retina (~220 PPI) / 1x (~110 PPI) square pixels so
+    // WindowServer picks the requested scale as default without a 1x bounce.
+    {
+        CGSize mm2x=physicalSizeForMode(2828,1676,2);
+        assert(mm2x.width==327 && mm2x.height==194);
+        assert(physicalSizeCompatible(mm2x,2828,1676,2));
+        assert(!physicalSizeCompatible(mm2x,2828,1676,1));
+        assert(!physicalSizeCompatible(CGSizeMake(600,340),2828,1676,2));
+        CGSize mmPortrait=physicalSizeForMode(1668,2420,2);
+        assert(mmPortrait.width==193 && mmPortrait.height==279);
+        assert(physicalSizeCompatible(mmPortrait,1668,2420,2));
+        assert(!physicalSizeCompatible(mmPortrait,2420,1668,2));
+        CGSize mm1x=physicalSizeForMode(1920,1080,1);
+        assert(mm1x.width==443 && mm1x.height==249);
+        assert(physicalSizeCompatible(mm1x,1920,1080,1));
+        assert(!physicalSizeCompatible(mm1x,1920,1080,2));
+    }
+
+    // Primary-mirror sessions create with matching DPI, reuse identical modes,
+    // and replace the virtual display when geometry or scale changes.
+    reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR; assert(snapshotTopology(9));
+    configure(5104,2776,2,10,YES);
+    for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==1 && lastDescriptorSizeMM.width==589 && lastDescriptorSizeMM.height==321);
+    assert(lastWidth==5104 && lastHeight==2776 && lastScale==2);
+    configure(5104,2776,2,11,YES); // Same mode stays in-place.
+    for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==1);
+    configure(2828,1676,2,12,YES); // Smaller workspace replaces display with fresh DPI & ID.
+    for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==2 && lastDescriptorSizeMM.width==327 && lastDescriptorSizeMM.height==194);
+    assert(lastWidth==2828 && lastHeight==1676 && lastScale==2);
+
+    // Extended workspaces keep minor compatible resizes in-place to avoid
+    // evacuating windows, while recreating on scale flips or orientation shifts.
+    reset(); sessionDisplayPolicy=DP_DISPLAY_EXTEND; assert(snapshotTopology(9));
+    configure(2560,1440,2,20,YES);
+    for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==1 && lastDescriptorSizeMM.width==296 && lastDescriptorSizeMM.height==166);
+    configure(2400,1350,2,21,YES); // Compatible Retina PPI (~206 PPI): stays in-place.
+    for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==1 && lastWidth==2400 && lastHeight==1350 && lastScale==2);
+    configure(1668,2420,2,22,YES); // Portrait rotation: recreates with square-pixel portrait mm.
+    for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==2 && lastDescriptorSizeMM.width==193 && lastDescriptorSizeMM.height==279);
+    assert(lastWidth==1668 && lastHeight==2420 && lastScale==2);
+    configure(1920,1200,1,23,YES); // Scale flip 2x -> 1x: recreates with 110 PPI mm.
+    for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
+    assert(virtualDisplayCreations==3 && lastDescriptorSizeMM.width==443 && lastDescriptorSizeMM.height==277);
+    assert(lastWidth==1920 && lastHeight==1200 && lastScale==1);
+
     [NSFileManager.defaultManager removeItemAtPath:testHome error:nil];
-    puts("PASS: three policies, mode-list recovery, journal retention, queued restore takeover, degraded local layout and diagnostic events");
+    puts("PASS: three policies, mode-list recovery, journal retention, queued restore takeover, degraded local layout, diagnostic events, DPI sizing and display recreation");
 } }
