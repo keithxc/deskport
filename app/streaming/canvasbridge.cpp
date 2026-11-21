@@ -24,6 +24,7 @@ constexpr const char* CanvasTag = "deskport-shell-canvas";
 constexpr int CanvasTextCode = 0x44505458;
 constexpr int CanvasTouchCancelCode = 0x44505443;
 constexpr int CanvasWheelCode = 0x44505748;
+constexpr int CanvasWakeCode = 0x4450574B;
 constexpr size_t TextPayloadSize = sizeof(SDL_UserEvent::data1) + sizeof(SDL_UserEvent::data2);
 static_assert(TextPayloadSize >= 5 && TextPayloadSize <= SDL_TEXTINPUTEVENT_TEXT_SIZE);
 static_assert(sizeof(SDL_UserEvent::data1) >= sizeof(float) && sizeof(SDL_UserEvent::data2) >= sizeof(float));
@@ -36,6 +37,7 @@ void wakeSdl() {
     if (!type || wakePending.exchange(true, std::memory_order_acq_rel)) return;
     SDL_Event wake{};
     wake.type = type;
+    wake.user.code = CanvasWakeCode;
     if (SDL_PushEvent(&wake) <= 0) wakePending.store(false, std::memory_order_release);
 }
 void windowEvent(SDL_Window* window, Uint8 kind) {
@@ -75,8 +77,16 @@ bool CanvasBridge::requested() { return wanted.load(); }
 void CanvasBridge::registerWindow(SDL_Window* window) {
     if (!enabled() || !window) return;
     if (!wakeEventType.load(std::memory_order_acquire)) {
-        const Uint32 registered = SDL_RegisterEvents(1);
-        if (registered != Uint32(-1)) wakeEventType.store(registered, std::memory_order_release);
+        Uint32 registered = SDL_RegisterEvents(1);
+        if (registered == SDL_USEREVENT) {
+            // Bare SDL_USEREVENT (0x8000) is used with custom user.code values
+            // across Session and CanvasBridge. Reserve a distinct event type so
+            // wake draining and isWakeEvent() never collide with SDL_USEREVENT.
+            registered = SDL_RegisterEvents(1);
+        }
+        if (registered != Uint32(-1) && registered != SDL_USEREVENT) {
+            wakeEventType.store(registered, std::memory_order_release);
+        }
     }
     SDL_SetWindowData(window, CanvasTag, &configured);
     previousFocus = previousHover = false;
@@ -192,7 +202,7 @@ bool CanvasBridge::isTouchCancel(const SDL_Event& event) {
 }
 bool CanvasBridge::isWakeEvent(const SDL_Event& event) {
     const Uint32 type = wakeEventType.load(std::memory_order_acquire);
-    return type != 0 && event.type == type;
+    return type != 0 && event.type == type && event.user.code == CanvasWakeCode;
 }
 void CanvasBridge::setIpcWaiter(std::function<bool(int)> waiter) {
     QMutexLocker lock(&stateMutex);
