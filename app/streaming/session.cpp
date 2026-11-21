@@ -2351,12 +2351,12 @@ void Session::execInternal()
     ResumeWatchdog resumeWatchdog;
     bool initialRateChecked = false;
     for (;;) {
-        CanvasBridge::synchronize(m_Window);
-        if (CanvasBridge::owns(m_Window)) m_IsFullScreen = CanvasBridge::fullscreen();
         if (!m_ThreadedExec && serviceEvents.elapsed() >= 20) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
             serviceEvents.restart();
         }
+        CanvasBridge::synchronize(m_Window);
+        if (CanvasBridge::owns(m_Window)) m_IsFullScreen = CanvasBridge::fullscreen();
         // Hidden from the tray or closed, or the screen is locked.
         const bool screenLocked = m_ClientBlocked || ScreenLockMonitor::locked() || SleepMonitor::asleep();
         if (screenLocked && m_ViewerRequested.exchange(false)) {
@@ -2423,6 +2423,23 @@ void Session::execInternal()
         if (m_AdaptiveDisplay && m_AdaptiveDisplay->takeLeaveFullscreen()) leaveFullscreen();
         if (applyPendingDesktopAdjustment()) goto DispatchDeferredCleanup;
         if (activity.available() && checkAdaptiveResize()) goto DispatchDeferredCleanup;
+        if (!m_ThreadedExec && CanvasBridge::owns(m_Window)) {
+            if (!SDL_PollEvent(&event)) {
+                // On macOS/Windows the worker's hidden SDL window receives no native
+                // pointer events; wait directly on the shell IPC socket so mouse and
+                // keyboard input wake this thread immediately instead of sleeping 20 ms.
+                const int waitMs = SDL_NumJoysticks() > 0 ? 2 : 10;
+                const bool waited = CanvasBridge::waitForIpc(waitMs);
+                CanvasBridge::synchronize(m_Window);
+                if (!SDL_PollEvent(&event)) {
+                    if (waited || !SDL_WaitEventTimeout(&event, waitMs)) {
+                        presence.runCallbacks();
+                        continue;
+                    }
+                }
+            }
+        }
+        else {
 #if SDL_VERSION_ATLEAST(2, 0, 18) && !defined(STEAM_LINK)
         // SDL 2.0.18 has a proper wait event implementation that uses platform
         // support to block on events rather than polling on Windows, macOS, X11,
@@ -2454,6 +2471,10 @@ void Session::execInternal()
             continue;
         }
 #endif
+        }
+        if (CanvasBridge::isWakeEvent(event)) {
+            continue;
+        }
 #if SDL_VERSION_ATLEAST(2, 0, 22)
         // EXT owns heap text, even when a hidden viewer discards the event.
         if (event.type == SDL_TEXTEDITING_EXT) {

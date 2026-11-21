@@ -316,9 +316,9 @@ int main() {
         move[8]=(i%2)?255:0;move[9]=(i%2)?255:1;
         assert(pointer.observe(move.data(),move.size(),i*10).untilMs==0);
     }
-    move[8]=0;move[9]=8;
+    move[8]=0;move[9]=3;
     boost=pointer.observe(move.data(),move.size(),11000);
-    assert(boost.fps==30 && boost.untilMs==11180);
+    assert(boost.fps==60 && boost.untilMs==11180);
     pointer.observe(move.data(),move.size(),11050);
     boost=pointer.observe(move.data(),move.size(),11100);
     assert(boost.fps==60 && boost.untilMs==11800);
@@ -329,7 +329,7 @@ int main() {
         abs[9]=50+(i%2);
         assert(absolute.observe(abs.data(),abs.size(),1010+i*10).untilMs==0);
     }
-    abs[9]=60;assert(absolute.observe(abs.data(),abs.size(),12000).fps==30);
+    abs[9]=53;assert(absolute.observe(abs.data(),abs.size(),12000).fps==60);
     assert(deskport::activityFrameRate({},0,60)==1);
     assert(deskport::activityFrameRate(boost,11100,1)==1);
     deskport::StreamPolicy absoluteClock(60, 100000);

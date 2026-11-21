@@ -1,3 +1,16 @@
+## Mouse latency optimization — 2026-11-21
+
+Batch 1 (implemented):
+
+- [x] Eliminate the embedded-canvas IPC wakeup stall: push a dedicated SDL wakeup event on `CanvasBridge` input/state changes, coalesce consecutive pointer motions while updating cursor coordinates directly, wait directly on the shell IPC socket on macOS/Windows (`!m_ThreadedExec`), skip redundant `SessionCanvas::refresh()` / `canvas-state` IPC on already-hovered pure motion, and flush `QLocalSocket` on `MultiSessions::canvasInput`.
+- [x] Remove Sunshine's 10 ms delayed `BUTTON_LEFT` release hack in absolute mouse mode (`host/overlays/patch-host-mouse-latency.py`), and lower `InputActivity` motion wake threshold from 6 px to 3 px with immediate 60 fps burst ceiling (`host/common/inputactivity.h`).
+
+Batch 2 (TODO):
+
+- [ ] Evaluate selective idle-tail VideoToolbox drain on the macOS host: complete an in-flight frame only when capture goes idle (rather than unconditionally on every 5K60 frame, which caused stutter on 2026-11-02) and verify 5K60 continuous motion + single-frame tail latency on Apple Silicon macOS.
+- [ ] Reduce macOS `libvirtualhid` mouse injection overhead: avoid redundant `CGWarpMouseCursorPosition` calls after `CGEventPost(kCGHIDEventTap, ...)` on non-dragging motion/clicks, set `CGEventSourceSetLocalEventsSuppressionInterval(source, 0.0)`, and cache cursor coordinates instead of allocating a temporary `CGEvent` on every packet.
+- [ ] Consider a separate host-to-client cursor shape/visibility/position channel so desktop clients can hide the host-baked cursor (`showsCursor = NO`) and render native zero-latency cursors without double-cursor artifacts.
+
 ## Desktop portable compatibility — 2026-11-19
 
 Use the portable core's desktop workspace and stream arithmetic and its parsed

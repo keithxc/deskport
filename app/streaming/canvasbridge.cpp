@@ -7,7 +7,10 @@
 
 namespace {
 std::atomic<bool> configured{false}, wanted{false}, acceptsInput{false};
+std::atomic<Uint32> wakeEventType{0};
+std::atomic<bool> wakePending{false};
 QMutex stateMutex;
+std::function<bool(int)> ipcWaiter;
 QPair<QString, QString> videoConnection;
 QJsonObject viewport, details;
 QQueue<QJsonObject> pendingInput;
@@ -25,6 +28,13 @@ static_assert(TextPayloadSize >= 5 && TextPayloadSize <= SDL_TEXTINPUTEVENT_TEXT
 int bounded(const QJsonObject& object, const char* key, int maximum) {
     const auto value = object.value(key).toDouble(-1);
     return std::isfinite(value) && value >= 0 && value <= maximum ? int(value) : -1;
+}
+void wakeSdl() {
+    const Uint32 type = wakeEventType.load(std::memory_order_acquire);
+    if (!type || wakePending.exchange(true, std::memory_order_acq_rel)) return;
+    SDL_Event wake{};
+    wake.type = type;
+    if (SDL_PushEvent(&wake) <= 0) wakePending.store(false, std::memory_order_release);
 }
 void windowEvent(SDL_Window* window, Uint8 kind) {
     SDL_Event event{}; event.type = SDL_WINDOWEVENT; event.window.windowID = SDL_GetWindowID(window);
@@ -45,12 +55,15 @@ void CanvasBridge::state(const QJsonObject& value) {
     const int width = bounded(value, "width", MaxWidth), height = bounded(value, "height", MaxHeight);
     const qreal scale = value.value("scale").toDouble();
     if (width < 1 || height < 1 || !std::isfinite(scale) || scale < 0.5 || scale > 4) return;
-    QMutexLocker lock(&stateMutex);
-    if (!value["visible"].toBool() || !value["focused"].toBool()) {
-        releasePending = true;
-        pendingInput.clear();
+    {
+        QMutexLocker lock(&stateMutex);
+        if (!value["visible"].toBool() || !value["focused"].toBool()) {
+            releasePending = true;
+            pendingInput.clear();
+        }
+        viewport = value;
     }
-    viewport = value;
+    wakeSdl();
 }
 void CanvasBridge::requested(bool visible) {
     wanted = visible;
@@ -59,6 +72,10 @@ void CanvasBridge::requested(bool visible) {
 bool CanvasBridge::requested() { return wanted.load(); }
 void CanvasBridge::registerWindow(SDL_Window* window) {
     if (!enabled() || !window) return;
+    if (!wakeEventType.load(std::memory_order_acquire)) {
+        const Uint32 registered = SDL_RegisterEvents(1);
+        if (registered != Uint32(-1)) wakeEventType.store(registered, std::memory_order_release);
+    }
     SDL_SetWindowData(window, CanvasTag, &configured);
     previousFocus = previousHover = false;
     synchronize(window);
@@ -97,16 +114,40 @@ void CanvasBridge::inputEnabled(bool enabled) {
 }
 void CanvasBridge::input(const QJsonObject& event) {
     if (!enabled() || !wanted || !acceptsInput) return;
-    QMutexLocker lock(&stateMutex);
-    if (overflowPaused || !viewport["visible"].toBool() || !viewport["focused"].toBool()) return;
-    if (pendingInput.size() >= 256) {
-        // Never replay a backlog after the user has released control.
-        pendingInput.clear(); overflowPaused = true;
-        releasePending = true;
-        details["grab"] = false;
-        return;
+    bool notify = false;
+    {
+        QMutexLocker lock(&stateMutex);
+        if (overflowPaused || !viewport["visible"].toBool() || !viewport["focused"].toBool()) return;
+        const bool isMotion = event.value("type").toString() == "motion";
+        if (isMotion) {
+            const int x = bounded(event, "x", MaxWidth), y = bounded(event, "y", MaxHeight);
+            if (x >= 0 && y >= 0) {
+                viewport["x"] = x;
+                viewport["y"] = y;
+                if (!pendingInput.isEmpty() && pendingInput.back().value("type").toString() == "motion") {
+                    auto& tail = pendingInput.back();
+                    tail["x"] = x;
+                    tail["y"] = y;
+                    tail["dx"] = qBound(-32767, tail.value("dx").toInt() + event.value("dx").toInt(), 32767);
+                    tail["dy"] = qBound(-32767, tail.value("dy").toInt() + event.value("dy").toInt(), 32767);
+                    notify = true;
+                }
+            }
+        }
+        if (!notify) {
+            if (pendingInput.size() >= 256) {
+                // Never replay a backlog after the user has released control.
+                pendingInput.clear(); overflowPaused = true;
+                releasePending = true;
+                details["grab"] = false;
+                notify = true;
+            } else {
+                pendingInput.enqueue(event);
+                notify = true;
+            }
+        }
     }
-    pendingInput.enqueue(event);
+    if (notify) wakeSdl();
 }
 bool CanvasBridge::decodeTextEvent(SDL_Event& event) {
     if (event.type != SDL_USEREVENT || event.user.code != CanvasTextCode) return false;
@@ -122,8 +163,26 @@ bool CanvasBridge::decodeTextEvent(SDL_Event& event) {
 bool CanvasBridge::isTouchCancel(const SDL_Event& event) {
     return event.type == SDL_USEREVENT && event.user.code == CanvasTouchCancelCode;
 }
+bool CanvasBridge::isWakeEvent(const SDL_Event& event) {
+    const Uint32 type = wakeEventType.load(std::memory_order_acquire);
+    return type != 0 && event.type == type;
+}
+void CanvasBridge::setIpcWaiter(std::function<bool(int)> waiter) {
+    QMutexLocker lock(&stateMutex);
+    ipcWaiter = std::move(waiter);
+}
+bool CanvasBridge::waitForIpc(int timeoutMs) {
+    std::function<bool(int)> waiter;
+    { QMutexLocker lock(&stateMutex); waiter = ipcWaiter; }
+    return waiter ? waiter(timeoutMs) : false;
+}
 void CanvasBridge::synchronize(SDL_Window* window) {
     if (!owns(window)) return;
+    wakePending.store(false, std::memory_order_release);
+    if (const Uint32 type = wakeEventType.load(std::memory_order_acquire)) {
+        SDL_Event discard;
+        while (SDL_PeepEvents(&discard, 1, SDL_GETEVENT, type, type) > 0) {}
+    }
     QJsonObject state; QQueue<QJsonObject> input; bool release;
     { QMutexLocker lock(&stateMutex); state = viewport; input.swap(pendingInput); release = releasePending; releasePending = false; overflowPaused = false; }
     const int width = state["width"].toInt(1120), height = state["height"].toInt(704);

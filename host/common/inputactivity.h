@@ -26,7 +26,7 @@ public:
         if (type == 7 && size == 12) {
             if (now - motionStart > 120) { dx = dy = 0; motionStart = now; }
             dx += word(8); dy += word(10);
-            if (std::abs(dx) + std::abs(dy) < 6) return {};
+            if (std::abs(dx) + std::abs(dy) < 3) return {};
             dx = dy = 0; motionStart = now; motion = true;
         } else if (type == 5 && size == 18) {
             const int x = word(8), y = word(10), w = word(14), h = word(16);
@@ -35,7 +35,7 @@ public:
                 absolute = true; absX = x; absY = y; absWidth = w; absHeight = h;
                 return {};
             }
-            if (std::abs(x - absX) + std::abs(y - absY) < 6) return {};
+            if (std::abs(x - absX) + std::abs(y - absY) < 3) return {};
             absX = x; absY = y; motion = true;
         } else if (!(((type == 3 || type == 4) && size == 14) ||
                      ((type == 8 || type == 9) && size == 9) ||
@@ -45,7 +45,7 @@ public:
         if (now - last > 200) { burstStart = now; count = 0; }
         last = now; count = std::min(count + 1, 100);
         const bool sustained = count >= 3 && now - burstStart >= 80;
-        const int fps = motion && !sustained ? 30 : 60;
+        const int fps = 60;
         const auto until = now + (sustained ? 700 : motion ? 180 : 350);
         if (now >= boost.untilMs) boost = {};
         boost.fps = std::max(boost.fps, fps);

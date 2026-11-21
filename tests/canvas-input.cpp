@@ -45,8 +45,29 @@ int main(int argc, char** argv) {
     CanvasBridge::configure(state); CanvasBridge::requested(true); CanvasBridge::registerWindow(window);
     CanvasBridge::inputEnabled(true); events();
     QJsonObject key{{"type","key"},{"down",true},{"scan",SDL_SCANCODE_A},{"symbol",SDLK_a},{"modifiers",0}};
-    CanvasBridge::input(key); CanvasBridge::synchronize(window);
+    CanvasBridge::input(key);
+    // Input must wake a blocked SDL_WaitEventTimeout loop immediately, and
+    // synchronize() must drain the wakeup sentinel cleanly.
+    auto woken = events();
+    assert(woken.size() == 1 && CanvasBridge::isWakeEvent(woken[0]));
+    CanvasBridge::synchronize(window);
     auto received = events(); assert(received.size() == 1 && received[0].type == SDL_KEYDOWN);
+    // Consecutive motions coalesce while updating cursor coordinates; buttons stay ordered barriers.
+    CanvasBridge::input({{"type","motion"},{"x",100},{"y",120},{"dx",5},{"dy",-3}});
+    CanvasBridge::input({{"type","motion"},{"x",112},{"y",114},{"dx",12},{"dy",-6}});
+    int mx = 0, my = 0;
+    CanvasBridge::mouseState(&mx, &my);
+    assert(mx == 112 && my == 114);
+    CanvasBridge::input({{"type","button"},{"button",1},{"down",true},{"x",112},{"y",114}});
+    CanvasBridge::input({{"type","motion"},{"x",120},{"y",118},{"dx",8},{"dy",4}});
+    CanvasBridge::synchronize(window);
+    received = events();
+    assert(received.size() == 3);
+    assert(received[0].type == SDL_MOUSEMOTION && received[0].motion.x == 112 && received[0].motion.y == 114 &&
+           received[0].motion.xrel == 17 && received[0].motion.yrel == -9);
+    assert(received[1].type == SDL_MOUSEBUTTONDOWN && received[1].button.button == 1);
+    assert(received[2].type == SDL_MOUSEMOTION && received[2].motion.x == 120 && received[2].motion.y == 118 &&
+           received[2].motion.xrel == 8 && received[2].motion.yrel == 4);
     // Losing and regaining focus before the next worker tick must still release.
     state["focused"] = false; CanvasBridge::state(state);
     state["focused"] = true; CanvasBridge::state(state); CanvasBridge::input(key);

@@ -67,6 +67,7 @@ macos          script  patch-host-vt-drain.py        {src}
 all            script  patch-host-input-activity.py  {src}
 all            copy    host/common/keyrepeat.h      src/deskport/common/
 all            script  patch-host-key-repeat.py      {src}
+all            script  patch-host-mouse-latency.py   {src}
 all            script  patch-host-sync-cadence.py    {src}
 
 # Linux capture and driver lifetimes.
