@@ -2484,6 +2484,7 @@ void Session::execInternal()
         }
 #endif
         CanvasBridge::decodeTextEvent(event);
+        CanvasBridge::decodeWheelEvent(event);
         if (CanvasBridge::isTouchCancel(event)) {
             m_InputHandler->releaseRemoteInput();
             continue;

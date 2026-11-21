@@ -464,7 +464,16 @@ void SessionCanvas::hoverMoveEvent(QHoverEvent* event) {
 }
 void SessionCanvas::wheelEvent(QWheelEvent* event) {
     if (m_LocalWindowDrag) { event->accept(); return; }
-    emit input({{"type","wheel"},{"x",event->angleDelta().x()/120.0},{"y",event->angleDelta().y()/120.0}}); event->accept();
+    qreal x = event->angleDelta().x() / 120.0;
+    qreal y = event->angleDelta().y() / 120.0;
+    if (x == 0.0 && y == 0.0 && !event->pixelDelta().isNull()) {
+        x = event->pixelDelta().x() / 40.0;
+        y = event->pixelDelta().y() / 40.0;
+    }
+    if (x != 0.0 || y != 0.0) {
+        emit input({{"type","wheel"},{"x",x},{"y",y}});
+    }
+    event->accept();
 }
 void SessionCanvas::touchEvent(QTouchEvent* event) {
     if (!event->pointingDevice() || event->pointingDevice()->type() != QInputDevice::DeviceType::TouchScreen) { event->ignore(); return; }

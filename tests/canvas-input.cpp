@@ -2,6 +2,7 @@
 #include "gui/canvaskey.h"
 #include <QCoreApplication>
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <vector>
 
@@ -9,6 +10,7 @@ static std::vector<SDL_Event> events() {
     std::vector<SDL_Event> result; SDL_Event event;
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) > 0) {
         CanvasBridge::decodeTextEvent(event);
+        CanvasBridge::decodeWheelEvent(event);
         result.push_back(event);
     }
     return result;
@@ -17,6 +19,7 @@ int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
     SDL_Event unrelated{}; unrelated.type = SDL_USEREVENT; unrelated.user.code = 106;
     assert(!CanvasBridge::decodeTextEvent(unrelated) && unrelated.user.code == 106);
+    assert(!CanvasBridge::decodeWheelEvent(unrelated) && unrelated.user.code == 106);
     assert(CanvasKey::windows(0x1e) == SDL_SCANCODE_A);
     assert(CanvasKey::windows(0x11d) == SDL_SCANCODE_RCTRL);
     assert(CanvasKey::windows(0x11c) == SDL_SCANCODE_KP_ENTER);
@@ -92,6 +95,24 @@ int main(int argc, char** argv) {
         assert(QString::fromUtf8(chunk).toUtf8() == chunk); text += chunk;
     }
     assert(QString::fromUtf8(text) == unicode);
+    // High-resolution fractional touchpad wheels survive SDL_PushEvent/sdl2-compat
+    // and coalesce consecutively while keeping buttons as ordered barriers.
+    CanvasBridge::input({{"type","wheel"},{"x",0.0},{"y",0.0}}); // zero ignored
+    CanvasBridge::input({{"type","wheel"},{"x",0.125},{"y",-0.25}});
+    CanvasBridge::input({{"type","wheel"},{"x",0.25},{"y",-1.5}});
+    CanvasBridge::input({{"type","button"},{"button",1},{"down",true},{"x",100},{"y",100}});
+    CanvasBridge::input({{"type","wheel"},{"x",0.0},{"y",0.5}});
+    CanvasBridge::synchronize(window);
+    received = events();
+    assert(received.size() == 3);
+    assert(received[0].type == SDL_MOUSEWHEEL);
+    assert(std::fabs(received[0].wheel.preciseX - 0.375f) < 1e-5f);
+    assert(std::fabs(received[0].wheel.preciseY - (-1.75f)) < 1e-5f);
+    assert(received[0].wheel.x == 0 && received[0].wheel.y == -1);
+    assert(received[1].type == SDL_MOUSEBUTTONDOWN);
+    assert(received[2].type == SDL_MOUSEWHEEL);
+    assert(std::fabs(received[2].wheel.preciseY - 0.5f) < 1e-5f);
+    assert(received[2].wheel.y == 0);
     CanvasBridge::pointerRegion(true, 10, 20, 300, 200);
     assert(CanvasBridge::description()["pointerRegion"].toObject()["width"].toInt() == 300);
     CanvasBridge::pointerRegion(false);

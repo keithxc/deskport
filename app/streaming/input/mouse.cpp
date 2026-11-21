@@ -3,6 +3,7 @@
 
 #include <Limelight.h>
 #include <SDL.h>
+#include <cmath>
 #include "streaming/streamutils.h"
 
 void SdlInputHandler::handleMouseButtonEvent(SDL_MouseButtonEvent* event)
@@ -202,13 +203,16 @@ void SdlInputHandler::handleMouseWheelEvent(SDL_MouseWheelEvent* event)
         event->preciseY = SDL_clamp(event->preciseY, -1.0f, 1.0f);
 #endif
 
-        LiSendHighResScrollEvent((short)(event->preciseY * 120)); // WHEEL_DELTA
+        const long amountY = std::lround(event->preciseY * 120.0f);
+        if (amountY != 0) {
+            LiSendHighResScrollEvent(static_cast<short>(qBound(-32767L, amountY, 32767L))); // WHEEL_DELTA
+        }
     }
 
     if (event->preciseX != 0.0f) {
         // Invert the scroll direction if needed
         if (m_ReverseScrollDirection) {
-            event->preciseX = -event->preciseY;
+            event->preciseX = -event->preciseX;
         }
 
 #ifdef Q_OS_DARWIN
@@ -217,7 +221,10 @@ void SdlInputHandler::handleMouseWheelEvent(SDL_MouseWheelEvent* event)
         event->preciseX = SDL_clamp(event->preciseX, -1.0f, 1.0f);
 #endif
 
-        LiSendHighResHScrollEvent((short)(event->preciseX * 120)); // WHEEL_DELTA
+        const long amountX = std::lround(event->preciseX * 120.0f);
+        if (amountX != 0) {
+            LiSendHighResHScrollEvent(static_cast<short>(qBound(-32767L, amountX, 32767L))); // WHEEL_DELTA
+        }
     }
 #else
     if (event->y != 0) {

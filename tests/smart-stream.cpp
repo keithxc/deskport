@@ -231,6 +231,20 @@ int main() {
     pacer.add(120, 0); pacer.take(40); pacer.add(-80, 0); // reversal cancels pending distance
     assert(!pacer.pending());
     pacer.add(30, 0); pacer.clear(); assert(!pacer.pending());
+    // Fine touchpad high-res increments accumulate instead of truncating to zero.
+    pacer.addHighRes(120, 0, 10, 5);
+    assert(pacer.take(100).vertical == 50 && !pacer.pending());
+    pacer.addHighRes(1, 0, 10, 5); assert(!pacer.pending());
+    pacer.addHighRes(1, 0, 10, 5); assert(!pacer.pending());
+    pacer.addHighRes(1, 0, 10, 5); // 3 * 50 = 150 -> 1 pt + 30/120 remainder
+    assert(pacer.take(40).vertical == 1 && !pacer.pending());
+    pacer.addHighRes(2, 0, 10, 5); // 30 + 100 = 130 -> 1 pt + 10/120 remainder
+    assert(pacer.take(40).vertical == 1 && !pacer.pending());
+    pacer.addHighRes(-1, 0, 10, 5); // reversal drops positive remainder
+    assert(!pacer.pending());
+    pacer.addHighRes(-2, 0, 10, 5); // -50 + -100 = -150 -> -1 pt
+    assert(pacer.take(40).vertical == -1 && !pacer.pending());
+    pacer.clear();
 
     // Daily traffic: cumulative counters per session, new sessions start at
     // zero, midnight starts a new day, levels at 70/85/100%.

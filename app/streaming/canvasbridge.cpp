@@ -23,8 +23,10 @@ int questionAnswer = -1;
 constexpr const char* CanvasTag = "deskport-shell-canvas";
 constexpr int CanvasTextCode = 0x44505458;
 constexpr int CanvasTouchCancelCode = 0x44505443;
+constexpr int CanvasWheelCode = 0x44505748;
 constexpr size_t TextPayloadSize = sizeof(SDL_UserEvent::data1) + sizeof(SDL_UserEvent::data2);
 static_assert(TextPayloadSize >= 5 && TextPayloadSize <= SDL_TEXTINPUTEVENT_TEXT_SIZE);
+static_assert(sizeof(SDL_UserEvent::data1) >= sizeof(float) && sizeof(SDL_UserEvent::data2) >= sizeof(float));
 int bounded(const QJsonObject& object, const char* key, int maximum) {
     const auto value = object.value(key).toDouble(-1);
     return std::isfinite(value) && value >= 0 && value <= maximum ? int(value) : -1;
@@ -118,8 +120,8 @@ void CanvasBridge::input(const QJsonObject& event) {
     {
         QMutexLocker lock(&stateMutex);
         if (overflowPaused || !viewport["visible"].toBool() || !viewport["focused"].toBool()) return;
-        const bool isMotion = event.value("type").toString() == "motion";
-        if (isMotion) {
+        const auto eventType = event.value("type").toString();
+        if (eventType == "motion") {
             const int x = bounded(event, "x", MaxWidth), y = bounded(event, "y", MaxHeight);
             if (x >= 0 && y >= 0) {
                 viewport["x"] = x;
@@ -132,6 +134,15 @@ void CanvasBridge::input(const QJsonObject& event) {
                     tail["dy"] = qBound(-32767, tail.value("dy").toInt() + event.value("dy").toInt(), 32767);
                     notify = true;
                 }
+            }
+        } else if (eventType == "wheel") {
+            const double x = event.value("x").toDouble(), y = event.value("y").toDouble();
+            if (!std::isfinite(x) || !std::isfinite(y) || (x == 0.0 && y == 0.0)) return;
+            if (!pendingInput.isEmpty() && pendingInput.back().value("type").toString() == "wheel") {
+                auto& tail = pendingInput.back();
+                tail["x"] = qBound(-120.0, tail.value("x").toDouble() + x, 120.0);
+                tail["y"] = qBound(-120.0, tail.value("y").toDouble() + y, 120.0);
+                notify = true;
             }
         }
         if (!notify) {
@@ -158,6 +169,22 @@ bool CanvasBridge::decodeTextEvent(SDL_Event& event) {
     SDL_memcpy(text.text.text, &event.user.data1, TextPayloadSize);
     text.text.text[TextPayloadSize - 1] = '\0';
     event = text;
+    return true;
+}
+bool CanvasBridge::decodeWheelEvent(SDL_Event& event) {
+    if (event.type != SDL_USEREVENT || event.user.code != CanvasWheelCode) return false;
+    float preciseX = 0.0f, preciseY = 0.0f;
+    SDL_memcpy(&preciseX, &event.user.data1, sizeof(preciseX));
+    SDL_memcpy(&preciseY, &event.user.data2, sizeof(preciseY));
+    SDL_Event wheel{};
+    wheel.type = SDL_MOUSEWHEEL;
+    wheel.wheel.windowID = event.user.windowID;
+    wheel.wheel.timestamp = event.user.timestamp;
+    wheel.wheel.x = qBound(-120, int(std::trunc(preciseX)), 120);
+    wheel.wheel.y = qBound(-120, int(std::trunc(preciseY)), 120);
+    wheel.wheel.preciseX = preciseX;
+    wheel.wheel.preciseY = preciseY;
+    event = wheel;
     return true;
 }
 bool CanvasBridge::isTouchCancel(const SDL_Event& event) {
@@ -270,9 +297,18 @@ void CanvasBridge::synchronize(SDL_Window* window) {
             }
             flush(); continue;
         } else if (type == "wheel") {
-            event.type = SDL_MOUSEWHEEL; event.wheel.windowID = SDL_GetWindowID(window);
-            event.wheel.x = qBound(-120, value["x"].toInt(), 120); event.wheel.y = qBound(-120, value["y"].toInt(), 120);
-            event.wheel.preciseX = value["x"].toDouble(); event.wheel.preciseY = value["y"].toDouble();
+            const double rawX = value.value("x").toDouble(), rawY = value.value("y").toDouble();
+            if (!std::isfinite(rawX) || !std::isfinite(rawY)) continue;
+            const float preciseX = float(qBound(-120.0, rawX, 120.0));
+            const float preciseY = float(qBound(-120.0, rawY, 120.0));
+            if (preciseX == 0.0f && preciseY == 0.0f) continue;
+            // sdl2-compat 2.32.68 ignores preciseX/preciseY in Event2to3 when
+            // pushing SDL_MOUSEWHEEL, dropping fractional touchpad deltas.
+            // Carry both floats inline in a user event and restore on poll.
+            event.type = SDL_USEREVENT; event.user.code = CanvasWheelCode;
+            event.user.windowID = SDL_GetWindowID(window); event.user.timestamp = SDL_GetTicks();
+            SDL_memcpy(&event.user.data1, &preciseX, sizeof(preciseX));
+            SDL_memcpy(&event.user.data2, &preciseY, sizeof(preciseY));
         } else continue;
         SDL_PushEvent(&event);
     }
