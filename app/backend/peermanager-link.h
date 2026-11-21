@@ -78,6 +78,7 @@ struct PeerManager::Link : QObject {
     quint64 sessionEpoch = 0;
     bool displayControl = false;
     bool caretUpdates = false;
+    bool caretWasValid = false;
     bool clientWindow = false;
     // Last full-screen state reported with display-resize; older clients do not
     // report it and keep the request available.

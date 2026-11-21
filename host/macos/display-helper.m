@@ -33,6 +33,8 @@
 @end
 
 static CGVirtualDisplay *display;
+static CGSize displayPhysicalSize;
+static NSInteger displayCreatedScale;
 static unsigned generation;
 static int requestSequence;
 static NSInteger requestedScale = 1;
@@ -60,6 +62,61 @@ static CGDirectDisplayID mirrorSource(CGDirectDisplayID ident) {
     const CGDirectDisplayID source = CGDisplayMirrorsDisplay(ident);
     return source == (CGDirectDisplayID)-1 ? kCGNullDirectDisplay : source;
 }
+static void discardDisplay(void) {
+    display = nil;
+    displayPhysicalSize = CGSizeZero;
+    displayCreatedScale = 0;
+}
+// Report native Retina (~220 PPI) or standard (~110 PPI) square-pixel physical
+// dimensions so WindowServer marks the requested scale as the display's default
+// mode instead of bringing a HiDPI workspace online in 1x first.
+static CGSize physicalSizeForMode(NSInteger width, NSInteger height, NSInteger scale) {
+    const double ppi = scale == 2 ? 220.0 : 110.0;
+    const double mmPerPixel = 25.4 / ppi;
+    return CGSizeMake(fmax(1.0, round((double)width * mmPerPixel)),
+                      fmax(1.0, round((double)height * mmPerPixel)));
+}
+static BOOL physicalSizeCompatible(CGSize physicalMM, NSInteger width, NSInteger height, NSInteger scale) {
+    if (physicalMM.width <= 0 || physicalMM.height <= 0 || width <= 0 || height <= 0) return NO;
+    const double ppiX = (double)width / (physicalMM.width / 25.4);
+    const double ppiY = (double)height / (physicalMM.height / 25.4);
+    const double minPpi = scale == 2 ? 180.0 : 80.0;
+    const double maxPpi = scale == 2 ? 280.0 : 140.0;
+    if (ppiX < minPpi || ppiX > maxPpi || ppiY < minPpi || ppiY > maxPpi) return NO;
+    const double ratio = ppiX / ppiY;
+    return ratio >= 0.85 && ratio <= 1.18;
+}
+static BOOL shouldRecreateDisplay(NSInteger width, NSInteger height, NSInteger scale) {
+    if (!display) return NO;
+    if (scale != displayCreatedScale || !physicalSizeCompatible(displayPhysicalSize, width, height, scale)) return YES;
+    // On primary-workspace policies there is no separate extended screen to
+    // evacuate windows onto. Replacing the virtual display on geometry changes
+    // keeps physical DPI exact and gives macOS system overlays that key off
+    // display identity (e.g. macOS 27's Siri AI / Apps launcher) a fresh screen
+    // transition so they recenter cleanly without relying on private OS hooks.
+    return !isolatedPolicy() && sessionDisplayPolicy != DP_DISPLAY_EXTEND;
+}
+// Separate HiDPI (2x) and standard (1x) virtual display identities so
+// WindowServer's permanent display store never replays a cached 1x mode onto a
+// 2x workspace (or reuses legacy productID=1 entries saved with fixed mm).
+static unsigned int virtualDisplayProductID(NSInteger scale) {
+    if (isolatedDisplay()) return 2;
+    return scale == 2 ? 3 : 4;
+}
+static CGVirtualDisplay *createVirtualDisplay(NSInteger width, NSInteger height, NSInteger scale) {
+    CGVirtualDisplayDescriptor *descriptor = [CGVirtualDisplayDescriptor new];
+    descriptor.queue = dispatch_get_main_queue();
+    descriptor.name = isolatedDisplay() ? @"DeskPort Temporary Workspace" : @"DeskPort Workspace";
+    descriptor.maxPixelsWide = 7680; descriptor.maxPixelsHigh = 4320;
+    descriptor.sizeInMillimeters = physicalSizeForMode(width, height, scale);
+    descriptor.vendorID = 0x4450; descriptor.productID = virtualDisplayProductID(scale);
+    descriptor.serialNum = isolatedDisplay() ?
+        (unsigned int)[NSProcessInfo.processInfo.environment[@"DESKPORT_DISPLAY_SERIAL"] longLongValue] : 1;
+    CGVirtualDisplay *created = [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
+    displayPhysicalSize = created ? descriptor.sizeInMillimeters : CGSizeZero;
+    displayCreatedScale = created ? scale : 0;
+    return created;
+}
 // A mirror set that refuses to detach must not wedge sharing for the lifetime of
 // this helper. Discard the virtual display once per request so the retry builds
 // a fresh one, instead of answering an error the host can only surface as a stop.
@@ -67,7 +124,7 @@ static BOOL rebuildDisplay(NSInteger width, NSInteger height, NSInteger scale, i
     if (displayRebuilt) return NO;
     displayRebuilt = YES;
     fprintf(stderr,"DeskPort rebuild seq=%d: dedicated display could not be separated (%d); recreating it\n",sequence,error);
-    display = nil;
+    discardDisplay();
     const unsigned token = ++generation;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
         if (token == generation) configure(width, height, scale, sequence, session);
@@ -78,11 +135,12 @@ static NSArray *displayModes(NSInteger width, NSInteger height, NSInteger scale)
     return @[[[CGVirtualDisplayMode alloc] initWithWidth:(unsigned)width / scale
         height:(unsigned)height / scale refreshRate:60.0]];
 }
-static void applyMode(NSInteger width, NSInteger height, NSInteger scale) {
+static BOOL applyMode(NSInteger width, NSInteger height, NSInteger scale) {
+    if (!display) return NO;
     CGVirtualDisplaySettings *settings = [CGVirtualDisplaySettings new];
     settings.hiDPI = scale == 2;
     settings.modes = displayModes(width, height, scale);
-    [display applySettings:settings];
+    return [display applySettings:settings];
 }
 static void respond(NSDictionary *value) {
     fprintf(stderr,"DeskPort display seq=%d session=%d result=%s\n",requestSequence,sessionActive,[value description].UTF8String);
@@ -91,6 +149,19 @@ static void respond(NSDictionary *value) {
     if (requestSequence) response[@"seq"] = @(requestSequence);
     NSData *json = [NSJSONSerialization dataWithJSONObject:response options:0 error:nil];
     fwrite(json.bytes, 1, json.length, stdout); fputc('\n', stdout); fflush(stdout);
+}
+// Persist fallback mode corrections so a stale WindowServer permanent entry
+// (e.g. after a manual Display Settings change) heals itself on next connect.
+static void persistDisplayMode(CGDirectDisplayID ident, CGDisplayModeRef mode) {
+    CGDisplayConfigRef config = NULL;
+    CGError result = CGBeginDisplayConfiguration(&config);
+    if (result == kCGErrorSuccess) {
+        result = CGConfigureDisplayWithDisplayMode(config, ident, mode, NULL);
+        const CGConfigureOption option = isolatedDisplay() ? kCGConfigureForSession : kCGConfigurePermanently;
+        if (result == kCGErrorSuccess) result = CGCompleteDisplayConfiguration(config, option);
+        else CGCancelDisplayConfiguration(config);
+    }
+    if (result != kCGErrorSuccess) CGDisplaySetDisplayMode(ident, mode, NULL);
 }
 static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsigned attempt) {
     if (token != generation) return;
@@ -140,7 +211,7 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
                 CGDisplayModeRef mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(modes, i);
                 if (CGDisplayModeGetPixelWidth(mode) == width && CGDisplayModeGetPixelHeight(mode) == height &&
                     CGDisplayModeGetWidth(mode) == width / requestedScale && CGDisplayModeGetHeight(mode) == height / requestedScale) {
-                    CGDisplaySetDisplayMode(display.displayID, mode, NULL);
+                    persistDisplayMode(display.displayID, mode);
                     break;
                 }
             }
@@ -183,6 +254,20 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
         if (lastWidth && !rollingBack) {
             rollingBack = YES; requestedScale = lastScale;
             const unsigned restoreToken = ++generation;
+            if (!physicalSizeCompatible(displayPhysicalSize, lastWidth, lastHeight, lastScale)) {
+                discardDisplay();
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+                    if (restoreToken != generation) return;
+                    display = createVirtualDisplay(lastWidth, lastHeight, lastScale);
+                    if (!applyMode(lastWidth, lastHeight, lastScale)) {
+                        rollingBack = NO;
+                        respond(@{@"error": @"Requested mode was rejected; could not restore the previous display mode"});
+                        return;
+                    }
+                    waitForMode(lastWidth, lastHeight, restoreToken, 0);
+                });
+                return;
+            }
             applyMode(lastWidth, lastHeight, lastScale);
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
                 waitForMode(lastWidth, lastHeight, restoreToken, 0);
@@ -210,7 +295,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
         // change the fallback physical display's mode after the first restore.
         preserveTopologyJournal=YES;
         restoreTopology(display.displayID);
-        display=nil;
+        discardDisplay();
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW,500*NSEC_PER_MSEC),dispatch_get_main_queue(), ^{
             if (token!=generation) return;
             preserveTopologyJournal=NO;
@@ -247,6 +332,16 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
         if (mode) CFRelease(mode);
         if (same) { waitForMode(width, height, ++generation, 0); return; }
     }
+    if (shouldRecreateDisplay(width, height, scale)) {
+        fprintf(stderr,"DeskPort recreate seq=%d: replacing virtual display for %ldx%ld@%ld\n",
+            sequence,(long)width,(long)height,(long)scale);
+        discardDisplay();
+        const unsigned token = ++generation;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+            if (token == generation) configure(width, height, scale, sequence, session);
+        });
+        return;
+    }
     if (!display) {
         if (!savedTopology && !snapshotTopology(0)) {
             respond(@{@"error": @"Could not save the original display layout"}); return;
@@ -254,15 +349,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
         if (!NSClassFromString(@"CGVirtualDisplay")) {
             respond(@{@"error": @"Virtual displays are unavailable on this macOS version"}); return;
         }
-        CGVirtualDisplayDescriptor *descriptor = [CGVirtualDisplayDescriptor new];
-        descriptor.queue = dispatch_get_main_queue();
-        descriptor.name = isolatedDisplay() ? @"DeskPort Temporary Workspace" : @"DeskPort Workspace";
-        descriptor.maxPixelsWide = 7680; descriptor.maxPixelsHigh = 4320;
-        descriptor.sizeInMillimeters = CGSizeMake(600, 340);
-        descriptor.vendorID = 0x4450; descriptor.productID = isolatedDisplay() ? 2 : 1;
-        descriptor.serialNum = isolatedDisplay() ?
-            (unsigned int)[NSProcessInfo.processInfo.environment[@"DESKPORT_DISPLAY_SERIAL"] longLongValue] : 1;
-        display = [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
+        display = createVirtualDisplay(width, height, scale);
     }
     // The virtual display must be the source, not a sink in an old mirror set.
     // Physical displays join it only after the requested mode has settled.
@@ -279,10 +366,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
             respond(@{@"error": @"Could not separate the dedicated display"}); return;
         }
     }
-    CGVirtualDisplaySettings *settings = [CGVirtualDisplaySettings new];
-    settings.hiDPI = scale == 2;
-    settings.modes = displayModes(width, height, scale);
-    if (!display || ![display applySettings:settings]) {
+    if (!applyMode(width, height, scale)) {
         respond(@{@"error": @"macOS rejected the virtual display mode"}); return;
     }
     const unsigned token = ++generation;
@@ -298,7 +382,7 @@ static void finishHelper(void) {
     restoreTopology(display.displayID);
     // Removing the virtual source can itself reset the fallback monitor's mode.
     // Keep the journal until removal is observed, then restore the physical mode.
-    display=nil;
+    discardDisplay();
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,500*NSEC_PER_MSEC),dispatch_get_main_queue(), ^{
         preserveTopologyJournal=NO;
         restoreTopology(0);

@@ -859,6 +859,33 @@ private slots:
             socket.write("{\"type\":\"display-ping\"}\n");
             QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
             QCOMPARE(QJsonDocument::fromJson(socket.readLine()).object()["type"].toString(),QString("display-pong"));
+            if (message["textCaret"].toBool()) {
+                // Idle {"valid":false} samples before any valid caret are suppressed.
+                emit host.caretChanged({{"valid",false}});
+                emit host.caretChanged({{"valid",false}});
+                socket.write("{\"type\":\"display-ping\"}\n");
+                QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
+                QCOMPARE(QJsonDocument::fromJson(socket.readLine()).object()["type"].toString(),QString("display-pong"));
+                // Active carets are delivered and repeated for the client's 1 s expiry timer.
+                emit host.caretChanged({{"valid",true},{"x",0.25},{"y",0.75}});
+                QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
+                const auto firstCaret=QJsonDocument::fromJson(socket.readLine()).object();
+                QCOMPARE(firstCaret["type"].toString(),QString("text-caret"));
+                QVERIFY(firstCaret["caret"].toObject()["valid"].toBool());
+                emit host.caretChanged({{"valid",true},{"x",0.25},{"y",0.75}});
+                QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
+                QCOMPARE(QJsonDocument::fromJson(socket.readLine()).object()["type"].toString(),QString("text-caret"));
+                // The first valid -> false transition is delivered; duplicate false samples are suppressed.
+                emit host.caretChanged({{"valid",false}});
+                QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
+                const auto invalidCaret=QJsonDocument::fromJson(socket.readLine()).object();
+                QCOMPARE(invalidCaret["type"].toString(),QString("text-caret"));
+                QVERIFY(!invalidCaret["caret"].toObject()["valid"].toBool());
+                emit host.caretChanged({{"valid",false}});
+                socket.write("{\"type\":\"display-ping\"}\n");
+                QTRY_VERIFY_WITH_TIMEOUT(socket.canReadLine(),5000);
+                QCOMPARE(QJsonDocument::fromJson(socket.readLine()).object()["type"].toString(),QString("display-pong"));
+            }
             auto changed=message;
             changed["seq"]=2;
             changed["displayPolicy"]=(message.value("displayPolicy").toInt()+1)%3;

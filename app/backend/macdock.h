@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+class QObject;
 class QMenu;
 class QAction;
 
@@ -11,6 +13,11 @@ void deskPortSetDockIconVisible(bool visible);
 
 // An accessory application is not activated by ordering a window front alone.
 void deskPortActivateApplication();
+
+// Qt Cocoa emits tray activation on mouseDown, inside NSStatusBarButton's
+// tracking loop. Run only after that loop has returned (not in tracking mode).
+// Destroying context cancels the callback.
+void deskPortAfterStatusItemTracking(QObject* context, std::function<void()> callback);
 
 // A menu attached to a status item opens on either mouse button and swallows the
 // button action, which leaves no left click for the window toggle. The right

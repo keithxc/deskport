@@ -93,6 +93,7 @@ void PeerManager::sessionRequestVerified(Link* link, const QJsonObject& message)
         link->displayPolicy = previous->displayPolicy;
         link->clientWindow = previous->clientWindow; link->clientFullScreen = previous->clientFullScreen;
         link->caretUpdates = previous->caretUpdates;
+        link->caretWasValid = previous->caretWasValid;
         m_SessionLink = link;
         if (m_DisplayLink == previous) m_DisplayLink = link;
         if (m_ClipboardLink && m_ClipboardLink->fingerprint == link->fingerprint)

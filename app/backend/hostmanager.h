@@ -118,6 +118,8 @@ public:
     void setResident(bool enabled) { m_Resident = enabled; }
     Q_INVOKABLE void requestExit();
     Q_INVOKABLE void requestRestart();
+    // Called only after the viewer owners have drained; also checks our host.
+    void completeExit();
     void updateSessionMenu(const QVariantList& sessions);
     // Mirrors the "hide title bar while viewing" preference in the tray menu.
     void setStreamTitleBarHidden(bool hidden);
@@ -198,6 +200,9 @@ private:
     QSystemTrayIcon m_Tray;
     QMenu* m_Menu = nullptr;
     bool m_NativeMenuTracking = false;
+#ifdef Q_OS_MACOS
+    bool m_NativeMenuPending = false;
+#endif
     // Connected desktops are listed at the top of the tray menu, in device-list
     // order. Fixed slots are updated in place; actions are never destroyed.
     static constexpr int MaxTraySessions = 7;
