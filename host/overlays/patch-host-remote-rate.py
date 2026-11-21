@@ -64,12 +64,13 @@ patch('src/video.cpp', '    deskport::KeyframeRequests deskport_keys;', '''    d
       const auto previous = deskport_previous_limit_bps ? deskport_previous_limit_bps : avcodec_ctx->rc_max_rate;
       // Retain main's saver burst, cadence and quality bounds in one rollback transaction.
       const bool configured = saver || deskport_saver_configured;
+      const int burst = saver ? (constrained ? 1 : 2) : 1;
       const bool applied = deskport::vt::apply(vt, bps,
-          deskport::encoderMinQp(saver, constrained), previous, saver ? 3 : 1,
+          deskport::encoderMinQp(saver, constrained), previous, burst,
           configured ? deskport::encoderMaxQp(saver, constrained) : -1,
           configured ? (saver ? 8.0 : av_q2d(avcodec_ctx->framerate)) : 0);
       if (applied) {
-        deskport_previous_limit_bps = bps * (saver ? 3 : 1);
+        deskport_previous_limit_bps = bps * burst;
         deskport_saver_configured = saver;
         deskport_quality.configured(saver && !constrained &&
             deskport::sharpPictureBudget(kbps, avcodec_ctx->width, avcodec_ctx->height));
@@ -230,7 +231,8 @@ patch('src/stream.cpp', '''        size_t ratecontrol_packets_in_1ms = std::giga
         if (deskport_paced) {
           if (auto kbps = session->mail->event<int>("deskport_rate_kbps")->pop(0ms)) session->deskport_pace_kbps = *kbps;
           ratecontrol_packets_in_1ms = deskport::remotePacketsPerMs(
-              session->deskport_pace_kbps > 0 ? session->deskport_pace_kbps : session->config.monitor.bitrate, blocksize);
+              session->deskport_pace_kbps > 0 ? session->deskport_pace_kbps : session->config.monitor.bitrate,
+              blocksize, deskport::liveSaver.load() == 1);
           // Actual video payload rate, once a second, for the rate controller.
           const auto sent_now = std::chrono::steady_clock::now();
           session->deskport_sent_bytes += payload.size();

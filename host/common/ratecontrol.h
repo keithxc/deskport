@@ -186,9 +186,12 @@ inline int applyPermille(int kbps, int permille) {
 }
 
 // Packets per millisecond for the inherited pacer. Remote sessions pace at four
-// times the live target (at least 20 Mbps) instead of about 800 Mbps.
-inline std::size_t remotePacketsPerMs(int targetKbps, std::size_t blockSize) {
-    const std::int64_t kbps = std::max<std::int64_t>(20000, std::int64_t(targetKbps) * 4);
+// times the live target (at least 20 Mbps, or 8 Mbps in data saver so a scene
+// switch does not burst-flood a mobile hotspot queue) instead of about 800 Mbps.
+inline std::size_t remotePacketsPerMs(int targetKbps, std::size_t blockSize, bool saver = false) {
+    const std::int64_t floorKbps = saver ? 8000 : 20000;
+    const std::int64_t multiplier = saver ? 3 : 4;
+    const std::int64_t kbps = std::max<std::int64_t>(floorKbps, std::int64_t(targetKbps) * multiplier);
     const std::int64_t bytesPerMs = kbps / 8;
     return std::max<std::size_t>(1, (bytesPerMs + blockSize / 2) / std::max<std::size_t>(1, blockSize));
 }

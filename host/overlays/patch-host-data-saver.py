@@ -113,7 +113,8 @@ patch('src/video.cpp', '''          if (session->convert(*img)) {
           }
           const auto deskport_saver_us = std::chrono::duration_cast<std::chrono::microseconds>(
               std::chrono::steady_clock::now() - smart_start).count();
-          if (deskport_saving && !deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame)) {
+          const bool deskport_interactive = absolute_ms < boost.untilMs;
+          if (deskport_saving && !deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame, deskport_interactive)) {
             deskport_saver_pending = true;
             continue;
           }
@@ -122,7 +123,7 @@ patch('src/video.cpp', '''          if (session->convert(*img)) {
           break;
         } else if (deskport_saving && deskport_saver_pending &&
                    deskport_saver_gate.admit(std::chrono::duration_cast<std::chrono::microseconds>(
-                       std::chrono::steady_clock::now() - smart_start).count(), false)) {
+                       std::chrono::steady_clock::now() - smart_start).count(), false, absolute_ms < boost.untilMs)) {
           deskport_saver_pending = false; // the held picture goes out now
         } else if (smart && !requested_idr_frame''')
 

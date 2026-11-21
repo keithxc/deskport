@@ -102,8 +102,8 @@ int main() {
         assert(!deskport::vt::applyExpectedFrameRate(&ctx, invalid));
         assert(ctx.expected == 8 && ctx.operations.size() == propertyCalls);
     }
-    assert(ctx.average == 992000 && ctx.limitBytes == 992000 * 3 / 8 && ctx.limitSeconds == 1);
-    assert(ptr->deskport_initial_kbps == 15000 && ptr->deskport_previous_limit_bps == 992000 * 3);
+    assert(ctx.average == 992000 && ctx.limitBytes == 992000 * 2 / 8 && ctx.limitSeconds == 1);
+    assert(ptr->deskport_initial_kbps == 15000 && ptr->deskport_previous_limit_bps == 992000 * 2);
     const auto callsBeforeInvalid = ctx.propertyCalls;
     for (int invalid : {0, -1, 15001, 200001}) assert(!ptr->deskport_set_bitrate(invalid, false, true));
     assert(ctx.propertyCalls == callsBeforeInvalid && ctx.average == 992000);
@@ -112,13 +112,16 @@ int main() {
     assert(finish(*ptr, idle) == 0);
     capture(base); // image was popped/converted, but gate may delay submission
     capture(base);
-    Call fresh {1}; assert(before(*ptr, fresh) == 0 && ctx.max == 26);
-    assert((ctx.writes == Writes{{'M',26}}));
+    Call fresh {1}; assert(before(*ptr, fresh) == 0 && ctx.max == 34);
+    assert((ctx.writes == Writes{{'M',34}}));
     assert(output(*ptr, fresh, fresh.native) == 0);
     assert(finish(*ptr, fresh) == 0); // EAGAIN after current output is not a drop
+    Call sharpen {110}; assert(before(*ptr, sharpen) == 0 && ctx.max == 26);
+    assert(output(*ptr, sharpen, sharpen.native) == 0 && finish(*ptr, sharpen) == 0);
+    ctx.writes.clear();
     capture(base);
-    Call nextFresh {2}; assert(before(*ptr, nextFresh) == 0 && ctx.max == 26);
-    assert(ctx.writes.size() == 1); // no native write when requested Max is unchanged
+    Call nextFresh {2}; assert(before(*ptr, nextFresh) == 0 && ctx.max == 34);
+    assert(ctx.writes.size() == 1);
     assert(finish(*ptr, nextFresh) == 0); // current strict picture dropped
     capture(base);
     Call retry {3}; assert(before(*ptr, retry) == 0 && ctx.max == 51);
@@ -129,19 +132,19 @@ int main() {
 
     // Delayed old output does not prove that the current strict picture exists.
     capture(base);
-    Call strict {5}; assert(before(*ptr, strict) == 0 && ctx.max == 26);
+    Call strict {5}; assert(before(*ptr, strict) == 0 && ctx.max == 34);
     assert(output(*ptr, strict, refine.native) == 0 && !strict.currentProduced);
     assert(finish(*ptr, strict) == 0);
     capture(base);
     Call forced {6}; assert(before(*ptr, forced) == 0 && ctx.max == 51);
     assert(finish(*ptr, forced) == 0);
 
-    // A fresh KEY always bypasses Max26 and cannot start the strict drop loop.
+    // A fresh KEY always bypasses Max34/26 and cannot start the strict drop loop.
     capture(base);
     Call key {7}; assert(before(*ptr, key, true) == 0 && ctx.max == 51);
     assert(finish(*ptr, key) == 0);
     capture(base);
-    Call afterKey {8}; assert(before(*ptr, afterKey) == 0 && ctx.max == 26);
+    Call afterKey {8}; assert(before(*ptr, afterKey) == 0 && ctx.max == 34);
     assert(output(*ptr, afterKey, afterKey.native) == 0 && finish(*ptr, afterKey) == 0);
     assert(ctx.rateCalls == 1 && ctx.min == 22); // picture policy never changes Avg/DRL/Min
 
@@ -185,7 +188,7 @@ int main() {
     ctx.width = 1280; ctx.height = 800;
     assert(ptr->deskport_set_bitrate(351, false, true));
     capture(base);
-    Call smallerPicture {12}; assert(before(*ptr, smallerPicture) == 0 && ctx.max == 26);
+    Call smallerPicture {12}; assert(before(*ptr, smallerPicture) == 0 && ctx.max == 34);
     assert(output(*ptr, smallerPicture, smallerPicture.native) == 0 && finish(*ptr, smallerPicture) == 0);
     ctx.width = 0;
     assert(ptr->deskport_set_bitrate(992, false, true));
@@ -194,10 +197,10 @@ int main() {
     assert(finish(*ptr, invalidSize) == 0);
     ctx.width = 2040; ctx.height = 1228;
     assert(ptr->deskport_set_bitrate(992, false, true));
-    capture(base); ctx.fail = 26;
+    capture(base); ctx.fail = 34;
     Call rejected {14}; assert(before(*ptr, rejected) == -1);
     assert(ctx.max == 51); // rejected setter never enters the applied cache
-    assert(ptr->deskport_quality.needsMaximum(26));
+    assert(ptr->deskport_quality.needsMaximum(34));
 
     // Run the extracted production setter through each independent native
     // failure, with readable limits and FFmpeg's unreadable-limit fallback.
@@ -207,14 +210,14 @@ int main() {
             avcodec_encode_session_t transaction;
             auto& state = *transaction.avcodec_ctx;
             assert(transaction.deskport_set_bitrate(992, false, true));
-            state.max = 26; // previous fresh picture's strict bound
+            state.max = 26; // previous picture's strict bound
             transaction.deskport_quality.appliedMaximum(26);
             state.limitsReadable = readable;
             state.propertyCalls = 0; state.failAt = stage;
             assert(!transaction.deskport_set_bitrate(499, true, false));
-            assert(state.average == 992000 && state.limitBytes == 992000 * 3 / 8 && state.limitSeconds == 1);
+            assert(state.average == 992000 && state.limitBytes == 992000 * 2 / 8 && state.limitSeconds == 1);
             assert(state.min == 22 && state.max == 26 && state.expected == 8);
-            assert(transaction.deskport_previous_limit_bps == 992000 * 3 && transaction.deskport_saver_configured);
+            assert(transaction.deskport_previous_limit_bps == 992000 * 2 && transaction.deskport_saver_configured);
             assert(!transaction.deskport_quality.needsMaximum(26));
             state.failAt = 0;
             assert(transaction.deskport_set_bitrate(499, true, false));
@@ -260,7 +263,7 @@ with tempfile.TemporaryDirectory(prefix='deskport-picture-', dir=directory) as t
         begin = video.index('          if (auto *avcodec_session = dynamic_cast<avcodec_encode_session_t *>(session.get())) {')
         capture = video[begin:video.index('          frame_timestamp = img->frame_timestamp;', begin)]
         assert video.rfind('if (auto img = images->pop(', 0, begin) > video.index('void encode_run(')
-        assert video.index('avcodec_session->deskport_quality.captured();') < video.index('deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame)')
+        assert video.index('avcodec_session->deskport_quality.captured();') < video.index('deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame, deskport_interactive)')
         assert video.count('avcodec_session->deskport_quality.captured();') == 1
         assert 'deskport_quality.changed(' not in video and 'deskport_quality.relax(' not in video
         begin = video.index('      const int deskport_max_qp = session.deskport_quality.requestedMaximum(')

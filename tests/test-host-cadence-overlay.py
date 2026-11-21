@@ -67,7 +67,7 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert video.count('deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)') == 2
         assert video.count('if (deskport_saving && fps <= 1)') == 1
         assert video.count('deskport::saverFrameRate(absolute_ms, deskport_refinement.active(absolute_ms), boost,') == 1
-        assert video.count('deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame)') == 1
+        assert video.count('deskport_saver_gate.admit(deskport_saver_us, requested_idr_frame, deskport_interactive)') == 1
         assert video.count('deskport_saver_pending = true;') == 1
         assert video.count('cadence.saver = deskport::liveSaver.load() == 1;') == 1
         assert stream.count('deskport::saverMinParity(deskport::liveSaver.load() == 1,') == 1

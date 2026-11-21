@@ -205,8 +205,10 @@ int main() {
     memory.store(8000, 3000, 1000);
     assert(memory.resumeFor(8000, 301000) == 3000);
     assert(memory.resumeFor(8000, 301001) == 0 && memory.resumeFor(15000, 2000) == 0);
-    assert(deskport::remotePacketsPerMs(3000, 1040) == 2);   // 20 Mbps floor
-    assert(deskport::remotePacketsPerMs(15000, 1040) == 7);  // 4x target
+    assert(deskport::remotePacketsPerMs(3000, 1040) == 2);          // 20 Mbps floor
+    assert(deskport::remotePacketsPerMs(3000, 1040, true) == 1);    // 8 Mbps saver floor (9 Mbps at 3x)
+    assert(deskport::remotePacketsPerMs(15000, 1040) == 7);         // 4x target
+    assert(deskport::remotePacketsPerMs(15000, 1040, true) == 5);   // 3x saver target
     assert(deskport::remotePacketsPerMs(1, 1 << 20) == 1);
 
     // Scroll pacing: bounded steps, total and direction preserved.
@@ -380,6 +382,7 @@ int main() {
     // refresh; recovery is never delayed. Packet size is a quality heuristic.
     assert(deskport::saverFrameRate(1500,true,{},60)==4 && deskport::saverFrameRate(1500,false,{},60)==1);
     assert(deskport::saverFrameRate(1500,false,{1600,60},60)==4 && deskport::saverFrameRate(1500,true,{},1)==1);
+    assert(deskport::saverFrameRate(1500,true,{1600,60},60)==8);
     deskport::SaverRefinement refinement;
     refinement.changed(1000);
     assert(refinement.active(3999) && !refinement.active(4000));
@@ -403,6 +406,7 @@ int main() {
     deskport::SaverGate saverGate;
     assert(saverGate.admit(1000000,false) && !saverGate.admit(1124999,false) && saverGate.admit(1125000,false));
     assert(saverGate.admit(1130000,true) && !saverGate.admit(1254999,false) && saverGate.admit(1255000,false));
+    assert(saverGate.admit(2000000,false,true) && !saverGate.admit(2062499,false,true) && saverGate.admit(2062500,false,true));
     deskport::FrameCadence saving(60);
     saving.saver = true;
     assert(saving.admit(20000000,true,false));  // a single change is not delayed

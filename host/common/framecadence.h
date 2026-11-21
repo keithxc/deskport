@@ -18,6 +18,7 @@ inline int refineFrameRate(std::int64_t nowMs, std::int64_t lastChangeMs, int ce
 // refreshed every kSaverIdleMs. Resolution and the negotiated frame rate are
 // unchanged.
 constexpr int kSaverContentFps = 8;
+constexpr int kSaverInteractiveFps = 16;
 constexpr std::int64_t kSaverIdleMs = 5000;
 // Like zero-hertz screen sharing, repeat after changes before entering idle.
 // Packet size is only a convergence heuristic, not a decoder quality report:
@@ -48,19 +49,24 @@ private:
     int stableFrames = 0;
 };
 inline int saverFrameRate(std::int64_t nowMs, bool refining, ActivityBoost boost, int ceiling) {
-    const bool active = refining || nowMs < boost.untilMs;
-    return active ? std::max(1, std::min(ceiling, kSaverRefineFps)) : 1;
+    const bool interactive = nowMs < boost.untilMs;
+    if (interactive && refining) return std::max(1, std::min(ceiling, kSaverContentFps));
+    if (interactive || refining) return std::max(1, std::min(ceiling, kSaverRefineFps));
+    return 1;
 }
 // Encoded size of the latest picture on this encoder thread, by frame number.
 struct EncodedFrame { std::int64_t frame = -1; int bytes = -1; };
 inline thread_local EncodedFrame lastEncodedFrame;
 inline int encodedBytes(std::int64_t frame) { return lastEncodedFrame.frame == frame ? lastEncodedFrame.bytes : -1; }
-// Spaces captured content frames; recovery frames always pass.
+// Spaces captured content frames; recovery frames always pass. Active user
+// input uses a smoother interactive cadence so scrolling/pointer tracking
+// does not stutter at 125 ms intervals.
 class SaverGate {
 public:
-    bool admit(std::int64_t nowUs, bool recovery) {
+    bool admit(std::int64_t nowUs, bool recovery, bool interactive = false) {
         if (!recovery && nowUs < next) return false;
-        next = nowUs + 1000000 / kSaverContentFps;
+        const int fps = interactive ? kSaverInteractiveFps : kSaverContentFps;
+        next = nowUs + 1000000 / fps;
         return true;
     }
 private:
@@ -91,7 +97,8 @@ public:
         pending = pending || changed;
         const int fps = floor(nowUs);
         if (recovery || pending) {
-            if (saver && !gate.admit(nowUs, recovery)) return false;
+            const bool interactive = nowUs / 1000 < boost.untilMs;
+            if (saver && !gate.admit(nowUs, recovery, interactive)) return false;
             if (!policy.admit(nowUs, recovery)) return false;
         } else if (sent && nowUs - lastEncoded < (saver && fps <= 1 ? kSaverIdleMs * 1000 : 1000000 / fps)) {
             return false;
