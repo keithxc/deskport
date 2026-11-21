@@ -57,7 +57,7 @@ TARGET = diagnostics-test
                    and r.get('rtt_ms') == 27 and r.get('quality_floor') == 'off'
                    and r.get('saver') is True and r.get('min_qp') == 22
                    and r.get('max_qp') == 26 for r in all_records)
-        for strict, minimum, maximum in ((True, 22, 26), (False, 22, 51)):
+        for strict, minimum, maximum in ((True, 22, 34), (True, 22, 26), (False, 22, 51)):
             assert any(r.get('event') == 'rate' and r.get('min_qp') == minimum
                        and r.get('max_qp') == maximum and r.get('quality_strict') is strict
                        and not ({'target_kbps', 'rtt_ms', 'quality_floor', 'saver'} & r.keys())

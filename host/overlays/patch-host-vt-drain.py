@@ -47,7 +47,7 @@ patch('src/video.cpp', '''    // send the frame to the encoder
         }
         session.deskport_quality.appliedMaximum(deskport_max_qp);
         BOOST_LOG(info) << "DeskPort live quality: min_qp=22, max_qp=" << deskport_max_qp
-                        << ", strict=" << (deskport_max_qp == 26 ? "on" : "off");
+                        << ", strict=" << (deskport_max_qp < 51 ? "on" : "off");
       }
       const auto pts = session.deskport_clock.submit(now_us, frame_nr, ctx->time_base.num, ctx->time_base.den);
       if (!pts) { BOOST_LOG(error) << "Invalid VideoToolbox frame clock"; return -1; }

@@ -29,7 +29,7 @@ const QStringList networkKeys {"rtt_ms", "rtt_var_ms", "received_fps", "rendered
 const QStringList rateKeys {"target_kbps", "rtt_ms", "baseline_ms", "ceiling_kbps", "floor_kbps", "resume_kbps"};
 const QStringList encodedKeys {"encoded_kbps", "frames", "keyframes", "max_frame_bytes"};
 bool qualityStrictRange(int minimum, int maximum, bool strict) {
-    return minimum == 22 && maximum == (strict ? 26 : 51);
+    return minimum == 22 && (strict ? (maximum == 26 || maximum == 34) : maximum == 51);
 }
 QString codecName(int format) {
     switch (format) {

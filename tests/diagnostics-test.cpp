@@ -229,9 +229,10 @@ private slots:
             QVERIFY(Diagnostics::project(QString("DeskPort live rate: target_kbps=992, rtt_ms=0, quality_floor=off, saver=on, min_qp=22, %1").arg(suffix)).isEmpty());
     }
     void pictureQualityStrictKeepsActualRange() {
-        for (const bool strict : {false, true}) {
+        for (const auto& entry : {QPair<bool, int>{false, 51}, {true, 34}, {true, 26}}) {
+            const bool strict = entry.first;
             const int minimum = 22;
-            const int maximum = strict ? 26 : 51;
+            const int maximum = entry.second;
             const auto line = QString("[2026-11-02 18:31:00.000]: Info: DeskPort live quality: min_qp=%1, max_qp=%2, strict=%3")
                 .arg(minimum).arg(maximum).arg(strict ? "on" : "off");
             auto record = Diagnostics::project(line);
@@ -267,10 +268,10 @@ private slots:
             QVERIFY(Diagnostics::project(line + " host=private.example").isEmpty());
             QVERIFY(Diagnostics::project(line + " clipboard=private sentence").isEmpty());
         }
-        for (const auto& suffix : {"min_qp=22, max_qp=26, strict=off", "min_qp=32, max_qp=51, strict=off",
-                 "min_qp=22, max_qp=51, strict=on", "min_qp=32, max_qp=52, strict=on",
-                 "min_qp=-1, max_qp=51, strict=on", "min_qp=22, max_qp=51, strict=true",
-                 "min_qp=22, max_qp=51, strict=private.example"})
+        for (const auto& suffix : {"min_qp=22, max_qp=26, strict=off", "min_qp=22, max_qp=34, strict=off",
+                 "min_qp=32, max_qp=51, strict=off", "min_qp=22, max_qp=51, strict=on",
+                 "min_qp=32, max_qp=52, strict=on", "min_qp=-1, max_qp=51, strict=on",
+                 "min_qp=22, max_qp=51, strict=true", "min_qp=22, max_qp=51, strict=private.example"})
             QVERIFY(Diagnostics::project(QString("DeskPort live quality: %1").arg(suffix)).isEmpty());
     }
     void selectedDecoderMetadata_data() {
@@ -330,6 +331,7 @@ private slots:
         QTemporaryDir dir; Diagnostics logs(nullptr,dir.path()); logs.setEnabled(true);
         for (int i=0;i<28000;++i) logs.record("host","Connection failed");
         logs.ingest("host", "DeskPort live rate: target_kbps=992, rtt_ms=27, quality_floor=off, saver=on, min_qp=22, max_qp=26\n");
+        logs.ingest("host", "DeskPort live quality: min_qp=22, max_qp=34, strict=on\n");
         logs.ingest("host", "DeskPort live quality: min_qp=22, max_qp=26, strict=on\n");
         logs.ingest("host", "DeskPort live quality: min_qp=22, max_qp=51, strict=off\n");
         logs.record("client", "Video stream is 2040x1228x60 (format 0x100)");
