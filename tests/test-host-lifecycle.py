@@ -226,7 +226,7 @@ INCLUDEPATH += "{root}/app/backend" "{root}/app" "{root}/app/gui" "{root}/moonli
 RESOURCES += "{work}/test-resources.qrc"
 macx {{
     OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm" "{root}/app/backend/macdock.mm" "{root}/app/backend/macclipboard.mm" "{root}/app/backend/macunattended.mm"
-    LIBS += -framework CoreGraphics -framework AVFoundation -framework ApplicationServices -framework AppKit -framework ServiceManagement
+    LIBS += -framework CoreFoundation -framework CoreGraphics -framework AVFoundation -framework ApplicationServices -framework AppKit -framework ServiceManagement
 }}
 ''')
     if "--clipboard" in sys.argv:

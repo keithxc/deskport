@@ -20,6 +20,16 @@ void deskPortActivateApplication() {
     });
 }
 
+void deskPortAfterStatusItemTracking(QObject* context, std::function<void()> callback) {
+    const QPointer<QObject> owner(context);
+    // A queued Qt call, zero timer or main dispatch block can run in AppKit's
+    // nested tracking loop. A default-mode-only block lets the real mouseUp
+    // finish that loop before another native menu starts consuming events.
+    [[NSRunLoop mainRunLoop] performInModes:@[NSDefaultRunLoopMode] block:^{
+        if (owner) callback();
+    }];
+}
+
 @interface DeskPortStatusMenuTarget : NSObject
 @property (nonatomic, assign) NSInteger chosen;
 @end

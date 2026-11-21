@@ -9,6 +9,12 @@
 #include "nvaddress.h"
 #include "localhostfilter.h"
 #include "peerstore.h"
+#ifdef Q_OS_MACOS
+#include "macdock.h"
+#include <CoreFoundation/CoreFoundation.h>
+#include <QSettings>
+#include <QWindow>
+#endif
 #ifdef Q_OS_LINUX
 #include <csignal>
 #include <sys/prctl.h>
@@ -65,6 +71,102 @@ static QAction* trayAction(const QString& title) {
             for (auto action : menu->actions()) if (action->isVisible() && action->text()==title) return action;
     return nullptr;
 }
+
+#ifdef Q_OS_MACOS
+// Offscreen only: reproduce the resident window's close-to-hide veto without
+// creating a status item, opening a menu or sending any native mouse events.
+class CloseToHideWindow : public QWindow {
+public:
+    int closes = 0;
+    bool event(QEvent* event) override {
+        if (event->type() == QEvent::Close) {
+            ++closes;
+            event->ignore();
+            hide();
+            return true;
+        }
+        return QWindow::event(event);
+    }
+};
+
+static int explicitExitProbe(QApplication& app, bool restart) {
+    QTemporaryDir dir;
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, dir.path());
+    QCoreApplication::setOrganizationName("DeskPortExitTest");
+    QCoreApplication::setApplicationName("DeskPortExitTest");
+    app.setQuitOnLastWindowClosed(false);
+    CloseToHideWindow window;
+    window.create();
+    const bool closed = window.close();
+    if (closed || window.closes != 1) {
+        qWarning() << "Exit probe close-veto setup failed: closed=" << closed << "closes=" << window.closes;
+        return 81;
+    }
+    window.show(); // Keep a visible close veto in place for the eventual exit.
+    qputenv("DESKPORT_TEST_MODE", "stubborn");
+    HostManager host(nullptr, dir.path(), false);
+    host.setResident(true);
+    int hides = 0, exits = 0, aboutToQuit = 0, ticksAfterExit = 0;
+    bool requested = false, drained = false;
+    QObject::connect(&host, &HostManager::hideRequested, &app, [&] { ++hides; });
+    QObject::connect(&host, &HostManager::exitRequested, &app, [&] {
+        ++exits;
+        // Explicit authorization alone must not bypass the host drain.
+        host.completeExit();
+    });
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [&] {
+        ++aboutToQuit;
+    });
+    QTimer::singleShot(0, &app, [&] {
+        host.completeExit(); // Neither authorized nor running: must be a no-op.
+        host.start(2560, 1440);
+    });
+    QTimer poll;
+    QObject::connect(&poll, &QTimer::timeout, &app, [&] {
+        if (!requested && host.canPair() && QFile::exists(dir.filePath("host-started"))) {
+            // Ordinary resident Quit still hides, and cannot authorize exit.
+            QEvent quit(QEvent::Quit);
+            QCoreApplication::sendEvent(&app, &quit);
+            if (hides != 1 || exits) { app.exit(82); return; }
+            host.completeExit();
+            auto action = trayAction(restart ? "Restart DeskPort" : "Quit");
+            if (!action) { app.exit(83); return; }
+            requested = true;
+            action->trigger();
+            if (exits) app.exit(84); // Tray actions must return before dispatch.
+        } else if (exits) {
+            ++ticksAfterExit;
+            if (!host.running()) {
+                // Snapshot before aboutToQuit: HostManager's earlier handler
+                // calls beginStop() again and temporarily sets m_Stopping.
+                drained = exits == 1 && !host.canPair();
+                host.completeExit();
+            }
+        }
+    });
+    poll.start(10);
+    QTimer::singleShot(10000, &app, [&] { app.exit(85); });
+    const int result = app.exec();
+    const bool restartMarker = QSettings().value("ui/showAfterRestart", false).toBool();
+    const bool displayClosed = QFile::exists(dir.filePath("display-closed"));
+    const auto fail = [&](int code) {
+        qWarning() << "Exit probe failed: code=" << code << "restart=" << restart
+                   << "requested=" << requested << "drained=" << drained
+                   << "hides=" << hides << "exits=" << exits << "aboutToQuit=" << aboutToQuit
+                   << "closes=" << window.closes << "windowVisible=" << window.isVisible()
+                   << "ticksAfterExit=" << ticksAfterExit << "running=" << host.running()
+                   << "canPair=" << host.canPair() << "restarting=" << host.restarting()
+                   << "restartMarker=" << restartMarker << "displayClosed=" << displayClosed;
+        return code;
+    };
+    if (result) return fail(result);
+    if (!drained || aboutToQuit != 1 || window.closes != 1 || ticksAfterExit < 10) return fail(86);
+    if (host.restarting() != restart || restartMarker != restart) return fail(87);
+    if (!displayClosed) return fail(88);
+    return 0;
+}
+#endif
 
 class HostLifecycle : public QObject {
     Q_OBJECT
@@ -243,6 +345,57 @@ private slots:
         QVERIFY(!trayAction("Desk 0")); QVERIFY(!trayAction("Disconnect “Desk 8”")); QVERIFY(!trayAction("Reconnect “Desk 8”"));
         QVERIFY(trayAction("Open device list"));
     }
+#ifdef Q_OS_MACOS
+    void nativeMenuWaitsForStatusButtonTracking() {
+        // Exercise the production scheduler in the mode AppKit uses while a
+        // status button waits for mouseUp. No synthetic input or personal UI.
+        const auto loop = CFRunLoopGetMain();
+        const auto tracking = CFSTR("NSEventTrackingRunLoopMode");
+        CFRunLoopSourceContext sourceContext = {};
+        sourceContext.perform = [](void*) {};
+        const auto source = CFRunLoopSourceCreate(nullptr, 0, &sourceContext);
+        CFRunLoopAddSource(loop, source, tracking);
+        CFRunLoopAddSource(loop, source, kCFRunLoopDefaultMode);
+        QObject owner;
+        int delivered = 0;
+        bool canceledDelivered = false;
+        deskPortAfterStatusItemTracking(&owner, [&] { ++delivered; });
+        auto canceled = new QObject;
+        deskPortAfterStatusItemTracking(canceled, [&] { canceledDelivered = true; });
+        delete canceled;
+        const bool synchronous = delivered != 0;
+        CFRunLoopRunInMode(tracking, 0.02, false);
+        const bool ranDuringTracking = delivered != 0;
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.02, false);
+        CFRunLoopRemoveSource(loop, source, tracking);
+        CFRunLoopRemoveSource(loop, source, kCFRunLoopDefaultMode);
+        CFRelease(source);
+        QVERIFY(!synchronous);
+        QVERIFY(!ranDuringTracking);
+        QCOMPARE(delivered, 1);
+        QVERIFY(!canceledDelivered);
+    }
+    void explicitExitBypassesCloseToHideAfterDrain_data() {
+        QTest::addColumn<bool>("restart");
+        QTest::newRow("quit") << false;
+        QTest::newRow("restart") << true;
+    }
+    void explicitExitBypassesCloseToHideAfterDrain() {
+        QFETCH(bool, restart);
+        QProcess probe;
+        auto environment = QProcessEnvironment::systemEnvironment();
+        environment.insert("DESKPORT_TEST_EXPLICIT_EXIT", restart ? "restart" : "quit");
+        probe.setProcessEnvironment(environment);
+        probe.start(QCoreApplication::applicationFilePath(), {});
+        QVERIFY(probe.waitForStarted(3000));
+        const bool finished = probe.waitForFinished(15000);
+        if (!finished) { probe.kill(); probe.waitForFinished(3000); }
+        QVERIFY2(finished, probe.readAllStandardError().constData());
+        QCOMPARE(probe.exitStatus(), QProcess::NormalExit);
+        QVERIFY2(probe.exitCode() == 0,
+            qPrintable(QString("Exit probe failed (%1): %2").arg(probe.exitCode()).arg(QString::fromUtf8(probe.readAllStandardError()))));
+    }
+#endif
     void exitKeepsEventLoopAliveWhileHelperStops() {
         qputenv("DESKPORT_TEST_MODE","stubborn");
         QTemporaryDir dir; HostManager host(nullptr,dir.path());
@@ -764,6 +917,10 @@ private slots:
 };
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
+#ifdef Q_OS_MACOS
+    const auto exitProbe = qEnvironmentVariable("DESKPORT_TEST_EXPLICIT_EXIT");
+    if (!exitProbe.isEmpty()) return explicitExitProbe(app, exitProbe == "restart");
+#endif
 #ifdef Q_OS_LINUX
     const auto crashOwner = qEnvironmentVariable("DESKPORT_TEST_CRASH_OWNER");
     if (!crashOwner.isEmpty()) {

@@ -483,12 +483,19 @@ HostManager::HostManager(QObject *parent, const QString &directory, bool interac
 }
 #ifdef Q_OS_MACOS
 void HostManager::showTrayMenu() {
-    emit trayMenuAboutToShow();
-    m_NativeMenuTracking = true;
-    const auto chosen = deskPortShowStatusMenu(m_Menu);
-    if (chosen) chosen->trigger();
-    m_NativeMenuTracking = false;
-    updateSessionMenu(m_PendingSessionRows);
+    if (m_NativeMenuPending || m_NativeMenuTracking || m_ExitRequested) return;
+    m_NativeMenuPending = true;
+    deskPortAfterStatusItemTracking(this, [this] {
+        m_NativeMenuPending = false;
+        if (m_ExitRequested) return;
+        emit trayMenuAboutToShow();
+        m_NativeMenuTracking = true;
+        const QPointer<QAction> chosen = deskPortShowStatusMenu(m_Menu);
+        // Queued handlers capture the selected session before refreshing rows.
+        if (chosen) chosen->trigger();
+        m_NativeMenuTracking = false;
+        updateSessionMenu(m_PendingSessionRows);
+    });
 }
 #endif
 void HostManager::setStreamTitleBarHidden(bool hidden) {
@@ -594,6 +601,18 @@ void HostManager::requestRestart() {
     QSettings().setValue("ui/showAfterRestart", true);
     emit operationRequested(m_Status);
     QTimer::singleShot(100, this, &HostManager::requestExit);
+}
+void HostManager::completeExit() {
+    if (!m_ExitRequested || running()) return;
+#ifdef Q_OS_MACOS
+    // Explicit Quit/Restart has already authorized shutdown and all owners have
+    // drained. QGuiApplication's Quit event closes windows first; our resident
+    // QML window vetoes close-to-hide, canceling Cocoa termination. Exit the Qt
+    // loop directly, preserving aboutToQuit, main()'s relaunch and destructors.
+    QCoreApplication::exit(0);
+#else
+    qApp->quit();
+#endif
 }
 void HostManager::scheduleRecovery() {
     if (!m_DesiredSharing || m_ShuttingDown || m_RecoveryTimer.isActive()) return;

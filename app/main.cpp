@@ -1008,7 +1008,7 @@ int main(int argc, char *argv[])
     QObject::connect(&hostManager, &HostManager::exitRequested, &app, [&] {
         if (multiSessions) multiSessions->shutdown();
         auto timer = new QTimer(&app);
-        QObject::connect(timer, &QTimer::timeout, &app, [timer, &app, &hostManager, &multiSessions] {
+        QObject::connect(timer, &QTimer::timeout, &app, [timer, &hostManager, &multiSessions] {
             if (Session::get()) {
                 Session::get()->cancelRecovery();
                 SDL_Event event {}; event.type = SDL_USEREVENT; event.user.code = DeskPortEndSession;
@@ -1017,7 +1017,7 @@ int main(int argc, char *argv[])
             // Keep Qt and the tray alive while both independent owners drain.
             // Their destructors should not be the normal shutdown mechanism.
             if (!SessionLifetime::busy() && !hostManager.running() && (!multiSessions || !multiSessions->busy())) {
-                timer->stop(); timer->deleteLater(); app.quit();
+                timer->stop(); timer->deleteLater(); hostManager.completeExit();
             }
         });
         timer->start(50);
