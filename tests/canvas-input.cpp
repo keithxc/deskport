@@ -6,9 +6,10 @@
 #include <cstdio>
 #include <vector>
 
-static std::vector<SDL_Event> events() {
+static std::vector<SDL_Event> events(bool dropWake = true) {
     std::vector<SDL_Event> result; SDL_Event event;
     while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) > 0) {
+        if (dropWake && CanvasBridge::isWakeEvent(event)) continue;
         CanvasBridge::decodeTextEvent(event);
         CanvasBridge::decodeWheelEvent(event);
         result.push_back(event);
@@ -50,11 +51,15 @@ int main(int argc, char** argv) {
     QJsonObject key{{"type","key"},{"down",true},{"scan",SDL_SCANCODE_A},{"symbol",SDLK_a},{"modifiers",0}};
     CanvasBridge::input(key);
     // Input must wake a blocked SDL_WaitEventTimeout loop immediately, and
-    // synchronize() must drain the wakeup sentinel cleanly.
-    auto woken = events();
-    assert(woken.size() == 1 && CanvasBridge::isWakeEvent(woken[0]));
+    // synchronize() must drain the wakeup sentinel cleanly without touching SDL_USEREVENT.
+    auto woken = events(false);
+    assert(woken.size() == 1 && CanvasBridge::isWakeEvent(woken[0]) && woken[0].type != SDL_USEREVENT);
+    SDL_Event appUser{}; appUser.type = SDL_USEREVENT; appUser.user.code = 106;
+    assert(SDL_PushEvent(&appUser) == 1);
     CanvasBridge::synchronize(window);
-    auto received = events(); assert(received.size() == 1 && received[0].type == SDL_KEYDOWN);
+    auto received = events();
+    assert(received.size() == 2 && received[0].type == SDL_USEREVENT && received[0].user.code == 106 &&
+           received[1].type == SDL_KEYDOWN);
     // Consecutive motions coalesce while updating cursor coordinates; buttons stay ordered barriers.
     CanvasBridge::input({{"type","motion"},{"x",100},{"y",120},{"dx",5},{"dy",-3}});
     CanvasBridge::input({{"type","motion"},{"x",112},{"y",114},{"dx",12},{"dy",-6}});
