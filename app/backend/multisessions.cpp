@@ -112,6 +112,7 @@ void MultiSessions::canvasInput(QJsonObject event) {
     if (m_RefreshingCanvasFrame || !m_CanvasWindow || !m_CanvasWindow->isVisible() || (!m_CanvasWindow->isActive() && !(QGuiApplication::focusWindow() && m_CanvasWindow->isAncestorOf(QGuiApplication::focusWindow()))) || !entry ||
         !entry->exposed || !m_Hiding.isEmpty() || entry->state != "connected") return;
     send(entry, {{"command","canvas-input"},{"epoch",double(m_Epoch)},{"event",event}});
+    if (entry->socket) entry->socket->flush();
 }
 void MultiSessions::answerCanvasQuestion(int choice) {
     const auto entry = m_Entries.value(m_Wanted);

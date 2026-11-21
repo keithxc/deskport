@@ -51,8 +51,18 @@ int SessionWorker::run() {
         QTimer::singleShot(5000,qApp,[] { QCoreApplication::exit(1); });
     });
     m_Socket.setReadBufferSize(16385); m_Socket.connectToServer(m_Endpoint);
+    CanvasBridge::setIpcWaiter([this](int timeoutMs) {
+        if (m_Socket.state() != QLocalSocket::ConnectedState) return false;
+        if (m_Socket.bytesAvailable() > 0) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
+            return true;
+        }
+        m_Socket.waitForReadyRead(timeoutMs);
+        return true;
+    });
     QTimer::singleShot(10000,this,[this] { if(m_Socket.state()!=QLocalSocket::ConnectedState) QCoreApplication::exit(1); });
     const auto result=QCoreApplication::exec();
+    CanvasBridge::setIpcWaiter({});
     // A forced IPC-loss exit must not free computers beneath a live SDL worker.
     if (!m_Session) delete m_Computers;
     m_Computers=nullptr;

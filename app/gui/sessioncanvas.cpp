@@ -440,7 +440,11 @@ void SessionCanvas::mouse(QMouseEvent* event, bool down, bool isButton) {
         const int mask = SDL_BUTTON(button(event->button()));
         if (down) m_Buttons |= mask; else m_Buttons &= ~mask;
     }
-    const auto old = m_Mouse; m_Mouse = position(event->position()); m_Hovered = true; refresh();
+    const bool wasHovered = m_Hovered;
+    const auto old = m_Mouse; m_Mouse = position(event->position()); m_Hovered = true;
+    // Pure pointer motion while already hovered does not alter window/surface
+    // state; CanvasBridge tracks cursor coordinates directly from motion input.
+    if (isButton || !wasHovered || m_LastState.isEmpty()) refresh();
     QJsonObject value {{"type",isButton ? "button" : "motion"},{"x",m_Mouse.x()},{"y",m_Mouse.y()}};
     if (isButton) { value["button"] = button(event->button()); value["down"] = down; }
     else { value["dx"] = m_Mouse.x() - old.x(); value["dy"] = m_Mouse.y() - old.y(); }
@@ -453,7 +457,9 @@ void SessionCanvas::hoverEnterEvent(QHoverEvent* event) { m_Hovered = true; m_Mo
 void SessionCanvas::hoverLeaveEvent(QHoverEvent*) { m_Hovered = false; refresh(); }
 void SessionCanvas::hoverMoveEvent(QHoverEvent* event) {
     if (m_LocalWindowDrag) { event->accept(); return; }
-    const auto old = m_Mouse; m_Mouse = position(event->position()); refresh();
+    const bool wasHovered = m_Hovered;
+    const auto old = m_Mouse; m_Mouse = position(event->position()); m_Hovered = true;
+    if (!wasHovered || m_LastState.isEmpty()) refresh();
     emit input({{"type","motion"},{"x",m_Mouse.x()},{"y",m_Mouse.y()},{"dx",m_Mouse.x()-old.x()},{"dy",m_Mouse.y()-old.y()}});
 }
 void SessionCanvas::wheelEvent(QWheelEvent* event) {

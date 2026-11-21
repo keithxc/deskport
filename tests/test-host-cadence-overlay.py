@@ -19,8 +19,12 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
             f.extractall(target, filter='data')
         if not (target / 'src').exists():
             target = next(p for p in target.iterdir() if (p / 'src').exists())
-        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'encoder-policy', 'vt-drain', 'input-activity', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'remote-rate'):
+        for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'encoder-policy', 'vt-drain', 'input-activity', 'mouse-latency', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'remote-rate'):
             subprocess.run(['python3', str(root / f'host/overlays/patch-host-{name}.py'), str(target)], check=True)
+        subprocess.run(['python3', str(root / 'host/overlays/patch-host-mouse-latency.py'), str(target)], check=True)
+        input_cpp = (target / 'src/input.cpp').read_text()
+        assert 'pushDelayed(std::move(f), 10ms)' not in input_cpp
+        assert 'deliver absolute-mode left-button releases without a 10 ms' in input_cpp
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-encoder-policy.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-remote-rate.py'), str(target)], check=True)
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-vt-drain.py'), str(target)], check=True)
