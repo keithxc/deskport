@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -92,7 +92,7 @@ Các gói macOS 2.9.0 chính xác đã vượt qua kiểm tra Developer ID, côn
 | Linux x86_64 | Trình xem + máy chủ; không gian làm việc thích ứng trên máy chủ KWin, Mutter và Hyprland đủ điều kiện | **2.9.0 ổn định**: DEB, RPM, Arch, AppImage, gói di động và Nix | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [hướng dẫn cài đặt](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Chỉ trình xem | **2.9.0 ổn định**, Freedesktop Platform 25.08 | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Chỉ thiết bị khách | App Store; bản mới hơn được thử riêng trên TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Chỉ thiết bị khách | **2.7 (63)** · Đang thử nghiệm kín trên Google Play | [Tải APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Chỉ thiết bị khách | **2.9.0 (67)** · Đang thử nghiệm kín trên Google Play | [Tải APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Trình xem + máy chủ + màn hình ảo | **2.9.0 ổn định**; Setup kèm máy chủ, ZIP di động chỉ để xem; ứng dụng và bộ cài chưa ký | [Bộ cài](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Chưa đủ điều kiện | Chưa có gói phát hành được xác minh | — |
 
@@ -119,7 +119,7 @@ bao gồm [yêu cầu về đầu vào của máy chủ](../LINUX_PACKAGES.md#fi
 Với Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak chỉ hỗ trợ xem. Bản phát hành kèm [mã kiểm tra SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) và [báo cáo xác minh](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
 
 Bản dựng 63 dùng cùng khóa ký ứng dụng với Google Play. Khi cập nhật lên phiên bản mới hơn từ Play, các máy tính đã ghép đôi và các thiết lập sẽ được giữ lại. Nếu đã cài bản dựng 62 từ GitHub, bạn cần gỡ bản đó trước khi cài bản 63. Các thiết lập cục bộ sẽ bị xóa và bạn phải ghép đôi lại với máy tính.
 

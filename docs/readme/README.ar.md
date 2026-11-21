@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -93,7 +93,7 @@
 | Linux x86_64 | عارض + مضيف؛ مساحة عمل تكيّفية على مضيفات KWin وMutter وHyprland المؤهلة | **2.9.0 مستقر**: DEB وRPM وArch وAppImage وأرشيف محمول وNix | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [دليل التثبيت](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | عارض فقط | **2.9.0 مستقر**، Freedesktop Platform 25.08 | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad، iOS/iPadOS 15+ | عميل فقط | App Store؛ تُختبر الإصدارات الأحدث بشكل منفصل في TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | عميل فقط | **2.7 (63)** · لم يكتمل الاختبار المغلق في Google Play | [تنزيل APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | عميل فقط | **2.9.0 (67)** · لم يكتمل الاختبار المغلق في Google Play | [تنزيل APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | عارض + مضيف + شاشة افتراضية | **2.9.0 مستقر**؛ Setup يتضمن المضيف، وZIP المحمول للعرض فقط؛ التطبيق والمثبّت غير موقّعين | [المثبّت](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | غير مؤهل | لا توجد حزمة إصدار متحقق منها | — |
 
@@ -120,7 +120,7 @@
 باستخدام Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 يوفر Flatpak العرض فقط. يتضمن الإصدار [مجاميع SHA-256 الاختبارية](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) و[تقرير تحقق](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
+**Android 2.9.0 (67)** · ~~$4.99~~ · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
 
 يستخدم الإصدار 63 مفتاح توقيع Google Play نفسه، لذا يحتفظ التحديث إلى إصدار أحدث من المتجر بأجهزة الكمبيوتر المقترنة والإعدادات. إذا ثبّتَّ الإصدار 62 من GitHub، فيجب إلغاء تثبيته قبل تثبيت 63. يؤدي ذلك إلى مسح الإعدادات المحلية ويتطلب إقران أجهزة الكمبيوتر مجددًا.
 

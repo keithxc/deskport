@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -109,7 +109,7 @@ does not certify every feature on every GPU or OS session. The release verificat
 | Linux x86_64 | Viewer + host; adaptive workspace on capable KWin, Mutter and Hyprland hosts | **2.9.0**: DEB, RPM, Arch, AppImage, portable archive and Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [installation guide](docs/LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Viewer only | **2.9.0**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Client only | App Store; newer builds tested separately in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Client only | **2.7 (63)** · Google Play closed testing in progress | [Download APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Client only | **2.9.0 (67)** · Google Play closed testing in progress | [Download APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Viewer + host + virtual display | **2.9.0**; full installer hosts, portable ZIP views; application and installer unsigned | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [Portable viewer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Not qualified | No verified release package | — |
 
@@ -156,7 +156,7 @@ With Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 The [portable tar archive](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-linux-x86_64.tar.gz)
 also requires glibc 2.39+. Flatpak provides viewing only. Before installing, require the published [SHA-256 checksums](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt), a [verification report](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt), and [Linux package verification](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Until Google Play closed testing is complete, the [signed APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) is available on GitHub. The mobile clients are closed source. GitHub temporarily provides the Android installer only.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Until Google Play closed testing is complete, the [signed APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) is available on GitHub. The mobile clients are closed source. GitHub temporarily provides the Android installer only.
 
 Build 63 uses the Google Play signing key. A newer Play release can update it in place and keep your paired computers and settings. If you installed GitHub build 62, switching to build 63 requires uninstalling DeskPort first. This clears your settings and you’ll need to pair your computers again.
 

@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -94,7 +94,7 @@ Paket macOS 2.9.0 yang tepat telah lulus pemeriksaan Developer ID, notarisasi Ap
 | Linux x86_64 | Penampil + host; ruang kerja adaptif pada host KWin, Mutter, dan Hyprland yang mendukung | **2.9.0 stabil**: DEB, RPM, Arch, AppImage, arsip portabel, dan Nix | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [panduan instalasi](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | Hanya penampil | **2.9.0 stabil**, Freedesktop Platform 25.08 | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Hanya klien | App Store; build lebih baru diuji terpisah di TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Hanya klien | **2.7 (63)** · Pengujian tertutup Google Play masih berlangsung | [Unduh APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | Hanya klien | **2.9.0 (67)** · Pengujian tertutup Google Play masih berlangsung | [Unduh APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | Penampil + host + layar virtual | **2.9.0 stabil**; Setup menyertakan host, ZIP portabel hanya untuk penampil; aplikasi dan pemasang tidak ditandatangani | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Belum memenuhi syarat | Tidak ada paket rilis terverifikasi | — |
 
@@ -122,7 +122,7 @@ termasuk [persyaratan input host](../LINUX_PACKAGES.md#first-connection-and-host
 Dengan Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
 Flatpak hanya untuk melihat. Rilis menyertakan [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) dan [laporan verifikasi](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
-**Android 2.7 (63)** · ~~$4.99~~ · Selama pengujian tertutup Google Play berlangsung, [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tersedia sementara di GitHub. Kode sumber klien seluler bersifat tertutup. Di sini hanya tersedia berkas instalasi.
+**Android 2.9.0 (67)** · ~~$4.99~~ · Selama pengujian tertutup Google Play berlangsung, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) tersedia sementara di GitHub. Kode sumber klien seluler bersifat tertutup. Di sini hanya tersedia berkas instalasi.
 
 Build 63 menggunakan kunci penandatanganan yang sama dengan Google Play. Pembaruan ke versi Play yang lebih baru akan mempertahankan pasangan komputer dan pengaturan. Jika Anda memasang build 62 dari GitHub, hapus instalasinya sebelum memasang build 63. Pengaturan lokal akan terhapus dan komputer perlu dipasangkan kembali.
 

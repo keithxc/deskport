@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="授權條款" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -88,7 +88,7 @@
 | Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [安裝指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 僅檢視端 | **2.9.0 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad，iOS/iPadOS 15+ | 僅用戶端 | 已在 App Store 上架；較新的版本另於 TestFlight 測試 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 僅用戶端 | **2.7（組建 63）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | 僅用戶端 | **2.9.0（組建 67）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **2.9.0 正式版**；Setup 包含主機端，可攜式 ZIP 僅供檢視；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未經驗證 | 沒有經過驗證的發布套件 | — |
 
@@ -113,7 +113,7 @@ AppImage 與可攜版會在開始分享時自動註冊目前顯示輔助程式�
 並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run --refresh github:keithxc/deskport/v2.9.0`。
 Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)。
 
-**Android 2.7（組建 63）** · ~~$4.99~~ · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
+**Android 2.9.0（組建 67）** · ~~$4.99~~ · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
 
 組建 63 使用 Google Play 的應用程式簽章，日後可直接安裝較新的 Play 版，保留配對與設定。若已安裝 GitHub 組建 62，首次切換至 63 須先解除安裝舊版。解除安裝會清除本機設定，安裝後須重新配對電腦。
 

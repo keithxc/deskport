@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="ライセンス" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -91,7 +91,7 @@
 | Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [インストールガイド](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | ビューアのみ | **2.9.0 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad、iOS/iPadOS 15+ | クライアントのみ | App Store で公開中。新しいビルドは TestFlight で別途テスト | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | クライアントのみ | **2.7 (63)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | クライアントのみ | **2.9.0 (67)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **2.9.0 安定版**；Setup はホストを含み、ポータブル ZIP は閲覧専用；アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未検証 | 検証済みのリリースパッケージなし | — |
 
@@ -117,7 +117,7 @@ DeskPort を「アプリケーション」にドラッグして起動します�
 ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run --refresh github:keithxc/deskport/v2.9.0`。
 Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)が含まれます。
 
-**Android 2.7 (63)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
+**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
 
 ビルド 63 は Google Play 版と同じ署名鍵を使用しています。今後、より新しい Play 版に上書き更新すると、パソコンとのペアリングと設定が引き継がれます。GitHub のビルド 62 をお使いの場合は、63 のインストール前に旧版をアンインストールしてください。ローカル設定が消去されるため、再度ペアリングが必要です。
 

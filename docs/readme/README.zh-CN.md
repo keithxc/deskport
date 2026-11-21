@@ -42,7 +42,7 @@
 <p align="center">
   <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="许可证" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -100,7 +100,7 @@ macOS 客户端连接到一台 Windows 11 专业版测试机，显示 Windows「
 | Linux x86_64 | 查看端 + 主机端；符合条件的 KWin、Mutter 和 Hyprland 主机支持自适应工作区 | **2.9.0**：DEB、RPM、Arch、AppImage、便携包与 Nix | [发布页](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [安装指南](../LINUX_PACKAGES.md) |
 | Linux x86_64 Flatpak | 仅查看端 | **2.9.0**，Freedesktop Platform 25.08 | [发布页](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad，iOS/iPadOS 15+ | 仅客户端 | 已上架 App Store；较新的版本另在 TestFlight 测试 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 仅客户端 | **2.7（构建 63）** · Google Play 封闭测试尚未完成 | [下载 APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
+| Android 8.0+ | 仅客户端 | **2.9.0（构建 67）** · Google Play 封闭测试尚未完成 | [下载 APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
 | Windows x64 | 查看端 + 主机端 + 虚拟显示器 | **2.9.0**；完整安装包提供主机功能，便携 ZIP 仅为查看端；应用与安装器未签名 | [安装包](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [便携查看端](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未验证 | 没有经过验证的发布包 | — |
 
@@ -141,7 +141,7 @@ AppImage 与便携版会在开始共享时自动注册当前显示助手的路�
 [便携 tar 包](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-linux-x86_64.tar.gz)
 同样需要 glibc 2.39+。Flatpak 仅提供查看功能。安装前请核对发布的 [SHA-256 校验和](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)、[验证报告](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)与 [Linux 安装包验证记录](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt)。
 
-**Android 2.7（构建 63）** · ~~$4.99~~ · Google Play 正式上架所需的封闭测试尚未完成，目前可从 GitHub 临时下载 [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk)。移动客户端不开源，这里仅提供安装包。
+**Android 2.9.0（构建 67）** · ~~$4.99~~ · Google Play 正式上架所需的封闭测试尚未完成，目前可从 GitHub 临时下载 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk)。移动客户端不开源，这里仅提供安装包。
 
 构建 63 使用 Google Play 的应用签名，今后可直接用更高版本的 Play 版覆盖安装，保留配对和设置。如果已安装 GitHub 构建 62，首次切换到 63 需先卸载旧版。卸载会清除本地设置，安装后需重新配对电脑。
 
