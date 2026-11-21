@@ -96,13 +96,20 @@ static BOOL shouldRecreateDisplay(NSInteger width, NSInteger height, NSInteger s
     // transition so they recenter cleanly without relying on private OS hooks.
     return !isolatedPolicy() && sessionDisplayPolicy != DP_DISPLAY_EXTEND;
 }
+// Separate HiDPI (2x) and standard (1x) virtual display identities so
+// WindowServer's permanent display store never replays a cached 1x mode onto a
+// 2x workspace (or reuses legacy productID=1 entries saved with fixed mm).
+static unsigned int virtualDisplayProductID(NSInteger scale) {
+    if (isolatedDisplay()) return 2;
+    return scale == 2 ? 3 : 4;
+}
 static CGVirtualDisplay *createVirtualDisplay(NSInteger width, NSInteger height, NSInteger scale) {
     CGVirtualDisplayDescriptor *descriptor = [CGVirtualDisplayDescriptor new];
     descriptor.queue = dispatch_get_main_queue();
     descriptor.name = isolatedDisplay() ? @"DeskPort Temporary Workspace" : @"DeskPort Workspace";
     descriptor.maxPixelsWide = 7680; descriptor.maxPixelsHigh = 4320;
     descriptor.sizeInMillimeters = physicalSizeForMode(width, height, scale);
-    descriptor.vendorID = 0x4450; descriptor.productID = isolatedDisplay() ? 2 : 1;
+    descriptor.vendorID = 0x4450; descriptor.productID = virtualDisplayProductID(scale);
     descriptor.serialNum = isolatedDisplay() ?
         (unsigned int)[NSProcessInfo.processInfo.environment[@"DESKPORT_DISPLAY_SERIAL"] longLongValue] : 1;
     CGVirtualDisplay *created = [[CGVirtualDisplay alloc] initWithDescriptor:descriptor];
@@ -142,6 +149,19 @@ static void respond(NSDictionary *value) {
     if (requestSequence) response[@"seq"] = @(requestSequence);
     NSData *json = [NSJSONSerialization dataWithJSONObject:response options:0 error:nil];
     fwrite(json.bytes, 1, json.length, stdout); fputc('\n', stdout); fflush(stdout);
+}
+// Persist fallback mode corrections so a stale WindowServer permanent entry
+// (e.g. after a manual Display Settings change) heals itself on next connect.
+static void persistDisplayMode(CGDirectDisplayID ident, CGDisplayModeRef mode) {
+    CGDisplayConfigRef config = NULL;
+    CGError result = CGBeginDisplayConfiguration(&config);
+    if (result == kCGErrorSuccess) {
+        result = CGConfigureDisplayWithDisplayMode(config, ident, mode, NULL);
+        const CGConfigureOption option = isolatedDisplay() ? kCGConfigureForSession : kCGConfigurePermanently;
+        if (result == kCGErrorSuccess) result = CGCompleteDisplayConfiguration(config, option);
+        else CGCancelDisplayConfiguration(config);
+    }
+    if (result != kCGErrorSuccess) CGDisplaySetDisplayMode(ident, mode, NULL);
 }
 static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsigned attempt) {
     if (token != generation) return;
@@ -191,7 +211,7 @@ static void waitForMode(NSInteger width, NSInteger height, unsigned token, unsig
                 CGDisplayModeRef mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(modes, i);
                 if (CGDisplayModeGetPixelWidth(mode) == width && CGDisplayModeGetPixelHeight(mode) == height &&
                     CGDisplayModeGetWidth(mode) == width / requestedScale && CGDisplayModeGetHeight(mode) == height / requestedScale) {
-                    CGDisplaySetDisplayMode(display.displayID, mode, NULL);
+                    persistDisplayMode(display.displayID, mode);
                     break;
                 }
             }

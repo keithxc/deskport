@@ -8,7 +8,8 @@
 static NSMutableDictionary *screens, *pending;
 static NSString *testHome;
 static BOOL rejectCommit, enableAvailable=YES;
-static unsigned modeWrites;
+static unsigned modeWrites, sessionModeFallbacks;
+static CGConfigureOption lastCommitOption;
 static NSMutableDictionary *screen(unsigned i) { return screens[@(i)]; }
 static CGError listScreens(uint32_t max, CGDirectDisplayID *ids, uint32_t *count) {
     *count=0; for (NSNumber *n in [[screens allKeys] sortedArrayUsingSelector:@selector(compare:)]) if (*count<max) ids[(*count)++]=n.unsignedIntValue;
@@ -47,9 +48,17 @@ static CGError setMode(CGDisplayConfigRef c,unsigned i,CGDisplayModeRef m,CFDict
     }
     return 0;
 }
-static CGError selectMode(unsigned i,CGDisplayModeRef m,CFDictionaryRef opts) { return 0; }
+static CGError selectMode(unsigned i,CGDisplayModeRef m,CFDictionaryRef opts) {
+    sessionModeFallbacks++;
+    for (NSString *key in @[@"width",@"height",@"pixelsW",@"pixelsH"]) {
+        if (modeData(m)[key]) screen(i)[key]=modeData(m)[key];
+        else [screen(i) removeObjectForKey:key];
+    }
+    return 0;
+}
 static unsigned mainDisplay(void) { for (NSNumber *n in screens) if ([screen(n.unsignedIntValue)[@"main"] boolValue]) return n.unsignedIntValue; return 0; }
 static CGError complete(CGDisplayConfigRef c,CGConfigureOption option) {
+    lastCommitOption=option;
     if (rejectCommit) return kCGErrorFailure;
     // Mirrored sinks share the source's origin but do not become the main source.
     for (NSNumber *ident in pending) {
@@ -95,7 +104,7 @@ static CGRect fakeBounds(unsigned i) { return CGRectMake([screen(i)[@"x"] intVal
 #define main unusedDisplayHelperMain
 #include "../host/macos/display-helper.m"
 #undef main
-static unsigned virtualDisplayCreations;
+static unsigned virtualDisplayCreations, lastDescriptorProductID;
 static CGSize lastDescriptorSizeMM;
 static BOOL rejectApplySettings;
 @interface DPTestVirtualDisplayMode ()
@@ -115,6 +124,7 @@ static BOOL rejectApplySettings;
     if ((self=[super init])) {
         virtualDisplayCreations++;
         lastDescriptorSizeMM = descriptor.sizeInMillimeters;
+        lastDescriptorProductID = descriptor.productID;
     }
     return self;
 }
@@ -136,9 +146,9 @@ static NSMutableDictionary *entry(BOOL enabled,BOOL main,int x) {
     return [@{@"enabled":@(enabled),@"main":@(main),@"mirror":@0,@"x":@(x),@"y":@0,@"width":@1920,@"height":@1080} mutableCopy];
 }
 static void reset(void) {
-    savedTopology=nil; preserveTopologyJournal=NO; recoveryOwnedDisplay=0; rejectCommit=NO; enableAvailable=YES; modeWrites=0;
+    savedTopology=nil; preserveTopologyJournal=NO; recoveryOwnedDisplay=0; rejectCommit=NO; enableAvailable=YES; modeWrites=0; sessionModeFallbacks=0; lastCommitOption=0;
     discardDisplay(); sessionActive=NO; restoreAttempt=0; lastWidth=0; lastHeight=0; lastScale=1; ++generation;
-    virtualDisplayCreations=0; lastDescriptorSizeMM=CGSizeZero; rejectApplySettings=NO;
+    virtualDisplayCreations=0; lastDescriptorProductID=0; lastDescriptorSizeMM=CGSizeZero; rejectApplySettings=NO;
     screens=[@{@1:entry(YES,YES,0),@2:entry(YES,NO,1920),@3:entry(NO,NO,3840),@9:entry(YES,NO,5760)} mutableCopy];
     [NSFileManager.defaultManager removeItemAtPath:topologyPath() error:nil];
 }
@@ -216,6 +226,10 @@ int main(int argc, const char *argv[]) { @autoreleasepool {
         assert(restoreTopology(9));
         assert([screen(1) isEqual:first] && [screen(2) isEqual:second]);
         assert(modeWrites==0 && !savedTopology);
+        assert(virtualDisplayProductID(2)==2 && virtualDisplayProductID(1)==2);
+        NSDictionary *mode=@{@"width":@786,@"height":@800,@"pixelsW":@1572,@"pixelsH":@1600};
+        persistDisplayMode(9,(CGDisplayModeRef)(__bridge void *)mode);
+        assert(lastCommitOption==kCGConfigureForSession && sessionModeFallbacks==0);
         assert(![NSFileManager.defaultManager fileExistsAtPath:topologyPath()]);
         puts("PASS: isolated helper only changes its own extended display, no shared journal or physical restore");
         return 0;
@@ -329,14 +343,14 @@ int main(int argc, const char *argv[]) { @autoreleasepool {
     reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR; assert(snapshotTopology(9));
     configure(5104,2776,2,10,YES);
     for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
-    assert(virtualDisplayCreations==1 && lastDescriptorSizeMM.width==589 && lastDescriptorSizeMM.height==321);
+    assert(virtualDisplayCreations==1 && lastDescriptorProductID==3 && lastDescriptorSizeMM.width==589 && lastDescriptorSizeMM.height==321);
     assert(lastWidth==5104 && lastHeight==2776 && lastScale==2);
     configure(5104,2776,2,11,YES); // Same mode stays in-place.
     for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
     assert(virtualDisplayCreations==1);
     configure(2828,1676,2,12,YES); // Smaller workspace replaces display with fresh DPI & ID.
     for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
-    assert(virtualDisplayCreations==2 && lastDescriptorSizeMM.width==327 && lastDescriptorSizeMM.height==194);
+    assert(virtualDisplayCreations==2 && lastDescriptorProductID==3 && lastDescriptorSizeMM.width==327 && lastDescriptorSizeMM.height==194);
     assert(lastWidth==2828 && lastHeight==1676 && lastScale==2);
 
     // Extended workspaces keep minor compatible resizes in-place to avoid
@@ -344,18 +358,34 @@ int main(int argc, const char *argv[]) { @autoreleasepool {
     reset(); sessionDisplayPolicy=DP_DISPLAY_EXTEND; assert(snapshotTopology(9));
     configure(2560,1440,2,20,YES);
     for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
-    assert(virtualDisplayCreations==1 && lastDescriptorSizeMM.width==296 && lastDescriptorSizeMM.height==166);
+    assert(virtualDisplayCreations==1 && lastDescriptorProductID==3 && lastDescriptorSizeMM.width==296 && lastDescriptorSizeMM.height==166);
     configure(2400,1350,2,21,YES); // Compatible Retina PPI (~206 PPI): stays in-place.
     for (unsigned i=0;i<10;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
     assert(virtualDisplayCreations==1 && lastWidth==2400 && lastHeight==1350 && lastScale==2);
     configure(1668,2420,2,22,YES); // Portrait rotation: recreates with square-pixel portrait mm.
     for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
-    assert(virtualDisplayCreations==2 && lastDescriptorSizeMM.width==193 && lastDescriptorSizeMM.height==279);
+    assert(virtualDisplayCreations==2 && lastDescriptorProductID==3 && lastDescriptorSizeMM.width==193 && lastDescriptorSizeMM.height==279);
     assert(lastWidth==1668 && lastHeight==2420 && lastScale==2);
-    configure(1920,1200,1,23,YES); // Scale flip 2x -> 1x: recreates with 110 PPI mm.
+    configure(1920,1200,1,23,YES); // Scale flip 2x -> 1x: recreates with 110 PPI mm & 1x productID.
     for (unsigned i=0;i<15;i++) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
-    assert(virtualDisplayCreations==3 && lastDescriptorSizeMM.width==443 && lastDescriptorSizeMM.height==277);
+    assert(virtualDisplayCreations==3 && lastDescriptorProductID==4 && lastDescriptorSizeMM.width==443 && lastDescriptorSizeMM.height==277);
     assert(lastWidth==1920 && lastHeight==1200 && lastScale==1);
+
+    // Mode fallback heals WindowServer's permanent store, falling back to
+    // session-only mode switch when permanent commit is rejected.
+    reset();
+    assert(virtualDisplayProductID(2)==3 && virtualDisplayProductID(1)==4);
+    {
+        NSDictionary *mode=@{@"width":@786,@"height":@800,@"pixelsW":@1572,@"pixelsH":@1600};
+        persistDisplayMode(9,(CGDisplayModeRef)(__bridge void *)mode);
+        assert(lastCommitOption==kCGConfigurePermanently && sessionModeFallbacks==0);
+        assert([screen(9)[@"width"] intValue]==786 && [screen(9)[@"pixelsW"] intValue]==1572);
+        rejectCommit=YES;
+        NSDictionary *other=@{@"width":@1414,@"height":@838,@"pixelsW":@2828,@"pixelsH":@1676};
+        persistDisplayMode(9,(CGDisplayModeRef)(__bridge void *)other);
+        assert(lastCommitOption==kCGConfigurePermanently && sessionModeFallbacks==1);
+        assert([screen(9)[@"width"] intValue]==1414 && [screen(9)[@"pixelsW"] intValue]==2828);
+    }
 
     [NSFileManager.defaultManager removeItemAtPath:testHome error:nil];
     puts("PASS: three policies, mode-list recovery, journal retention, queued restore takeover, degraded local layout, diagnostic events, DPI sizing and display recreation");
