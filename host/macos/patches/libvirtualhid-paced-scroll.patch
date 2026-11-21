@@ -42,7 +42,7 @@ index 45fdb85..75f4ce4 100644
          return OperationStatus::success();
        }
  
-@@ -777,7 +792,7 @@ namespace lvh::detail {
+@@ -777,16 +792,61 @@ namespace lvh::detail {
          return post_mouse(button->button, event.pressed ? button->down_event : button->up_event, mouse_position, mouse_position, click_count);
        }
  
@@ -50,8 +50,10 @@ index 45fdb85..75f4ce4 100644
 +      OperationStatus submit_scroll(std::int32_t high_resolution_vertical, std::int32_t high_resolution_horizontal) {
          const auto source_pixels_per_line = CGEventSourceGetPixelsPerLine(state_->source);
          const auto pixels_per_line = source_pixels_per_line > 0 ? static_cast<int>(source_pixels_per_line + 0.5) : 10;
-         const auto vertical = scroll_pixels(high_resolution_vertical, pixels_per_line, state_->scroll_lines_per_detent_value);
-@@ -786,7 +801,51 @@ namespace lvh::detail {
+-        const auto vertical = scroll_pixels(high_resolution_vertical, pixels_per_line, state_->scroll_lines_per_detent_value);
+-        const auto horizontal = scroll_pixels(high_resolution_horizontal, pixels_per_line, state_->scroll_lines_per_detent_value);
+-        if (vertical == 0 && horizontal == 0) {
++        if (high_resolution_vertical == 0 && high_resolution_horizontal == 0) {
            return OperationStatus::success();
          }
  
@@ -63,7 +65,10 @@ index 45fdb85..75f4ce4 100644
 +        bool remainder = false;
 +        {
 +          std::lock_guard lock {scroll_mutex_};
-+          scroll_pacer_.add(vertical, horizontal);
++          scroll_pacer_.addHighRes(high_resolution_vertical, high_resolution_horizontal, pixels_per_line, state_->scroll_lines_per_detent_value);
++          if (!scroll_pacer_.pending()) {
++            return OperationStatus::success();
++          }
 +          scroll_step_points_ = deskport::scrollStepPoints(backing_scale());
 +          const auto now = std::chrono::steady_clock::now();
 +          if (now - last_scroll_post_ >= std::chrono::milliseconds(deskport::kScrollStepMs)) {
@@ -104,7 +109,7 @@ index 45fdb85..75f4ce4 100644
          if (!event) {
            return OperationStatus::failure(ErrorCode::backend_failure, "create macOS scroll event");
          }
-@@ -797,12 +856,41 @@ namespace lvh::detail {
+@@ -797,12 +857,41 @@ namespace lvh::detail {
          return OperationStatus::success();
        }
  
