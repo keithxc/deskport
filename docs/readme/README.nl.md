@@ -4,11 +4,6 @@
 
 <h1 align="center">DeskPort</h1>
 
-> **Current desktop release: [0.7.4 (r2)](https://github.com/keithxc/deskport/releases/tag/v0.7.4).**
-> The translated package examples and verification history below still describe
-> 0.7.3. Use the [current installation guide](../../README.md#install) and
-> [0.7.4 release notes](../releases/RELEASE_0.7.4.md) for the replacement downloads.
-
 <p align="center">
   <a href="../../README.md">English</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -34,14 +29,18 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
+> **[2.9.0 stabiel](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+>
+> Koppel een DeskPort-client aan een DeskPort-host. DeskPort-apparaatkoppeling is incompatibel met ongewijzigde Sunshine aan de hostkant en met ongewijzigde Moonlight aan de clientkant. Volledige hostpakketten bevatten de voor DeskPort aangepaste Sunshine-host.
+
 <p align="center">
-  Een werkruimte voor extern bureaublad, gebouwd op Moonlight en Sunshine.<br>
+  Een onafhankelijke externe desktopwerkruimte met een eigen client en een eigen host.<br>
   Houd je externe bureaublad klaar op de achtergrond, haal het met één handeling naar je
   huidige werkruimte en berg het weer op zonder opnieuw te verbinden.
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3_stable-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -85,20 +84,18 @@ de volledige afbeelding; deze voorbeelden zeggen niets over beschikbaarheid in w
 
 ## Ondersteunde platforms
 
-Zie de [pc-implementatie- en acceptatiematrix](../PC_SUPPORT_MATRIX.md) voor de huidige
-reikwijdte van broncode tegenover geïnstalleerde pakketten, compositormogelijkheden, historisch bewijs
-en resterende native controles. De releasebeschikbaarheid hieronder certificeert niet elke functie op
-elke GPU of OS-sessie. De 0.7.3-release legt exacte pakketidentiteiten en validatiegrenzen vast in het
-verificatierapport.
+De exacte macOS-pakketten van 2.9.0 zijn gecontroleerd op Developer ID, Apple-notarisatie en Gatekeeper na uitpakken van de ZIP. Onder Windows zijn Setup-upgrade, opstarten, service/serverinfo en Defender-scan gecontroleerd. Linux-controles omvatten pakketten, VM's, containers en opstarten. Dit bevestigt geen volledige werking van streaming op fysieke hardware, invoer, schermovergangen, HDR of klembord.
+
+[VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) · [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt) · [PC_SUPPORT_MATRIX](../PC_SUPPORT_MATRIX.md)
 
 | Platform | Rol | Releasestatus | Download |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Viewer + host + native virtueel scherm | **0.7.3 stabiel**; ondertekend met Developer ID en genotariseerd door Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) |
-| Linux x86_64 | Viewer + host; adaptieve werkruimte op geschikte KWin-, Mutter- en Hyprland-hosts | **0.7.3 stabiel**: DEB, RPM, Arch, AppImage, draagbaar archief en Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [installatiegids](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Alleen viewer | **0.7.3 stabiel**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
+| macOS Apple Silicon, macOS 26+ | Viewer + host + native virtueel scherm | **2.9.0 stabiel**; ondertekend met Developer ID en genotariseerd door Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | Viewer + host; adaptieve werkruimte op geschikte KWin-, Mutter- en Hyprland-hosts | **2.9.0 stabiel**: DEB, RPM, Arch, AppImage, draagbaar archief en Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [installatiegids](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Alleen viewer | **2.9.0 stabiel**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Alleen client | App Store; nieuwere builds apart getest in TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Alleen client | **2.7 (63)** · Gesloten test op Google Play loopt | [APK downloaden](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | Viewer + host + virtueel scherm | **0.7.3 stabiel**; volledig installatieprogramma kan hosten, draagbare ZIP alleen bekijken; applicatie en installatieprogramma niet ondertekend | [Installatieprogramma](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
+| Windows x64 | Viewer + host + virtueel scherm | **2.9.0 stabiel**; Setup met host, draagbare ZIP alleen als viewer; toepassing en installatieprogramma niet ondertekend | [Installatieprogramma](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Niet gekwalificeerd | Geen geverifieerd releasepakket | — |
 
 > **Antivirusmelding voor Windows:** antivirussoftware kan de Windows-hulpcomponenten van DeskPort ten onrechte markeren.
@@ -115,15 +112,15 @@ Een brondefinitie of geslaagde compilatie alleen maakt een platform niet onderst
 
 ## Installatie
 
-**macOS:** open de [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg),
+**macOS:** open de [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg),
 sleep DeskPort naar Programma's en open het. Geef machtigingen voor Schermopname en
 Toegankelijkheid om hostfuncties te gebruiken. Nix en Homebrew zijn niet nodig.
 
-**Linux:** kies het [0.7.3-pakket](https://github.com/keithxc/deskport/releases/tag/v0.7.3)
+**Linux:** kies het [2.9.0-pakket](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
 voor je systeem en volg de [stappen per distributie hieronder](#linux-installatie-per-distributie),
 inclusief de [vereisten voor hostinvoer](../LINUX_PACKAGES.md#first-connection-and-hosting).
-Met Nix: `nix run github:keithxc/deskport/v0.7.3`.
-De Flatpak biedt alleen bekijken. De release bevat [SHA-256-controlesommen](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) en een [verificatierapport](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+Met Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
+De Flatpak biedt alleen bekijken. De release bevat [SHA-256-controlesommen](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) en een [verificatierapport](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
 **Android 2.7 (63)** · ~~$4.99~~ · Tot de gesloten test op Google Play is afgerond, is de [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) tijdelijk beschikbaar op GitHub. De broncode van de mobiele apps is gesloten. Hier wordt alleen het installatiebestand aangeboden.
 
@@ -134,10 +131,12 @@ De mobiele app is een eenmalige betaalde aankoop; zie je winkel voor de actuele 
 Desktopreleases blijven gratis en open source. Aankopen ondersteunen ondertekening,
 testhardware en verdere ontwikkeling.
 
-Start Delen op de host, selecteer hem op de client en keur het apparaat goed op de host.
-Beide apparaten moeten elkaar via het netwerk kunnen bereiken: gebruik een LAN of je eigen VPN,
-zoals Tailscale. DeskPort biedt geen accountdienst, gehoste desktops, relay of netwerktunnel.
-Klassiek koppelen via Sunshine-pincode blijft beschikbaar.
+Start Delen op de DeskPort-host, selecteer hem in de DeskPort-client en keur het apparaat goed op de host. Gebruik LAN of een eigen VPN zoals Tailscale; DeskPort biedt geen accountdienst, gehoste desktops, relay of netwerktunnel. Nieuwe handmatige adressen gebruiken poort `48989`; vul bij afwijking de poort op de deelpagina van de host in.
+
+Geschiedenis: wijzigingen en verificatiegrenzen van [0.7.3](../releases/RELEASE_0.7.3.md) en de vervangende pakketten van [0.7.4](../releases/RELEASE_0.7.4.md) blijven in hun oorspronkelijke notities staan; dit zijn geen verificatieresultaten voor 2.9.0.
+
+<details>
+<summary>0.7.3 / 0.7.2</summary>
 
 **0.7.3 stabiel:** deze desktopupdate brengt een gedeelde UI-catalogus in 22 talen samen met
 extra klassieke desktopvertalingen, taalwissel in de browser, delen in aangemelde Windows-sessies
@@ -164,6 +163,8 @@ gekoppelde host; latere controles bevestigden nul actieve sessies, geen gereserv
 oorspronkelijk schermindeling. Het incident is geen streamingacceptatie, en diagnostiek kan niet vaststellen
 dat er geen externe invoer is verzonden. Zie de releasenotes voor de exacte reikwijdte.
 
+</details>
+
 **Eerdere kandidaten:** [0.7.2-rc.1](https://github.com/keithxc/deskport/releases/tag/v0.7.2-rc.1)
 introduceerde snellere herverbinding bij formaatwijziging, vervaagde overgangen en soepeler slepen op macOS;
 [0.7.2-rc.2](https://github.com/keithxc/deskport/releases/tag/v0.7.2-rc.2)
@@ -177,7 +178,7 @@ De AppImage bevat een eigen glibc-runtime; native pakketten behouden hun vereist
 
 ### Linux-installatie per distributie
 
-Deze instructies zijn bedoeld voor **x86_64**-desktopsystemen en de downloads van release **0.7.3**.
+Deze instructies zijn bedoeld voor **x86_64**-desktopsystemen en de downloads van release **2.9.0**.
 Native pakketten vereisen glibc 2.39 of nieuwer. Het zijn upstream-downloads, geen pakketten uit een
 DeskPort-distributierepository; installeer toekomstige releases door het nieuwe pakket opnieuw te
 downloaden en te verifiëren.
@@ -208,11 +209,11 @@ schermhulp van de host.
 
 | Distributie / desktop | Downloadroute |
 | --- | --- |
-| Ubuntu 26.04 GNOME | 0.7.3-DEB of AppImage; DEB-startregressie geslaagd, hiaten in GNOME-opname/herstel blijven |
+| Ubuntu 26.04 GNOME | 2.9.0-DEB of AppImage |
 | Debian 13 KDE | DEB, geïnstalleerd met APT |
 | Fedora 44 KDE | RPM, geïnstalleerd met DNF |
 | Arch Linux KDE | Lokaal Arch-pakket, geïnstalleerd met `pacman -U` |
-| Bazzite KDE | 0.7.3-AppImage; VM-controles op het exacte pakket hierboven |
+| Bazzite KDE | 2.9.0-AppImage |
 | Omarchy / Hyprland | Lokaal Arch-pakket, geïnstalleerd met `pacman -U` |
 
 Open een terminal in je normale desktopsessie. Elke opdrachtreeks controleert de exacte gedownloade
@@ -226,14 +227,14 @@ Start daarna de nieuw geïnstalleerde versie zodat het nieuwe programma draait.
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — downloaden, installeren, bijwerken en verwijderen</summary>
 
-Download [deskport_0.7.3-1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport_0.7.3-1_amd64.deb)
+Download [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb)
 en open een terminal in de map met dat bestand:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.3-1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install ./deskport_0.7.3-1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -253,14 +254,14 @@ van de geïnstalleerde Mutter-/opnamemogelijkheden; zie de
 <details>
 <summary><strong>Debian 13 KDE</strong> — downloaden, installeren, bijwerken en verwijderen</summary>
 
-Download [deskport_0.7.3-1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport_0.7.3-1_amd64.deb)
+Download [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb)
 en open een terminal in de downloadmap:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport_0.7.3-1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install ./deskport_0.7.3-1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
 deskport
 ```
 
@@ -278,13 +279,17 @@ voordat je gaat delen.
 <details>
 <summary><strong>Fedora 44 KDE</strong> — downloaden, installeren, bijwerken en verwijderen</summary>
 
-Download [deskport-0.7.3-1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1.x86_64.rpm)
+Download [deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm)
 en open een terminal in de downloadmap:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo dnf install ./deskport-0.7.3-1.x86_64.rpm &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
+  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
+else
+  sudo dnf install ./deskport-2.9.0.x86_64.rpm
+fi &&
 deskport
 ```
 
@@ -300,13 +305,13 @@ Controleer voor hosten op KDE ook de [compositor- en invoervereisten](../LINUX_P
 <summary><strong>Arch Linux KDE</strong> — downloaden, installeren, bijwerken en verwijderen</summary>
 
 Voer je gebruikelijke volledige Arch-systeemupdate uit en download dan
-[deskport-0.7.3-1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1-x86_64.pkg.tar.zst).
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst).
 Open een terminal in de downloadmap:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.3-1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -322,7 +327,7 @@ Controleer voor hosten op KDE ook de [compositor- en invoervereisten](../LINUX_P
 <summary><strong>Bazzite KDE</strong> — AppImage, starten en verwijderen</summary>
 
 Download
-[DeskPort-0.7.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-x86_64.AppImage).
+[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage).
 Stop het delen en gebruik **Afsluiten** om een oudere DeskPort-instantie volledig af te sluiten; het
 venster sluiten kan hem laten doordraaien. Bewaar de nieuwe AppImage op een vaste locatie voordat je
 starten bij aanmelden inschakelt:
@@ -330,11 +335,11 @@ starten bij aanmelden inschakelt:
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-0.7.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-0.7.3-x86_64.AppImage &&
-./DeskPort-0.7.3-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.0-x86_64.AppImage &&
+./DeskPort-2.9.0-x86_64.AppImage
 ```
 
 Start normaal; meegeleverde bibliotheken hoeven niet verwijderd of verplaatst te worden. Als starten bij
@@ -357,13 +362,13 @@ alleen bekijken.
 <summary><strong>Omarchy / Hyprland</strong> — lokaal Arch-pakket en hostvereisten</summary>
 
 Voer de normale systeemupdate van Omarchy uit en download dan
-[deskport-0.7.3-1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v0.7.3/deskport-0.7.3-1-x86_64.pkg.tar.zst).
+[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst).
 Open een terminal in de downloadmap:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "deskport-0.7.3-1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-0.7.3-1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -385,18 +390,18 @@ Pakketinstallatie alleen configureert geen onbeheerde desktopaanmelding en verif
 <details>
 <summary><strong>Flatpak-alternatief</strong> — alleen bekijken, op systemen met Flatpak</summary>
 
-Download [DeskPort-0.7.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-client-x86_64.flatpak)
+Download [DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak)
 en open een terminal in de downloadmap:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-0.7.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user ./DeskPort-0.7.3-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
 De lokale bundel kan de runtime Freedesktop Platform 25.08 downloaden. Hij biedt alleen bekijken,
-zonder Sunshine-hosting of integratie met de aanmelddienst van de desktop.
+zonder DeskPort-hosting of integratie met de aanmelddienst van de desktop.
 Installeer later gedownloade bundels met `flatpak install --user --or-update ./NEW_FILENAME.flatpak`
 nadat je de controlesommen hebt geverifieerd. Verwijder met
 `flatpak uninstall --user io.github.keithxc.DeskPort`. Dit is een bundel uit de GitHub-release;
@@ -416,8 +421,8 @@ thuismap behouden.
 
 | Kanaal | Status | Installatie |
 | --- | --- | --- |
-| GitHub-releasepakketten | 0.7.3 stabiel | Download het pakket voor je distributie hierboven |
-| Upstream Nix-flake | 0.7.3 stabiel | `nix run github:keithxc/deskport/v0.7.3` |
+| GitHub-releasepakketten | 2.9.0 stabiel | Download het pakket voor je distributie hierboven |
+| Upstream Nix-flake | 2.9.0 stabiel | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | Recept getest; publicatie geblokkeerd door de pauze in registratie van nieuwe accounts | [Bouw het recept lokaal](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) ingediend ter beoordeling; niet samengevoegd | Gebruik de upstream-flake tot opname |
 | Officiële Arch-repository's / Flathub | Niet vermeld | Gebruik de releasedownloads; de Flatpak kan alleen bekijken |
@@ -452,7 +457,7 @@ Bronnen: [Moonlight](https://moonlight-stream.org/),
 De huidige platformgrenzen van DeskPort staan hierboven; deze tabel impliceert geen gelijke functies op
 elk besturingssysteem of een gemeten prestatievoordeel.
 
-Zie de [releasenotes van 0.7.3](../releases/RELEASE_0.7.3.md),
+Zie de [releasenotes van 2.9.0](../releases/RELEASE_2.9.0.md),
 de [architectuur](../ARCHITECTURE.md) en de [roadmap](../ROADMAP.md).
 
 ## Bouwen en uitvoeren op Linux
@@ -472,12 +477,7 @@ Nix-buildinvoer blijven vastgezette externe afhankelijkheden. Native builds moet
 Voor SSH-configuratie, lokaal hostbeheer, VPS-vereisten en Omarchy/Hyprland,
 zie de [CLI-gids](../CLI.md). `deskport doctor` controleert de hostvereisten;
 `deskport status --json` inspecteert de draaiende instantie zonder een venster te openen.
-`nix run . -- --help` toont de opdrachtregelinterface. Start Delen op de host en koppel de apparaten
-voordat je verbindt. Klassiek koppelen via Sunshine-pincode is ook beschikbaar. Er worden geen
-persoonlijke host- of koppelgegevens meegeleverd of uit Moonlight geïmporteerd.
-Nieuwe handmatige adressen gebruiken standaard DeskPort-poort `48989`. Voeg de poort toe die op de
-deelpagina van de host staat als die afwijkt, of gebruik `host:47989` om expliciet te verbinden met een
-standaard zelfstandige Sunshine-installatie. Opgeslagen/gevonden eindpunten behouden hun eigen poorten.
+`nix run . -- --help`
 
 Voor een bewerkbare native build:
 

@@ -4,11 +4,6 @@
 
 <h1 align="center">DeskPort</h1>
 
-> **Current desktop release: [0.7.4 (r2)](https://github.com/keithxc/deskport/releases/tag/v0.7.4).**
-> The translated package examples and verification history below still describe
-> 0.7.3. Use the [current installation guide](../../README.md#install) and
-> [0.7.4 release notes](../releases/RELEASE_0.7.4.md) for the replacement downloads.
-
 <p align="center">
   <a href="../../README.md">English</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -34,14 +29,18 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
+> **[2.9.0 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+>
+> DeskPort クライアントと DeskPort ホストをペアリングしてください。DeskPort のデバイス連携は、ホスト側のオリジナル版 Sunshine とクライアント側のオリジナル版 Moonlight のどちらにも対応していません。ホスト機能を含むパッケージには DeskPort 向けに修正した Sunshine ホストが同梱されています。
+
 <p align="center">
-  Moonlight と Sunshine をベースにしたリモートデスクトップ・ワークスペース。<br>
+  独自のクライアントとホストを備えた、独立したリモートデスクトップワークスペース。<br>
   リモートデスクトップをバックグラウンドに常駐させ、ワンアクションで今のワークスペースに呼び出し、
   再接続せずにまた隠せます。
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="ライセンス" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -82,16 +81,18 @@
 
 ## 対応プラットフォーム
 
-以下は正式版 0.7.3 のリンクです。パッケージ検証と実行時の検証は対象範囲が異なります。結果と未検証項目は[検証レポート](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)をご覧ください。
+2.9.0 の対象 macOS パッケージは Developer ID、Apple 公証、ZIP 展開後の Gatekeeper 検証を通過しています。Windows では Setup によるアップグレード、起動、サービス/serverinfo、Defender スキャンを確認済みです。Linux の検証はパッケージ、VM、コンテナ、起動を対象としています。これらは実機でのストリーミング、入力、画面遷移、HDR、クリップボードの全面的な検証を意味しません。
+
+[VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) · [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt) · [PC_SUPPORT_MATRIX](../PC_SUPPORT_MATRIX.md)
 
 | プラットフォーム | 役割 | リリース状況 | ダウンロード |
 | --- | --- | --- | --- |
-| macOS Apple Silicon、macOS 26+ | ビューア＋ホスト＋ネイティブ仮想ディスプレイ | **0.7.3 正式版**。Developer ID 署名、Apple 公証、ZIP 展開後の Gatekeeper 検証に合格 | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) |
-| Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **0.7.3 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [インストールガイド](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | ビューアのみ | **0.7.3 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
+| macOS Apple Silicon、macOS 26+ | ビューア＋ホスト＋ネイティブ仮想ディスプレイ | **2.9.0 正式版**。Developer ID 署名、Apple 公証、ZIP 展開後の Gatekeeper 検証に合格 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [インストールガイド](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | ビューアのみ | **2.9.0 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad、iOS/iPadOS 15+ | クライアントのみ | App Store で公開中。新しいビルドは TestFlight で別途テスト | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | クライアントのみ | **2.7 (63)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **0.7.3 正式版**。インストーラーはホストを含み、ポータブル ZIP はビューア専用。未インストール状態のパッケージと CLI を検証済み。アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
+| Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **2.9.0 安定版**；Setup はホストを含み、ポータブル ZIP は閲覧専用；アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未検証 | 検証済みのリリースパッケージなし | — |
 
 > **Windows のウイルス対策に関する注意：** ウイルス対策ソフトが DeskPort の Windows ヘルパーコンポーネントを誤検知する可能性があります。
@@ -108,13 +109,13 @@ AppImage とポータブル版は共有開始時に現在のディスプレイ�
 
 ## インストール
 
-**macOS：** [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) を開き、
+**macOS：** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) を開き、
 DeskPort を「アプリケーション」にドラッグして起動します。ホスト機能を使うには「画面収録」と
 「アクセシビリティ」の権限を許可してください。Nix や Homebrew は不要です。
 
-**Linux：** お使いのシステムに合った [0.7.3 パッケージ](https://github.com/keithxc/deskport/releases/tag/v0.7.3)を選び、
-ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run github:keithxc/deskport/v0.7.3`。
-Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)が含まれます。
+**Linux：** お使いのシステムに合った [2.9.0 パッケージ](https://github.com/keithxc/deskport/releases/tag/v2.9.0)を選び、
+ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run --refresh github:keithxc/deskport/v2.9.0`。
+Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)が含まれます。
 
 **Android 2.7 (63)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
 
@@ -125,14 +126,18 @@ Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](
 デスクトップ版は今後も無料かつオープンソースです。ご購入は署名、テスト用ハードウェア、
 今後の開発に充てられます。
 
-ホストで共有を開始し、クライアントでそのホストを選択して、ホスト側でデバイスを承認します。
-両デバイス間でネットワークが到達可能である必要があります：LAN か、Tailscale などご自身の VPN を使ってください。
-DeskPort はアカウントサービス、ホスティング型デスクトップ、リレー、ネットワークトンネルを提供しません。
-従来の Sunshine PIN ペアリングも引き続き使えます。
+DeskPort ホストで共有を開始し、DeskPort クライアントで選択して、ホスト側でデバイスを承認してください。LAN または Tailscale などの自前の VPN を使用します。DeskPort はアカウントサービス、ホスト型デスクトップ、リレー、ネットワークトンネルを提供しません。新しい手動アドレスの既定ポートは `48989` です。異なる場合はホストの共有ページに表示されたポートを指定してください。
+
+履歴：[0.7.3](../releases/RELEASE_0.7.3.md) の変更・検証範囲と [0.7.4](../releases/RELEASE_0.7.4.md) の差し替え記録は当時のリリースノートに残しています。2.9.0 の検証結果ではありません。
+
+<details>
+<summary>0.7.3 / 0.7.2</summary>
 
 **0.7.3 正式版：** 22 言語の共有 UI カタログとブラウザーでの言語切り替え、Windows のログイン済みセッションでの共有と仮想ディスプレイ DPI、Linux ランタイムと Wayland クリップボード、保護付きの Hyprland/X11 ワークスペース、任意で有効にできるローカル IME、正方形のデバイスカードを改善しています。 変更点と検証範囲は [0.7.3 リリースノート](../releases/RELEASE_0.7.3.md)をご覧ください。
 
 **0.7.3 の検証範囲：** Windows では最終パッケージ内容の一致、PE、ネイティブ CLI、Defender の検出ゼロを確認しました。インストール、GUI 接続、ストリーミングは未検証です。最終 AppImage は通常の FUSE とソフトウェア GPU を使う Bazzite VM の検証に合格しました。Ubuntu 26.04 VM では 0.7.2 の DEB で VA クラッシュを再現し、最終 0.7.3 DEB で修正を確認しました。アップグレードは合格しました。ロールバックでは旧版のクラッシュが再現され、その後のアンインストールでも合成テスト設定が保持されました。GNOME のキャプチャと復旧は未受け入れです。コンテナー・Flatpak の結果とその他の制限は[検証レポート](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt)をご覧ください。これらは物理ハードウェア全体の動作確認を意味しません。
+
+</details>
 
 **過去のリリース：0.7.2 安定版：** [デスクトップ版](https://github.com/keithxc/deskport/releases/tag/v0.7.2)は、リサイズ、リモートストリーミング、データセーバー、Linux ランタイムの改善をまとめ、Bazzite/KDE Wayland での AppImage の問題を修正しています。詳しくは [0.7.2 リリースノート](../releases/RELEASE_0.7.2.md)を、Linux ディストリビューション別のインストール手順は[英語版 README](../../README.md#linux-installation-by-distribution)をご覧ください。
 
@@ -144,10 +149,12 @@ DeskPort はアカウントサービス、ホスティング型デスクトッ�
 
 ### Linux リポジトリでの提供状況
 
+2.9.0 のインストール・更新は [Linux ガイド](../LINUX_PACKAGES.md)と[英語 README のディストリビューション別手順](../../README.md#linux-installation-by-distribution)に従ってください。更新前に旧アプリを完全に終了し、[SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)でパッケージを確認してください。Flatpak は閲覧専用です。
+
 | チャネル | 状況 | インストール |
 | --- | --- | --- |
-| GitHub リリースパッケージ | 0.7.3 正式版 | 上記からお使いのディストリビューション用パッケージをダウンロード |
-| アップストリーム Nix flake | 0.7.3 正式版 | `nix run github:keithxc/deskport/v0.7.3` |
+| GitHub リリースパッケージ | 2.9.0 正式版 | 上記からお使いのディストリビューション用パッケージをダウンロード |
+| アップストリーム Nix flake | 2.9.0 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | レシピはテスト済み。新規アカウント登録の一時停止により公開できていません | [レシピをローカルでビルド](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) をレビュー待ちで提出済み。未マージ | 取り込まれるまではアップストリームの flake を使用 |
 | Arch 公式リポジトリ / Flathub | 未登録 | リリースからダウンロード。Flatpak はビューアのみ |
@@ -181,7 +188,7 @@ Nixpkgs に `pkgs.deskport` が加わるわけでもありません。ホスト�
 DeskPort の現在のプラットフォーム制限は上記のとおりです。この表はすべての OS での機能の同等性や、
 計測された性能面の優位性を意味するものではありません。
 
-[0.7.3 リリースノート](../releases/RELEASE_0.7.3.md)、
+[2.9.0 リリースノート](../releases/RELEASE_2.9.0.md)、
 [アーキテクチャ](../ARCHITECTURE.md)、[ロードマップ](../ROADMAP.md)も参照してください。
 
 ## Linux でのビルドと実行
@@ -201,12 +208,7 @@ nix build
 SSH の設定、ローカルホスト管理、VPS の前提条件、Omarchy/Hyprland については
 [CLI ガイド](../CLI.md)を参照してください。`deskport doctor` はホストの前提条件をチェックし、
 `deskport status --json` はウィンドウを開かずに実行中のインスタンスを調べます。
-`nix run . -- --help` でコマンドラインインターフェースを一覧表示します。接続前にホストで共有を開始し、
-デバイスをバインドしてください。従来の Sunshine PIN ペアリングも利用できます。個人のホスト情報や
-ペアリング認証情報は含まれておらず、Moonlight からインポートされることもありません。
-新しく手動で追加するアドレスは、DeskPort のポート `48989` が既定です。異なる場合はホストの共有ページに
-表示されたポートを入力するか、標準の単体 Sunshine に明示的に接続するには `host:47989` を使ってください。
-保存済み／検出済みのエンドポイントはそれぞれのポートを保持します。
+`nix run . -- --help`
 
 編集可能なネイティブビルドの場合：
 

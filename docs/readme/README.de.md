@@ -4,11 +4,6 @@
 
 <h1 align="center">DeskPort</h1>
 
-> **Current desktop release: [0.7.4 (r2)](https://github.com/keithxc/deskport/releases/tag/v0.7.4).**
-> The translated package examples and verification history below still describe
-> 0.7.3. Use the [current installation guide](../../README.md#install) and
-> [0.7.4 release notes](../releases/RELEASE_0.7.4.md) for the replacement downloads.
-
 <p align="center">
   <a href="../../README.md">English</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -34,14 +29,18 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
+> **[2.9.0 stabil](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+>
+> Koppeln Sie einen DeskPort-Client mit einem DeskPort-Host. Die DeskPort-Gerätebindung ist mit unverändertem Sunshine auf der Hostseite und mit unverändertem Moonlight auf der Clientseite inkompatibel. Vollständige Hostpakete enthalten den für DeskPort angepassten Sunshine-Host.
+
 <p align="center">
-  Ein Remote-Desktop-Arbeitsbereich auf Basis von Moonlight und Sunshine.<br>
+  Ein unabhängiger Remote-Desktop-Arbeitsbereich mit eigenem Client und eigenem Host.<br>
   Halten Sie Ihren Remote-Desktop im Hintergrund bereit, holen Sie ihn mit einer
   Aktion in Ihren aktuellen Arbeitsbereich und blenden Sie ihn ohne erneutes Verbinden wieder aus.
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v0.7.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-0.7.3-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk"><img alt="Android 2.7 APK" src="https://img.shields.io/badge/Android-2.7%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -85,16 +84,18 @@ um das Bild in voller Größe zu sehen; diese Vorschauen implizieren keine Verf�
 
 ## Unterstützte Plattformen
 
-Die folgenden Links führen zum offiziellen Release 0.7.3. Paketprüfungen und Laufzeitprüfungen haben unterschiedliche Abdeckungen; Details und offene Punkte stehen im [Prüfbericht](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+Die exakten macOS-Pakete von 2.9.0 bestanden Developer-ID-, Apple-Notarisierungs- und Gatekeeper-Prüfungen nach ZIP-Extraktion. Unter Windows bestanden Setup-Upgrade, Start, Dienst/serverinfo und Defender-Scan. Linux-Prüfungen umfassen Pakete, VMs, Container und Start. Dies bestätigt keine vollständige Prüfung von Streaming auf physischer Hardware, Eingabe, Anzeigeübergängen, HDR oder Zwischenablage.
+
+[VERIFICATION.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) · [VERIFICATION-linux.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION-linux.txt) · [PC_SUPPORT_MATRIX](../PC_SUPPORT_MATRIX.md)
 
 | Plattform | Rolle | Release-Status | Download |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Viewer + Host + native virtuelle Anzeige | **0.7.3 stabil**; Developer-ID-Signaturen, Apple-Notarisierung und Gatekeeper-Prüfung nach ZIP-Entpacken bestanden | [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg) |
-| Linux x86_64 | Viewer + Host; adaptiver virtueller Arbeitsbereich auf geeigneten KWin-, Mutter- und Hyprland-Hosts | **0.7.3 stabil**: DEB, RPM, Arch, AppImage, portables Archiv und Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) · [Installationsanleitung](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Nur Viewer | **0.7.3 stabil**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v0.7.3) |
+| macOS Apple Silicon, macOS 26+ | Viewer + Host + native virtuelle Anzeige | **2.9.0 stabil**; Developer-ID-Signaturen, Apple-Notarisierung und Gatekeeper-Prüfung nach ZIP-Entpacken bestanden | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
+| Linux x86_64 | Viewer + Host; adaptiver virtueller Arbeitsbereich auf geeigneten KWin-, Mutter- und Hyprland-Hosts | **2.9.0 stabil**: DEB, RPM, Arch, AppImage, portables Archiv und Nix | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [Installationsanleitung](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Nur Viewer | **2.9.0 stabil**, Freedesktop Platform 25.08 | [Release](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
 | iPhone / iPad, iOS/iPadOS 15+ | Nur Client | App Store; neuere Builds werden separat in TestFlight getestet | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Nur Client | **2.7 (63)** · Geschlossener Test bei Google Play läuft | [APK herunterladen](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) |
-| Windows x64 | Viewer + Host + virtuelle Anzeige | **0.7.3 stabil**; Installer mit Host; portables ZIP nur als Viewer; Paket- und CLI-Prüfungen ohne Installation bestanden; Anwendung und Installer unsigniert | [Installer](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-windows-x64-setup-full.exe) |
+| Windows x64 | Viewer + Host + virtuelle Anzeige | **2.9.0 stabil**; Setup mit Host, portables ZIP nur als Viewer; Anwendung und Installer unsigniert | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Nicht qualifiziert | Kein verifiziertes Release-Paket | — |
 
 > **Hinweis zu Windows-Virenschutz:** Virenschutzprogramme könnten die Windows-Hilfskomponenten von DeskPort fälschlicherweise als Bedrohung melden.
@@ -112,14 +113,14 @@ Eine Quelldefinition oder eine erfolgreiche Kompilierung allein ist keine unters
 
 ## Installation
 
-**macOS:** Öffnen Sie das [DMG](https://github.com/keithxc/deskport/releases/download/v0.7.3/DeskPort-0.7.3-macos-arm64.dmg),
+**macOS:** Öffnen Sie das [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg),
 ziehen Sie DeskPort in „Programme“ und öffnen Sie es. Erteilen Sie die Berechtigungen für Bildschirmaufnahme und
 Bedienungshilfen, um Host-Funktionen zu nutzen. Nix und Homebrew werden nicht benötigt.
 
-**Linux:** Wählen Sie das [0.7.3-Paket](https://github.com/keithxc/deskport/releases/tag/v0.7.3)
+**Linux:** Wählen Sie das [2.9.0-Paket](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
 für Ihr System und folgen Sie der [Installationsanleitung](../LINUX_PACKAGES.md),
-einschließlich der Berechtigungen für Host-Eingaben. Mit Nix: `nix run github:keithxc/deskport/v0.7.3`.
-Flatpak bietet nur das Ansehen. Die Release-Assets enthalten [SHA-256-Prüfsummen](https://github.com/keithxc/deskport/releases/download/v0.7.3/SHA256SUMS.txt) und einen [Prüfbericht](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt).
+einschließlich der Berechtigungen für Host-Eingaben. Mit Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
+Flatpak bietet nur das Ansehen. Die Release-Assets enthalten [SHA-256-Prüfsummen](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) und einen [Prüfbericht](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
 
 **Android 2.7 (63)** · ~~$4.99~~ · Bis zum Abschluss des geschlossenen Tests bei Google Play ist die [APK](https://github.com/keithxc/deskport/releases/download/v0.7.8/DeskPort-2.7-63.apk) vorübergehend auf GitHub verfügbar. Der Quellcode der mobilen Clients ist nicht öffentlich. Hier wird nur das Installationspaket angeboten.
 
@@ -130,14 +131,18 @@ Die mobile App ist ein kostenpflichtiger Einmalkauf; den aktuellen lokalen Preis
 Desktop-Releases bleiben kostenlos und Open Source. Käufe unterstützen Signierung,
 Testhardware und die weitere Entwicklung.
 
-Starten Sie die Freigabe auf dem Host, wählen Sie ihn auf dem Client aus und genehmigen Sie das Gerät auf dem
-Host. Beide Geräte benötigen eine funktionierende Netzwerkverbindung: Verwenden Sie ein LAN oder Ihr eigenes VPN wie
-Tailscale. DeskPort bietet keinen Kontodienst, keine gehosteten Desktops, kein Relay
-und keinen Netzwerktunnel. Das klassische Sunshine-PIN-Pairing bleibt verfügbar.
+Starten Sie die Freigabe auf dem DeskPort-Host, wählen Sie ihn im DeskPort-Client und genehmigen Sie das Gerät auf dem Host. Nutzen Sie LAN oder ein eigenes VPN wie Tailscale; DeskPort bietet weder Kontodienst, gehostete Desktops, Relay noch Netzwerktunnel. Neue manuelle Adressen verwenden Port `48989`; geben Sie bei Abweichung den Port auf der Freigabeseite des Hosts an.
+
+Historie: Änderungen und Prüfgrenzen von [0.7.3](../releases/RELEASE_0.7.3.md) und die Ersatzpakete von [0.7.4](../releases/RELEASE_0.7.4.md) bleiben in den ursprünglichen Release Notes dokumentiert; sie sind keine Abnahmeergebnisse für 2.9.0.
+
+<details>
+<summary>0.7.3 / 0.7.2</summary>
 
 **0.7.3 stabil:** Diese Version bringt einen gemeinsamen UI-Katalog mit 22 Sprachen und Sprachwechsel im Browser und verbessert die Freigabe in angemeldeten Windows-Sitzungen und die DPI-Einstellungen virtueller Anzeigen, die Linux-Laufzeit und Wayland-Zwischenablage, abgesicherte Hyprland/X11-Arbeitsbereiche, die optionale lokale IME sowie quadratische Gerätekarten. Änderungen und Prüfgrenzen stehen in den [Release Notes zu 0.7.3](../releases/RELEASE_0.7.3.md).
 
 **Prüfumfang von 0.7.3:** Unter Windows bestanden der exakte Payload-Abgleich, PE- und native CLI-Prüfungen sowie der Defender-Scan ohne Funde; Installation, GUI-Verbindung und Streaming wurden nicht geprüft. Das endgültige AppImage bestand die Bazzite-VM-Prüfung mit regulärem FUSE und Software-GPU. In der Ubuntu-26.04-VM reproduzierte das DEB von 0.7.2 den VA-Absturz; das endgültige DEB von 0.7.3 behob ihn und bestand das Upgrade. Der Rollback reproduzierte den Absturz der alten Version; die anschließende Deinstallation erhielt die synthetische Testkonfiguration. GNOME-Aufnahme und -Wiederherstellung sind weiterhin nicht abgenommen. Container-/Flatpak-Ergebnisse und weitere Grenzen stehen im [Prüfbericht](https://github.com/keithxc/deskport/releases/download/v0.7.3/VERIFICATION.txt); dies ist keine vollständige Prüfung auf physischer Hardware.
+
+</details>
 
 **Historisch: 0.7.2 stabil:** Das [Desktop-Release](https://github.com/keithxc/deskport/releases/tag/v0.7.2) bündelt Verbesserungen bei Größenänderung, Remote-Streaming, Datensparmodus und Linux-Laufzeit und behebt AppImage-Probleme unter Bazzite/KDE Wayland. Details in den [Release Notes zu 0.7.2](../releases/RELEASE_0.7.2.md); Installationsschritte je Linux-Distribution stehen in der [englischen README](../../README.md#linux-installation-by-distribution).
 
@@ -149,10 +154,12 @@ native Pakete behalten ihre Anforderung an glibc 2.39.
 
 ### Verfügbarkeit in Linux-Repositorys
 
+Folgen Sie für Installation und Upgrade von 2.9.0 der [Linux-Anleitung](../LINUX_PACKAGES.md) und den [Schritten je Distribution im englischen README](../../README.md#linux-installation-by-distribution). Beenden Sie vor dem Upgrade die alte Anwendung vollständig und prüfen Sie das Paket mit [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt). Flatpak bietet nur die Viewer-Funktion.
+
 | Kanal | Status | Installation |
 | --- | --- | --- |
-| GitHub-Release-Pakete | 0.7.3 stabil | Laden Sie oben das Paket für Ihre Distribution herunter |
-| Upstream-Nix-Flake | 0.7.3 stabil | `nix run github:keithxc/deskport/v0.7.3` |
+| GitHub-Release-Pakete | 2.9.0 stabil | Laden Sie oben das Paket für Ihre Distribution herunter |
+| Upstream-Nix-Flake | 2.9.0 stabil | `nix run --refresh github:keithxc/deskport/v2.9.0` |
 | AUR `deskport-bin` | Rezept getestet; Veröffentlichung durch Pausierung der Neuregistrierung von Konten blockiert | [Rezept lokal bauen](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) zur Prüfung eingereicht; nicht gemergt | Bis zur Aufnahme das Upstream-Flake verwenden |
 | Offizielle Arch-Repositorys / Flathub | Nicht gelistet | Release-Downloads verwenden; Flatpak ist nur ein Viewer |
@@ -188,7 +195,7 @@ Quellen: [Moonlight](https://moonlight-stream.org/),
 Die aktuellen Plattformgrenzen von DeskPort sind oben aufgeführt; diese Tabelle impliziert weder
 Funktionsgleichheit auf allen Betriebssystemen noch einen gemessenen Leistungsvorteil.
 
-Siehe die [Release Notes zu 0.7.3](../releases/RELEASE_0.7.3.md),
+Siehe die [Release Notes zu 2.9.0](../releases/RELEASE_2.9.0.md),
 die [Architektur](../ARCHITECTURE.md) und die [Roadmap](../ROADMAP.md).
 
 ## Unter Linux bauen und ausführen
@@ -208,13 +215,7 @@ die Nix-Build-Eingaben bleiben fixierte externe Abhängigkeiten. Native Builds m
 Für SSH-Einrichtung, lokale Host-Verwaltung, VPS-Voraussetzungen und Omarchy/Hyprland
 siehe den [CLI-Leitfaden](../CLI.md). `deskport doctor` prüft die Voraussetzungen für das Hosting;
 `deskport status --json` untersucht die laufende Instanz, ohne ein Fenster zu öffnen.
-`nix run . -- --help` listet die Befehlszeilenschnittstelle auf. Starten Sie die Freigabe auf dem Host und binden Sie die Geräte, bevor Sie sich verbinden. Das klassische
-Sunshine-PIN-Pairing ist ebenfalls verfügbar. Es sind keine persönlichen Host- oder Pairing-Zugangsdaten
-enthalten oder werden aus Moonlight importiert.
-Neue manuelle Adressen verwenden standardmäßig DeskPorts Port `48989`. Geben Sie den auf der
-Freigabeseite des Hosts angezeigten Port an, falls abweichend, oder verwenden Sie `host:47989`, um sich explizit
-mit einer standardmäßigen eigenständigen Sunshine-Installation zu verbinden. Gespeicherte/erkannte Endpunkte behalten
-ihre eigenen Ports.
+`nix run . -- --help`
 
 Für einen bearbeitbaren nativen Build:
 

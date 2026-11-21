@@ -1,16 +1,16 @@
 # Distribution repository submissions
 
-These recipes package the public DeskPort desktop release. They do not reference
-mobile sources, private test releases or a developer's NixOS configuration.
-Installation instructions and publication status live in
-[the Linux guide](../docs/LINUX_PACKAGES.md).
+These recipes support distribution submissions for DeskPort. For the current
+desktop packages, use the [DeskPort 2.9.0 release](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+and [the Linux installation guide](../docs/LINUX_PACKAGES.md).
 
 ## AUR
 
-`aur/deskport-bin/PKGBUILD` downloads the immutable-version upstream portable
-archive and verifies its SHA-256. It retains the private runtime and component
-notices, supplies desktop entries, and leaves host/device setup to the user.
-The package provides and conflicts with `deskport`. Only x86_64 is qualified.
+`aur/deskport-bin/PKGBUILD` is a submission recipe pinned to 0.6.3. It downloads
+the versioned upstream portable archive and verifies its SHA-256. It retains the
+private runtime and component notices, supplies desktop entries, and leaves
+host/device setup to the user. The package provides and conflicts with
+`deskport`. Only x86_64 is qualified.
 
 New-account registration is temporarily closed according to the notice reported
 by the maintainer on 2026-09-27. Do not automate retries or request a manual
@@ -36,7 +36,11 @@ checks before pushing. Increment `pkgrel` for packaging-only changes.
 
 ## Nixpkgs
 
-Submitted as [PR #567358](https://github.com/NixOS/nixpkgs/pull/567358). The maintainer confirmed review, and the PR is ready for upstream review. It is not merged or available in Nixpkgs channels.
+The [0.7.8 submission](https://github.com/NixOS/nixpkgs/pull/572043) is open for
+upstream review. The local example below retains the 0.6.3 pin used for the
+[earlier submission](https://github.com/NixOS/nixpkgs/pull/567358).
+To run DeskPort 2.9.0 with Nix, use the
+[versioned upstream flake](../docs/LINUX_PACKAGES.md#nixos-and-nix).
 
 `nixpkgs/deskport/package.nix` is a standalone `callPackage` expression. It builds
 the viewer from the release tag and the shared core from its exact public commit.
