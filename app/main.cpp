@@ -944,6 +944,9 @@ int main(int argc, char *argv[])
                                                 });
     qmlRegisterSingletonType<Manual>("Manual", 1, 0, "Manual",
                                      [](QQmlEngine*, QJSEngine*) -> QObject* { return new Manual(); });
+#ifdef Q_OS_WIN
+    const int systemPropertiesType =
+#endif
     qmlRegisterSingletonType<SystemProperties>("SystemProperties", 1, 0,
                                                "SystemProperties",
                                                [](QQmlEngine*, QJSEngine*) -> QObject* {
