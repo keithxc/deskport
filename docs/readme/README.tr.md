@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 kararlı](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 kararlı](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > DeskPort istemcisini DeskPort ana makinesiyle eşleştirin. DeskPort cihaz bağlama özelliği, ana makine tarafında özgün Sunshine ve istemci tarafında özgün Moonlight ile uyumlu değildir. Tam ana makine paketleri, DeskPort için uyarlanmış Sunshine ana makinesini içerir.
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -90,12 +90,12 @@ Tam macOS 2.9.0 paketleri Developer ID, Apple noter onayı ve ZIP çıkarıldık
 
 | Platform | Rol | Sürüm durumu | İndirme |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Görüntüleyici + ana bilgisayar + yerel sanal ekran | **2.9.0 kararlı**; Developer ID ile imzalı ve Apple tarafından onaylanmış | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | Görüntüleyici + ana bilgisayar; uygun KWin, Mutter ve Hyprland ana bilgisayarlarında uyarlanabilir çalışma alanı | **2.9.0 kararlı**: DEB, RPM, Arch, AppImage, taşınabilir arşiv ve Nix | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [kurulum kılavuzu](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Yalnızca görüntüleyici | **2.9.0 kararlı**, Freedesktop Platform 25.08 | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon, macOS 26+ | Görüntüleyici + ana bilgisayar + yerel sanal ekran | **2.9.1 kararlı**; Developer ID imzası ve Apple onayı gerekir | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | Görüntüleyici + ana bilgisayar; uygun KWin, Mutter ve Hyprland ana bilgisayarlarında uyarlanabilir çalışma alanı | **2.9.1 kararlı**: DEB, RPM, Arch, AppImage, taşınabilir arşiv ve Nix | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [kurulum kılavuzu](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Yalnızca görüntüleyici | **2.9.1 kararlı**, Freedesktop Platform 25.08 | [Sürüm](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad, iOS/iPadOS 15+ | Yalnızca istemci | App Store; yeni derlemeler TestFlight'ta ayrıca test edilir | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Yalnızca istemci | **2.9.0 (67)** · Google Play kapalı testi sürüyor | [APK indir](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | Görüntüleyici + ana bilgisayar + sanal ekran | **2.9.0 kararlı**; Setup ana bilgisayar içerir, taşınabilir ZIP yalnızca görüntüleyicidir; uygulama ve yükleyici imzasızdır | [Yükleyici](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | Yalnızca istemci | **2.9.1 (71)** · Google Play kapalı testi sürüyor | [APK indir](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | Görüntüleyici + ana bilgisayar + sanal ekran | **2.9.1 kararlı**; Setup ana bilgisayar içerir, taşınabilir ZIP yalnızca görüntüleyicidir; uygulama ve yükleyici imzasızdır | [Yükleyici](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Nitelendirilmedi | Doğrulanmış sürüm paketi yok | — |
 
 > **Windows antivirüs uyarısı:** Antivirüs yazılımları DeskPort'un Windows yardımcı bileşenlerini yanlışlıkla tehdit olarak işaretleyebilir.
@@ -112,17 +112,17 @@ Yalnızca bir kaynak tanımı veya başarılı bir derleme, bir platformu destek
 
 ## Kurulum
 
-**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) dosyasını açın,
+**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) dosyasını açın,
 DeskPort'u Uygulamalar klasörüne sürükleyip başlatın. Ana bilgisayar özellikleri için Ekran Kaydı ve
 Erişilebilirlik izinlerini verin. Nix ve Homebrew gerekmez.
 
-**Linux:** Sisteminiz için [2.9.0 paketini](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+**Linux:** Sisteminiz için [2.9.1 paketini](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
 seçin ve [aşağıdaki dağıtıma özel adımları](#dağıtıma-göre-linux-kurulumu) izleyin; buna
 [ana bilgisayar girdi gereksinimleri](../LINUX_PACKAGES.md#first-connection-and-hosting) de dahildir.
-Nix ile: `nix run --refresh github:keithxc/deskport/v2.9.0`.
-Flatpak yalnızca görüntüleme sağlar. Sürüm, [SHA-256 sağlama toplamlarını](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) ve bir [doğrulama raporunu](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) içerir.
+Nix ile: `nix run --refresh github:keithxc/deskport/v2.9.1`.
+Flatpak yalnızca görüntüleme sağlar. Sürüm, [SHA-256 sağlama toplamlarını](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) ve bir [doğrulama raporunu](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt) içerir.
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play kapalı testi tamamlanana kadar [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) geçici olarak GitHub üzerinden indirilebilir. Mobil istemcilerin kaynak kodu kapalıdır. Burada yalnızca kurulum paketi dağıtılır.
+**Android 2.9.1 (71)** · ~~$4.99~~ · Google Play kapalı testi tamamlanana kadar [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) geçici olarak GitHub üzerinden indirilebilir. Mobil istemcilerin kaynak kodu kapalıdır. Burada yalnızca kurulum paketi dağıtılır.
 
 63 numaralı derleme Google Play ile aynı uygulama imzalama anahtarını kullanır. Play üzerinden daha yeni bir sürüme güncellediğinizde eşleştirilmiş bilgisayarlar ve ayarlarınız korunur. GitHub’dan 62 numaralı derlemeyi yüklediyseniz 63’ü yüklemeden önce uygulamayı kaldırmanız gerekir. Yerel ayarlar silinir ve bilgisayarları yeniden eşleştirmeniz gerekir.
 
@@ -133,7 +133,7 @@ geliştirmenin sürmesini destekler.
 
 DeskPort ana bilgisayarında paylaşımı başlatın, DeskPort istemcisinde onu seçin ve cihazı ana bilgisayarda onaylayın. LAN veya Tailscale gibi kendi VPN'inizi kullanın; DeskPort hesap, barındırılan masaüstü, aktarma sunucusu veya ağ tüneli sağlamaz. Yeni elle girilen adresler `48989` bağlantı noktasını kullanır; farklıysa ana bilgisayarın paylaşım sayfasındaki bağlantı noktasını belirtin.
 
-Geçmiş: [0.7.3](../releases/RELEASE_0.7.3.md) değişiklikleri ve doğrulama sınırları ile [0.7.4](../releases/RELEASE_0.7.4.md) yedek paketleri özgün sürüm notlarında korunur; bunlar 2.9.0 doğrulama sonuçları değildir.
+Geçmiş: [0.7.3](../releases/RELEASE_0.7.3.md) değişiklikleri ve doğrulama sınırları ile [0.7.4](../releases/RELEASE_0.7.4.md) yedek paketleri özgün sürüm notlarında korunur; bunlar 2.9.1 doğrulama sonuçları değildir.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -177,7 +177,7 @@ AppImage özel bir glibc çalışma zamanı içerir; yerel paketler glibc 2.39 g
 
 ### Dağıtıma göre Linux kurulumu
 
-Bu talimatlar **x86_64** masaüstü sistemleri ve **2.9.0** sürüm indirmeleri içindir. Yerel paketler
+Bu talimatlar **x86_64** masaüstü sistemleri ve **2.9.1** sürüm indirmeleri içindir. Yerel paketler
 glibc 2.39 veya daha yenisini gerektirir. Bunlar bir DeskPort dağıtım deposundaki paketler değil, üst
 kaynaktan indirmelerdir; gelecekteki sürümleri yeni paketi yeniden indirip doğrulayarak kurun.
 
@@ -206,11 +206,11 @@ KWin 6.3'ü de ana bilgisayar ekran yardımcısının 6.6 alt sınırının alt�
 
 | Dağıtım / masaüstü | İndirme yolu |
 | --- | --- |
-| Ubuntu 26.04 GNOME | 2.9.0 DEB veya AppImage |
+| Ubuntu 26.04 GNOME | 2.9.1 DEB veya AppImage |
 | Debian 13 KDE | DEB, APT ile kurulur |
 | Fedora 44 KDE | RPM, DNF ile kurulur |
 | Arch Linux KDE | Yerel Arch paketi, `pacman -U` ile kurulur |
-| Bazzite KDE | 2.9.0 AppImage |
+| Bazzite KDE | 2.9.1 AppImage |
 | Omarchy / Hyprland | Yerel Arch paketi, `pacman -U` ile kurulur |
 
 Normal masaüstü oturumunuzda bir terminal açın. Her komut dizisi, kurmadan önce indirilen dosyanın tam adını
@@ -224,14 +224,14 @@ Ardından yeni ikili dosyanın çalışması için yeni kurulan sürümü başla
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — indirme, kurulum, güncelleme ve kaldırma</summary>
 
-[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) dosyasını indirin,
+[deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb) dosyasını indirin,
 ardından bu dosyanın bulunduğu dizinde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -250,14 +250,14 @@ olmak, kurulu Mutter/yakalama yeteneklerine bağlıdır; bkz.
 <details>
 <summary><strong>Debian 13 KDE</strong> — indirme, kurulum, güncelleme ve kaldırma</summary>
 
-[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) dosyasını indirin,
+[deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb) dosyasını indirin,
 ardından indirme dizininde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -274,16 +274,16 @@ kontrol edin.
 <details>
 <summary><strong>Fedora 44 KDE</strong> — indirme, kurulum, güncelleme ve kaldırma</summary>
 
-[deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm) dosyasını indirin,
+[deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm) dosyasını indirin,
 ardından indirme dizininde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
-  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
+  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.0.x86_64.rpm
+  sudo dnf install ./deskport-2.9.1.x86_64.rpm
 fi &&
 deskport
 ```
@@ -300,13 +300,13 @@ KDE'de ana bilgisayar olmak için [birleştirici ve girdi gereksinimlerini](../L
 <summary><strong>Arch Linux KDE</strong> — indirme, kurulum, güncelleme ve kaldırma</summary>
 
 Her zamanki tam Arch sistem güncellemenizi yapın, ardından
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) dosyasını indirin.
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst) dosyasını indirin.
 İndirme dizininde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -321,7 +321,7 @@ KDE'de ana bilgisayar olmak için [birleştirici ve girdi gereksinimlerini](../L
 <details>
 <summary><strong>Bazzite KDE</strong> — AppImage, başlatma ve kaldırma</summary>
 
-[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage)
+[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage)
 dosyasını indirin. Paylaşımı durdurun ve eski DeskPort örneklerini tamamen kapatmak için **Çıkış**'ı
 kullanın; pencereyi kapatmak onu çalışır durumda bırakabilir. Oturum açılışında başlatmayı etkinleştirmeden
 önce yeni AppImage'ı kalıcı bir konuma kaydedin:
@@ -329,11 +329,11 @@ kullanın; pencereyi kapatmak onu çalışır durumda bırakabilir. Oturum açı
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.0-x86_64.AppImage &&
-./DeskPort-2.9.0-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.1-x86_64.AppImage &&
+./DeskPort-2.9.1-x86_64.AppImage
 ```
 
 Normal şekilde başlatın; paketlenmiş kütüphaneleri kaldırmanız veya taşımanız gerekmez. Oturum açılışında
@@ -355,13 +355,13 @@ Flatpak yalnızca görüntüleme sağlar.
 <summary><strong>Omarchy / Hyprland</strong> — yerel Arch paketi ve ana bilgisayar gereksinimleri</summary>
 
 Omarchy'nin normal sistem güncellemesini yapın, ardından
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) dosyasını indirin.
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst) dosyasını indirin.
 İndirme dizininde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -382,13 +382,13 @@ Paket kurulumu tek başına gözetimsiz masaüstü oturumunu yapılandırmaz vey
 <details>
 <summary><strong>Flatpak alternatifi</strong> — yalnızca görüntüleme, Flatpak yapılandırılmış sistemlerde</summary>
 
-[DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak) dosyasını indirin,
+[DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak) dosyasını indirin,
 ardından indirme dizininde bir terminal açın:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -411,8 +411,8 @@ açılışında başlatmayı kapatın. Paket kaldırma, ana dizininizdeki DeskPo
 
 | Kanal | Durum | Kurulum |
 | --- | --- | --- |
-| GitHub sürüm paketleri | 2.9.0 kararlı | Yukarıdan dağıtımınıza uygun paketi indirin |
-| Üst kaynak Nix flake | 2.9.0 kararlı | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| GitHub sürüm paketleri | 2.9.1 kararlı | Yukarıdan dağıtımınıza uygun paketi indirin |
+| Üst kaynak Nix flake | 2.9.1 kararlı | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | Tarif test edildi; yayın, yeni hesap kaydı duraklaması nedeniyle engellendi | [Tarifi yerelde derleyin](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) incelemeye gönderildi; birleştirilmedi | Dahil edilene kadar üst kaynak flake'i kullanın |
 | Resmî Arch depoları / Flathub | Listelenmiyor | Sürüm indirmelerini kullanın; Flatpak yalnızca görüntüleyicidir |
@@ -447,7 +447,7 @@ Kaynaklar: [Moonlight](https://moonlight-stream.org/),
 DeskPort'un güncel platform sınırları yukarıda listelenmiştir; bu tablo her işletim sisteminde özellik
 eşitliği veya ölçülmüş bir performans üstünlüğü anlamına gelmez.
 
-Bkz. [2.9.0 sürüm notları](../releases/RELEASE_2.9.0.md),
+Bkz. [2.9.1 sürüm notları](../releases/RELEASE_2.9.1.md),
 [mimari](../ARCHITECTURE.md) ve [yol haritası](../ROADMAP.md).
 
 ## Linux'ta derleme ve çalıştırma

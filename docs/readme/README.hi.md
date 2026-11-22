@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 स्थिर](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 स्थिर](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > DeskPort क्लाइंट को DeskPort होस्ट के साथ पेयर करें। DeskPort की डिवाइस बाइंडिंग होस्ट की ओर मूल Sunshine और क्लाइंट की ओर मूल Moonlight के साथ संगत नहीं है। पूरे होस्ट पैकेज में DeskPort के लिए संशोधित Sunshine होस्ट शामिल है।
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -90,12 +90,12 @@
 
 | प्लेटफ़ॉर्म | भूमिका | रिलीज़ स्थिति | डाउनलोड |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | व्यूअर + होस्ट + नेटिव वर्चुअल डिस्प्ले | **2.9.0 स्थिर**; Developer ID से हस्ताक्षरित और Apple द्वारा नोटराइज़्ड | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | व्यूअर + होस्ट; सक्षम KWin, Mutter और Hyprland होस्ट पर अनुकूली वर्कस्पेस | **2.9.0 स्थिर**: DEB, RPM, Arch, AppImage, पोर्टेबल आर्काइव और Nix | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [इंस्टॉलेशन गाइड](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | केवल व्यूअर | **2.9.0 स्थिर**, Freedesktop Platform 25.08 | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon, macOS 26+ | व्यूअर + होस्ट + नेटिव वर्चुअल डिस्प्ले | **2.9.1 स्थिर**; Developer ID हस्ताक्षर और Apple नोटराइज़ेशन आवश्यक | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | व्यूअर + होस्ट; सक्षम KWin, Mutter और Hyprland होस्ट पर अनुकूली वर्कस्पेस | **2.9.1 स्थिर**: DEB, RPM, Arch, AppImage, पोर्टेबल आर्काइव और Nix | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [इंस्टॉलेशन गाइड](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | केवल व्यूअर | **2.9.1 स्थिर**, Freedesktop Platform 25.08 | [रिलीज़](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad, iOS/iPadOS 15+ | केवल क्लाइंट | App Store; नए बिल्ड TestFlight में अलग से परखे जाते हैं | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | केवल क्लाइंट | **2.9.0 (67)** · Google Play का बंद परीक्षण जारी है | [APK डाउनलोड करें](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | व्यूअर + होस्ट + वर्चुअल डिस्प्ले | **2.9.0 स्थिर**; Setup में होस्ट, पोर्टेबल ZIP केवल व्यूअर; ऐप और इंस्टॉलर अहस्ताक्षरित | [इंस्टॉलर](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | केवल क्लाइंट | **2.9.1 (71)** · Google Play का बंद परीक्षण जारी है | [APK डाउनलोड करें](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | व्यूअर + होस्ट + वर्चुअल डिस्प्ले | **2.9.1 स्थिर**; Setup में होस्ट, पोर्टेबल ZIP केवल व्यूअर; ऐप और इंस्टॉलर अहस्ताक्षरित | [इंस्टॉलर](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | योग्य नहीं | कोई सत्यापित रिलीज़ पैकेज नहीं | — |
 
 > **Windows एंटीवायरस सूचना:** एंटीवायरस सॉफ़्टवेयर DeskPort के Windows सहायक घटकों को गलती से खतरा बता सकता है।
@@ -112,17 +112,17 @@
 
 ## इंस्टॉल करें
 
-**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) खोलें,
+**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) खोलें,
 DeskPort को Applications में खींचें और खोलें। होस्ट सुविधाओं के लिए Screen Recording और Accessibility
 अनुमतियाँ दें। Nix और Homebrew की ज़रूरत नहीं है।
 
-**Linux:** अपने सिस्टम के लिए [2.9.0 पैकेज](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+**Linux:** अपने सिस्टम के लिए [2.9.1 पैकेज](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
 चुनें और [नीचे दिए वितरण-विशिष्ट चरणों](#वितरण-के-अनुसार-linux-इंस्टॉलेशन) का पालन करें,
 जिनमें [होस्ट इनपुट आवश्यकताएँ](../LINUX_PACKAGES.md#first-connection-and-hosting) भी शामिल हैं।
-Nix के साथ: `nix run --refresh github:keithxc/deskport/v2.9.0`।
-Flatpak केवल देखने की सुविधा देता है। रिलीज़ में [SHA-256 चेकसम](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) और [सत्यापन रिपोर्ट](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt) शामिल हैं।
+Nix के साथ: `nix run --refresh github:keithxc/deskport/v2.9.1`।
+Flatpak केवल देखने की सुविधा देता है। रिलीज़ में [SHA-256 चेकसम](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) और [सत्यापन रिपोर्ट](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt) शामिल हैं।
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
+**Android 2.9.1 (71)** · ~~$4.99~~ · Google Play का बंद परीक्षण पूरा होने तक [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) अस्थायी रूप से GitHub पर उपलब्ध है। मोबाइल क्लाइंट का स्रोत कोड निजी है। यहाँ केवल इंस्टॉलर दिया गया है।
 
 बिल्ड 63 में Google Play वाली साइनिंग कुंजी का इस्तेमाल हुआ है। आगे चलकर Play के नए संस्करण में अपडेट करने पर पेयर किए गए कंप्यूटर और सेटिंग्स बनी रहेंगी। अगर आपने GitHub से बिल्ड 62 इंस्टॉल किया था, तो 63 इंस्टॉल करने से पहले उसे अनइंस्टॉल करना होगा। इससे स्थानीय सेटिंग्स मिट जाएँगी और कंप्यूटर फिर से पेयर करने होंगे।
 
@@ -132,7 +132,7 @@ Flatpak केवल देखने की सुविधा देता ह�
 
 DeskPort होस्ट पर शेयरिंग शुरू करें, DeskPort क्लाइंट में उसे चुनें और होस्ट पर डिवाइस स्वीकार करें। LAN या Tailscale जैसा अपना VPN इस्तेमाल करें; DeskPort अकाउंट सेवा, होस्टेड डेस्कटॉप, रिले या नेटवर्क टनल नहीं देता। नए मैनुअल पते पोर्ट `48989` इस्तेमाल करते हैं; अलग होने पर होस्ट के शेयरिंग पृष्ठ पर दिखा पोर्ट दें।
 
-इतिहास: [0.7.3](../releases/RELEASE_0.7.3.md) के बदलाव और जाँच की सीमाएँ तथा [0.7.4](../releases/RELEASE_0.7.4.md) के प्रतिस्थापन पैकेज मूल रिलीज़ नोट्स में दर्ज हैं; ये 2.9.0 के सत्यापन परिणाम नहीं हैं।
+इतिहास: [0.7.3](../releases/RELEASE_0.7.3.md) के बदलाव और जाँच की सीमाएँ तथा [0.7.4](../releases/RELEASE_0.7.4.md) के प्रतिस्थापन पैकेज मूल रिलीज़ नोट्स में दर्ज हैं; ये 2.9.1 के सत्यापन परिणाम नहीं हैं।
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -173,7 +173,7 @@ Windows Setup ने कॉन्फ़िगरेशन और पेयरि
 
 ### वितरण के अनुसार Linux इंस्टॉलेशन
 
-ये निर्देश **x86_64** डेस्कटॉप सिस्टम और **2.9.0** रिलीज़ डाउनलोड के लिए हैं। नेटिव पैकेज को glibc 2.39
+ये निर्देश **x86_64** डेस्कटॉप सिस्टम और **2.9.1** रिलीज़ डाउनलोड के लिए हैं। नेटिव पैकेज को glibc 2.39
 या नया चाहिए। ये अपस्ट्रीम डाउनलोड हैं, DeskPort वितरण रिपॉज़िटरी के पैकेज नहीं; भविष्य की रिलीज़ नया पैकेज
 फिर से डाउनलोड और सत्यापित करके इंस्टॉल करें।
 
@@ -199,11 +199,11 @@ VM में सामान्य FUSE स्टार्टअप और ह�
 
 | वितरण / डेस्कटॉप | डाउनलोड मार्ग |
 | --- | --- |
-| Ubuntu 26.04 GNOME | 2.9.0 DEB या AppImage |
+| Ubuntu 26.04 GNOME | 2.9.1 DEB या AppImage |
 | Debian 13 KDE | DEB, APT से इंस्टॉल |
 | Fedora 44 KDE | RPM, DNF से इंस्टॉल |
 | Arch Linux KDE | लोकल Arch पैकेज, `pacman -U` से इंस्टॉल |
-| Bazzite KDE | 2.9.0 AppImage |
+| Bazzite KDE | 2.9.1 AppImage |
 | Omarchy / Hyprland | लोकल Arch पैकेज, `pacman -U` से इंस्टॉल |
 
 अपने सामान्य डेस्कटॉप सत्र में टर्मिनल खोलें। हर कमांड क्रम इंस्टॉल करने से पहले डाउनलोड की गई फ़ाइल के
@@ -217,14 +217,14 @@ VM में सामान्य FUSE स्टार्टअप और ह�
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — डाउनलोड, इंस्टॉल, अपडेट और हटाना</summary>
 
-[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) डाउनलोड करें,
+[deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb) डाउनलोड करें,
 फिर उस फ़ाइल वाली डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -242,14 +242,14 @@ Flatpak या अलग से समर्थित Nix/सोर्स बि
 <details>
 <summary><strong>Debian 13 KDE</strong> — डाउनलोड, इंस्टॉल, अपडेट और हटाना</summary>
 
-[deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb) डाउनलोड करें,
+[deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb) डाउनलोड करें,
 फिर डाउनलोड डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -266,16 +266,16 @@ KDE पर होस्टिंग के लिए शेयरिंग श�
 <details>
 <summary><strong>Fedora 44 KDE</strong> — डाउनलोड, इंस्टॉल, अपडेट और हटाना</summary>
 
-[deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm) डाउनलोड करें,
+[deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm) डाउनलोड करें,
 फिर डाउनलोड डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
-  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
+  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.0.x86_64.rpm
+  sudo dnf install ./deskport-2.9.1.x86_64.rpm
 fi &&
 deskport
 ```
@@ -291,13 +291,13 @@ KDE पर होस्टिंग के लिए [कंपोज़िट�
 <summary><strong>Arch Linux KDE</strong> — डाउनलोड, इंस्टॉल, अपडेट और हटाना</summary>
 
 अपना सामान्य पूर्ण Arch सिस्टम अपडेट करें, फिर
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) डाउनलोड करें।
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst) डाउनलोड करें।
 डाउनलोड डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -312,7 +312,7 @@ KDE पर होस्टिंग के लिए [कंपोज़िट�
 <details>
 <summary><strong>Bazzite KDE</strong> — AppImage, स्टार्टअप और हटाना</summary>
 
-[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage)
+[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage)
 डाउनलोड करें। शेयरिंग रोकें और किसी भी पुराने DeskPort इंस्टेंस को पूरी तरह बंद करने के लिए **Quit** इस्तेमाल
 करें; विंडो बंद करने से वह चलता रह सकता है। लॉगिन स्टार्टअप सक्षम करने से पहले नई AppImage को स्थायी स्थान पर
 सहेजें:
@@ -320,11 +320,11 @@ KDE पर होस्टिंग के लिए [कंपोज़िट�
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.0-x86_64.AppImage &&
-./DeskPort-2.9.0-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.1-x86_64.AppImage &&
+./DeskPort-2.9.1-x86_64.AppImage
 ```
 
 सामान्य रूप से लॉन्च करें; बंडल की गई लाइब्रेरी हटाने या खिसकाने की ज़रूरत नहीं। अगर लॉगिन स्टार्टअप किसी पुरानी
@@ -344,13 +344,13 @@ DeskPort लॉगिन स्टार्टअप बंद करें, Des
 <summary><strong>Omarchy / Hyprland</strong> — लोकल Arch पैकेज और होस्टिंग आवश्यकताएँ</summary>
 
 Omarchy का सामान्य सिस्टम अपडेट करें, फिर
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst) डाउनलोड करें।
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst) डाउनलोड करें।
 डाउनलोड डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -370,13 +370,13 @@ Hyprland होस्टिंग एक समर्पित हेडले�
 <details>
 <summary><strong>Flatpak विकल्प</strong> — केवल देखना, Flatpak कॉन्फ़िगर किए गए सिस्टम पर</summary>
 
-[DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak) डाउनलोड करें,
+[DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak) डाउनलोड करें,
 फिर डाउनलोड डायरेक्टरी में टर्मिनल खोलें:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -399,8 +399,8 @@ Flathub पर DeskPort लिस्टिंग की ज़रूरत न�
 
 | चैनल | स्थिति | इंस्टॉलेशन |
 | --- | --- | --- |
-| GitHub रिलीज़ पैकेज | 2.9.0 स्थिर | ऊपर से अपने वितरण का पैकेज डाउनलोड करें |
-| अपस्ट्रीम Nix flake | 2.9.0 स्थिर | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| GitHub रिलीज़ पैकेज | 2.9.1 स्थिर | ऊपर से अपने वितरण का पैकेज डाउनलोड करें |
+| अपस्ट्रीम Nix flake | 2.9.1 स्थिर | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | रेसिपी परखी गई; नए अकाउंट पंजीकरण रुकने से प्रकाशन अवरुद्ध | [रेसिपी लोकल रूप से बनाएँ](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) समीक्षा के लिए भेजा गया; मर्ज नहीं हुआ | शामिल होने तक अपस्ट्रीम flake इस्तेमाल करें |
 | आधिकारिक Arch रिपॉज़िटरी / Flathub | सूचीबद्ध नहीं | रिलीज़ डाउनलोड इस्तेमाल करें; Flatpak केवल-व्यूअर है |
@@ -433,7 +433,7 @@ Flathub पर DeskPort लिस्टिंग की ज़रूरत न�
 DeskPort की मौजूदा प्लेटफ़ॉर्म सीमाएँ ऊपर सूचीबद्ध हैं; यह तालिका हर OS पर सुविधा समानता या मापे गए प्रदर्शन
 लाभ का दावा नहीं करती।
 
-देखें [2.9.0 रिलीज़ नोट्स](../releases/RELEASE_2.9.0.md), [आर्किटेक्चर](../ARCHITECTURE.md) और [रोडमैप](../ROADMAP.md)।
+देखें [2.9.1 रिलीज़ नोट्स](../releases/RELEASE_2.9.1.md), [आर्किटेक्चर](../ARCHITECTURE.md) और [रोडमैप](../ROADMAP.md)।
 
 ## Linux पर बिल्ड करें और चलाएँ
 

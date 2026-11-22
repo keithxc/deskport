@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > 請以 DeskPort 用戶端與 DeskPort 主機配對。DeskPort 裝置綁定不相容於主機端的原版 Sunshine 或用戶端的原版 Moonlight。完整桌面主機套件內建為 DeskPort 調整過的 Sunshine 主機。
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="桌面版本" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="授權條款" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -84,12 +84,12 @@
 
 | 平台 | 角色 | 發布狀態 | 下載 |
 | --- | --- | --- | --- |
-| macOS Apple Silicon，macOS 26+ | 檢視端 + 主機端 + 原生虛擬顯示器 | **2.9.0 正式版**；Developer ID 簽署、Apple 公證與 ZIP 解壓後的 Gatekeeper 檢查通過 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [安裝指南](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | 僅檢視端 | **2.9.0 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon，macOS 26+ | 檢視端 + 主機端 + 原生虛擬顯示器 | **2.9.1 正式版**；須完成 Developer ID 簽署與 Apple 公證 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | 檢視端 + 主機端；符合條件的 KWin、Mutter 與 Hyprland 主機支援自動調整的虛擬工作區 | **2.9.1 正式版**：DEB、RPM、Arch、AppImage、可攜式封存檔與 Nix | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [安裝指南](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | 僅檢視端 | **2.9.1 正式版**，Freedesktop Platform 25.08 | [發布頁面](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad，iOS/iPadOS 15+ | 僅用戶端 | 已在 App Store 上架；較新的版本另於 TestFlight 測試 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | 僅用戶端 | **2.9.0（組建 67）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **2.9.0 正式版**；Setup 包含主機端，可攜式 ZIP 僅供檢視；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | 僅用戶端 | **2.9.1（組建 71）** · Google Play 封閉測試尚未完成 | [下載 APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | 檢視端 + 主機端 + 虛擬顯示器 | **2.9.1 正式版**；Setup 包含主機端，可攜式 ZIP 僅供檢視；應用程式與安裝程式未簽署 | [安裝程式](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未經驗證 | 沒有經過驗證的發布套件 | — |
 
 > **Windows 防毒軟體提醒：** 防毒軟體有可能將 DeskPort 的 Windows 輔助元件誤判為威脅。
@@ -105,15 +105,15 @@ AppImage 與可攜版會在開始分享時自動註冊目前顯示輔助程式�
 
 ## 安裝
 
-**macOS：** 開啟[DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg)，
+**macOS：** 開啟[DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg)，
 把 DeskPort 拖進「應用程式」後開啟。若要使用主機端功能，請授予「螢幕錄製」與
 「輔助使用」權限。不需要 Nix 或 Homebrew。
 
-**Linux：** 選擇適合你系統的 [2.9.0 套件](https://github.com/keithxc/deskport/releases/tag/v2.9.0)，
-並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run --refresh github:keithxc/deskport/v2.9.0`。
-Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)。
+**Linux：** 選擇適合你系統的 [2.9.1 套件](https://github.com/keithxc/deskport/releases/tag/v2.9.1)，
+並依照[安裝指南](../LINUX_PACKAGES.md)操作，包括主機輸入權限的設定。使用 Nix：`nix run --refresh github:keithxc/deskport/v2.9.1`。
+Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt)與[驗證報告](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt)。
 
-**Android 2.9.0（組建 67）** · ~~$4.99~~ · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
+**Android 2.9.1（組建 71）** · ~~$4.99~~ · Google Play 正式上架所需的封閉測試尚未完成，目前可從 GitHub 暫時下載 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk)。行動用戶端未開放原始碼，此處僅提供安裝檔。
 
 組建 63 使用 Google Play 的應用程式簽章，日後可直接安裝較新的 Play 版，保留配對與設定。若已安裝 GitHub 組建 62，首次切換至 63 須先解除安裝舊版。解除安裝會清除本機設定，安裝後須重新配對電腦。
 
@@ -123,7 +123,7 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 
 在 DeskPort 主機端開始分享，於 DeskPort 客戶端選取主機，再於主機端核准裝置。請使用區域網路或 Tailscale 等自備 VPN；DeskPort 不提供帳號服務、代管桌面、轉送服務或網路通道。新增的手動位址預設使用連接埠 `48989`；若不同，請填入主機分享頁面顯示的連接埠。
 
-歷史紀錄：[0.7.3](../releases/RELEASE_0.7.3.md) 的變更與驗證範圍，以及 [0.7.4](../releases/RELEASE_0.7.4.md) 的替換紀錄，保留於原始版本說明；這些不是 2.9.0 的驗收結果。
+歷史紀錄：[0.7.3](../releases/RELEASE_0.7.3.md) 的變更與驗證範圍，以及 [0.7.4](../releases/RELEASE_0.7.4.md) 的替換紀錄，保留於原始版本說明；這些不是 2.9.1 的驗收結果。
 
 <details>
 <summary>0.7.3</summary>
@@ -143,12 +143,12 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 
 ### Linux 軟體庫狀態
 
-安裝或升級 2.9.0，請依照 [Linux 指南](../LINUX_PACKAGES.md)及[英文 README 的各發行版步驟](../../README.md#linux-installation-by-distribution)。升級前請完全結束舊版應用程式，並以 [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) 核對套件。Flatpak 僅供檢視。
+安裝或升級 2.9.1，請依照 [Linux 指南](../LINUX_PACKAGES.md)及[英文 README 的各發行版步驟](../../README.md#linux-installation-by-distribution)。升級前請完全結束舊版應用程式，並以 [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) 核對套件。Flatpak 僅供檢視。
 
 | 管道 | 狀態 | 安裝方式 |
 | --- | --- | --- |
-| GitHub 發布套件 | 2.9.0 正式版 | 在上方下載適合你發行版的套件 |
-| 上游 Nix flake | 2.9.0 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| GitHub 發布套件 | 2.9.1 正式版 | 在上方下載適合你發行版的套件 |
+| 上游 Nix flake | 2.9.1 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | 配方已測試；因 AUR 暫停新帳號註冊而無法發布 | [在本機建置配方](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | 已提交 [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) 等待審查；尚未合併 | 合併前請使用上游 flake |
 | Arch 官方軟體庫 / Flathub | 未收錄 | 請從發布頁面下載；Flatpak 僅為檢視端 |
@@ -182,7 +182,7 @@ Flatpak 僅提供檢視功能。發布檔案附有 [SHA-256 檢查碼](https://g
 DeskPort 目前的平台限制列於上方；此表並不表示各作業系統的功能完全相同，
 也不代表經過量測的效能優勢。
 
-請參閱 [2.9.0 版本說明](../releases/RELEASE_2.9.0.md)、
+請參閱 [2.9.1 版本說明](../releases/RELEASE_2.9.1.md)、
 [架構說明](../ARCHITECTURE.md)與[開發藍圖](../ROADMAP.md)。
 
 ## 在 Linux 上建置與執行

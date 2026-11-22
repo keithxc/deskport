@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 стабильная](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 стабильная](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > Сопрягайте клиент DeskPort с хостом DeskPort. Привязка устройств DeskPort несовместима с оригинальным Sunshine на стороне хоста и с оригинальным Moonlight на стороне клиента. Полные пакеты хоста включают версию Sunshine, адаптированную для DeskPort.
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -90,12 +90,12 @@
 
 | Платформа | Роль | Статус выпуска | Загрузка |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Просмотр + хост + нативный виртуальный дисплей | **2.9.0 стабильная**; подписи Developer ID, нотаризация Apple и Gatekeeper после распаковки ZIP проверены | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | Просмотр + хост; адаптивное виртуальное рабочее пространство на подходящих хостах KWin, Mutter и Hyprland | **2.9.0 стабильная**: DEB, RPM, Arch, AppImage, переносной архив и Nix | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [руководство по установке](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Только просмотр | **2.9.0 стабильная**, Freedesktop Platform 25.08 | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon, macOS 26+ | Просмотр + хост + нативный виртуальный дисплей | **2.9.1 стабильная**; требуются подпись Developer ID и нотаризация Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | Просмотр + хост; адаптивное виртуальное рабочее пространство на подходящих хостах KWin, Mutter и Hyprland | **2.9.1 стабильная**: DEB, RPM, Arch, AppImage, переносной архив и Nix | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [руководство по установке](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Только просмотр | **2.9.1 стабильная**, Freedesktop Platform 25.08 | [Выпуск](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad, iOS/iPadOS 15+ | Только клиент | App Store; новые сборки отдельно тестируются в TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Только клиент | **2.9.0 (67)** · Идёт закрытое тестирование в Google Play | [Скачать APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | Просмотр + хост + виртуальный дисплей | **2.9.0 стабильная**; Setup с хостом, переносимый ZIP только для просмотра; приложение и установщик не подписаны | [Установщик](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | Только клиент | **2.9.1 (71)** · Идёт закрытое тестирование в Google Play | [Скачать APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | Просмотр + хост + виртуальный дисплей | **2.9.1 стабильная**; Setup с хостом, переносимый ZIP только для просмотра; приложение и установщик не подписаны | [Установщик](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Не квалифицировано | Нет проверенного пакета выпуска | — |
 
 > **Примечание об антивирусах Windows:** Антивирусы могут ошибочно помечать вспомогательные компоненты DeskPort для Windows как угрозу.
@@ -113,16 +113,16 @@ AppImage и переносные сборки автоматически рег�
 
 ## Установка
 
-**macOS:** Откройте [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg),
+**macOS:** Откройте [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg),
 перетащите DeskPort в «Программы» и запустите. Предоставьте разрешения «Запись экрана» и
 «Универсальный доступ», чтобы использовать функции хоста. Nix и Homebrew не нужны.
 
-**Linux:** Выберите [пакет 2.9.0](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+**Linux:** Выберите [пакет 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
 для своей системы и следуйте [руководству по установке](../LINUX_PACKAGES.md),
-включая разрешения на ввод для хоста. Через Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
-Flatpak обеспечивает только просмотр. Файлы выпуска включают [контрольные суммы SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) и [отчёт о проверке](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
+включая разрешения на ввод для хоста. Через Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
+Flatpak обеспечивает только просмотр. Файлы выпуска включают [контрольные суммы SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) и [отчёт о проверке](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Пока не завершено закрытое тестирование в Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) временно доступен на GitHub. Исходный код мобильных клиентов закрыт. Здесь распространяется только установочный пакет.
+**Android 2.9.1 (71)** · ~~$4.99~~ · Пока не завершено закрытое тестирование в Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) временно доступен на GitHub. Исходный код мобильных клиентов закрыт. Здесь распространяется только установочный пакет.
 
 Сборка 63 подписана тем же ключом, что и приложение в Google Play. При обновлении до более новой версии из магазина сохраняются настройки и сопряжения с компьютерами. Если у вас установлена сборка 62 с GitHub, перед установкой сборки 63 её нужно удалить. Локальные настройки будут сброшены, а компьютеры придётся подключить заново.
 
@@ -133,7 +133,7 @@ Flatpak обеспечивает только просмотр. Файлы вы�
 
 Запустите демонстрацию на хосте DeskPort, выберите его в клиенте DeskPort и одобрите устройство на хосте. Используйте LAN или собственную VPN, например Tailscale; DeskPort не предоставляет учётные записи, размещённые рабочие столы, ретрансляторы или сетевые туннели. Новые ручные адреса используют порт `48989`; если он отличается, укажите порт со страницы демонстрации хоста.
 
-История: изменения и границы проверок [0.7.3](../releases/RELEASE_0.7.3.md), а также замена пакетов [0.7.4](../releases/RELEASE_0.7.4.md) сохранены в исходных примечаниях; это не результаты проверки 2.9.0.
+История: изменения и границы проверок [0.7.3](../releases/RELEASE_0.7.3.md), а также замена пакетов [0.7.4](../releases/RELEASE_0.7.4.md) сохранены в исходных примечаниях; это не результаты проверки 2.9.1.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -154,12 +154,12 @@ Flatpak обеспечивает только просмотр. Файлы вы�
 
 ### Доступность в репозиториях Linux
 
-Для установки или обновления 2.9.0 следуйте [руководству Linux](../LINUX_PACKAGES.md) и [шагам для дистрибутивов в английском README](../../README.md#linux-installation-by-distribution). Полностью завершите старое приложение перед обновлением и проверьте пакет по [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt). Flatpak предоставляет только просмотр.
+Для установки или обновления 2.9.1 следуйте [руководству Linux](../LINUX_PACKAGES.md) и [шагам для дистрибутивов в английском README](../../README.md#linux-installation-by-distribution). Полностью завершите старое приложение перед обновлением и проверьте пакет по [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt). Flatpak предоставляет только просмотр.
 
 | Канал | Статус | Установка |
 | --- | --- | --- |
-| Пакеты выпуска на GitHub | 2.9.0 стабильная | Загрузите пакет для своего дистрибутива выше |
-| Upstream Nix flake | 2.9.0 стабильная | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| Пакеты выпуска на GitHub | 2.9.1 стабильная | Загрузите пакет для своего дистрибутива выше |
+| Upstream Nix flake | 2.9.1 стабильная | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | Рецепт протестирован; публикация заблокирована приостановкой регистрации новых аккаунтов | [Соберите рецепт локально](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) отправлен на рецензию; не слит | До включения используйте upstream flake |
 | Официальные репозитории Arch / Flathub | Нет в списке | Используйте загрузки выпуска; Flatpak работает только для просмотра |
@@ -195,7 +195,7 @@ Flatpak обеспечивает только просмотр. Файлы вы�
 Текущие ограничения платформ DeskPort перечислены выше; эта таблица не подразумевает
 одинаковых возможностей на всех ОС или измеренного преимущества в производительности.
 
-См. [примечания к выпуску 2.9.0](../releases/RELEASE_2.9.0.md),
+См. [примечания к выпуску 2.9.1](../releases/RELEASE_2.9.1.md),
 [архитектуру](../ARCHITECTURE.md) и [дорожную карту](../ROADMAP.md).
 
 ## Сборка и запуск в Linux

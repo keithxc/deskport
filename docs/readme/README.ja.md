@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 正式版](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > DeskPort クライアントと DeskPort ホストをペアリングしてください。DeskPort のデバイス連携は、ホスト側のオリジナル版 Sunshine とクライアント側のオリジナル版 Moonlight のどちらにも対応していません。ホスト機能を含むパッケージには DeskPort 向けに修正した Sunshine ホストが同梱されています。
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="デスクトップ版" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="ライセンス" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -87,12 +87,12 @@
 
 | プラットフォーム | 役割 | リリース状況 | ダウンロード |
 | --- | --- | --- | --- |
-| macOS Apple Silicon、macOS 26+ | ビューア＋ホスト＋ネイティブ仮想ディスプレイ | **2.9.0 正式版**。Developer ID 署名、Apple 公証、ZIP 展開後の Gatekeeper 検証に合格 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **2.9.0 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [インストールガイド](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | ビューアのみ | **2.9.0 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon、macOS 26+ | ビューア＋ホスト＋ネイティブ仮想ディスプレイ | **2.9.1 正式版**。Developer ID 署名と Apple 公証が必要 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | ビューア＋ホスト。条件を満たす KWin・Mutter・Hyprland ホストではアダプティブな仮想ワークスペース | **2.9.1 正式版**：DEB、RPM、Arch、AppImage、ポータブルアーカイブ、Nix | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [インストールガイド](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | ビューアのみ | **2.9.1 正式版**、Freedesktop Platform 25.08 | [リリース](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad、iOS/iPadOS 15+ | クライアントのみ | App Store で公開中。新しいビルドは TestFlight で別途テスト | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | クライアントのみ | **2.9.0 (67)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **2.9.0 安定版**；Setup はホストを含み、ポータブル ZIP は閲覧専用；アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | クライアントのみ | **2.9.1 (71)** · Google Play のクローズド テスト中 | [APK をダウンロード](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | ビューア＋ホスト＋仮想ディスプレイ | **2.9.1 安定版**；Setup はホストを含み、ポータブル ZIP は閲覧専用；アプリとインストーラーは未署名 | [インストーラー](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 未検証 | 検証済みのリリースパッケージなし | — |
 
 > **Windows のウイルス対策に関する注意：** ウイルス対策ソフトが DeskPort の Windows ヘルパーコンポーネントを誤検知する可能性があります。
@@ -109,15 +109,15 @@ AppImage とポータブル版は共有開始時に現在のディスプレイ�
 
 ## インストール
 
-**macOS：** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) を開き、
+**macOS：** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) を開き、
 DeskPort を「アプリケーション」にドラッグして起動します。ホスト機能を使うには「画面収録」と
 「アクセシビリティ」の権限を許可してください。Nix や Homebrew は不要です。
 
-**Linux：** お使いのシステムに合った [2.9.0 パッケージ](https://github.com/keithxc/deskport/releases/tag/v2.9.0)を選び、
-ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run --refresh github:keithxc/deskport/v2.9.0`。
-Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt)が含まれます。
+**Linux：** お使いのシステムに合った [2.9.1 パッケージ](https://github.com/keithxc/deskport/releases/tag/v2.9.1)を選び、
+ホスト入力の権限設定を含めて[インストールガイド](../LINUX_PACKAGES.md)に従ってください。Nix の場合：`nix run --refresh github:keithxc/deskport/v2.9.1`。
+Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt)と[検証レポート](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt)が含まれます。
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
+**Android 2.9.1 (71)** · ~~$4.99~~ · Google Play のクローズド テストが完了するまで、GitHub で [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) を配布します。モバイル版のソースコードは非公開です。ここで配布するのはインストーラーのみです。
 
 ビルド 63 は Google Play 版と同じ署名鍵を使用しています。今後、より新しい Play 版に上書き更新すると、パソコンとのペアリングと設定が引き継がれます。GitHub のビルド 62 をお使いの場合は、63 のインストール前に旧版をアンインストールしてください。ローカル設定が消去されるため、再度ペアリングが必要です。
 
@@ -128,7 +128,7 @@ Flatpak は閲覧のみです。リリースには [SHA-256 チェックサム](
 
 DeskPort ホストで共有を開始し、DeskPort クライアントで選択して、ホスト側でデバイスを承認してください。LAN または Tailscale などの自前の VPN を使用します。DeskPort はアカウントサービス、ホスト型デスクトップ、リレー、ネットワークトンネルを提供しません。新しい手動アドレスの既定ポートは `48989` です。異なる場合はホストの共有ページに表示されたポートを指定してください。
 
-履歴：[0.7.3](../releases/RELEASE_0.7.3.md) の変更・検証範囲と [0.7.4](../releases/RELEASE_0.7.4.md) の差し替え記録は当時のリリースノートに残しています。2.9.0 の検証結果ではありません。
+履歴：[0.7.3](../releases/RELEASE_0.7.3.md) の変更・検証範囲と [0.7.4](../releases/RELEASE_0.7.4.md) の差し替え記録は当時のリリースノートに残しています。2.9.1 の検証結果ではありません。
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -149,12 +149,12 @@ DeskPort ホストで共有を開始し、DeskPort クライアントで選択�
 
 ### Linux リポジトリでの提供状況
 
-2.9.0 のインストール・更新は [Linux ガイド](../LINUX_PACKAGES.md)と[英語 README のディストリビューション別手順](../../README.md#linux-installation-by-distribution)に従ってください。更新前に旧アプリを完全に終了し、[SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt)でパッケージを確認してください。Flatpak は閲覧専用です。
+2.9.1 のインストール・更新は [Linux ガイド](../LINUX_PACKAGES.md)と[英語 README のディストリビューション別手順](../../README.md#linux-installation-by-distribution)に従ってください。更新前に旧アプリを完全に終了し、[SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt)でパッケージを確認してください。Flatpak は閲覧専用です。
 
 | チャネル | 状況 | インストール |
 | --- | --- | --- |
-| GitHub リリースパッケージ | 2.9.0 正式版 | 上記からお使いのディストリビューション用パッケージをダウンロード |
-| アップストリーム Nix flake | 2.9.0 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| GitHub リリースパッケージ | 2.9.1 正式版 | 上記からお使いのディストリビューション用パッケージをダウンロード |
+| アップストリーム Nix flake | 2.9.1 正式版 | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | レシピはテスト済み。新規アカウント登録の一時停止により公開できていません | [レシピをローカルでビルド](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) をレビュー待ちで提出済み。未マージ | 取り込まれるまではアップストリームの flake を使用 |
 | Arch 公式リポジトリ / Flathub | 未登録 | リリースからダウンロード。Flatpak はビューアのみ |
@@ -188,7 +188,7 @@ Nixpkgs に `pkgs.deskport` が加わるわけでもありません。ホスト�
 DeskPort の現在のプラットフォーム制限は上記のとおりです。この表はすべての OS での機能の同等性や、
 計測された性能面の優位性を意味するものではありません。
 
-[2.9.0 リリースノート](../releases/RELEASE_2.9.0.md)、
+[2.9.1 リリースノート](../releases/RELEASE_2.9.1.md)、
 [アーキテクチャ](../ARCHITECTURE.md)、[ロードマップ](../ROADMAP.md)も参照してください。
 
 ## Linux でのビルドと実行

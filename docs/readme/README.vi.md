@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 ổn định](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 ổn định](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > Ghép đôi ứng dụng khách DeskPort với máy chủ DeskPort. Tính năng liên kết thiết bị DeskPort không tương thích với Sunshine nguyên bản ở phía máy chủ hoặc Moonlight nguyên bản ở phía ứng dụng khách. Gói máy chủ đầy đủ đi kèm phiên bản Sunshine đã được điều chỉnh cho DeskPort.
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -88,12 +88,12 @@ Các gói macOS 2.9.0 chính xác đã vượt qua kiểm tra Developer ID, côn
 
 | Nền tảng | Vai trò | Trạng thái phát hành | Tải xuống |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Trình xem + máy chủ + màn hình ảo gốc | **2.9.0 ổn định**; ký bằng Developer ID và được Apple công chứng | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | Trình xem + máy chủ; không gian làm việc thích ứng trên máy chủ KWin, Mutter và Hyprland đủ điều kiện | **2.9.0 ổn định**: DEB, RPM, Arch, AppImage, gói di động và Nix | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [hướng dẫn cài đặt](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Chỉ trình xem | **2.9.0 ổn định**, Freedesktop Platform 25.08 | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon, macOS 26+ | Trình xem + máy chủ + màn hình ảo gốc | **2.9.1 ổn định**; yêu cầu chữ ký Developer ID và công chứng Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | Trình xem + máy chủ; không gian làm việc thích ứng trên máy chủ KWin, Mutter và Hyprland đủ điều kiện | **2.9.1 ổn định**: DEB, RPM, Arch, AppImage, gói di động và Nix | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [hướng dẫn cài đặt](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Chỉ trình xem | **2.9.1 ổn định**, Freedesktop Platform 25.08 | [Bản phát hành](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad, iOS/iPadOS 15+ | Chỉ thiết bị khách | App Store; bản mới hơn được thử riêng trên TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Chỉ thiết bị khách | **2.9.0 (67)** · Đang thử nghiệm kín trên Google Play | [Tải APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | Trình xem + máy chủ + màn hình ảo | **2.9.0 ổn định**; Setup kèm máy chủ, ZIP di động chỉ để xem; ứng dụng và bộ cài chưa ký | [Bộ cài](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | Chỉ thiết bị khách | **2.9.1 (71)** · Đang thử nghiệm kín trên Google Play | [Tải APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | Trình xem + máy chủ + màn hình ảo | **2.9.1 ổn định**; Setup kèm máy chủ, ZIP di động chỉ để xem; ứng dụng và bộ cài chưa ký | [Bộ cài](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Chưa đủ điều kiện | Chưa có gói phát hành được xác minh | — |
 
 > **Lưu ý về phần mềm diệt virus trên Windows:** phần mềm diệt virus có thể nhận nhầm các thành phần hỗ trợ Windows của DeskPort là mối đe dọa.
@@ -109,17 +109,17 @@ Chỉ có định nghĩa mã nguồn hoặc biên dịch thành công không có
 
 ## Cài đặt
 
-**macOS:** mở [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg),
+**macOS:** mở [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg),
 kéo DeskPort vào Applications rồi mở. Cấp quyền Ghi màn hình và Trợ năng để dùng tính năng máy chủ. Không cần Nix
 hay Homebrew.
 
-**Linux:** chọn [gói 2.9.0](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+**Linux:** chọn [gói 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
 cho hệ thống của bạn và làm theo [các bước theo bản phân phối bên dưới](#cài-đặt-linux-theo-bản-phân-phối),
 bao gồm [yêu cầu về đầu vào của máy chủ](../LINUX_PACKAGES.md#first-connection-and-hosting).
-Với Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
-Flatpak chỉ hỗ trợ xem. Bản phát hành kèm [mã kiểm tra SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) và [báo cáo xác minh](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
+Với Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
+Flatpak chỉ hỗ trợ xem. Bản phát hành kèm [mã kiểm tra SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) và [báo cáo xác minh](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
+**Android 2.9.1 (71)** · ~~$4.99~~ · Trong khi chờ hoàn tất thử nghiệm kín trên Google Play, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) được cung cấp tạm thời trên GitHub. Mã nguồn của các ứng dụng di động không được công khai. Tại đây chỉ phân phối tệp cài đặt.
 
 Bản dựng 63 dùng cùng khóa ký ứng dụng với Google Play. Khi cập nhật lên phiên bản mới hơn từ Play, các máy tính đã ghép đôi và các thiết lập sẽ được giữ lại. Nếu đã cài bản dựng 62 từ GitHub, bạn cần gỡ bản đó trước khi cài bản 63. Các thiết lập cục bộ sẽ bị xóa và bạn phải ghép đôi lại với máy tính.
 
@@ -129,7 +129,7 @@ vẫn miễn phí và mã nguồn mở. Tiền mua giúp duy trì việc ký mã
 
 Bắt đầu chia sẻ trên máy chủ DeskPort, chọn máy chủ trong thiết bị khách DeskPort và phê duyệt thiết bị trên máy chủ. Dùng LAN hoặc VPN riêng như Tailscale; DeskPort không cung cấp dịch vụ tài khoản, máy tính được lưu trữ, chuyển tiếp hay đường hầm mạng. Địa chỉ nhập tay mới dùng cổng `48989`; nếu khác, hãy nhập cổng hiển thị trên trang chia sẻ của máy chủ.
 
-Lịch sử: thay đổi và giới hạn kiểm tra của [0.7.3](../releases/RELEASE_0.7.3.md), cùng việc thay gói của [0.7.4](../releases/RELEASE_0.7.4.md), được giữ trong ghi chú gốc; đây không phải kết quả xác nhận 2.9.0.
+Lịch sử: thay đổi và giới hạn kiểm tra của [0.7.3](../releases/RELEASE_0.7.3.md), cùng việc thay gói của [0.7.4](../releases/RELEASE_0.7.4.md), được giữ trong ghi chú gốc; đây không phải kết quả xác nhận 2.9.1.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -170,7 +170,7 @@ và [hướng dẫn trình duyệt](../BROWSER_ACCESS.md). AppImage kèm môi tr
 
 ### Cài đặt Linux theo bản phân phối
 
-Các hướng dẫn này dành cho hệ thống máy tính **x86_64** và các tệp tải xuống của bản **2.9.0**. Gói gốc cần glibc
+Các hướng dẫn này dành cho hệ thống máy tính **x86_64** và các tệp tải xuống của bản **2.9.1**. Gói gốc cần glibc
 2.39 trở lên. Đây là tệp tải từ dự án gốc, không phải gói từ kho của bản phân phối dành cho DeskPort; hãy cài các bản
 sau bằng cách tải và xác minh lại gói mới.
 
@@ -196,11 +196,11 @@ thấp hơn mức tối thiểu 6.6 của trình hỗ trợ hiển thị trên m
 
 | Bản phân phối / môi trường | Cách tải |
 | --- | --- |
-| Ubuntu 26.04 GNOME | DEB hoặc AppImage 2.9.0 |
+| Ubuntu 26.04 GNOME | DEB hoặc AppImage 2.9.1 |
 | Debian 13 KDE | DEB, cài bằng APT |
 | Fedora 44 KDE | RPM, cài bằng DNF |
 | Arch Linux KDE | Gói Arch cục bộ, cài bằng `pacman -U` |
-| Bazzite KDE | AppImage 2.9.0 |
+| Bazzite KDE | AppImage 2.9.1 |
 | Omarchy / Hyprland | Gói Arch cục bộ, cài bằng `pacman -U` |
 
 Mở terminal trong phiên làm việc bình thường. Mỗi chuỗi lệnh đối chiếu đúng tên tệp đã tải với `SHA256SUMS.txt` của
@@ -212,14 +212,14 @@ Trước khi nâng cấp, dừng chia sẻ và thoát hoàn toàn phiên bản D
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — tải, cài đặt, cập nhật và gỡ bỏ</summary>
 
-Tải [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb),
+Tải [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
 rồi mở terminal trong thư mục chứa tệp đó:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -236,14 +236,14 @@ xem [yêu cầu hiển thị thích ứng](../LINUX_ADAPTIVE_DISPLAY.md).
 <details>
 <summary><strong>Debian 13 KDE</strong> — tải, cài đặt, cập nhật và gỡ bỏ</summary>
 
-Tải [deskport_2.9.0_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport_2.9.0_amd64.deb),
+Tải [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
 rồi mở terminal trong thư mục tải xuống:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.0_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.0_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
 deskport
 ```
 
@@ -260,16 +260,16 @@ trước khi bắt đầu chia sẻ.
 <details>
 <summary><strong>Fedora 44 KDE</strong> — tải, cài đặt, cập nhật và gỡ bỏ</summary>
 
-Tải [deskport-2.9.0.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0.x86_64.rpm),
+Tải [deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm),
 rồi mở terminal trong thư mục tải xuống:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.0 ]; then
-  sudo dnf reinstall ./deskport-2.9.0.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
+  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.0.x86_64.rpm
+  sudo dnf install ./deskport-2.9.1.x86_64.rpm
 fi &&
 deskport
 ```
@@ -285,13 +285,13 @@ cách tải và xác minh gói RPM tương thích tiếp theo rồi cài bằng 
 <summary><strong>Arch Linux KDE</strong> — tải, cài đặt, cập nhật và gỡ bỏ</summary>
 
 Cập nhật toàn bộ hệ thống Arch như thường lệ, rồi tải
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst).
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
 Mở terminal trong thư mục tải xuống:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -306,18 +306,18 @@ dụng. Cài các gói tải về sau bằng `sudo pacman -U ./NEW_FILENAME.pkg.
 <summary><strong>Bazzite KDE</strong> — AppImage, khởi động và gỡ bỏ</summary>
 
 Tải
-[DeskPort-2.9.0-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage).
+[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage).
 Dừng chia sẻ và dùng **Quit** để thoát hoàn toàn mọi phiên bản DeskPort cũ; đóng cửa sổ có thể khiến nó vẫn chạy.
 Lưu AppImage mới vào vị trí cố định trước khi bật khởi động khi đăng nhập:
 
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.0-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.0-x86_64.AppImage &&
-./DeskPort-2.9.0-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.1-x86_64.AppImage &&
+./DeskPort-2.9.1-x86_64.AppImage
 ```
 
 Mở như bình thường; không cần xóa hay di chuyển các thư viện đi kèm. Nếu khởi động khi đăng nhập trỏ tới AppImage cũ,
@@ -336,13 +336,13 @@ màn hình; cài trong Distrobox không tạo tích hợp với màn hình của
 <summary><strong>Omarchy / Hyprland</strong> — gói Arch cục bộ và yêu cầu làm máy chủ</summary>
 
 Cập nhật hệ thống Omarchy như thường lệ, rồi tải
-[deskport-2.9.0-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.0/deskport-2.9.0-x86_64.pkg.tar.zst).
+[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
 Mở terminal trong thư mục tải xuống:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.0-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.0-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -361,13 +361,13 @@ về yêu cầu trình tổng hợp đang chạy, quyền chụp màn hình và 
 <details>
 <summary><strong>Phương án Flatpak</strong> — chỉ xem, trên hệ thống đã cấu hình Flatpak</summary>
 
-Tải [DeskPort-2.9.0-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-client-x86_64.flatpak),
+Tải [DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak),
 rồi mở terminal trong thư mục tải xuống:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.0-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.0-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -388,8 +388,8 @@ nếu đã bật. Gỡ gói vẫn giữ cài đặt DeskPort trong thư mục ho
 
 | Kênh | Trạng thái | Cài đặt |
 | --- | --- | --- |
-| Gói phát hành trên GitHub | 2.9.0 ổn định | Tải gói cho bản phân phối của bạn ở trên |
-| Nix flake của dự án | 2.9.0 ổn định | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| Gói phát hành trên GitHub | 2.9.1 ổn định | Tải gói cho bản phân phối của bạn ở trên |
+| Nix flake của dự án | 2.9.1 ổn định | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | Công thức đã thử; việc phát hành bị chặn do tạm ngừng đăng ký tài khoản mới | [Tự dựng công thức trên máy](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | Đã gửi [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) để xem xét; chưa hợp nhất | Dùng flake của dự án cho đến khi được đưa vào |
 | Kho chính thức Arch / Flathub | Chưa có | Dùng tệp từ bản phát hành; Flatpak chỉ để xem |
@@ -422,7 +422,7 @@ Nguồn: [Moonlight](https://moonlight-stream.org/),
 Giới hạn nền tảng hiện tại của DeskPort được liệt kê ở trên; bảng này không ngụ ý tính năng ngang bằng trên mọi hệ
 điều hành hay lợi thế hiệu năng đã đo.
 
-Xem [ghi chú phát hành 2.9.0](../releases/RELEASE_2.9.0.md), [kiến trúc](../ARCHITECTURE.md) và [lộ trình](../ROADMAP.md).
+Xem [ghi chú phát hành 2.9.1](../releases/RELEASE_2.9.1.md), [kiến trúc](../ARCHITECTURE.md) và [lộ trình](../ROADMAP.md).
 
 ## Dựng và chạy trên Linux
 

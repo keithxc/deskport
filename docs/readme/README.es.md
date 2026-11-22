@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.0 estable](https://github.com/keithxc/deskport/releases/tag/v2.9.0)** · [2.9.0](../releases/RELEASE_2.9.0.md)
+> **[2.9.1 estable](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
 >
 > Empareja un cliente DeskPort con un host DeskPort. La vinculación de dispositivos de DeskPort es incompatible con Sunshine original en el host y con Moonlight original en el cliente. Los paquetes completos del host incluyen la versión de Sunshine adaptada para DeskPort.
 
@@ -40,9 +40,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.0"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.0-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
-  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk"><img alt="Android 2.9.0 APK" src="https://img.shields.io/badge/Android-2.9.0%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
+  <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
@@ -90,12 +90,12 @@ Los paquetes exactos de macOS 2.9.0 superaron Developer ID, notarización de App
 
 | Plataforma | Función | Estado de la versión | Descarga |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Visor + host + pantalla virtual nativa | **2.9.0 estable**; firmas Developer ID, notarización de Apple y Gatekeeper tras extraer el ZIP verificados | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg) |
-| Linux x86_64 | Visor + host; espacio de trabajo virtual adaptativo en hosts KWin, Mutter y Hyprland compatibles | **2.9.0 estable**: DEB, RPM, Arch, AppImage, archivo portable y Nix | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.0) · [guía de instalación](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Solo visor | **2.9.0 estable**, Freedesktop Platform 25.08 | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.0) |
+| macOS Apple Silicon, macOS 26+ | Visor + host + pantalla virtual nativa | **2.9.1 estable**; requiere firma Developer ID y notarización de Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
+| Linux x86_64 | Visor + host; espacio de trabajo virtual adaptativo en hosts KWin, Mutter y Hyprland compatibles | **2.9.1 estable**: DEB, RPM, Arch, AppImage, archivo portable y Nix | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [guía de instalación](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Solo visor | **2.9.1 estable**, Freedesktop Platform 25.08 | [Versión](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
 | iPhone / iPad, iOS/iPadOS 15+ | Solo cliente | App Store; las compilaciones más recientes se prueban por separado en TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
-| Android 8.0+ | Solo cliente | **2.9.0 (67)** · Prueba cerrada de Google Play en curso | [Descargar APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) |
-| Windows x64 | Visor + host + pantalla virtual | **2.9.0 estable**; Setup con host, ZIP portable solo como visor; aplicación e instalador sin firma | [Instalador](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-windows-x64-portable-full.zip) |
+| Android 8.0+ | Solo cliente | **2.9.1 (71)** · Prueba cerrada de Google Play en curso | [Descargar APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
+| Windows x64 | Visor + host + pantalla virtual | **2.9.1 estable**; Setup con host, ZIP portable solo como visor; aplicación e instalador sin firma | [Instalador](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
 | Linux ARM64 / Mac Intel | No cualificado | Sin paquete de versión verificado | — |
 
 > **Aviso sobre antivirus en Windows:** Es posible que algún antivirus marque los componentes auxiliares de DeskPort para Windows como un falso positivo.
@@ -113,16 +113,16 @@ Una definición de código fuente o una compilación exitosa por sí solas no co
 
 ## Instalación
 
-**macOS:** Abre el [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-macos-arm64.dmg),
+**macOS:** Abre el [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg),
 arrastra DeskPort a Aplicaciones y ábrelo. Concede los permisos de Grabación de pantalla y
 Accesibilidad para usar las funciones de host. No se necesitan Nix ni Homebrew.
 
-**Linux:** Elige el [paquete 2.9.0](https://github.com/keithxc/deskport/releases/tag/v2.9.0)
+**Linux:** Elige el [paquete 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
 para tu sistema y sigue la [guía de instalación](../LINUX_PACKAGES.md),
-incluidos los permisos de entrada del host. Con Nix: `nix run --refresh github:keithxc/deskport/v2.9.0`.
-Flatpak solo permite visualizar. Los recursos de la versión incluyen [sumas de verificación SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt) y un [informe de verificación](https://github.com/keithxc/deskport/releases/download/v2.9.0/VERIFICATION.txt).
+incluidos los permisos de entrada del host. Con Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
+Flatpak solo permite visualizar. Los recursos de la versión incluyen [sumas de verificación SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) y un [informe de verificación](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
 
-**Android 2.9.0 (67)** · ~~$4.99~~ · Hasta que termine la prueba cerrada de Google Play, el [APK](https://github.com/keithxc/deskport/releases/download/v2.9.0/DeskPort-2.9.0-67.apk) está disponible temporalmente en GitHub. Los clientes móviles son de código cerrado. Aquí solo se distribuye el instalador.
+**Android 2.9.1 (71)** · ~~$4.99~~ · Hasta que termine la prueba cerrada de Google Play, el [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) está disponible temporalmente en GitHub. Los clientes móviles son de código cerrado. Aquí solo se distribuye el instalador.
 
 La compilación 63 usa la misma clave de firma que Google Play. Al actualizar a una versión posterior de Play se conservan los equipos vinculados y los ajustes. Si instalaste la compilación 62 de GitHub, debes desinstalarla antes de instalar la 63. Se borrarán los ajustes locales y tendrás que volver a vincular los equipos.
 
@@ -133,7 +133,7 @@ el hardware de pruebas y el desarrollo continuo.
 
 Inicia Compartir en el host DeskPort, selecciónalo en el cliente DeskPort y aprueba el dispositivo en el host. Usa una LAN o tu propia VPN, como Tailscale; DeskPort no ofrece cuentas, escritorios alojados, relés ni túneles de red. Las nuevas direcciones manuales usan el puerto `48989`; si es distinto, indica el que aparece en la página de compartir del host.
 
-Historial: los cambios y límites de verificación de [0.7.3](../releases/RELEASE_0.7.3.md) y los paquetes de reemplazo de [0.7.4](../releases/RELEASE_0.7.4.md) se conservan en sus notas originales; no son resultados de validación de 2.9.0.
+Historial: los cambios y límites de verificación de [0.7.3](../releases/RELEASE_0.7.3.md) y los paquetes de reemplazo de [0.7.4](../releases/RELEASE_0.7.4.md) se conservan en sus notas originales; no son resultados de validación de 2.9.1.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -154,12 +154,12 @@ los paquetes nativos mantienen su requisito de glibc 2.39.
 
 ### Disponibilidad en repositorios de Linux
 
-Para instalar o actualizar 2.9.0, sigue la [guía de Linux](../LINUX_PACKAGES.md) y los [pasos por distribución del README en inglés](../../README.md#linux-installation-by-distribution). Cierra por completo la aplicación anterior antes de actualizar y comprueba el paquete con [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.0/SHA256SUMS.txt). Flatpak solo permite visualizar.
+Para instalar o actualizar 2.9.1, sigue la [guía de Linux](../LINUX_PACKAGES.md) y los [pasos por distribución del README en inglés](../../README.md#linux-installation-by-distribution). Cierra por completo la aplicación anterior antes de actualizar y comprueba el paquete con [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt). Flatpak solo permite visualizar.
 
 | Canal | Estado | Instalación |
 | --- | --- | --- |
-| Paquetes de versión en GitHub | 2.9.0 estable | Descarga arriba el paquete para tu distribución |
-| Flake de Nix upstream | 2.9.0 estable | `nix run --refresh github:keithxc/deskport/v2.9.0` |
+| Paquetes de versión en GitHub | 2.9.1 estable | Descarga arriba el paquete para tu distribución |
+| Flake de Nix upstream | 2.9.1 estable | `nix run --refresh github:keithxc/deskport/v2.9.1` |
 | AUR `deskport-bin` | Receta probada; publicación bloqueada por la pausa en el registro de cuentas nuevas | [Compila la receta localmente](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) enviado para revisión; sin fusionar | Usa el flake upstream hasta su inclusión |
 | Repositorios oficiales de Arch / Flathub | No listado | Usa las descargas de la versión; Flatpak es solo visor |
@@ -195,7 +195,7 @@ Fuentes: [Moonlight](https://moonlight-stream.org/),
 Los límites de plataforma actuales de DeskPort se indican arriba; esta tabla no implica
 paridad de funciones en todos los sistemas operativos ni una ventaja de rendimiento medida.
 
-Consulta las [notas de la versión 2.9.0](../releases/RELEASE_2.9.0.md),
+Consulta las [notas de la versión 2.9.1](../releases/RELEASE_2.9.1.md),
 la [arquitectura](../ARCHITECTURE.md) y la [hoja de ruta](../ROADMAP.md).
 
 ## Compilar y ejecutar en Linux
