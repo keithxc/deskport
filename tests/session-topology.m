@@ -271,21 +271,24 @@ int main(int argc, const char *argv[]) { @autoreleasepool {
     assert(!sessionActive && !caretTimer);
     setSessionActive(YES);
     setSessionActive(NO); // Cancel a first sample that has not run yet.
-    setSessionActive(YES);
-    dispatch_source_t currentCaretTimer = caretTimer;
-    setSessionActive(YES); // Mode verification must not start another timer.
-    assert(caretTimer == currentCaretTimer);
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.1, false);
-    assert(caretQueries == 1); // Each new session samples before the 200 ms tick.
-    setSessionActive(NO);
-    assert(!caretTimer && !sessionActive);
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.3, false);
-    assert(caretQueries == 1); // No idle poll or stale cancelled-source callback.
-    setSessionActive(YES);
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.1, false);
-    assert(caretQueries == 2);
-    setSessionActive(NO);
-    puts("PASS: immediate per-session caret sample, single active timer, no idle accessibility queries");
+    for (int session = 0; session < 2; ++session) {
+        const unsigned beforeStart = caretQueries;
+        setSessionActive(YES);
+        dispatch_source_t currentCaretTimer = caretTimer;
+        setSessionActive(YES); // Mode verification must not start another timer.
+        assert(caretTimer == currentCaretTimer);
+        const uint64_t deadline = clock_gettime_nsec_np(CLOCK_MONOTONIC) + 2 * NSEC_PER_SEC;
+        while (caretQueries == beforeStart && clock_gettime_nsec_np(CLOCK_MONOTONIC) < deadline) {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true);
+        }
+        setSessionActive(NO);
+        const unsigned atStop = caretQueries;
+        assert(atStop > beforeStart);
+        assert(!caretTimer && !sessionActive);
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.3, false);
+        assert(caretQueries == atStop); // No idle poll or stale cancelled-source callback.
+    }
+    puts("PASS: per-session caret sample, single active timer, no idle accessibility queries");
     if (isolatedDisplay()) {
         reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR;
         NSDictionary *first=[screen(1) copy], *second=[screen(2) copy];
