@@ -79,6 +79,11 @@ public:
     // Empty when accepted (including queued restoration), otherwise a fixed diagnostic code.
     QString displayResizeRejection(int width, int height, int scale, int sequence, int policy = 0) const;
     virtual bool resizeDisplay(int width, int height, int scale, int sequence, int policy = 0);
+    bool displayParked() const { return m_DisplayParked; }
+    QString parkedDisplayOwner() const { return m_ParkedDisplayOwner; }
+    int parkedDisplayPolicy() const { return m_ParkedDisplayPolicy; }
+    void parkDisplay(const QString& owner, int policy);
+    void claimParkedDisplay(const QString& owner);
     void restoreDisplay();
     virtual void settleSessionDisplay(QObject* context, std::function<void(bool)> completion);
     virtual void sessionControl(const QJsonObject& request, QObject* context,
@@ -202,6 +207,16 @@ private:
     quint64 m_DisplayGeneration = 0;
     QJsonObject m_QueuedDisplayRequest;
     int m_DisplayScale = 1;
+    void unparkDisplay(bool restore);
+    static quint64 localHidEventCount();
+    bool m_DisplayParked = false;
+    bool m_ParkedInputArmed = false;
+    QString m_ParkedDisplayOwner;
+    int m_ParkedDisplayPolicy = -1;
+    int m_ParkedDisplayTimeoutMs = 30 * 60 * 1000;
+    quint64 m_ParkedHidCounter = 0;
+    QTimer m_ParkedDisplayTimer;
+    QTimer m_ParkedInputMonitor;
     QNetworkAccessManager m_Network;
     QSystemTrayIcon m_Tray;
     QMenu* m_Menu = nullptr;

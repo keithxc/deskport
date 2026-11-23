@@ -541,7 +541,7 @@ private slots:
     }
     void sessionAdmission_data() {
         QTest::addColumn<QString>("scenario");
-        for (const char* name : {"host-capture-loss", "host-explicit-stop", "recover-owner", "recover-before-eof", "recover-wrong-token", "recover-wrong-identity", "release-explicit", "client-window", "video-pause", "video-legacy", "video-stale", "video-intruder", "rate-live", "rate-recorded", "rate-legacy", "rate-intruder", "rate-invalid", "rate-saver-invalid", "rate-saver-conflict", "seamless-preflight-active-link"}) QTest::newRow(name) << QString(name);
+        for (const char* name : {"host-capture-loss", "host-explicit-stop", "recover-owner", "recover-before-eof", "recover-wrong-token", "recover-wrong-identity", "release-explicit", "release-suspended-same-peer", "release-suspended-disconnect-before-resize", "release-suspended-other-peer", "release-suspended-policy-change", "release-suspended-revoked", "release-suspended-invalid", "client-window", "video-pause", "video-legacy", "video-stale", "video-intruder", "rate-live", "rate-recorded", "rate-legacy", "rate-intruder", "rate-invalid", "rate-saver-invalid", "rate-saver-conflict", "seamless-preflight-active-link"}) QTest::newRow(name) << QString(name);
         QFile fixtures(qEnvironmentVariable("TEST_CORE_SESSION_CASES"));
         QVERIFY(fixtures.open(QIODevice::ReadOnly));
         for (const auto& entry : QJsonDocument::fromJson(fixtures.readAll()).object()["scenarios"].toArray()) {
@@ -630,6 +630,82 @@ private slots:
                 QCOMPARE(state()["takeovers"].toInt(), 0);
             }
             incoming.abort(); host.stop(); return;
+        }
+        if (scenario.startsWith("release-suspended-")) {
+            auto lifecycleQuery = query; lifecycleQuery["sessionLifecycle"] = 1;
+            connectPeer(old,"TEST_CERT_A","TEST_KEY_A"); send(old,lifecycleQuery);
+            const auto admitted = receive(old); QVERIFY(admitted["admitted"].toBool());
+            auto parkedResize = resize; parkedResize["width"] = 1332; parkedResize["height"] = 1600; parkedResize["scale"] = 2; parkedResize["displayPolicy"] = 0;
+            send(old,parkedResize); QVERIFY(!receive(old).contains("error"));
+            QSignalSpy resized(&host,&HostManager::displayResized);
+            if (scenario == "release-suspended-invalid") {
+                send(old,{{"type","session-release"},{"suspended","yes"}});
+                QTRY_VERIFY(state()["lease"].toString().isEmpty());
+                QVERIFY(!host.displayParked());
+                QTRY_VERIFY(!resized.isEmpty() && resized.first().first().toInt() < 0);
+                host.stop(); return;
+            }
+            send(old,{{"type","session-release"},{"suspended",true}});
+            QTRY_COMPARE_WITH_TIMEOUT(old.state(),QAbstractSocket::UnconnectedState,5000);
+            QTRY_VERIFY(state()["lease"].toString().isEmpty());
+            QVERIFY(host.displayParked());
+            QCOMPARE(host.parkedDisplayOwner(), fp(credential("TEST_CERT_A")));
+            QCOMPARE(host.parkedDisplayPolicy(), 0);
+#ifdef Q_OS_MACOS
+            QTRY_VERIFY(QFile::exists(dir.path()+"/host/display-parked"));
+#endif
+            QTest::qWait(400);
+            QCOMPARE(resized.size(), 0);
+            if (scenario == "release-suspended-revoked") {
+                manager.revoke(fp(credential("TEST_CERT_A")));
+                QTRY_VERIFY(!manager.busy());
+                QVERIFY(!host.displayParked());
+                QTRY_VERIFY(!resized.isEmpty() && resized.first().first().toInt() < 0);
+                host.stop(); return;
+            }
+            if (scenario == "release-suspended-other-peer") {
+                connectPeer(incoming,"TEST_CERT_C","TEST_KEY_C"); send(incoming,lifecycleQuery);
+                const auto next = receive(incoming);
+                QVERIFY(next["admitted"].toBool());
+                QVERIFY(!next["busy"].toBool());
+                QCOMPARE(state()["takeovers"].toInt(), 0);
+                QVERIFY(!host.displayParked());
+                QCOMPARE(resized.size(), 1);
+                QVERIFY(resized.first().first().toInt() < 0);
+                incoming.abort(); host.stop(); return;
+            }
+            connectPeer(incoming,"TEST_CERT_A","TEST_KEY_A"); send(incoming,lifecycleQuery);
+            const auto resumed = receive(incoming);
+            QVERIFY(resumed["admitted"].toBool());
+            QCOMPARE(state()["takeovers"].toInt(), 0);
+            QCOMPARE(resized.size(), 0);
+            if (scenario == "release-suspended-disconnect-before-resize") {
+                send(incoming,{{"type","session-release"}});
+                QTRY_VERIFY(state()["lease"].toString().isEmpty());
+                QVERIFY(!host.displayParked());
+                QTRY_VERIFY(!resized.isEmpty() && resized.first().first().toInt() < 0);
+                host.stop(); return;
+            }
+            auto nextResize = parkedResize;
+            if (scenario == "release-suspended-policy-change") nextResize["displayPolicy"] = 2;
+            send(incoming,nextResize);
+            const auto reply = receive(incoming);
+            QVERIFY2(!reply.contains("error"), qPrintable(reply["error"].toString()));
+            QVERIFY(!host.displayParked());
+            if (scenario == "release-suspended-same-peer") {
+                QCOMPARE(resized.size(), 1);
+                QCOMPARE(resized.first().first().toInt(), 1);
+            } else {
+                QCOMPARE(resized.size(), 2);
+                QVERIFY(resized.at(0).first().toInt() < 0);
+                QCOMPARE(resized.at(1).first().toInt(), 1);
+            }
+            resized.clear();
+            send(incoming,{{"type","session-release"}});
+            QTRY_VERIFY(state()["lease"].toString().isEmpty());
+            QVERIFY(!host.displayParked());
+            QTRY_VERIFY(!resized.isEmpty() && resized.first().first().toInt() < 0);
+            host.stop(); return;
         }
         if (scenario.startsWith("recover-") || scenario == "release-explicit") {
             auto lifecycleQuery = query; lifecycleQuery["sessionLifecycle"] = 1;

@@ -96,7 +96,7 @@ struct PeerManager::Link : QObject {
     bool videoRate = false, ratePending = false;
     int rateSequence = 0;
     QJsonObject rateResult;
-    bool lifecycle = false, recovering = false;
+    bool lifecycle = false, recovering = false, parkDisplayOnFail = false;
     int displaySequence = 0;
     qint64 lastDisplayRequest = 0;
     bool localReady = false, remoteReady = false, ended = false;

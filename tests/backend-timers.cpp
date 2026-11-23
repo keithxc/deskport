@@ -17,7 +17,12 @@ public:
     explicit TimerTestHost(const QString& directory) : HostManager(nullptr, directory, false) {}
     bool running() const override { return online; }
     bool canPair() const override { return online; }
-    bool adaptiveDisplayAvailable() const override { return false; }
+    bool adaptiveDisplayAvailable() const override { return adaptive; }
+    bool resizeDisplay(int width, int height, int scale, int sequence, int policy = 0) override {
+        Q_UNUSED(width); Q_UNUSED(height); Q_UNUSED(scale); Q_UNUSED(policy);
+        if (sequence < 0) ++restores;
+        return true;
+    }
     void sessionControl(const QJsonObject&, QObject*, std::function<void(QJsonObject)> done) override {
         ++releases; done({{"status", true}});
     }
@@ -30,8 +35,8 @@ public:
         const bool okay = action != "stop" || !failStop;
         done({{"status", okay}, {"state", closed ? "closed" : "connected"}, {"code", okay ? "" : "unavailable"}});
     }
-    bool online = true, closed = false, failStop = false, holdStatus = false;
-    int polls = 0, releases = 0;
+    bool online = true, adaptive = false, closed = false, failStop = false, holdStatus = false;
+    int polls = 0, releases = 0, restores = 0;
     std::function<void(QJsonObject)> pendingStatus;
 };
 
@@ -245,6 +250,28 @@ private slots:
         manager.m_Peers = {};
         emit manager.changed();
         QVERIFY(!manager.m_EndpointRefresh.isActive());
+    }
+    void parkedDisplayExpiryAndClaim() {
+        QTemporaryDir directory;
+        QVERIFY(directory.isValid());
+        TimerTestHost host(directory.path());
+        QVERIFY(!host.m_ParkedDisplayTimer.isActive());
+        QVERIFY(!host.m_ParkedInputMonitor.isActive());
+        host.adaptive = true;
+        host.m_DisplayWidth = 1332;
+        host.m_DisplayHeight = 1600;
+        host.m_ParkedDisplayTimeoutMs = 120;
+        host.parkDisplay("peer-a", 0);
+        QVERIFY(host.displayParked());
+        QVERIFY(host.m_ParkedDisplayTimer.isActive());
+        QVERIFY(!host.m_ParkedInputMonitor.isActive());
+        host.m_ParkedInputMonitor.start(500);
+        host.claimParkedDisplay("peer-a");
+        QVERIFY(!host.m_ParkedInputMonitor.isActive());
+        QVERIFY(host.m_ParkedDisplayTimer.isActive());
+        QTRY_VERIFY_WITH_TIMEOUT(!host.displayParked(), 1000);
+        QVERIFY(!host.m_ParkedDisplayTimer.isActive());
+        QTRY_COMPARE_WITH_TIMEOUT(host.restores, 1, 1000);
     }
     void unattendedExternalMarkers() {
 #ifndef Q_OS_MACOS

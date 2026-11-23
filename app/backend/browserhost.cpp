@@ -206,6 +206,7 @@ void BrowserHost::begin(const QJsonObject& input, Completion done) {
             for (const auto& waiter : waiters) if (waiter) waiter(success());
             emit changed(); done(reserved); return;
         }
+        if (m_Host->displayParked()) m_DisplayOwned = true;
         if (m_Cancelled) { end([done](QJsonObject) { done(failure("cancelled")); }); return; }
         if (!m_Host->adaptiveDisplayAvailable()) { beginMedia(body, epoch, done); return; }
         m_Operation = true; m_DisplayOwned = true;

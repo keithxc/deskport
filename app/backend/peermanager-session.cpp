@@ -167,7 +167,9 @@ void PeerManager::acquireSession(Link* link, const QString& snapshot, bool takeo
         }
         // The management response means all old streams have stopped and joined.
         // Their input contexts are gone before any new display lease is admitted.
-        const bool hadDisplay = m_DisplayLink;
+        const bool settleParked = m_Host->displayParked() &&
+            (!alive || m_Host->parkedDisplayOwner() != alive->fingerprint);
+        const bool hadDisplay = m_DisplayLink || settleParked;
         auto oldSession = m_SessionLink;
         auto oldDisplay = m_DisplayLink;
         auto oldClipboard = m_ClipboardLink;
@@ -187,6 +189,7 @@ void PeerManager::acquireSession(Link* link, const QString& snapshot, bool takeo
             }
             m_SessionLink = alive; ++m_SessionEpoch;
             alive->sessionAdmitted = true;
+            m_Host->claimParkedDisplay(alive->fingerprint);
             alive->lastDisplayRequest = QDateTime::currentMSecsSinceEpoch();
             QJsonObject response{{"type", takeover ? DP_MESSAGE_SESSION_RESULT : DP_MESSAGE_SESSION_STATE},
                                  {"busy", false}, {"admitted", true}};

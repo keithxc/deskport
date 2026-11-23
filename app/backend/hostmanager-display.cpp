@@ -124,8 +124,19 @@ QString HostManager::displayResizeRejection(int width, int height, int scale, in
 
 bool HostManager::resizeDisplay(int width, int height, int scale, int sequence, int policy) {
     if (!displayResizeRejection(width, height, scale, sequence, policy).isEmpty()) return false;
+    const bool wasParked = m_DisplayParked && sequence > 0;
+    const int parkedPolicy = m_ParkedDisplayPolicy;
+    unparkDisplay(false);
     if (m_DisplaySequence) {
         // Finish the previous session's restoration before a new client takes over.
+        m_QueuedDisplayRequest = {{"width", width}, {"height", height}, {"scale", scale},
+                                  {"seq", sequence}, {"policy", policy}};
+        return true;
+    }
+    if (wasParked && policy != parkedPolicy) {
+        // Native display helpers forbid changing topology policy mid-session.
+        // Settle the parked session first, then apply the new policy via the queue.
+        if (!resizeDisplay(sharingWidth(), sharingHeight(), 1, -1)) return false;
         m_QueuedDisplayRequest = {{"width", width}, {"height", height}, {"scale", scale},
                                   {"seq", sequence}, {"policy", policy}};
         return true;
@@ -174,7 +185,68 @@ void HostManager::settleSessionDisplay(QObject* context, std::function<void(bool
     restoreDisplay();
 }
 
+quint64 HostManager::localHidEventCount() {
+#ifdef Q_OS_MACOS
+    static constexpr CGEventType types[] = {
+        kCGEventMouseMoved, kCGEventLeftMouseDown, kCGEventRightMouseDown,
+        kCGEventOtherMouseDown, kCGEventScrollWheel, kCGEventKeyDown, kCGEventFlagsChanged
+    };
+    quint64 total = 0;
+    for (const auto type : types)
+        total += CGEventSourceCounterForEventType(kCGEventSourceStateHIDSystemState, type);
+    return total;
+#else
+    return 0;
+#endif
+}
+
+void HostManager::parkDisplay(const QString& owner, int policy) {
+    if (owner.isEmpty() || !virtualDisplayActive() || m_Stopping || m_DisplaySequence != 0) {
+        restoreDisplay();
+        return;
+    }
+    if (m_CaretMonitor) m_CaretMonitor->stop();
+#ifdef Q_OS_MACOS
+    if (m_Display.state() == QProcess::Running)
+        m_Display.write("{\"parked\":true}\n");
+#endif
+    m_DisplayParked = true;
+    m_ParkedDisplayOwner = owner;
+    m_ParkedDisplayPolicy = policy;
+    m_ParkedDisplayTimer.start(m_ParkedDisplayTimeoutMs);
+    m_ParkedInputArmed = false;
+#ifdef Q_OS_MACOS
+    if (!m_Isolated && QGuiApplication::platformName() == QStringLiteral("cocoa"))
+        m_ParkedInputMonitor.start(500);
+    else m_ParkedInputMonitor.stop();
+#else
+    m_ParkedInputMonitor.stop();
+#endif
+    emit changed();
+}
+
+void HostManager::claimParkedDisplay(const QString& owner) {
+    if (!m_DisplayParked || m_ParkedDisplayOwner != owner) return;
+    // Stop local HID polling before the resumed client's input channel starts.
+    m_ParkedInputArmed = false;
+    m_ParkedInputMonitor.stop();
+    m_ParkedDisplayTimer.start(m_ParkedDisplayTimeoutMs);
+}
+
+void HostManager::unparkDisplay(bool restore) {
+    const bool wasParked = m_DisplayParked;
+    m_DisplayParked = false;
+    m_ParkedInputArmed = false;
+    m_ParkedDisplayOwner.clear();
+    m_ParkedDisplayPolicy = -1;
+    m_ParkedDisplayTimer.stop();
+    m_ParkedInputMonitor.stop();
+    if (wasParked && restore) restoreDisplay();
+    else if (wasParked) emit changed();
+}
+
 void HostManager::restoreDisplay() {
+    unparkDisplay(false);
     m_QueuedDisplayRequest = {}; // A disconnected queued controller must never take over later.
     // Video renegotiation retains the controller. Restore promptly on actual
     // disconnect, while allowing an already pending helper request to settle.

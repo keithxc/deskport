@@ -475,6 +475,17 @@ int main(int argc, const char *argv[]) {
                 NSData *data = [[NSString stringWithUTF8String:line] dataUsingEncoding:NSUTF8StringEncoding];
                 id request = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                 if ([request isKindOfClass:[NSDictionary class]]) {
+                    if ([request[@"parked"] boolValue]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (sessionActive) {
+                                ++caretGeneration;
+                                if (caretTimer) dispatch_source_cancel(caretTimer);
+                                caretTimer = nil;
+                                resetCaret();
+                            }
+                        });
+                        continue;
+                    }
                     NSInteger width = [request[@"width"] integerValue], height = [request[@"height"] integerValue];
                     NSInteger scale = [request[@"scale"] integerValue];
                     int sequence = [request[@"seq"] intValue];

@@ -49,14 +49,29 @@ print(json.dumps(initial), flush=True)
 if os.environ.get("DESKPORT_TEST_MODE") == "display-late-fail":
     select.select([sys.stdin], [], [], 1.5)
     sys.exit(4)
+session_active = False
+session_policy = 0
 for line in sys.stdin:
     request = json.loads(line)
+    if request.get("parked"):
+        pathlib.Path(os.environ["DESKPORT_DISPLAY_STATE_DIR"]).joinpath("display-parked").touch()
+        continue
     if os.environ.get("DESKPORT_TEST_MODE") == "gnome-slow": time.sleep(6)
     if "DESKPORT_TEST_HYPR_POLICY" in os.environ:
         pathlib.Path(os.environ["DESKPORT_DISPLAY_STATE_DIR"]).joinpath("last-display-request.json").write_text(json.dumps(request))
         request.update(outputName="DeskPort-Hyprland", active=request.get("session", True))
         if os.environ["DESKPORT_TEST_HYPR_POLICY"] == "0": request["layoutWarning"] = True
         if os.environ["DESKPORT_TEST_HYPR_POLICY"] == "legacy" and request.get("displayPolicy") != 0: request["error"] = "Legacy helper only accepts policy ID 0"
+    elif request.get("session", True):
+        req_policy = request.get("displayPolicy", 0)
+        if session_active and req_policy != session_policy:
+            request["error"] = "Invalid or changed session display policy"
+        else:
+            session_active = True
+            session_policy = req_policy
+    else:
+        session_active = False
+        session_policy = 0
     if os.environ.get("DESKPORT_TEST_MODE") == "restore-slow" and not request.get("session", True): time.sleep(0.8)
     if os.environ.get("DESKPORT_TEST_MODE") == "restore-reject" and not request.get("session", True):
         time.sleep(0.2)

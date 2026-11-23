@@ -669,9 +669,15 @@ void PeerManager::receive(Link* link, const QJsonObject& message) {
         return;
     }
     if (type == DP_MESSAGE_SESSION_RELEASE) {
-        if (link == m_SessionLink && link->lifecycle && link->sessionAdmitted)
+        if (link == m_SessionLink && link->lifecycle && link->sessionAdmitted &&
+            (!message.contains("suspended") || message["suspended"].isBool())) {
+            if (message["suspended"].toBool() && m_DisplayLink == link &&
+                link->displayControl && !link->displaySequence &&
+                m_Revoking != link->fingerprint) {
+                link->parkDisplayOnFail = true;
+            }
             fail(link, tr("Client disconnected"));
-        else fail(link, tr("Session release requires the admitted controller"));
+        } else fail(link, tr("Session release requires the admitted controller"));
         return;
     }
     if (type == DP_MESSAGE_SESSION_STATUS || type == DP_MESSAGE_SESSION_TAKEOVER) {
@@ -1080,14 +1086,24 @@ void PeerManager::fail(Link* link, const QString& message) {
         link->socket->abort(); link->deleteLater();
         return; // Background reachability failures must not replace UI status.
     }
-    if (m_SessionLink == link) {
+    const bool wasSessionLink = m_SessionLink == link;
+    if (wasSessionLink) {
         m_SessionLink = nullptr; ++m_SessionEpoch;
         const auto lease = link->sessionLease;
         m_Host->sessionControl({{"action", "release"}, {"lease", lease}}, this, [](QJsonObject) {});
     }
     if (m_ClipboardLink == link) { m_ClipboardLink = nullptr; ++m_SessionEpoch; }
     if (link->clipboardHelper) link->clipboardHelper->closeWriteChannel();
-    if (m_DisplayLink == link) { m_DisplayLink = nullptr; ++m_SessionEpoch; m_Host->restoreDisplay(); }
+    if (m_DisplayLink == link) {
+        m_DisplayLink = nullptr; ++m_SessionEpoch;
+        if (link->parkDisplayOnFail)
+            m_Host->parkDisplay(link->fingerprint, link->displayPolicy);
+        else m_Host->restoreDisplay();
+    } else if (wasSessionLink && !link->parkDisplayOnFail &&
+               m_Host->displayParked() && m_Host->parkedDisplayOwner() == link->fingerprint) {
+        ++m_SessionEpoch;
+        m_Host->restoreDisplay();
+    }
     if (m_Link == link) m_Link = nullptr;
     if (visible) m_Status = message;
     connect(link->socket, &QSslSocket::disconnected, link, &QObject::deleteLater);

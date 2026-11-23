@@ -156,6 +156,7 @@ void PeerManager::beginRevocation(const QString& fp) {
     if (m_SessionLink && m_SessionLink->fingerprint == fp) fail(m_SessionLink, tr("Device access removed"));
     if (m_ClipboardLink && m_ClipboardLink->fingerprint == fp) fail(m_ClipboardLink, tr("Device access removed"));
     if (m_DisplayLink && m_DisplayLink->fingerprint == fp) fail(m_DisplayLink, tr("Device access removed"));
+    if (m_Host->displayParked() && m_Host->parkedDisplayOwner() == fp) m_Host->restoreDisplay();
     m_Revoking = fp; m_TrustInFlight = true;
     m_Host->updatePeerTrust(trustId(fp), QString(), QSslCertificate(), true);
     emit changed();

@@ -135,6 +135,23 @@ HostManager::HostManager(QObject *parent, const QString &directory, bool interac
         start(m_RequestedWidth, m_RequestedHeight);
         if (!running()) scheduleRecovery();
     });
+    if (m_Isolated) {
+        const int testParkMs = qEnvironmentVariableIntValue("DESKPORT_TEST_PARK_TIMEOUT_MS");
+        if (testParkMs > 0) m_ParkedDisplayTimeoutMs = testParkMs;
+    }
+    m_ParkedDisplayTimer.setSingleShot(true);
+    connect(&m_ParkedDisplayTimer, &QTimer::timeout, this, [this] { unparkDisplay(true); });
+    connect(&m_ParkedInputMonitor, &QTimer::timeout, this, [this] {
+        if (!m_DisplayParked) { m_ParkedInputMonitor.stop(); return; }
+        const auto current = localHidEventCount();
+        if (!m_ParkedInputArmed) {
+            m_ParkedHidCounter = current;
+            m_ParkedInputArmed = true;
+            m_ParkedInputMonitor.start(1000);
+            return;
+        }
+        if (current != m_ParkedHidCounter) unparkDisplay(true);
+    });
     m_UnattendedMonitor.setInterval(10000);
     connect(&m_UnattendedMonitor, &QTimer::timeout, this, &HostManager::refreshUnattended);
     connect(&m_UnattendedWatcher, &QFileSystemWatcher::directoryChanged, this, &HostManager::refreshUnattended);
@@ -902,6 +919,7 @@ void HostManager::stop() {
     beginStop(available() ? tr("Sharing is off") : tr("The bundled DeskPort host is missing. Repair the installation to enable sharing."));
 }
 void HostManager::beginStop(const QString &status) {
+    unparkDisplay(false);
     if(m_CaretMonitor) m_CaretMonitor->stop();
     m_DisplaySequence = 0; m_QueuedDisplayRequest = {}; ++m_DisplayGeneration;
     if (m_Stopping) return;
