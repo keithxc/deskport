@@ -18,7 +18,7 @@ inline int refineFrameRate(std::int64_t nowMs, std::int64_t lastChangeMs, int ce
 // refreshed every kSaverIdleMs. Resolution and the negotiated frame rate are
 // unchanged.
 constexpr int kSaverContentFps = 8;
-constexpr int kSaverInteractiveFps = 16;
+constexpr int kSaverInteractiveFps = 32;
 constexpr std::int64_t kSaverIdleMs = 5000;
 // Like zero-hertz screen sharing, repeat after changes before entering idle.
 // Packet size is only a convergence heuristic, not a decoder quality report:

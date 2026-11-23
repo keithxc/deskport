@@ -7,12 +7,12 @@
 namespace deskport::vt {
 inline thread_local bool completeSubmittedFrame = false;
 inline thread_local OSStatus completionError = noErr;
-// Only the host's data-saver encode call opts in; restore an outer scope on
-// every return path. Other native VideoToolbox submissions forward unchanged.
+// Only the host's data-saver or tail encode call opts in; restore an outer scope
+// on every return path. Other native VideoToolbox submissions forward unchanged.
 class ScopedFrameCompletion {
 public:
     explicit ScopedFrameCompletion(bool enabled) : previous(completeSubmittedFrame), previousError(completionError) {
-        completeSubmittedFrame = enabled;
+        completeSubmittedFrame = previous || enabled;
         completionError = noErr;
     }
     ~ScopedFrameCompletion() { completeSubmittedFrame = previous; completionError = previousError; }

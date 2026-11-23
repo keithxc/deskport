@@ -69,10 +69,15 @@ patch('src/video.cpp', '''          deskport_last_change_ms = std::chrono::durat
               std::chrono::steady_clock::now().time_since_epoch()).count();
           (deskport_saving ? deskport_change_candidate_ms : deskport_last_change_ms) = deskport_captured_ms;
           if (session->convert(*img)) {''')
-patch('src/video.cpp', '''      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
+patch('src/video.cpp', '''      last_encoded = std::chrono::steady_clock::now();
+      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
         BOOST_LOG(error) << "Could not encode video packet"sv;
         return;
-      }''', '''      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
+      }''', '''#ifdef __APPLE__
+      deskport::vt::ScopedFrameCompletion deskport_tail_completion(!images->peek());
+#endif
+      last_encoded = std::chrono::steady_clock::now();
+      if (encode(frame_nr++, *session, packets, channel_data, frame_timestamp)) {
         BOOST_LOG(error) << "Could not encode video packet"sv;
         return;
       }

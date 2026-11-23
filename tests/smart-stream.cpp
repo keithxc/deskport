@@ -406,7 +406,7 @@ int main() {
     deskport::SaverGate saverGate;
     assert(saverGate.admit(1000000,false) && !saverGate.admit(1124999,false) && saverGate.admit(1125000,false));
     assert(saverGate.admit(1130000,true) && !saverGate.admit(1254999,false) && saverGate.admit(1255000,false));
-    assert(saverGate.admit(2000000,false,true) && !saverGate.admit(2062499,false,true) && saverGate.admit(2062500,false,true));
+    assert(saverGate.admit(2000000,false,true) && !saverGate.admit(2031249,false,true) && saverGate.admit(2031250,false,true));
     deskport::FrameCadence saving(60);
     saving.saver = true;
     assert(saving.admit(20000000,true,false));  // a single change is not delayed

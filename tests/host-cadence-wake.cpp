@@ -198,17 +198,17 @@ int main() {
     assert(cadence.readyUs(1125000) == 1375000); // Actual input changes idle floor.
     deskport::SaverGate gate;
     assert(gate.admit(1000000, false, true));
-    assert(gate.readyUs(1010000, true) == 1062500);
-    assert(gate.readyUs(1020000, false) == 1062500); // Expiry cannot postpone.
-    assert(gate.admit(1062500, false, false));
-    assert(gate.readyUs(1070000, false) == 1187500);
-    assert(gate.readyUs(1080000, true) == 1125000); // New input can accelerate.
-    assert(gate.readyUs(1090000, false) == 1125000);
+    assert(gate.readyUs(1010000, true) == 1031250);
+    assert(gate.readyUs(1020000, false) == 1031250); // Expiry cannot postpone.
+    assert(gate.admit(1031250, false, false));
+    assert(gate.readyUs(1040000, false) == 1156250);
+    assert(gate.readyUs(1050000, true) == 1062500); // New input can accelerate.
+    assert(gate.readyUs(1060000, false) == 1062500);
     deskport::SaverGate expired;
     assert(expired.admit(1000000, false, true));
     // Preserve the slot offered by admit itself, even when there was no
     // intermediate readyUs query before the interactive interval expired.
-    assert(expired.admit(1070000, false, false));
+    assert(expired.admit(1040000, false, false));
 
     PipeWait pipe;
     pipe.pipewire.ready = true; // A frame already ready needs no further signal.

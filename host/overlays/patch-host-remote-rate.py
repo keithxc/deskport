@@ -226,13 +226,19 @@ patch('src/stream.cpp', '''        size_t ratecontrol_packets_in_1ms = std::giga
           session->deskport_remote.store(remote ? 1 : 0, std::memory_order_relaxed);
           BOOST_LOG(info) << "DeskPort network path: " << (remote ? "remote" : "local");
         }
-        const bool deskport_paced = session->config.monitor.deskport_smart &&
+        const bool deskport_remote_paced = session->config.monitor.deskport_smart &&
             session->deskport_remote.load(std::memory_order_relaxed) == 1;
-        if (deskport_paced) {
+        if (deskport_remote_paced) {
           if (auto kbps = session->mail->event<int>("deskport_rate_kbps")->pop(0ms)) session->deskport_pace_kbps = *kbps;
-          ratecontrol_packets_in_1ms = deskport::remotePacketsPerMs(
-              session->deskport_pace_kbps > 0 ? session->deskport_pace_kbps : session->config.monitor.bitrate,
-              blocksize, deskport::liveSaver.load() == 1);
+        }
+        const int deskport_pace_target = deskport_remote_paced && session->deskport_pace_kbps > 0
+            ? session->deskport_pace_kbps
+            : session->config.monitor.bitrate;
+        // Pace UDP bursts on both Wi-Fi LAN and remote paths instead of 800 Mbps
+        // 64-packet microbursts that overflow AP queues when Data Saver is off.
+        ratecontrol_packets_in_1ms = deskport::remotePacketsPerMs(
+            deskport_pace_target, blocksize, deskport_remote_paced && deskport::liveSaver.load() == 1);
+        if (deskport_remote_paced) {
           // Actual video payload rate, once a second, for the rate controller.
           const auto sent_now = std::chrono::steady_clock::now();
           session->deskport_sent_bytes += payload.size();
@@ -246,7 +252,7 @@ patch('src/stream.cpp', '''        size_t ratecontrol_packets_in_1ms = std::giga
           }
         }''')
 patch('src/stream.cpp', '''        send_batch_size = std::min<size_t>(64, send_batch_size);''', '''        send_batch_size = std::min<size_t>(64, send_batch_size);
-        if (deskport_paced) send_batch_size = std::min(send_batch_size, ratecontrol_packets_in_1ms);''')
+        send_batch_size = std::min(send_batch_size, ratecontrol_packets_in_1ms);''')
 
 # Data saver from the launch/resume request (absent from older clients: off).
 patch('src/rtsp.h', '''    bool deskport_smart = true;''', '''    bool deskport_smart = true;
@@ -279,7 +285,7 @@ patch('src/video.cpp', '''      while (invalidate_ref_frames_events->peek()) {
       const bool deskport_idr_only = dynamic_cast<avcodec_encode_session_t *>(session.get()) != nullptr;
       while (invalidate_ref_frames_events->peek()) {
         if (auto frames = invalidate_ref_frames_events->pop(0ms)) {
-          if (!smart || !deskport_idr_only || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) {
+          if (!deskport_idr_only || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) {
             session->invalidate_ref_frames(frames->first, frames->second);
             // FFmpeg answers invalidation with an IDR too. With data saver,
             // bypass the idle wait and refine as for an explicit request;
@@ -293,7 +299,7 @@ patch('src/video.cpp', '''      while (invalidate_ref_frames_events->peek()) {
         if (idr_events->peek()) {
           idr_events->pop();
           // A coalesced explicit request cannot cancel accepted invalidation.
-          if (!smart || deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) requested_idr_frame = true;
+          if (deskport_key_gate.allow(deskport_key_ms, deskport_last_rtt)) requested_idr_frame = true;
         }
         // Follow a recovery key frame with the short full-rate refinement: a
         // still picture otherwise sends nothing for up to 5 s (data saver), so
