@@ -2351,6 +2351,7 @@ void Session::execInternal()
     QElapsedTimer activityClock; activityClock.start();
     ResumeWatchdog resumeWatchdog;
     bool initialRateChecked = false;
+    bool gamepadAttached = SDL_NumJoysticks() > 0;
     for (;;) {
         if (!m_ThreadedExec && serviceEvents.elapsed() >= 20) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
@@ -2381,7 +2382,7 @@ void Session::execInternal()
                 if (focused) m_InputHandler->notifyFocusGained();
             }
         }
-        m_AudioMuted = activity.audioMuted(m_Preferences->remoteAudio, m_Preferences->muteOnFocusLoss);
+        updateAudioPlayback(activity.audioMuted(m_Preferences->remoteAudio, m_Preferences->muteOnFocusLoss));
         CanvasBridge::inputEnabled(activity.available());
         if (m_AdaptiveDisplay && LiHasVideoKeyFrame()) {
             const bool paused = activity.videoPaused(activityClock.elapsed());
@@ -2424,20 +2425,20 @@ void Session::execInternal()
         if (m_AdaptiveDisplay && m_AdaptiveDisplay->takeLeaveFullscreen()) leaveFullscreen();
         if (applyPendingDesktopAdjustment()) goto DispatchDeferredCleanup;
         if (activity.available() && checkAdaptiveResize()) goto DispatchDeferredCleanup;
-        if (!m_ThreadedExec && CanvasBridge::owns(m_Window)) {
-            if (!SDL_PollEvent(&event)) {
-                // On macOS/Windows the worker's hidden SDL window receives no native
-                // pointer events; wait directly on the shell IPC socket so mouse and
-                // keyboard input wake this thread immediately instead of sleeping 20 ms.
-                const int waitMs = SDL_NumJoysticks() > 0 ? 2 : 10;
-                const bool waited = CanvasBridge::waitForIpc(waitMs);
-                CanvasBridge::synchronize(m_Window);
-                if (!SDL_PollEvent(&event)) {
-                    if (waited || !SDL_WaitEventTimeout(&event, waitMs)) {
-                        presence.runCallbacks();
-                        continue;
-                    }
-                }
+        const bool canvasViewer = CanvasBridge::owns(m_Window);
+        const int idleWaitMs = CanvasBridge::idleWaitTimeout(gamepadAttached, activity.available(), canvasViewer);
+        bool waitWithQt = !m_ThreadedExec && canvasViewer;
+#if SDL_VERSION_ATLEAST(2, 0, 18) && !defined(STEAM_LINK)
+        // A hidden native window has no pointer input to pump. Service Qt while
+        // idle there too; visible native windows retain SDL's native event wait.
+        waitWithQt |= !m_ThreadedExec && !activity.available();
+#endif
+        if (waitWithQt) {
+            // Qt keeps servicing IPC, timers and input while an SDL watch wakes
+            // the same wait for any pushed event. Never wait on two queues in turn.
+            if (!CanvasBridge::waitForEvent(&event, idleWaitMs)) {
+                presence.runCallbacks();
+                continue;
             }
         }
         else {
@@ -2451,7 +2452,9 @@ void Session::execInternal()
         // NB: This behavior was introduced in SDL 2.0.16, but had a few critical
         // issues that could cause indefinite timeouts, delayed joystick detection,
         // and other problems.
-        if (!SDL_WaitEventTimeout(&event, 20)) {
+        // Visible native windows retain their existing 20 ms Qt service cadence.
+        // Hidden main-thread owners use the unified Qt/SDL wait above.
+        if (!SDL_WaitEventTimeout(&event, idleWaitMs)) {
             presence.runCallbacks();
             continue;
         }
@@ -2473,6 +2476,10 @@ void Session::execInternal()
         }
 #endif
         }
+        // Only hotplug changes the controller polling budget. Never enumerate
+        // joysticks for each frame, pointer motion or controller input event.
+        if (event.type == SDL_JOYDEVICEADDED || event.type == SDL_JOYDEVICEREMOVED)
+            gamepadAttached = SDL_NumJoysticks() > 0;
         if (CanvasBridge::isWakeEvent(event)) {
             continue;
         }
@@ -2900,6 +2907,7 @@ void Session::execInternal()
     }
 
 DispatchDeferredCleanup:
+    updateAudioPlayback(true);
     CanvasBridge::inputEnabled(false);
     setViewerReady(false);
     m_Clipboard.reset();

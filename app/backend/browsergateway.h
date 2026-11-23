@@ -79,6 +79,7 @@ public:
 signals:
     void changed();
 private:
+    friend class BackendTimerTests;
     struct Connection;
     struct Session {
         QString id, csrf, pairingId;
@@ -110,6 +111,7 @@ private:
     void forward(Connection* connection, const QString& key, const QString& action, QJsonObject body);
     void release(const QString& key);
     void cleanup();
+    void updateCleanupTimer();
     bool loadCredentials(const QList<QHostAddress>& addresses);
     bool loadCertificate();
     bool addListener(const QHostAddress& address);
@@ -134,6 +136,7 @@ private:
     QList<QSslCertificate> m_Certificates;
     QSslKey m_PrivateKey;
     QTimer m_Cleanup;
+    QTimer m_AddressRefresh;
     QString m_Directory, m_Error;
     QByteArray m_Secret;
     qint64 m_LastStep = -1; // A code is accepted once; replay of an older step is refused.
@@ -142,7 +145,5 @@ private:
     QTimer m_CodeTick;
     QStringList m_Urls, m_Hosts;
     int m_Port = 0;
-    int m_AddressTicks = 0;
-    static constexpr int AddressRefreshTicks = 10;
     static constexpr int MaxCertificateNames = 32;
 };

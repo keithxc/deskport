@@ -101,6 +101,10 @@ static CGRect fakeBounds(unsigned i) { return CGRectMake([screen(i)[@"x"] intVal
 #define CGVirtualDisplayMode DPTestVirtualDisplayMode
 #define CGVirtualDisplaySettings DPTestVirtualDisplaySettings
 #define CGVirtualDisplayDescriptor DPTestVirtualDisplayDescriptor
+// Caret timer tests must never query the user's accessibility tree.
+static unsigned caretQueries;
+static BOOL caretTrusted(void) { ++caretQueries; return NO; }
+#define AXIsProcessTrusted caretTrusted
 #define main unusedDisplayHelperMain
 #include "../host/macos/display-helper.m"
 #undef main
@@ -147,7 +151,7 @@ static NSMutableDictionary *entry(BOOL enabled,BOOL main,int x) {
 }
 static void reset(void) {
     savedTopology=nil; preserveTopologyJournal=NO; recoveryOwnedDisplay=0; rejectCommit=NO; enableAvailable=YES; modeWrites=0; sessionModeFallbacks=0; lastCommitOption=0;
-    discardDisplay(); sessionActive=NO; restoreAttempt=0; lastWidth=0; lastHeight=0; lastScale=1; ++generation;
+    discardDisplay(); setSessionActive(NO); restoreAttempt=0; lastWidth=0; lastHeight=0; lastScale=1; ++generation;
     virtualDisplayCreations=0; lastDescriptorProductID=0; lastDescriptorSizeMM=CGSizeZero; rejectApplySettings=NO;
     screens=[@{@1:entry(YES,YES,0),@2:entry(YES,NO,1920),@3:entry(NO,NO,3840),@9:entry(YES,NO,5760)} mutableCopy];
     [NSFileManager.defaultManager removeItemAtPath:topologyPath() error:nil];
@@ -211,8 +215,77 @@ static void topologyFixtures(NSString *path) {
         printf("PASS fixture: %s policy=%d, UUID reconnect, hotplug, failed transaction and journal reload\n",[fixture[@"name"] UTF8String],policy);
     }
 }
+static void caretFixtures(void) {
+    const uint64_t start = 100 * NSEC_PER_SEC;
+    const uint64_t ms = NSEC_PER_MSEC;
+    NSDictionary *invalid = @{@"valid":@NO};
+    NSDictionary *valid = @{@"valid":@YES,@"x":@0.25,@"y":@0.5};
+    resetCaret();
+    assert(sendCaret(invalid, start));
+    assert(!sendCaret([invalid mutableCopy], start + 200 * ms));
+    assert(!sendCaret(invalid, start + 10000 * ms)); // Invalid has no keepalive.
+    assert(sendCaret(valid, start + 10200 * ms)); // Validity changes immediately.
+    assert(!sendCaret([valid mutableCopy], start + 10400 * ms));
+    assert(!sendCaret(valid, start + 10599 * ms));
+    assert(sendCaret(valid, start + 10600 * ms)); // Exact 400 ms deadline.
+    assert(!sendCaret(valid, start + 10800 * ms));
+    assert(sendCaret(valid, start + 11000 * ms)); // Deadline follows each send.
+    NSMutableDictionary *moved = [valid mutableCopy];
+    moved[@"x"] = @0.250001;
+    assert(sendCaret(moved, start + 11001 * ms)); // No coordinate rounding.
+    moved[@"y"] = @0.500001;
+    assert(sendCaret(moved, start + 11002 * ms)); // Cached dictionary is a copy.
+    assert(!sendCaret([moved copy], start + 11202 * ms));
+    assert(sendCaret(moved, start + 11402 * ms));
+    assert(sendCaret(invalid, start + 11403 * ms)); // Clear stale geometry now.
+    assert(!sendCaret(invalid, start + 21403 * ms));
+    setSessionActive(YES);
+    assert(!lastCaret && !caretRefreshDue);
+    assert(sendCaret(invalid, start + 21404 * ms));
+    setSessionActive(NO);
+    assert(!lastCaret && !caretRefreshDue);
+    setSessionActive(YES);
+    assert(sendCaret(valid, start + 21405 * ms));
+    dispatch_source_t timer = caretTimer;
+    setSessionActive(YES);
+    assert(caretTimer == timer && !sendCaret(valid, start + 21406 * ms));
+    discardDisplay();
+    assert(!lastCaret && !caretRefreshDue);
+    assert(sendCaret(valid, start + 21407 * ms)); // Same value on a new display.
+    screens = [@{@9:entry(YES,NO,0)} mutableCopy];
+    display = [DPTestVirtualDisplay new];
+    assert(applyMode(1920, 1080, 1));
+    assert(!lastCaret && !caretRefreshDue);
+    assert(sendCaret(valid, start + 21408 * ms)); // Same value after a mode change.
+    assert(sendCaret(valid, start + 22008 * ms)); // A delayed poll sends once.
+    assert(!sendCaret(valid, start + 22009 * ms)); // No catch-up burst.
+    discardDisplay();
+    setSessionActive(NO);
+    puts("PASS: exact caret changes, single invalid notification, monotonic 400 ms keepalive and transition resets");
+}
 int main(int argc, const char *argv[]) { @autoreleasepool {
     testHome=[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+    caretFixtures();
+    // Starting, releasing and rapidly replacing a lease must own exactly one
+    // caret timer. The AX trust stub counts samples without reading any apps.
+    assert(!sessionActive && !caretTimer);
+    setSessionActive(YES);
+    setSessionActive(NO); // Cancel a first sample that has not run yet.
+    setSessionActive(YES);
+    dispatch_source_t currentCaretTimer = caretTimer;
+    setSessionActive(YES); // Mode verification must not start another timer.
+    assert(caretTimer == currentCaretTimer);
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.1, false);
+    assert(caretQueries == 1); // Each new session samples before the 200 ms tick.
+    setSessionActive(NO);
+    assert(!caretTimer && !sessionActive);
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.3, false);
+    assert(caretQueries == 1); // No idle poll or stale cancelled-source callback.
+    setSessionActive(YES);
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.1, false);
+    assert(caretQueries == 2);
+    setSessionActive(NO);
+    puts("PASS: immediate per-session caret sample, single active timer, no idle accessibility queries");
     if (isolatedDisplay()) {
         reset(); sessionDisplayPolicy=DP_DISPLAY_PRIMARY_MIRROR;
         NSDictionary *first=[screen(1) copy], *second=[screen(2) copy];

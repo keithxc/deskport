@@ -54,6 +54,22 @@ patch('src/video.cpp', '      const auto devices {display_device::enumerate_devi
       if (std::getenv("DESKPORT_CAPTURE_DISPLAY_FILE")) return true;
 #endif
       const auto devices {display_device::enumerate_devices()};''')
+# Context changes must reach an already-static SCK capture without waiting for
+# its watchdog. The bridge only enqueues a NULL lifecycle callback on each SCK
+# queue; image conversion and normal frame cadence are unchanged. Guard the
+# bridge on Apple even if the patched source is later reused by another build.
+for name, header in (('src/video.cpp', 'video.h'), ('src/input.cpp', 'input.h')):
+    include = f'#include "{header}"'
+    patch(name, include, include + '\n#ifdef __APPLE__\nextern "C" void DPNudgeCaptureLifecycle(void);\n#endif')
+
+for name, event in (
+    ('src/video.cpp', '    ref->capture_ctx_queue->raise(capture_ctx_t {images, config});'),
+    ('src/video.cpp', '      images->stop();\n      shutdown_event->raise(true);'),
+    ('src/video.cpp', '    capture_thread_ctx.capture_ctx_queue->stop();'),
+    ('src/input.cpp', '      mail::man->event<int>(mail::switch_display)->raise(keyCode - VK_F1);'),
+):
+    indent = event[:len(event) - len(event.lstrip())]
+    patch(name, event, event + '\n#ifdef __APPLE__\n' + indent + 'DPNudgeCaptureLifecycle();\n#endif')
 patch(hid, '#include <fstream>', '#include <fstream>\n#include "deskport-admitted-display.h"')
 patch(hid, '        const auto mode = CGDisplayCopyDisplayMode(display_id);', '''        if (std::getenv("DESKPORT_CAPTURE_DISPLAY_FILE")) {
           int width, height, scale;

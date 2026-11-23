@@ -17,7 +17,19 @@ void postEvent(int command) { SDL_Event event{}; event.type = SDL_USEREVENT; eve
 }
 SessionWorker::SessionWorker(QString endpoint, QString token, QString host, QString app)
     : m_Endpoint(endpoint),m_Token(token),m_Host(host),m_App(app) { resize(1120,760); }
+SessionWorker::~SessionWorker() { CanvasBridge::setDescriptionCallback(nullptr, {}); }
 void SessionWorker::send(QJsonObject message) { if (m_Socket.state()==QLocalSocket::ConnectedState && m_Socket.bytesToWrite()<16384) m_Socket.write(frame(message)); }
+void SessionWorker::sendCanvasDescription() {
+    if (!m_CanvasDirty || !CanvasBridge::enabled() || m_Socket.state() != QLocalSocket::ConnectedState) return;
+    // Keep the dirty bit until backpressure clears; bytesWritten otherwise
+    // avoids taking the Canvas lock or constructing a control snapshot.
+    if (m_Socket.bytesToWrite() >= 16384) return;
+    const auto value = CanvasBridge::description();
+    m_CanvasDirty = false;
+    if (m_CanvasSent && value == m_LastCanvas) return;
+    send({{"type","canvas"},{"value",value}});
+    m_LastCanvas = value; m_CanvasSent = true;
+}
 int SessionWorker::run() {
     QTimer traffic;
     connect(&traffic, &QTimer::timeout, this, [this] {
@@ -28,15 +40,13 @@ int SessionWorker::run() {
         }
     });
     traffic.start(1000);
-    QTimer canvas; QJsonObject lastCanvas;
-    connect(&canvas, &QTimer::timeout, this, [this, &lastCanvas] {
-        if (!CanvasBridge::enabled()) return;
-        const auto value = CanvasBridge::description();
-        if (value != lastCanvas) { send({{"type","canvas"},{"value",value}}); lastCanvas = value; }
+    CanvasBridge::setDescriptionCallback(this, [this] { m_CanvasDirty = true; sendCanvasDescription(); });
+    connect(&m_Socket, &QLocalSocket::bytesWritten, this, [this] {
+        if (m_CanvasDirty && m_Socket.bytesToWrite() < 16384) sendCanvasDescription();
     });
-    canvas.start(20);
     connect(&m_Socket,&QLocalSocket::connected,this,[this] {
         send({{"token",m_Token}});
+        sendCanvasDescription();
 
     });
     connect(&m_Socket,&QLocalSocket::readyRead,this,[this] {
@@ -51,18 +61,9 @@ int SessionWorker::run() {
         QTimer::singleShot(5000,qApp,[] { QCoreApplication::exit(1); });
     });
     m_Socket.setReadBufferSize(16385); m_Socket.connectToServer(m_Endpoint);
-    CanvasBridge::setIpcWaiter([this](int timeoutMs) {
-        if (m_Socket.state() != QLocalSocket::ConnectedState) return false;
-        if (m_Socket.bytesAvailable() > 0) {
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 2);
-            return true;
-        }
-        m_Socket.waitForReadyRead(timeoutMs);
-        return true;
-    });
     QTimer::singleShot(10000,this,[this] { if(m_Socket.state()!=QLocalSocket::ConnectedState) QCoreApplication::exit(1); });
     const auto result=QCoreApplication::exec();
-    CanvasBridge::setIpcWaiter({});
+    CanvasBridge::setDescriptionCallback(nullptr, {});
     // A forced IPC-loss exit must not free computers beneath a live SDL worker.
     if (!m_Session) delete m_Computers;
     m_Computers=nullptr;

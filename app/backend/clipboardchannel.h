@@ -4,6 +4,10 @@
 #include <QSslCertificate>
 #include <QSslKey>
 #include <QJsonObject>
+#include <atomic>
+#include <functional>
+
+class QEventLoop;
 
 // Transport owns no platform clipboard. The SDL/main thread exchanges bounded
 // snapshots with it; only one request can be outstanding and nothing is persisted.
@@ -30,4 +34,10 @@ private:
     QString m_Notice;
     bool m_Ready = false, m_Busy = false;
     int m_MaxText = 1024 * 1024;
+    // Unlike QThread interruption, this also latches a stop before run starts.
+    std::atomic<bool> m_Stopping{false};
+    // Published/retired under m_Mutex, before their worker-thread owners die.
+    QEventLoop* m_Loop = nullptr;
+    QObject* m_RequestTarget = nullptr;
+    std::function<void()> m_RequestWake;
 };

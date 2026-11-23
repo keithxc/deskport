@@ -44,11 +44,9 @@ void PeerManager::refreshEndpoints() {
     // still refreshed while an earlier one, such as a LAN IP, is unreachable.
     QVector<QPair<QString, QString>> targets;
     for (auto it = m_Peers.constBegin(); it != m_Peers.constEnd(); ++it) {
-        const auto peer = it.value().toObject();
-        const int port = peer["bindingPort"].toInt(48991);
-        if (peer["role"].toString() == "client" || !peer["ready"].toBool() || !peer["granted"].toBool() ||
-            port < 1 || port > 65535) continue;
-        for (const auto& address : peerAddresses(peer)) targets.append({it.key(), address});
+        for (const auto& address : refreshableAddresses(it.value().toObject())) {
+            targets.append({it.key(), address});
+        }
     }
     if (targets.isEmpty()) return;
     if (m_RefreshCursor >= targets.size()) m_RefreshCursor = 0;

@@ -45,7 +45,7 @@ private:
 
     static int renderThread(void* context);
 
-    void handleVsync(int timeUntilNextVsyncMillis);
+    bool handleVsync(int timeUntilNextVsyncMillis);
 
     void enqueueFrameForRenderingAndUnlock(AVFrame* frame);
 
@@ -55,6 +55,8 @@ private:
 
     void captureSnapshot(AVFrame* frame, bool report);
 
+    void snapshotThread();
+
     QQueue<AVFrame*> m_RenderQueue;
     QQueue<AVFrame*> m_PacingQueue;
     QQueue<int> m_PacingQueueHistory;
@@ -63,6 +65,7 @@ private:
     QWaitCondition m_RenderQueueNotEmpty;
     QWaitCondition m_PacingQueueNotEmpty;
     QWaitCondition m_VsyncSignalled;
+    bool m_VsyncPending = false; // Protected by m_FrameQueueLock.
     SDL_Thread* m_RenderThread;
     SDL_Thread* m_VsyncThread;
     std::atomic<bool> m_Stopping;
@@ -70,6 +73,13 @@ private:
     // Converts an occasional frame for transition backdrops off the render path.
     // Joined before the decoder and its hardware device are released.
     std::thread m_SnapshotWorker;
+    // Never nest this lock with m_FrameQueueLock or hold it during conversion,
+    // callbacks, frame release, or join. Busy includes the pending frame.
+    QMutex m_SnapshotLock;
+    QWaitCondition m_SnapshotAvailable;
+    AVFrame* m_SnapshotFrame = nullptr;
+    bool m_SnapshotReport = false;
+    bool m_SnapshotStopping = false;
     std::atomic<bool> m_SnapshotBusy{false};
     bool m_SnapshotReported = false;
     Uint32 m_LastPresentationSnapshot = 0;

@@ -4,8 +4,94 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <utility>
+#include <vector>
 
 namespace deskport {
+// A generation, sampled before inspecting mailboxes, closes the gap between
+// checking several sources and sleeping. Notifications never consume payloads.
+class CadenceWake {
+public:
+    using Clock = std::chrono::steady_clock;
+    explicit CadenceWake(std::shared_ptr<CadenceWake> alsoNotify = {})
+        : combined(std::move(alsoNotify)) {}
+    std::uint64_t generation() {
+        std::lock_guard lock(mutex);
+        return serial;
+    }
+    void notify() {
+        {
+            std::lock_guard lock(mutex);
+            ++serial;
+        }
+        cv.notify_all();
+        if (combined) combined->notify();
+    }
+    bool waitUntil(std::uint64_t observed, Clock::time_point deadline) {
+        std::unique_lock lock(mutex);
+        return cv.wait_until(lock, deadline, [&] { return serial != observed; });
+    }
+private:
+    const std::shared_ptr<CadenceWake> combined;
+    std::mutex mutex;
+    std::condition_variable cv;
+    std::uint64_t serial = 0;
+};
+
+// The mailbox owner holds its existing lock during subscription/notification.
+// Weak ownership avoids retaining encoders after teardown or reinitialization.
+class CadenceListeners {
+public:
+    void watch(const std::shared_ptr<CadenceWake>& wake) {
+        for (auto it = listeners.begin(); it != listeners.end();) {
+            auto current = it->lock();
+            if (!current) it = listeners.erase(it);
+            else if (current == wake) return;
+            else ++it;
+        }
+        listeners.emplace_back(wake);
+    }
+    void notify() {
+        for (auto it = listeners.begin(); it != listeners.end();) {
+            if (auto wake = it->lock()) { wake->notify(); ++it; }
+            else it = listeners.erase(it);
+        }
+    }
+private:
+    std::vector<std::weak_ptr<CadenceWake>> listeners;
+};
+
+// Only capture lifecycle, real activity and controls subscribe here. Ordinary
+// image arrivals notify their own encoder, avoiding cross-session polling.
+// A PipeWire snapshot waits for frames or controls. Its pacing sleep waits
+// only for controls, so early producer frames stay buffered until their slot.
+inline auto pipewireFrameOrControl = std::make_shared<CadenceWake>();
+inline auto captureWake = std::make_shared<CadenceWake>(pipewireFrameOrControl);
+class CadenceControls {
+public:
+    void watch(const std::shared_ptr<CadenceWake>& wake) {
+        std::lock_guard lock(mutex);
+        listeners.watch(wake);
+    }
+    void notify() {
+        std::lock_guard lock(mutex);
+        listeners.notify();
+        captureWake->notify();
+    }
+private:
+    std::mutex mutex;
+    CadenceListeners listeners;
+};
+inline CadenceControls cadenceControls;
+// Synchronous capture and encode share one thread. Its next encode slot drives
+// PipeWire's idle deadline; asynchronous capture keeps the native idle limit.
+inline thread_local std::chrono::steady_clock::time_point captureDeadline =
+    std::chrono::steady_clock::time_point::max();
+inline thread_local bool pipewireControlTicks = false;
 // Exact comparison of visible plane bytes: padding changes are not screen changes.
 inline bool samePlane(const unsigned char* a, std::size_t aStride,
                       const unsigned char* b, std::size_t bStride,
@@ -59,6 +145,9 @@ public:
         const auto period = 1000000 / target;
         nextFrame = std::max(nextFrame + period, nowUs + period - 1000);
         return true;
+    }
+    std::int64_t readyUs(std::int64_t nowUs) const {
+        return target == ceiling ? nowUs : std::max(nowUs, nextFrame - 1000);
     }
 private:
     int ceiling, target, episodes = 0;

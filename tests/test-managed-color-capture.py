@@ -106,6 +106,8 @@ finally:
             resources['helper_exited'] = child.poll() is not None
             assert resources['helper_exited']
         restored = sorted(json.loads(sp.check_output([binary], text=True)))
+        resources['topology_before'] = baseline
+        resources['topology_after'] = restored
         resources['topology_restored'] = baseline is not None and restored == baseline
         assert resources['topology_restored'], 'display membership/mode/layout changed'
         print('Owned helper exited; display topology verified restored', flush=True)

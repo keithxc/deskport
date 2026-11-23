@@ -16,6 +16,7 @@
 #include <QThread>
 #include <QThreadPool>
 #include <QCoreApplication>
+#include <QDeadlineTimer>
 
 #include <random>
 #include <vector>
@@ -35,161 +36,178 @@ static bool outsideDiscoveryScope(const NvComputer* host)
 }
 
 
-class PcMonitorThread : public QThread
-{
-    Q_OBJECT
-
 #define TRIES_BEFORE_OFFLINING 2
 #define POLLS_PER_APPLIST_FETCH 10
 
-public:
-    PcMonitorThread(NvComputer* computer)
-        : m_Computer(computer)
-    {
-        setObjectName("Polling thread for " + computer->name);
+PcMonitorThread::PcMonitorThread(NvComputer* computer)
+    : m_Computer(computer)
+{
+    setObjectName("Polling thread for " + computer->name);
+}
+
+PcMonitorThread::~PcMonitorThread()
+{
+    requestInterruption();
+    wait();
+}
+
+void PcMonitorThread::requestInterruption()
+{
+    QMutexLocker lock(&m_WaitMutex);
+    // Unlike QThread's flag, this also remembers a stop before start().
+    m_StopRequested = true;
+    QThread::requestInterruption();
+    m_WaitCondition.wakeAll();
+}
+
+bool PcMonitorThread::stopRequested()
+{
+    QMutexLocker lock(&m_WaitMutex);
+    return m_StopRequested || isInterruptionRequested();
+}
+
+bool PcMonitorThread::waitForNextPoll()
+{
+    QMutexLocker lock(&m_WaitMutex);
+    const QDeadlineTimer deadline(3000);
+    // Test and publish the stop predicate under the wait mutex, so interruption
+    // cannot be lost between the predicate check and entering the wait.
+    while (!m_StopRequested && !isInterruptionRequested() && !deadline.hasExpired()) {
+        m_WaitCondition.wait(&m_WaitMutex, deadline);
+    }
+    return !m_StopRequested && !isInterruptionRequested();
+}
+
+// Probes one endpoint without touching shared state, so several endpoints
+// can be checked concurrently.
+QSharedPointer<NvComputer> PcMonitorThread::probeComputer(NvAddress address)
+{
+    NvHTTP http(address, 0, m_Computer->serverCert);
+
+    QString serverInfo;
+    try {
+        serverInfo = http.getServerInfo(NvHTTP::NvLogLevel::NVLL_NONE, true);
+    } catch (...) {
+        return {};
     }
 
-private:
-    // Probes one endpoint without touching shared state, so several endpoints
-    // can be checked concurrently.
-    QSharedPointer<NvComputer> probeComputer(NvAddress address)
-    {
-        NvHTTP http(address, 0, m_Computer->serverCert);
+    auto newState = QSharedPointer<NvComputer>::create(http, serverInfo);
 
-        QString serverInfo;
-        try {
-            serverInfo = http.getServerInfo(NvHTTP::NvLogLevel::NVLL_NONE, true);
-        } catch (...) {
-            return {};
-        }
-
-        auto newState = QSharedPointer<NvComputer>::create(http, serverInfo);
-
-        // Ensure the machine that responded is the one we intended to contact
-        if (m_Computer->uuid != newState->uuid) {
-            qInfo() << "Found unexpected PC" << newState->name << "looking for" << m_Computer->name;
-            return {};
-        }
-        return newState;
+    // Ensure the machine that responded is the one we intended to contact
+    if (m_Computer->uuid != newState->uuid) {
+        qInfo() << "Found unexpected PC" << newState->name << "looking for" << m_Computer->name;
+        return {};
     }
+    return newState;
+}
 
-    // Checks every endpoint at once and keeps the highest-priority one that
-    // answered, so an unreachable LAN entry costs one timeout, not one per
-    // address, while still winning whenever it is reachable.
-    bool pollAddresses(const QVector<NvAddress>& addresses, bool& changed)
-    {
-        std::vector<QSharedPointer<NvComputer>> results(addresses.size());
-        if (addresses.size() == 1) {
-            results[0] = probeComputer(addresses[0]);
-        } else {
-            QVector<QThread*> probes;
-            for (int i = 0; i < addresses.size(); i++) {
-                probes.append(QThread::create([this, &results, &addresses, i] {
-                    results[i] = probeComputer(addresses[i]);
-                }));
-                probes.last()->start();
-            }
-            for (auto probe : probes) {
-                probe->wait();
-                delete probe;
-            }
+// Checks every endpoint at once and keeps the highest-priority one that
+// answered, so an unreachable LAN entry costs one timeout, not one per
+// address, while still winning whenever it is reachable.
+bool PcMonitorThread::pollAddresses(const QVector<NvAddress>& addresses, bool& changed)
+{
+    std::vector<QSharedPointer<NvComputer>> results(addresses.size());
+    if (addresses.size() == 1) {
+        results[0] = probeComputer(addresses[0]);
+    } else {
+        QVector<QThread*> probes;
+        for (int i = 0; i < addresses.size(); i++) {
+            probes.append(QThread::create([this, &results, &addresses, i] {
+                results[i] = probeComputer(addresses[i]);
+            }));
+            probes.last()->start();
         }
-        for (const auto& result : results) {
-            if (result) {
-                changed = m_Computer->update(*result);
-                return true;
-            }
+        for (auto probe : probes) {
+            probe->wait();
+            delete probe;
         }
+    }
+    for (const auto& result : results) {
+        if (result) {
+            changed = m_Computer->update(*result);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool PcMonitorThread::updateAppList(bool& changed)
+{
+    NvHTTP http(m_Computer);
+
+    QVector<NvApp> appList;
+
+    try {
+        appList = http.getAppList();
+        if (appList.isEmpty()) {
+            return false;
+        }
+    } catch (...) {
         return false;
     }
 
-    bool updateAppList(bool& changed)
-    {
-        NvHTTP http(m_Computer);
+    QWriteLocker lock(&m_Computer->lock);
+    changed = m_Computer->updateAppList(appList);
+    return true;
+}
 
-        QVector<NvApp> appList;
-
-        try {
-            appList = http.getAppList();
-            if (appList.isEmpty()) {
-                return false;
+void PcMonitorThread::run()
+{
+    // Always fetch the applist the first time
+    int pollsSinceLastAppListFetch = POLLS_PER_APPLIST_FETCH;
+    while (!stopRequested()) {
+        bool stateChanged = false;
+        bool online = false;
+        bool wasOnline = m_Computer->state == NvComputer::CS_ONLINE;
+        for (int i = 0; i < (wasOnline ? TRIES_BEFORE_OFFLINING : 1) && !online; i++) {
+            if (stopRequested()) {
+                return;
             }
-        } catch (...) {
-            return false;
+
+            if (pollAddresses(m_Computer->uniqueAddresses(), stateChanged)) {
+                if (!wasOnline) {
+                    qInfo() << m_Computer->name << "is now online at" << m_Computer->activeAddress.toString();
+                }
+                online = true;
+            }
         }
 
-        QWriteLocker lock(&m_Computer->lock);
-        changed = m_Computer->updateAppList(appList);
-        return true;
-    }
+        // Check if we failed after all retry attempts
+        // Note: we don't need to acquire the read lock here,
+        // because we're on the writing thread.
+        if (!online && m_Computer->state != NvComputer::CS_OFFLINE) {
+            qInfo() << m_Computer->name << "is now offline";
+            m_Computer->state = NvComputer::CS_OFFLINE;
+            stateChanged = true;
+        }
 
-    void run() override
-    {
-        // Always fetch the applist the first time
-        int pollsSinceLastAppListFetch = POLLS_PER_APPLIST_FETCH;
-        while (!isInterruptionRequested()) {
-            bool stateChanged = false;
-            bool online = false;
-            bool wasOnline = m_Computer->state == NvComputer::CS_ONLINE;
-            for (int i = 0; i < (wasOnline ? TRIES_BEFORE_OFFLINING : 1) && !online; i++) {
-                if (isInterruptionRequested()) {
-                    return;
-                }
-
-                if (pollAddresses(m_Computer->uniqueAddresses(), stateChanged)) {
-                    if (!wasOnline) {
-                        qInfo() << m_Computer->name << "is now online at" << m_Computer->activeAddress.toString();
-                    }
-                    online = true;
-                }
-            }
-
-            // Check if we failed after all retry attempts
-            // Note: we don't need to acquire the read lock here,
-            // because we're on the writing thread.
-            if (!online && m_Computer->state != NvComputer::CS_OFFLINE) {
-                qInfo() << m_Computer->name << "is now offline";
-                m_Computer->state = NvComputer::CS_OFFLINE;
-                stateChanged = true;
-            }
-
-            // Grab the applist if it's empty or it's been long enough that we need to refresh
-            pollsSinceLastAppListFetch++;
-            if (m_Computer->state == NvComputer::CS_ONLINE &&
-                    m_Computer->pairState == NvComputer::PS_PAIRED &&
-                    (m_Computer->appList.isEmpty() || pollsSinceLastAppListFetch >= POLLS_PER_APPLIST_FETCH)) {
-                // Notify prior to the app list poll since it may take a while, and we don't
-                // want to delay onlining of a machine, especially if we already have a cached list.
-                if (stateChanged) {
-                    emit computerStateChanged(m_Computer);
-                    stateChanged = false;
-                }
-
-                if (updateAppList(stateChanged)) {
-                    pollsSinceLastAppListFetch = 0;
-                }
-            }
-
+        // Grab the applist if it's empty or it's been long enough that we need to refresh
+        pollsSinceLastAppListFetch++;
+        if (m_Computer->state == NvComputer::CS_ONLINE &&
+                m_Computer->pairState == NvComputer::PS_PAIRED &&
+                (m_Computer->appList.isEmpty() || pollsSinceLastAppListFetch >= POLLS_PER_APPLIST_FETCH)) {
+            // Notify prior to the app list poll since it may take a while, and we don't
+            // want to delay onlining of a machine, especially if we already have a cached list.
             if (stateChanged) {
-                // Tell anyone listening that we've changed state
                 emit computerStateChanged(m_Computer);
+                stateChanged = false;
             }
 
-            // Wait a bit to poll again, but do it in 100 ms chunks
-            // so we can be interrupted reasonably quickly.
-            // FIXME: QWaitCondition would be better.
-            for (int i = 0; i < 30 && !isInterruptionRequested(); i++) {
-                QThread::msleep(100);
+            if (updateAppList(stateChanged)) {
+                pollsSinceLastAppListFetch = 0;
             }
         }
+
+        if (stateChanged) {
+            // Tell anyone listening that we've changed state
+            emit computerStateChanged(m_Computer);
+        }
+
+        if (!waitForNextPoll()) {
+            return;
+        }
     }
-
-signals:
-   void computerStateChanged(NvComputer* computer);
-
-private:
-    NvComputer* m_Computer;
-};
+}
 
 ComputerManager::ComputerManager(StreamingPreferences* prefs, bool readOnly, const QString& targetHostId)
     : m_Prefs(prefs),
@@ -416,7 +434,7 @@ void ComputerManager::startPolling()
 
             MdnsPendingComputer* pendingComputer = new MdnsPendingComputer(m_MdnsServer, service);
             connect(pendingComputer, &MdnsPendingComputer::resolvedHost,
-                    this, &ComputerManager::handleMdnsServiceResolved);
+                    this, &ComputerManager::handleMdnsServiceResolved, Qt::DirectConnection);
             m_PendingResolution.append(pendingComputer);
         });
     }
@@ -464,6 +482,13 @@ void ComputerManager::startPollingComputer(NvComputer* computer)
 void ComputerManager::handleMdnsServiceResolved(MdnsPendingComputer* computer,
                                                 QVector<QHostAddress>& addresses)
 {
+    // The signal carries an address reference owned by computer. Keep delivery
+    // on the discovery thread and defer deletion until the emission returns.
+    Q_ASSERT(QThread::currentThread() == thread());
+    if (!m_PendingResolution.removeOne(computer)) {
+        return;
+    }
+
     QHostAddress v6Global = getBestGlobalAddressV6(addresses);
     bool added = false;
 
@@ -495,7 +520,6 @@ void ComputerManager::handleMdnsServiceResolved(MdnsPendingComputer* computer,
         }
     }
 
-    m_PendingResolution.removeOne(computer);
     computer->deleteLater();
 }
 

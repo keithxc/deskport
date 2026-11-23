@@ -44,18 +44,34 @@ float3 yuv_at(texture2d<float, access::read> image, int2 position, constant Para
 kernel void convert_p010(texture2d<float, access::read> image [[texture(0)]],
                          texture2d<float, access::write> luma [[texture(1)]],
                          texture2d<float, access::write> chroma [[texture(2)]],
-                         constant Parameters &p [[buffer(0)]], uint2 at [[thread_position_in_grid]]) {
+                         constant Parameters &p [[buffer(0)]], uint2 at [[thread_position_in_grid]],
+                         uint2 local [[thread_position_in_threadgroup]]) {
+    // Each 16x16 group converts its pixels once. Only the left halo crosses a
+    // tile: the last even column (14) samples column 15, never the next tile.
+    // Keep float precision and the original filter's expression/accumulation.
+    threadgroup float3 tile[16][17];
+    if (at.x < p.width && at.y < p.height) {
+        float3 value = yuv_at(image, int2(at), p);
+        tile[local.y][local.x+1] = value;
+        if (local.x == 0)
+            tile[local.y][0] = at.x == 0 ? value : yuv_at(image, int2(at)-int2(1,0), p);
+    }
+    // Partial groups must reach the barrier before inactive lanes exit.
+    threadgroup_barrier(mem_flags::mem_threadgroup);
     if (at.x >= p.width || at.y >= p.height) return;
-    float y = round(clamp(64.0f + 876.0f*yuv_at(image, int2(at), p).x, 64.0f, 940.0f));
+    float y = round(clamp(64.0f + 876.0f*tile[local.y][local.x+1].x, 64.0f, 940.0f));
     luma.write(float4(y * 64.0f / 65535.0f), at);
     if ((at.x & 1) || (at.y & 1)) return;
     // Horizontally left-cosited, vertically centered (the encoder's LEFT flag).
     // Low-pass around that location, rather than shifting chroma by half a pixel.
     float2 uv = float2(0.0f);
-    for (int dy = 0; dy < 2; ++dy)
-        uv += 0.125f*yuv_at(image, int2(at)+int2(-1,dy), p).yz +
-              0.250f*yuv_at(image, int2(at)+int2(0,dy), p).yz +
-              0.125f*yuv_at(image, int2(at)+int2(1,dy), p).yz;
+    for (uint dy = 0; dy < 2; ++dy) {
+        uint row = local.y + min(dy, p.height-1-at.y);
+        uint right = local.x+1 + min(1u, p.width-1-at.x);
+        uv += 0.125f*tile[row][local.x].yz +
+              0.250f*tile[row][local.x+1].yz +
+              0.125f*tile[row][right].yz;
+    }
     float2 code = round(clamp(512.0f + 896.0f*uv, 64.0f, 960.0f));
     chroma.write(float4(code * 64.0f / 65535.0f, 0.0f, 0.0f), at/2);
 }
@@ -67,6 +83,7 @@ kernel void convert_p010(texture2d<float, access::read> image [[texture(0)]],
 @property(nonatomic, strong) id<MTLCommandQueue> queue;
 @property(nonatomic, strong) id<MTLComputePipelineState> pipeline;
 @property(nonatomic) CVMetalTextureCacheRef cache;
+@property(nonatomic) NSUInteger cacheUses;
 @end
 @implementation DPColorConverter
 - (instancetype)init {
@@ -91,27 +108,36 @@ kernel void convert_p010(texture2d<float, access::read> image [[texture(0)]],
     if (!color || CVPixelBufferGetPixelFormatType(source) != kCVPixelFormatType_64RGBAHalf ||
         CVPixelBufferGetPixelFormatType(destination) != kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange ||
         width != CVPixelBufferGetWidth(destination) || height != CVPixelBufferGetHeight(destination)) return NO;
-    CVMetalTextureRef input = NULL, y = NULL, uv = NULL; BOOL success = NO;
-    if (CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, source, NULL, MTLPixelFormatRGBA16Float, width, height, 0, &input) != kCVReturnSuccess ||
-        CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, destination, NULL, MTLPixelFormatR16Unorm, width, height, 0, &y) != kCVReturnSuccess ||
-        CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, destination, NULL, MTLPixelFormatRG16Unorm,
-            CVPixelBufferGetWidthOfPlane(destination, 1), CVPixelBufferGetHeightOfPlane(destination, 1), 1, &uv) != kCVReturnSuccess) goto done;
-    {
-        uint32_t parameters[] = {(uint32_t)width, (uint32_t)height, color, 0};
-        id<MTLCommandBuffer> command = [_queue commandBuffer];
-        id<MTLComputeCommandEncoder> encoder = [command computeCommandEncoder];
-        if (!encoder) goto done;
-        [encoder setComputePipelineState:_pipeline];
-        [encoder setTexture:CVMetalTextureGetTexture(input) atIndex:0];
-        [encoder setTexture:CVMetalTextureGetTexture(y) atIndex:1];
-        [encoder setTexture:CVMetalTextureGetTexture(uv) atIndex:2];
-        [encoder setBytes:parameters length:sizeof(parameters) atIndex:0];
-        [encoder dispatchThreadgroups:MTLSizeMake((width+15)/16, (height+15)/16, 1) threadsPerThreadgroup:MTLSizeMake(16,16,1)];
-        [encoder endEncoding]; [command commit]; [command waitUntilCompleted];
-        success = command.status == MTLCommandBufferStatusCompleted;
+    BOOL success = NO;
+    @autoreleasepool {
+        CVMetalTextureRef input = NULL, y = NULL, uv = NULL;
+        if (CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, source, NULL, MTLPixelFormatRGBA16Float, width, height, 0, &input) != kCVReturnSuccess ||
+            CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, destination, NULL, MTLPixelFormatR16Unorm, width, height, 0, &y) != kCVReturnSuccess ||
+            CVMetalTextureCacheCreateTextureFromImage(NULL, _cache, destination, NULL, MTLPixelFormatRG16Unorm,
+                CVPixelBufferGetWidthOfPlane(destination, 1), CVPixelBufferGetHeightOfPlane(destination, 1), 1, &uv) != kCVReturnSuccess) goto done;
+        {
+            uint32_t parameters[] = {(uint32_t)width, (uint32_t)height, color, 0};
+            id<MTLCommandBuffer> command = [_queue commandBuffer];
+            id<MTLComputeCommandEncoder> encoder = [command computeCommandEncoder];
+            if (!encoder) goto done;
+            [encoder setComputePipelineState:_pipeline];
+            [encoder setTexture:CVMetalTextureGetTexture(input) atIndex:0];
+            [encoder setTexture:CVMetalTextureGetTexture(y) atIndex:1];
+            [encoder setTexture:CVMetalTextureGetTexture(uv) atIndex:2];
+            [encoder setBytes:parameters length:sizeof(parameters) atIndex:0];
+            [encoder dispatchThreadgroups:MTLSizeMake((width+15)/16, (height+15)/16, 1) threadsPerThreadgroup:MTLSizeMake(16,16,1)];
+            [encoder endEncoding]; [command commit]; [command waitUntilCompleted];
+            success = command.status == MTLCommandBufferStatusCompleted;
+        }
+    done:
+        if (input) CFRelease(input); if (y) CFRelease(y); if (uv) CFRelease(uv);
     }
-done:
-    if (input) CFRelease(input); if (y) CFRelease(y); if (uv) CFRelease(uv);
+    // Drain command/encoder texture references as well as the CV wrappers before
+    // reclaiming cached textures. Bound retention without flushing every frame.
+    if (++_cacheUses >= 60 || !success) {
+        CVMetalTextureCacheFlush(_cache, 0);
+        _cacheUses = 0;
+    }
     return success;
 }
 @end

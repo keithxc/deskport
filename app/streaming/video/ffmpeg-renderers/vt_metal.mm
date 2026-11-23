@@ -153,6 +153,7 @@ public:
           m_HwContext(nullptr),
           m_MetalLayer(nullptr),
           m_TextureCache(nullptr),
+          m_TextureCacheFramesUntilFlush(256),
           m_CscParamsBuffer(nullptr),
           m_VideoVertexBuffer(nullptr),
           m_OverlayTextures{},
@@ -530,7 +531,7 @@ public:
             return;
         }
 
-        std::array<CVMetalTextureRef, MAX_VIDEO_PLANES> cvMetalTextures;
+        std::array<CVMetalTextureRef, MAX_VIDEO_PLANES> cvMetalTextures{};
         size_t planes = getFramePlaneCount(frame);
         SDL_assert(planes <= MAX_VIDEO_PLANES);
 
@@ -572,6 +573,9 @@ public:
                     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                                  "CVMetalTextureCacheCreateTextureFromImage() failed: %d",
                                  err);
+                    for (size_t j = 0; j < i; j++) {
+                        CFRelease(cvMetalTextures[j]);
+                    }
                     return;
                 }
             }
@@ -675,6 +679,15 @@ public:
 
         // Wait for the command buffer to complete and free our CVMetalTextureCache references
         [commandBuffer waitUntilCompleted];
+
+        // Keep the dependency/lifetime wait above: software textures and the
+        // caller-owned frame cannot be reused until the GPU has finished.
+        // Count only mapped hardware frames; avoid per-frame clocks, timers or
+        // completion-handler work just to retire unused cache entries.
+        if (frame->format == AV_PIX_FMT_VIDEOTOOLBOX && --m_TextureCacheFramesUntilFlush == 0) {
+            CVMetalTextureCacheFlush(m_TextureCache, 0);
+            m_TextureCacheFramesUntilFlush = 256;
+        }
 
         [m_NextDrawable release];
         m_NextDrawable = nullptr;
@@ -951,6 +964,7 @@ private:
     AVBufferRef* m_HwContext;
     CAMetalLayer* m_MetalLayer;
     CVMetalTextureCacheRef m_TextureCache;
+    unsigned int m_TextureCacheFramesUntilFlush;
     id<MTLBuffer> m_CscParamsBuffer;
     id<MTLBuffer> m_VideoVertexBuffer;
     id<MTLTexture> m_OverlayTextures[Overlay::OverlayMax];

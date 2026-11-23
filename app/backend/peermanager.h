@@ -63,12 +63,14 @@ signals:
 protected:
     virtual qint64 nativeClipboardRevision() const;
 private:
+    friend class BackendTimerTests;
     void beginRevocation(const QString& fingerprint);
     void continueDeviceRemoval(bool success = true);
     QString m_RemovingDevice;
     QStringList m_RemovingFingerprints;
     struct Link;
     void attach(Link* link);
+    void updateTimers();
     void transportLost(Link* link);
     QTcpServer* createListener();
     void drain(Link* link);
@@ -103,6 +105,7 @@ private:
     Link* m_Link = nullptr;
     Link* m_RefreshLink = nullptr;
     int m_RefreshCursor = 0;
+    QTimer m_Watchdog, m_EndpointRefresh;
     Link* m_DisplayLink = nullptr;
     Link* m_SessionLink = nullptr;
     bool m_SessionOperation = false;

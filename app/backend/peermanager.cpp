@@ -117,28 +117,29 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
         if (!m_Host->displayWarning().isEmpty()) response["warning"] = m_Host->displayWarning();
         send(link, response);
     });
-    auto watchdog = new QTimer(this);
-    connect(watchdog, &QTimer::timeout, this, [this] {
+    m_Watchdog.setParent(this);
+    m_EndpointRefresh.setParent(this);
+    m_Watchdog.setInterval(2000);
+    connect(&m_Watchdog, &QTimer::timeout, this, [this] {
         if (m_SessionLink && QDateTime::currentMSecsSinceEpoch() - m_SessionLink->lastDisplayRequest > 20000)
             fail(m_SessionLink, tr("Session controller disconnected"));
         if (m_DisplayLink && (!m_Host->adaptiveDisplayAvailable() ||
             QDateTime::currentMSecsSinceEpoch() - m_DisplayLink->lastDisplayRequest > 20000))
             fail(m_DisplayLink, tr("Display controller disconnected"));
     });
-    connect(watchdog, &QTimer::timeout, this, [this] {
+    connect(&m_Watchdog, &QTimer::timeout, this, [this] {
         if (m_ClipboardLink && (!m_Host->running() ||
             QDateTime::currentMSecsSinceEpoch() - m_ClipboardLink->lastClipboardRequest > 150000))
             fail(m_ClipboardLink, tr("Clipboard session ended"));
     });
-    watchdog->start(2000);
-    // Isolated managers are driven explicitly by tests; production retries one
-    // remembered peer per tick without blocking the UI or active media sessions.
-    if (directory.isEmpty()) {
-        auto refresh = new QTimer(this);
-        connect(refresh, &QTimer::timeout, this, &PeerManager::refreshEndpoints);
-        refresh->start(10000);
-        QTimer::singleShot(1000, this, &PeerManager::refreshEndpoints);
-    }
+    m_EndpointRefresh.setInterval(10000);
+    connect(&m_EndpointRefresh, &QTimer::timeout, this, [this] {
+        if (m_EndpointRefresh.interval() != 10000) m_EndpointRefresh.setInterval(10000);
+        refreshEndpoints();
+    });
+    // All admitted/replaced/released controllers and saved-peer mutations emit
+    // changed synchronously, including the session and device adapters.
+    connect(this, &PeerManager::changed, this, &PeerManager::updateTimers);
     m_IdentityHealthy = m_Healthy;
     auto server = createListener();
     m_Server = server;
@@ -167,6 +168,27 @@ PeerManager::PeerManager(HostManager* host, const QByteArray& cert, const QByteA
             }
         }
     }
+    updateTimers();
+    if (m_EndpointRefresh.isActive()) m_EndpointRefresh.start(1000);
+}
+void PeerManager::updateTimers() {
+    if (m_SessionLink || m_DisplayLink || m_ClipboardLink) {
+        if (!m_Watchdog.isActive()) m_Watchdog.start();
+    } else m_Watchdog.stop();
+    // Remembered endpoints need active discovery even without a media session.
+    // Isolated managers are driven explicitly by tests, as before.
+    bool discover = false;
+    if (m_Persistent && m_Healthy) {
+        for (const auto& value : m_Peers) {
+            if (!refreshableAddresses(value.toObject()).isEmpty()) {
+                discover = true;
+                break;
+            }
+        }
+    }
+    if (discover) {
+        if (!m_EndpointRefresh.isActive()) m_EndpointRefresh.start();
+    } else m_EndpointRefresh.stop();
 }
 QTcpServer* PeerManager::createListener() {
     auto server = new Listener(this);
@@ -235,6 +257,7 @@ bool PeerManager::setConnectionPort(int value) {
     emit changed(); return true;
 }
 PeerManager::~PeerManager() {
+    m_Watchdog.stop(); m_EndpointRefresh.stop();
     m_Server->close();
     // QObject destroys children after derived members have gone away.
     for (auto link : m_IncomingLinks) disconnect(link, &QObject::destroyed, this, nullptr);

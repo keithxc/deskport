@@ -78,6 +78,7 @@ BrowserHost::BrowserHost(HostManager* host, QObject* parent, const QString& dire
         emit changed();
     });
     m_Poll.setInterval(1500);
+    connect(this, &BrowserHost::changed, this, &BrowserHost::updatePollTimer);
     connect(&m_Poll, &QTimer::timeout, this, &BrowserHost::poll);
     host->setBrowserTakeover([this] { return busy(); }, [this](std::function<void()> done) {
         endForTakeover([done](QJsonObject) { done(); });
@@ -95,7 +96,7 @@ void BrowserHost::endForTakeover(Completion done) {
 bool BrowserHost::start() {
     if (!m_Host->available() || !QSettings().value("web/enabled", true).toBool()) return false;
     m_Listening = m_Gateway.start();
-    if (m_Listening) m_Poll.start();
+    updatePollTimer();
     emit changed();
     return m_Listening;
 }
@@ -363,6 +364,14 @@ void BrowserHost::end(Completion done) {
         if (m_DisplayOwned && m_Host->adaptiveDisplayAvailable()) m_Host->settleSessionDisplay(this, release);
         else release(true);
     });
+}
+
+void BrowserHost::updatePollTimer() {
+    // Listening alone owns no media reservation to supervise. Session cleanup
+    // retries remain responsible for a reservation after the listener stops.
+    if (m_Listening && !m_Id.isEmpty()) {
+        if (!m_Poll.isActive()) m_Poll.start();
+    } else m_Poll.stop();
 }
 
 void BrowserHost::poll() {

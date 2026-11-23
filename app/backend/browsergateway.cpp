@@ -319,11 +319,15 @@ BrowserGateway::BrowserGateway(const Hooks& hooks, const Options& options, QObje
     m_Directory = options.stateDirectory.isEmpty() ?
         QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/browser" : options.stateDirectory;
     m_GlobalRate.credits = 12;
-    m_Cleanup.setInterval(1000);
+    m_Cleanup.setSingleShot(true);
+    m_Cleanup.setTimerType(Qt::PreciseTimer);
+    m_AddressRefresh.setInterval(10000);
+    connect(&m_AddressRefresh, &QTimer::timeout, this, &BrowserGateway::refreshAddresses);
     connect(&m_Cleanup, &QTimer::timeout, this, &BrowserGateway::cleanup);
     m_CodeTick.setSingleShot(true);
     connect(&m_CodeTick, &QTimer::timeout, this, [this] {
         if (m_LockedUntil && m_LockedUntil <= now()) m_LockedUntil = 0;
+        updateCleanupTimer();
         if (active()) scheduleCodeTick();
         emit changed();
     });
@@ -429,6 +433,7 @@ void BrowserGateway::releasePairing(const QString& id) {
     for (const auto& key : keys) if (m_Sessions.value(key).pairingId == id) {
         release(key); m_Sessions.remove(key);
     }
+    updateCleanupTimer();
 }
 bool BrowserGateway::revokeBrowser(const QString& id) {
     if (!m_Pairings.contains(id)) {
@@ -475,6 +480,7 @@ void BrowserGateway::createSession(Connection* connection, const QString& pairin
         session.created = session.lastSeen = now();
     }
     m_Sessions.insert(tokenKey(token), session);
+    updateCleanupTimer();
     QJsonValue pairing(QJsonValue::Null);
     if (!pairingId.isEmpty()) {
         const auto entry = m_Pairings.value(pairingId);
@@ -595,7 +601,9 @@ bool BrowserGateway::start() {
         }
         m_Urls = preferred + m_Urls;
     }
-    m_Cleanup.start(); scheduleCodeTick(); emit changed(); return true;
+    // Automatic listeners must discover interfaces even without browser traffic.
+    if (m_Options.listenAddresses.isEmpty()) m_AddressRefresh.start();
+    updateCleanupTimer(); scheduleCodeTick(); emit changed(); return true;
 }
 bool BrowserGateway::addListener(const QHostAddress& address) {
     auto listener = new Listener(this);
@@ -652,7 +660,7 @@ void BrowserGateway::refreshAddresses() {
     if (updated) emit changed();
 }
 void BrowserGateway::stop() {
-    m_Cleanup.stop(); m_CodeTick.stop();
+    m_Cleanup.stop(); m_AddressRefresh.stop(); m_CodeTick.stop();
     const auto sessions = m_Sessions.keys();
     for (const auto& key : sessions) release(key);
     m_Sessions.clear();
@@ -670,7 +678,7 @@ bool BrowserGateway::resetAccessCode() {
     m_Secret = secret; m_LastStep = -1;
     const auto keys = m_Sessions.keys();
     for (const auto& key : keys) release(key);
-    m_Sessions.clear(); emit changed(); return true;
+    m_Sessions.clear(); updateCleanupTimer(); emit changed(); return true;
 }
 void BrowserGateway::hostStateChanged() {
     if (!m_Hooks.state || m_Hooks.state().value("sharing").toBool()) return;
@@ -815,7 +823,7 @@ bool BrowserGateway::acceptCode(const QByteArray& input) {
     if (QRegularExpression("^[0-9]{6}$").match(QString::fromLatin1(code)).hasMatch() && !m_Secret.isEmpty()) {
         for (qint64 candidate = step - 1; candidate <= step + 1; ++candidate) {
             if (candidate > m_LastStep && equal(code, totp(m_Secret, candidate).toLatin1())) {
-                m_LastStep = candidate; m_CodeFailures.clear(); return true;
+                m_LastStep = candidate; m_CodeFailures.clear(); updateCleanupTimer(); return true;
             }
         }
     }
@@ -825,6 +833,7 @@ bool BrowserGateway::acceptCode(const QByteArray& input) {
     if (m_CodeFailures.size() >= qMax(1, m_Options.codeFailureLimit)) {
         m_LockedUntil = current + CodeLockMs; m_CodeFailures.clear(); emit changed();
     }
+    updateCleanupTimer();
     return false;
 }
 bool BrowserGateway::loginAllowed(const QString& address) {
@@ -838,6 +847,7 @@ bool BrowserGateway::loginAllowed(const QString& address) {
     if (!m_Rates.contains(address) && m_Rates.size() >= 128) return false;
     const bool local = take(m_Rates[address], 5, 1.0 / 12.0);
     const bool global = take(m_GlobalRate, 12, 1.0 / 5.0);
+    updateCleanupTimer();
     return local && global;
 }
 QString BrowserGateway::authenticated(Connection* connection) const {
@@ -981,11 +991,13 @@ void BrowserGateway::dispatch(Connection* connection) {
             error(connection, 503, "storage-unavailable", "The browser pairing could not be removed."); return;
         }
         release(key); m_Sessions.remove(key);
+        updateCleanupTimer();
         respond(connection, 200, "{\"ok\":true}", "application/json",
             {cookie(CookieName, {}, 0), cookie(PairingCookieName, {}, 0)}); return;
     }
     if (connection->path == "/api/logout" && connection->method == "POST") {
         release(key); m_Sessions.remove(key);
+        updateCleanupTimer();
         respond(connection, 200, "{\"ok\":true}", "application/json", {cookie(CookieName, {}, 0)}); return;
     }
     if (connection->path == "/api/status" && connection->method == "GET") {
@@ -1067,7 +1079,6 @@ void BrowserGateway::release(const QString& key) {
 }
 void BrowserGateway::cleanup() {
     const qint64 current = now();
-    if (++m_AddressTicks >= AddressRefreshTicks) { m_AddressTicks = 0; refreshAddresses(); }
     const auto keys = m_Sessions.keys();
     for (const auto& key : keys) {
         const auto session = m_Sessions.value(key);
@@ -1082,6 +1093,31 @@ void BrowserGateway::cleanup() {
     for (auto it = m_Rates.begin(); it != m_Rates.end();) {
         if (current - it->updated > 60 * 60 * 1000LL) it = m_Rates.erase(it); else ++it;
     }
+    while (!m_CodeFailures.isEmpty() && current - m_CodeFailures.first() > CodeFailureWindowMs)
+        m_CodeFailures.removeFirst();
+    const bool unlocked = m_LockedUntil && m_LockedUntil <= current;
+    if (unlocked) m_LockedUntil = 0;
+    updateCleanupTimer();
+    if (unlocked) emit changed();
+}
+void BrowserGateway::updateCleanupTimer() {
+    if (!active()) { m_Cleanup.stop(); return; }
+    const auto current = now();
+    qint64 wait = -1;
+    const auto due = [&wait, current](qint64 deadline) {
+        const auto remaining = qMax<qint64>(1, deadline - current);
+        if (wait < 0 || remaining < wait) wait = remaining;
+    };
+    // Retain the existing one-second bound for media, session and pairing
+    // expiry, including wall-clock changes to persistent pairing credentials.
+    if (!m_Sessions.isEmpty()) due(current + 1000);
+    for (const auto& rate : m_Rates) due(rate.updated + 60 * 60 * 1000LL + 1);
+    if (!m_CodeFailures.isEmpty()) due(m_CodeFailures.first() + CodeFailureWindowMs + 1);
+    if (m_LockedUntil) due(m_LockedUntil);
+    if (wait < 0) m_Cleanup.stop();
+    // Do not postpone already scheduled work when another request arrives.
+    else if (!m_Cleanup.isActive() || m_Cleanup.remainingTime() > wait)
+        m_Cleanup.start(int(wait));
 }
 void BrowserGateway::error(Connection* connection, int status, const QString& code, const QString& message, const QList<QByteArray>& cookies) {
     respond(connection, status, QJsonDocument(QJsonObject{{"ok", false}, {"code", code}, {"message", message}}).toJson(QJsonDocument::Compact), "application/json", cookies);

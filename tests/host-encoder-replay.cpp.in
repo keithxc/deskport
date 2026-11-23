@@ -13,6 +13,7 @@
 #include "host/common/picturequality.h"
 #define DESKPORT_REPLAY_HAS_PICTURE_QUALITY 1
 #endif
+#include <CoreMedia/CoreMedia.h>
 #include <CoreVideo/CoreVideo.h>
 #include <any>
 #include <atomic>
@@ -51,7 +52,9 @@ struct NullLog {
 
 namespace replay {
 struct Scene { std::string id; std::vector<unsigned char> pixels; };
-struct Event { long long atUs; int scene; bool activity, recovery; };
+// Existing four-column timelines remain valid. Optional pause: -1 unchanged,
+// 0 resume, 1 pause, with the same generation-before-unpause ordering as host.
+struct Event { long long atUs; int scene; bool activity, recovery; int pause = -1; };
 struct Provenance { int event = 0, scene = 0; long long captureUs = 0, submitUs = 0; int64_t input = -1; };
 inline Clock::time_point start;
 inline thread_local Provenance current;
@@ -180,6 +183,13 @@ extern "C" OSStatus VTSessionSetProperty(VTSessionRef session, CFStringRef key, 
     return status;
 }
 
+// Synthetic scenes are already NV12. Model the capture bridge's retained
+// pass-through contract; deferred P010/Metal conversion is outside this fixture.
+extern "C" CMSampleBufferRef DPCopyCaptureSampleForEncoder(CMSampleBufferRef sample) {
+    if (sample) CFRetain(sample);
+    return sample;
+}
+
 namespace platf {
 struct img_t {
     virtual ~img_t() = default;
@@ -191,7 +201,15 @@ struct pixel_buffer_t {
     explicit pixel_buffer_t(CVPixelBufferRef value) : buf(value) {}
     ~pixel_buffer_t() { if (buf) CVPixelBufferRelease(buf); }
 };
-struct av_img_t : img_t { std::shared_ptr<pixel_buffer_t> pixel_buffer; };
+struct sample_buffer_t {
+    CMSampleBufferRef buf = nullptr;
+    explicit sample_buffer_t(CMSampleBufferRef value) : buf(value) {}
+    ~sample_buffer_t() { if (buf) CFRelease(buf); }
+};
+struct av_img_t : img_t {
+    std::shared_ptr<pixel_buffer_t> pixel_buffer;
+    std::shared_ptr<sample_buffer_t> sample_buffer;
+};
 struct encode_device_t {
     virtual ~encode_device_t() = default;
     virtual int convert(img_t&) = 0;
@@ -225,6 +243,17 @@ inline std::shared_ptr<img_t> image(int scene, int event, long long captureUs) {
             std::memcpy(dest + y * stride, source + y * replay::width, replay::width);
     }
     CVPixelBufferUnlockBaseAddress(buffer, 0);
+#ifdef DESKPORT_REPLAY_HAS_CAPTURE_BRIDGE
+    CMVideoFormatDescriptionRef description = nullptr;
+    CMSampleBufferRef sample = nullptr;
+    const CMSampleTimingInfo timing {CMTimeMake(1, replay::fps), CMTimeMake(captureUs, 1000000), kCMTimeInvalid};
+    auto status = CMVideoFormatDescriptionCreateForImageBuffer(nullptr, buffer, &description);
+    if (status == noErr)
+        status = CMSampleBufferCreateReadyWithImageBuffer(nullptr, buffer, description, &timing, &sample);
+    if (description) CFRelease(description);
+    if (status != noErr) throw std::runtime_error("CMSampleBufferCreateReadyWithImageBuffer failed");
+    result->sample_buffer = std::make_shared<sample_buffer_t>(sample);
+#endif
     result->provenance = {event, scene, captureUs, 0};
     result->frame_timestamp = replay::start + std::chrono::microseconds(captureUs);
     return result;
@@ -242,7 +271,21 @@ template<typename T> struct EventMailbox {
     std::condition_variable condition;
     std::optional<T> value;
     bool alive = true;
-    void raise(T next) { { std::lock_guard lock(mutex); value = std::move(next); } condition.notify_one(); }
+#ifdef DESKPORT_REPLAY_HAS_CADENCE_WAKE
+    deskport::CadenceListeners changes, stops;
+    void deskport_watch(const std::shared_ptr<deskport::CadenceWake>& wake, bool stopOnly = false) {
+        std::lock_guard lock(mutex);
+        (stopOnly ? stops : changes).watch(wake);
+    }
+#endif
+    void raise(T next) {
+        std::lock_guard lock(mutex);
+        value = std::move(next);
+#ifdef DESKPORT_REPLAY_HAS_CADENCE_WAKE
+        changes.notify();
+#endif
+        condition.notify_one();
+    }
     template<typename Rep, typename Period> std::optional<T> pop(std::chrono::duration<Rep, Period> wait) {
         std::unique_lock lock(mutex);
         condition.wait_for(lock, wait, [&] { return value.has_value() || !alive; });
@@ -251,7 +294,15 @@ template<typename T> struct EventMailbox {
     std::optional<T> pop() { return pop(0ms); }
     bool peek() const { std::lock_guard lock(mutex); return value.has_value(); }
     bool running() const { std::lock_guard lock(mutex); return alive; }
-    void stop() { { std::lock_guard lock(mutex); alive = false; } condition.notify_all(); }
+    void stop() {
+        std::lock_guard lock(mutex);
+        alive = false;
+#ifdef DESKPORT_REPLAY_HAS_CADENCE_WAKE
+        stops.notify();
+        changes.notify();
+#endif
+        condition.notify_all();
+    }
 };
 struct ImageMailbox {
     EventMailbox<std::shared_ptr<platf::img_t>> mailbox;
@@ -259,6 +310,11 @@ struct ImageMailbox {
     bool peek() const { return mailbox.peek(); }
     bool running() const { return mailbox.running(); }
     void stop() { mailbox.stop(); }
+#ifdef DESKPORT_REPLAY_HAS_CADENCE_WAKE
+    void deskport_watch(const std::shared_ptr<deskport::CadenceWake>& wake, bool stopOnly = false) {
+        mailbox.deskport_watch(wake, stopOnly);
+    }
+#endif
     template<typename Rep, typename Period> std::shared_ptr<platf::img_t> pop(std::chrono::duration<Rep, Period> wait) {
         auto item = mailbox.pop(wait); return item ? *item : nullptr;
     }
@@ -306,7 +362,10 @@ namespace deskport::browser {
 inline std::shared_ptr<PacketSink> video_queue(void*) { return std::make_shared<PacketSink>(); }
 inline void publish_video(std::shared_ptr<PacketSink>& sink, packet_t packet) { sink->raise(std::move(packet)); }
 }
-namespace deskport_admission { inline std::atomic<bool> video_encode_paused {false}; }
+namespace deskport_admission {
+inline std::atomic<bool> video_encode_paused {false};
+inline std::atomic<unsigned long long> video_resume_generation {0};
+}
 namespace util {
 template<typename Fn> struct Guard { Fn fn; ~Guard() { fn(); } };
 template<typename Fn> auto fail_guard(Fn fn) { return Guard<Fn>{std::move(fn)}; }
@@ -352,6 +411,9 @@ struct avcodec_encode_session_t : encode_session_t {
     deskport::vt::FrameClock deskport_clock;
 #endif
     int64_t deskport_last_pts = -1, deskport_pts_shift = 0;
+    int deskport_initial_kbps = 0;
+    std::int64_t deskport_previous_limit_bps = 0;
+    bool deskport_saver_configured = false;
     int inject = 0;
     cbs::nal_t sps, vps;
     std::vector<packet_raw_avcodec::replace_t> replacements;
@@ -445,6 +507,13 @@ int main(int argc, char** argv) {
             if (!(row >> event.atUs >> event.scene >> event.activity >> event.recovery) || event.scene < 0 ||
                 event.scene >= int(replay::scenes.size()) || (events.empty() ? event.atUs != 0 : event.atUs <= events.back().atUs))
                 throw std::runtime_error("invalid timeline");
+            row >> std::ws;
+            if (!row.eof()) {
+                if (!(row >> event.pause) || event.pause < -1 || event.pause > 1)
+                    throw std::runtime_error("invalid timeline pause");
+                row >> std::ws;
+                if (!row.eof()) throw std::runtime_error("unexpected timeline column");
+            }
             events.push_back(event);
         }
         if (events.empty() || events.back().atUs >= duration * 1000LL) throw std::runtime_error("invalid timeline duration");
@@ -486,6 +555,14 @@ int main(int argc, char** argv) {
                 for (int i = 0; i < int(events.size()); ++i) {
                     const auto& event = events[i];
                     if (!replay::waitUntil(replay::start + std::chrono::microseconds(event.atUs))) break;
+                    if (event.pause >= 0) {
+                        if (deskport_admission::video_encode_paused && !event.pause)
+                            ++deskport_admission::video_resume_generation;
+                        deskport_admission::video_encode_paused = event.pause == 1;
+#ifdef DESKPORT_REPLAY_HAS_CADENCE_WAKE
+                        deskport::cadenceControls.notify();
+#endif
+                    }
                     images->raise(platf::image(event.scene, i, replay::nowUs()));
                     if (event.activity) activity->raise({std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count() + 350, 60});
                     if (event.recovery) idr->raise(true);

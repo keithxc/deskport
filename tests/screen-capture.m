@@ -127,6 +127,28 @@ static void testRGBConversion(BOOL hdr) {
     CMSampleBufferRef output = [capture convertSample:input]; assert(output);
     CVPixelBufferRef result = CMSampleBufferGetImageBuffer(output);
     assert(CVPixelBufferGetPixelFormatType(result) == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange);
+    // Resume must reuse the Metal pipeline and pool warmed by the eager path.
+    DPFrameConverter *warmed = capture.frameConverter;
+    DPColorConverter *metal = warmed.rgbConverter;
+    CVPixelBufferPoolRef pool = warmed.pool;
+    assert(metal && pool);
+    CMSampleBufferRef buffered = [capture bufferSample:input];
+    DPDeferredConversion *pending = (__bridge DPDeferredConversion *)CMGetAttachment(buffered, DPDeferredConversionKey, NULL);
+    assert(pending.converter == warmed);
+    CMSampleBufferRef resumed = DPCopyCaptureSampleForEncoder(buffered);
+    assert(resumed && warmed.rgbConverter == metal && warmed.pool == pool && capture.frameConverter == warmed);
+    CVPixelBufferRef resumedPixels = CMSampleBufferGetImageBuffer(resumed);
+    CVPixelBufferLockBaseAddress(result, kCVPixelBufferLock_ReadOnly);
+    CVPixelBufferLockBaseAddress(resumedPixels, kCVPixelBufferLock_ReadOnly);
+    for (size_t plane = 0; plane < 2; ++plane)
+        for (size_t y = 0; y < CVPixelBufferGetHeightOfPlane(result, plane); ++y)
+            assert(!memcmp((char *)CVPixelBufferGetBaseAddressOfPlane(result, plane) + y * CVPixelBufferGetBytesPerRowOfPlane(result, plane),
+                (char *)CVPixelBufferGetBaseAddressOfPlane(resumedPixels, plane) + y * CVPixelBufferGetBytesPerRowOfPlane(resumedPixels, plane),
+                64 * sizeof(uint16_t)));
+    CVPixelBufferUnlockBaseAddress(resumedPixels, kCVPixelBufferLock_ReadOnly);
+    CVPixelBufferUnlockBaseAddress(result, kCVPixelBufferLock_ReadOnly);
+    CFRelease(resumed);
+    CFRelease(buffered);
     CVPixelBufferLockBaseAddress(result, kCVPixelBufferLock_ReadOnly);
     uint16_t *row = CVPixelBufferGetBaseAddressOfPlane(result, 0); unsigned fractional = 0;
     for (int x = 1; x < 63; ++x) {
@@ -201,8 +223,70 @@ static void testDenseRGBPrecision(void) {
     CFRelease(output); CFRelease(input); CFRelease(description); CFRelease(pixels);
     printf("PASS: %u distinct 10-bit PQ luma codes, black/10,000-nit white preserved, no 8-bit intermediate\n", unique);
 }
+static void testLifecycleNudge(void) {
+    dispatch_queue_t queue = dispatch_queue_create("deskport.synthetic-lifecycle", DISPATCH_QUEUE_SERIAL);
+    dispatch_semaphore_t joined = dispatch_semaphore_create(0);
+    __block BOOL pendingContext = YES;
+    __block NSUInteger frames = 0, ticks = 0, joins = 0;
+    __weak DPCapture *weakCapture;
+    @autoreleasepool {
+        DPCapture *capture = session(queue, ^bool(CMSampleBufferRef s) {
+            if (s) ++frames;
+            else {
+                ++ticks;
+                if (pendingContext) {
+                    pendingContext = NO;
+                    ++joins; // Simulates draining the new encoder context queue.
+                    dispatch_semaphore_signal(joined);
+                }
+            }
+            return true;
+        });
+        weakCapture = capture;
+        SCStream *unusedStream = (SCStream *)(id)[NSObject new];
+        CMSampleBufferRef complete = sample(SCFrameStatusComplete);
+        dispatch_sync(queue, ^{
+            [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
+            // A new context can enqueue its nudge before heartbeat registration.
+            DPNudgeCaptureLifecycle();
+            [capture startHeartbeat];
+            // Disable the watchdog: all following progress must be event-driven.
+            dispatch_source_set_timer(capture.timer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+        });
+        assert(dispatch_semaphore_wait(joined, dispatch_time(DISPATCH_TIME_NOW, 200 * NSEC_PER_MSEC)) == 0);
+        dispatch_sync(queue, ^{
+            assert(frames == 1 && joins == 1 && ticks == 1 && capture.latest == complete);
+            pendingContext = YES; // Another encoder joins an already-static capture.
+        });
+        DPNudgeCaptureLifecycle();
+        assert(dispatch_semaphore_wait(joined, dispatch_time(DISPATCH_TIME_NOW, 200 * NSEC_PER_MSEC)) == 0);
+        dispatch_sync(queue, ^{
+            assert(frames == 1 && joins == 2 && ticks == 2 && capture.latest == complete);
+            // Posting from the capture queue must enqueue, never join itself.
+            pendingContext = YES;
+            DPNudgeCaptureLifecycle();
+            assert(joins == 2);
+        });
+        assert(dispatch_semaphore_wait(joined, dispatch_time(DISPATCH_TIME_NOW, 200 * NSEC_PER_MSEC)) == 0);
+        dispatch_sync(queue, ^{
+            assert(joins == 3 && ticks == 3 && frames == 1);
+            // A queued notification racing stop must not invoke the callback.
+            DPNudgeCaptureLifecycle();
+            [capture finish];
+            assert(!capture.lifecycleObserver && !capture.latest);
+        });
+        DPNudgeCaptureLifecycle();
+        dispatch_sync(queue, ^{ assert(joins == 3 && ticks == 3 && frames == 1); });
+        CFRelease(complete);
+    }
+    dispatch_sync(queue, ^{});
+    assert(!weakCapture);
+    puts("PASS: immediate idle encoder join, startup nudge race, asynchronous lifecycle-only dispatch, stop race, weak observer lifetime");
+}
+
 int main(void) {
     @autoreleasepool {
+        testLifecycleNudge();
         // Unsupported formats fail without invoking AVFoundation or capture.
         assert(setenv("DESKPORT_CAPTURE_DISPLAY_FILE", "/unused-test-descriptor", 1) == 0);
         DPScreenVideo *unsupported = [DPScreenVideo new];
@@ -236,11 +320,13 @@ int main(void) {
             if (s) ++frames; else ++ticks;
             return true;
         });
+        capture.diagnostics = NO;
         CMSampleBufferRef complete = sample(SCFrameStatusComplete);
         CMSampleBufferRef idle = sample(SCFrameStatusIdle);
         CMSampleBufferRef blank = sample(SCFrameStatusBlank);
         CMSampleBufferRef started = sample(SCFrameStatusStarted);
         dispatch_sync(queue, ^{
+            [capture startHeartbeat];
             [capture stream:unusedStream didOutputSampleBuffer:idle ofType:SCStreamOutputTypeScreen];
             assert(frames == 0 && capture.latest == NULL);
             [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
@@ -252,24 +338,37 @@ int main(void) {
             [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
             [capture stream:unusedStream didOutputSampleBuffer:started ofType:SCStreamOutputTypeScreen];
             assert(frames == 3 && capture.latest == started);
-            [capture startHeartbeat];
+            assert(capture.statsAt == 0 && capture.completeFrames == 0 && capture.idleFrames == 0);
         });
         // An idle heartbeat only services lifecycle. Replaying the retained surface
         // would make the encoder treat every tick as content and restart refinement.
         dispatch_semaphore_t delay = dispatch_semaphore_create(0);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 450 * NSEC_PER_MSEC), queue, ^{dispatch_semaphore_signal(delay);});
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 750 * NSEC_PER_MSEC), queue, ^{dispatch_semaphore_signal(delay);});
         assert(dispatch_semaphore_wait(delay, dispatch_time(DISPATCH_TIME_NOW, 2*NSEC_PER_SEC)) == 0);
         dispatch_sync(queue, ^{
-            assert(frames == 3 && ticks >= 1 && capture.latest == started);
+            assert(frames == 3 && ticks >= 2 && ticks <= 3 && capture.latest == started);
+            // A fresh surface bypasses the idle interval and is delivered now.
+            [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
+            assert(frames == 4 && capture.latest == complete);
             [capture finish];
             assert(capture.latest == NULL && capture.callback == nil && capture.timer == nil);
             [capture stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
             [capture deliver:complete];
-            assert(frames == 3);
+            assert(frames == 4);
             [capture finish]; // Signals exactly once, even after duplicate stop/error.
         });
         assert(dispatch_semaphore_wait(capture.signal, DISPATCH_TIME_NOW) == 0);
         assert(dispatch_semaphore_wait(capture.signal, DISPATCH_TIME_NOW) != 0);
+        // An idle client stop/reconfiguration is still observed within one tick.
+        __block BOOL keepRunning = YES;
+        DPCapture *idleStop = session(queue, ^bool(CMSampleBufferRef s) { return keepRunning; });
+        dispatch_sync(queue, ^{
+            [idleStop startHeartbeat];
+            [idleStop stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
+            keepRunning = NO;
+        });
+        assert(dispatch_semaphore_wait(idleStop.signal, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) == 0);
+        dispatch_sync(queue, ^{ assert(idleStop.finished && !idleStop.failed && idleStop.callback == nil); });
         DPCapture *stop = session(queue, ^bool(CMSampleBufferRef s) { return false; });
         dispatch_sync(queue, ^{
             [stop stream:unusedStream didOutputSampleBuffer:complete ofType:SCStreamOutputTypeScreen];
@@ -284,7 +383,7 @@ int main(void) {
         assert(dispatch_semaphore_wait(failure.signal, dispatch_time(DISPATCH_TIME_NOW, 2*NSEC_PER_SEC)) == 0);
         dispatch_sync(queue, ^{ assert(failure.failed && failure.finished); });
         CFRelease(complete); CFRelease(idle); CFRelease(blank); CFRelease(started);
-        puts("PASS: native frame status, lifecycle-only heartbeat, retained surface, stop, late callback, timeout");
+        puts("PASS: native frame status, 2 Hz lifecycle-only heartbeat, immediate frames, idle stop, retained surface, late callback, timeout");
     }
     return 0;
 }

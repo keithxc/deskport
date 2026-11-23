@@ -46,8 +46,15 @@ int main(int argc, char **argv) {
             if (CGGetActiveDisplayList(128, ids, &count) != kCGErrorSuccess) return 1;
             NSMutableArray *topology = [NSMutableArray array];
             for (unsigned i = 0; i < count; ++i) {
+                // WindowServer can re-enumerate the headless fallback display
+                // when the last virtual screen disappears. Compare its stable
+                // display identity and the complete observed geometry.
+                CFUUIDRef uuid = CGDisplayCreateUUIDFromDisplayID(ids[i]);
+                if (!uuid) return 1;
+                NSString *identity = CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+                CFRelease(uuid);
                 CGRect bounds = CGDisplayBounds(ids[i]); CGDisplayModeRef mode = CGDisplayCopyDisplayMode(ids[i]);
-                [topology addObject:@[@(ids[i]), @(bounds.origin.x), @(bounds.origin.y), @(bounds.size.width), @(bounds.size.height),
+                [topology addObject:@[identity, @(CGDisplayIsMain(ids[i])), @(bounds.origin.x), @(bounds.origin.y), @(bounds.size.width), @(bounds.size.height),
                     @(mode ? CGDisplayModeGetPixelWidth(mode) : 0), @(mode ? CGDisplayModeGetPixelHeight(mode) : 0)]];
                 if (mode) CFRelease(mode);
             }

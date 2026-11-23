@@ -7,10 +7,28 @@ _storage_sys.dont_write_bytecode = True
 _storage_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parents[1] / 'scripts'))
 import build_storage as _build_storage
 if __name__ == '__main__':
-    _build_storage.bootstrap()
+    if '--work-dir' in _storage_sys.argv:
+        import argparse as _argparse
+        import os as _os
+        import tempfile as _tempfile
+        from pathlib import Path as _Path
+        _parser = _argparse.ArgumentParser(description=__doc__)
+        _parser.add_argument('--work-dir', type=_Path, required=True)
+        _options = _parser.parse_args()
+        _storage = _build_storage.Storage()
+        _work = _storage.validate(_options.work_dir.expanduser().absolute())
+        _paths = {key: str(_storage.validate(_work / name)) for key, name in (
+            ('TMPDIR', 'tmp'), ('TMP', 'tmp'), ('TEMP', 'tmp'),
+            ('CLANG_MODULE_CACHE_PATH', 'clang-modules'), ('XDG_CACHE_HOME', 'cache'))}
+        _os.environ.update(_paths, PYTHONDONTWRITEBYTECODE='1')
+        for _value in set(_paths.values()):
+            _Path(_value).mkdir(parents=True, exist_ok=True)
+        _tempfile.tempdir = None
+    else:
+        _build_storage.bootstrap()
 
 from pathlib import Path
-import subprocess, tarfile, tempfile
+import shutil, subprocess, tarfile, tempfile
 root = Path(__file__).resolve().parents[1]
 for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
     with tempfile.TemporaryDirectory(prefix='deskport-cadence-') as tmp:
@@ -19,8 +37,17 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
             f.extractall(target, filter='data')
         if not (target / 'src').exists():
             target = next(p for p in target.iterdir() if (p / 'src').exists())
+        common = target / 'src/deskport/common'
+        common.mkdir(parents=True, exist_ok=True)
+        for name in ('smartstream.h', 'inputactivity.h', 'framecadence.h'):
+            shutil.copyfile(root / 'host/common' / name, common / name)
         for name in ('smart-stream', 'session-settings', 'session-takeover', 'linux-display', 'encoder-policy', 'vt-drain', 'input-activity', 'mouse-latency', 'sync-cadence', 'linux-cadence', 'pipewire-memory', 'remote-rate'):
             subprocess.run(['python3', str(root / f'host/overlays/patch-host-{name}.py'), str(target)], check=True)
+            if name in ('smart-stream', 'input-activity'):
+                stage_video = (target / 'src/video.cpp').read_text()
+                assert 'sleep_for(2ms)' not in stage_video
+                assert 'images->pop(0ms)' in stage_video
+                assert stage_video.count('// A producer can notify between this check') == 1
         subprocess.run(['python3', str(root / 'host/overlays/patch-host-mouse-latency.py'), str(target)], check=True)
         input_cpp = (target / 'src/input.cpp').read_text()
         assert 'pushDelayed(std::move(f), 10ms)' not in input_cpp
@@ -74,6 +101,45 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert stream.count('session->deskport_unrecoverable_ms = ') == 1
         assert (target / 'src/rtsp.cpp').read_text().count('deskport::liveSaver = session.deskport_saver') == 1
         assert (target / 'src/nvhttp.cpp').read_text().count('get_arg(args, "deskportSaver", "0")') == 1
+        # Check the final source after remote-rate, saver and reapplication;
+        # checking every stage also guards against reintroducing polling.
+        assert 'sleep_for(2ms)' not in video
+        assert 'last_activity_fps > 1 ? 2ms : 10ms' not in video
+        assert 'images->pop(0ms)' in video
+        assert video.count('deskport_wake->waitUntil(deskport_generation, deadline)') == 1
+        assert video.count('deskport_wake->waitUntil(deskport_generation, ready)') == 1
+        pipewire = (target / 'src/platform/linux/pipewire.cpp').read_text()
+        assert 'deskport_smart ? 10ms' not in pipewire
+        assert 'deadline = std::min(deadline, deskport::captureDeadline);' in pipewire
+        assert 'std::chrono::steady_clock::now() + 100ms' in pipewire
+        assert 'sleep_until(next_frame)' not in pipewire
+        capture_start = pipewire.index('          // Wake controls promptly')
+        loop_top = pipewire.rfind('      while (true)', 0, capture_start)
+        assert 'deskport_capture_generation =' not in pipewire[loop_top:capture_start]
+        callback_start = pipewire.index('      auto deskport_push =')
+        callback_end = pipewire.index('      auto next_frame =', callback_start)
+        (target / 'cadence-push.inc').write_text(pipewire[callback_start:callback_end])
+        pace_start = pipewire.rfind('        if (next_frame > now)', 0, capture_start)
+        pace_end = pipewire.index('          sleep_overshoot_logger.second_point_now_and_log();', pace_start)
+        pace_end = pipewire.index('        }', pace_end) + len('        }')
+        (target / 'cadence-pace.inc').write_text(pipewire[pace_start:pace_end])
+        mail_start = video.index('    // mail_raw_t owns weak references:')
+        mail_end = video.index('    encode_session.deskport_cadence.emplace', mail_start)
+        (target / 'cadence-syncmail.inc').write_text(video[mail_start:mail_end])
+        fields_start = video.index('    safe::mail_raw_t::event_t<deskport::ActivityBoost> deskport_activity;')
+        fields_end = video.index('    std::optional<deskport::FrameCadence>', fields_start)
+        (target / 'cadence-session-mail.inc').write_text(video[fields_start:fields_end])
+        assert 'ctx->deskport_mail->event<int>("deskport_congestion")->pop' not in video
+        assert 'ctx->deskport_mail->event<deskport::ActivityBoost>("deskport_activity")->pop' not in video
+        wait_start = video.index('      // A producer can notify between this check')
+        wait_end = video.index('      // Encode at a minimum FPS', wait_start)
+        (target / 'cadence-wait.inc').write_text(video[wait_start:wait_end])
+        pipe_start = pipewire.index('    bool wait_for_frame(')
+        pipe_end = pipewire.index('    static bool pw_format_supported(', pipe_start)
+        (target / 'cadence-pipewait.inc').write_text(pipewire[pipe_start:pipe_end])
+        subprocess.run(['c++', '-std=c++23', '-pthread', '-I', str(target), '-I', str(root),
+                        str(root / 'tests/host-cadence-wake.cpp'), '-o', str(target / 'wake-test')], check=True)
+        subprocess.run([str(target / 'wake-test')], check=True)
         # Execute the actual patched asynchronous capture callback with fake image
         # mailboxes. An idle tick must not republish content, but a new encoder
         # still needs exactly one initial image. The retained image must be
@@ -85,6 +151,7 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
         assert reset_position < video.index('      if (artificial_reinit', capture_end)
         bootstrap = target / 'cadence-bootstrap.cpp'
         bootstrap.write_text('''#include <cassert>
+#include "src/deskport/common/smartstream.h"
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -92,6 +159,7 @@ for archive in ('sunshine-nix.tar.gz', 'sunshine.tar.gz'):
 #define KITTY_WHILE_LOOP(init, condition, body) for (init; condition;) body
 namespace platf { struct img_t { int serial; }; }
 struct Images {
+  void deskport_watch(const std::shared_ptr<deskport::CadenceWake>&, bool = false) {}
   bool running() const { return true; }
   std::vector<std::shared_ptr<platf::img_t>> delivered;
   void raise(std::shared_ptr<platf::img_t> img) { delivered.push_back(img); }
@@ -152,4 +220,13 @@ int main() {
             'assert(!event.pop(std::chrono::milliseconds(0))); }\n')
         subprocess.run(['c++', '-std=c++23', '-pthread', str(mailbox), '-o', str(target / 'mailbox-test')], check=True)
         subprocess.run([str(target / 'mailbox-test')], check=True)
-        print(f'PASS: async/sync/input/PipeWire overlays, idle bootstrap and reinit release: {archive}')
+        # The independent pause overlay must retain the same event-driven waits.
+        # Its extra retained-image condition must compose with the saver deadline
+        # adjustment when saver is reapplied after the complete chain.
+        for name in ('video-pause', 'rate-api', 'data-saver'):
+            subprocess.run(['python3', str(root / f'host/overlays/patch-host-{name}.py'), str(target)], check=True)
+        final_video = (target / 'src/video.cpp').read_text()
+        assert final_video.count('// A producer can notify between this check') == 1
+        assert 'sleep_for(2ms)' not in final_video and 'sleep_for(10ms)' not in final_video
+        assert 'deskport::cadenceControls.notify();' in (target / 'src/confighttp.cpp').read_text()
+        print(f'PASS: async/sync/input/PipeWire waits, pause composition, idle bootstrap and reinit release: {archive}')

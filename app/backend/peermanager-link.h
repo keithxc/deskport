@@ -44,6 +44,12 @@ inline QStringList peerAddresses(const QJsonObject& peer) {
     }
     return result;
 }
+inline QStringList refreshableAddresses(const QJsonObject& peer) {
+    const int port = peer["bindingPort"].toInt(48991);
+    if (port < 1 || port > 65535 || peer["role"].toString() == "client" ||
+        !peer["ready"].toBool() || !peer["granted"].toBool()) return {};
+    return peerAddresses(peer);
+}
 inline void setPeerAddresses(QJsonObject& peer, const QStringList& addresses) {
     peer["address"] = addresses.value(0);
     if (addresses.size() > 1) peer["addresses"] = QJsonArray::fromStringList(addresses);

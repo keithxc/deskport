@@ -24,6 +24,7 @@ extern "C" {
 
 #include <SDL_syswm.h>
 #include <chrono>
+#include <system_error>
 
 // Limit the number of queued frames to prevent excessive memory consumption
 // if the V-Sync source or renderer is blocked for a while. It's important
@@ -55,12 +56,16 @@ Pacer::Pacer(IFFmpegRenderer* renderer, PVIDEO_STATS videoStats, VideoPresentati
 
 Pacer::~Pacer()
 {
+    // Publish stop under the condition-variable mutex so no waiter can miss it.
+    m_FrameQueueLock.lock();
     m_Stopping = true;
+    m_PacingQueueNotEmpty.wakeAll();
+    m_VsyncSignalled.wakeAll();
+    m_RenderQueueNotEmpty.wakeAll();
+    m_FrameQueueLock.unlock();
 
     // Stop the V-sync thread
     if (m_VsyncThread != nullptr) {
-        m_PacingQueueNotEmpty.wakeAll();
-        m_VsyncSignalled.wakeAll();
         SDL_WaitThread(m_VsyncThread, nullptr);
     }
 
@@ -70,7 +75,6 @@ Pacer::~Pacer()
 
     // Stop the render thread
     if (m_RenderThread != nullptr) {
-        m_RenderQueueNotEmpty.wakeAll();
         SDL_WaitThread(m_RenderThread, nullptr);
     }
     else {
@@ -80,6 +84,10 @@ Pacer::~Pacer()
     }
 
     // No further frames can start a capture; the decoder is still alive.
+    m_SnapshotLock.lock();
+    m_SnapshotStopping = true;
+    m_SnapshotAvailable.wakeOne();
+    m_SnapshotLock.unlock();
     if (m_SnapshotWorker.joinable()) m_SnapshotWorker.join();
 
     // Delete any remaining unconsumed frames
@@ -123,44 +131,48 @@ int Pacer::vsyncThread(void *context)
     SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 #endif
 
-    if (me->m_ClockPacing) {
-        // The visible Qt canvas owns presentation. A frame callback from the
-        // hidden SDL proxy can never be relied on (notably on Wayland). Pace
-        // with a monotonic clock; the visible swapchain still controls V-sync.
-        using Clock = PacingClock::Clock;
-        PacingClock clock(me->m_DisplayFps, Clock::now());
-        while (!me->m_Stopping) {
-            me->m_FrameQueueLock.lock();
+    // The visible Qt canvas owns presentation. A hidden SDL proxy cannot
+    // supply reliable callbacks, so canvas pacing uses a monotonic clock.
+    using Clock = PacingClock::Clock;
+    PacingClock clock(me->m_DisplayFps, Clock::now());
+    const bool async = me->m_VsyncSource && me->m_VsyncSource->isAsync();
+    int emptyCycles = 0;
+    while (!me->m_Stopping) {
+        const bool idle = emptyCycles >= 2;
+        if (idle) {
+            // Native callbacks may continue, but only a frame or teardown wakes this waiter.
+            QMutexLocker lock(&me->m_FrameQueueLock);
+            while (!me->m_Stopping && me->m_PacingQueue.isEmpty()) {
+                me->m_PacingQueueNotEmpty.wait(&me->m_FrameQueueLock);
+            }
+            me->m_PacingQueueHistory.clear();
+            me->m_VsyncPending = false;
+        }
+        else if (me->m_ClockPacing) {
+            QMutexLocker lock(&me->m_FrameQueueLock);
             while (!me->m_Stopping && Clock::now() < clock.deadline()) {
                 const auto remaining = clock.deadline() - Clock::now();
                 const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(remaining + std::chrono::microseconds(999)).count();
                 me->m_VsyncSignalled.wait(&me->m_FrameQueueLock, static_cast<unsigned long>(SDL_max(1LL, ms)));
             }
-            me->m_FrameQueueLock.unlock();
-            if (me->m_Stopping) break;
-            me->handleVsync(1000 / me->m_DisplayFps);
-            clock.advance(Clock::now());
         }
-        return 0;
-    }
-    bool async = me->m_VsyncSource->isAsync();
-    while (!me->m_Stopping) {
-        if (async) {
-            // Wait for the VSync source to invoke signalVsync() or 100ms to elapse
-            me->m_FrameQueueLock.lock();
-            me->m_VsyncSignalled.wait(&me->m_FrameQueueLock, 100);
-            me->m_FrameQueueLock.unlock();
+        else if (async) {
+            QMutexLocker lock(&me->m_FrameQueueLock);
+            if (!me->m_Stopping && !me->m_VsyncPending) {
+                me->m_VsyncSignalled.wait(&me->m_FrameQueueLock, 100);
+            }
+            me->m_VsyncPending = false;
         }
         else {
-            // Let the VSync source wait in the context of our thread
             me->m_VsyncSource->waitForVsync();
         }
 
-        if (me->m_Stopping) {
-            break;
+        if (me->m_Stopping) break;
+        emptyCycles = me->handleVsync(1000 / me->m_DisplayFps) ? 0 : emptyCycles + 1;
+        if (me->m_ClockPacing) {
+            if (idle) clock.reset(Clock::now());
+            else clock.advance(Clock::now());
         }
-
-        me->handleVsync(1000 / me->m_DisplayFps);
     }
 
     return 0;
@@ -233,12 +245,16 @@ void Pacer::enqueueFrameForRenderingAndUnlock(AVFrame *frame)
 
 // Called in an arbitrary thread by the IVsyncSource on V-sync
 // or an event synchronized with V-sync
-void Pacer::handleVsync(int timeUntilNextVsyncMillis)
+bool Pacer::handleVsync(int timeUntilNextVsyncMillis)
 {
     // Make sure initialize() has been called
     SDL_assert(m_MaxVideoFps != 0);
 
     m_FrameQueueLock.lock();
+    if (m_Stopping) {
+        m_FrameQueueLock.unlock();
+        return false;
+    }
 
     // If the queue length history entries are large, be strict
     // about dropping excess frames.
@@ -281,17 +297,18 @@ void Pacer::handleVsync(int timeUntilNextVsyncMillis)
         if (!m_PacingQueueNotEmpty.wait(&m_FrameQueueLock, SDL_max(timeUntilNextVsyncMillis, TIMER_SLACK_MS) - TIMER_SLACK_MS)) {
             // Wait timed out - unlock and bail
             m_FrameQueueLock.unlock();
-            return;
+            return false;
         }
 
-        if (m_Stopping) {
+        if (m_Stopping || m_PacingQueue.isEmpty()) {
             m_FrameQueueLock.unlock();
-            return;
+            return false;
         }
     }
 
     // Place the first frame on the render queue
     enqueueFrameForRenderingAndUnlock(m_PacingQueue.dequeue());
+    return true;
 }
 
 bool Pacer::initialize(SDL_Window* window, int maxVideoFps, bool enablePacing, QWindow* presentationWindow)
@@ -376,6 +393,8 @@ bool Pacer::initialize(SDL_Window* window, int maxVideoFps, bool enablePacing, Q
 
 void Pacer::signalVsync()
 {
+    QMutexLocker lock(&m_FrameQueueLock);
+    m_VsyncPending = true;
     m_VsyncSignalled.wakeOne();
 }
 
@@ -425,16 +444,50 @@ static QImage snapshotImage(const AVFrame* frame, bool report)
 
 void Pacer::captureSnapshot(AVFrame* frame, bool report)
 {
-    if (m_SnapshotWorker.joinable()) m_SnapshotWorker.join();
+    QMutexLocker lock(&m_SnapshotLock);
+    if (m_SnapshotStopping || m_Stopping || m_SnapshotBusy) return;
     AVFrame* copy = av_frame_clone(frame);
     if (!copy) return;
+
+    // Start at most one worker per Pacer. It sleeps between captures and owns
+    // the cloned frame until conversion, delivery, and reference release finish.
+    if (!m_SnapshotWorker.joinable()) {
+        try {
+            m_SnapshotWorker = std::thread(&Pacer::snapshotThread, this);
+        }
+        catch (const std::system_error& error) {
+            lock.unlock();
+            av_frame_free(&copy);
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unable to start snapshot worker: %s", error.what());
+            return;
+        }
+    }
     if (m_Callbacks.snapshotReady) m_LastPresentationSnapshot = SDL_GetTicks();
     else StreamSnapshot::captured(SDL_GetTicks());
     m_SnapshotBusy = true;
+    m_SnapshotFrame = copy;
     // Periodic captures stay silent after the first one of a stream.
-    report = report || !m_SnapshotReported;
+    m_SnapshotReport = report || !m_SnapshotReported;
     m_SnapshotReported = true;
-    m_SnapshotWorker = std::thread([this, copy, report]() mutable {
+    m_SnapshotAvailable.wakeOne();
+}
+
+void Pacer::snapshotThread()
+{
+    for (;;) {
+        m_SnapshotLock.lock();
+        while (!m_SnapshotStopping && !m_SnapshotFrame) {
+            m_SnapshotAvailable.wait(&m_SnapshotLock);
+        }
+        if (!m_SnapshotFrame) {
+            m_SnapshotLock.unlock();
+            return;
+        }
+        AVFrame* copy = m_SnapshotFrame;
+        const bool report = m_SnapshotReport;
+        m_SnapshotFrame = nullptr;
+        m_SnapshotLock.unlock();
+
         QImage image = snapshotImage(copy, report);
         if (m_Callbacks.snapshotReady) {
             if (!image.isNull()) StreamSnapshot::blur(image);
@@ -442,7 +495,7 @@ void Pacer::captureSnapshot(AVFrame* frame, bool report)
         } else StreamSnapshot::store(std::move(image));
         av_frame_free(&copy);
         m_SnapshotBusy = false;
-    });
+    }
 }
 
 void Pacer::renderFrame(AVFrame* frame)
@@ -538,8 +591,8 @@ void Pacer::submitFrame(AVFrame* frame)
     if (m_VsyncSource != nullptr || m_ClockPacing) {
         dropFrameForEnqueue(m_PacingQueue);
         m_PacingQueue.enqueue(frame);
-        m_FrameQueueLock.unlock();
         m_PacingQueueNotEmpty.wakeOne();
+        m_FrameQueueLock.unlock();
     }
     else {
         enqueueFrameForRenderingAndUnlock(frame);

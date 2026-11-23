@@ -18,11 +18,21 @@ patch('  struct sync_session_ctx_t {', '''  struct sync_session_ctx_t {
 patch('      ref->encode_session_ctx_queue.raise(sync_session_ctx_t {', '''      ref->encode_session_ctx_queue.raise(sync_session_ctx_t {
         mail,''')
 patch('  struct sync_session_t {', '''  struct sync_session_t {
+    safe::mail_raw_t::event_t<deskport::ActivityBoost> deskport_activity;
+    safe::mail_raw_t::event_t<int> deskport_congestion;
     std::optional<deskport::FrameCadence> deskport_cadence;
     std::optional<std::chrono::steady_clock::time_point> deskport_timestamp;
+    std::chrono::steady_clock::time_point deskport_manual_encoded {};
     int deskport_last_floor = 0;
     int deskport_last_ceiling = 0;''')
 patch('    encode_session.session = std::move(session);', '''    encode_session.session = std::move(session);
+    ctx.shutdown_event->deskport_watch(deskport::captureWake);
+    ctx.idr_events->deskport_watch(deskport::captureWake);
+    // mail_raw_t owns weak references: retain the channels for this session.
+    encode_session.deskport_activity = ctx.deskport_mail->event<deskport::ActivityBoost>("deskport_activity");
+    encode_session.deskport_congestion = ctx.deskport_mail->event<int>("deskport_congestion");
+    encode_session.deskport_activity->deskport_watch(deskport::captureWake);
+    encode_session.deskport_congestion->deskport_watch(deskport::captureWake);
     encode_session.deskport_cadence.emplace(ctx.config.framerate,
         std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now().time_since_epoch()).count());''')
@@ -41,9 +51,9 @@ patch(old, '''          std::optional<std::chrono::steady_clock::time_point> fra
             auto &cadence = *pos->deskport_cadence;
             const auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(
                 std::chrono::steady_clock::now().time_since_epoch()).count();
-            if (ctx->deskport_mail->event<int>("deskport_congestion")->pop(0ms))
+            if (pos->deskport_congestion->pop(0ms))
               cadence.policy.loss(now_us / 1000);
-            if (auto boost = ctx->deskport_mail->event<deskport::ActivityBoost>("deskport_activity")->pop(0ms))
+            if (auto boost = pos->deskport_activity->pop(0ms))
               cadence.boost = *boost;
             const int floor = cadence.floor(now_us);
             const int ceiling = cadence.policy.frameRate(now_us / 1000);
@@ -53,6 +63,8 @@ patch(old, '''          std::optional<std::chrono::steady_clock::time_point> fra
               pos->deskport_last_ceiling = ceiling;
             }
             if (!cadence.admit(now_us, frame_captured, deskport_recovery)) {
+              deskport::captureDeadline = std::min(deskport::captureDeadline,
+                  std::chrono::steady_clock::time_point(std::chrono::microseconds(cadence.readyUs(now_us))));
               ++pos;
               continue;
             }
@@ -61,5 +73,40 @@ patch(old, '''          std::optional<std::chrono::steady_clock::time_point> fra
           } else if (img) {
             frame_timestamp = img->frame_timestamp;
           }
+          // Lifecycle/control notifications wake every mode. Manual streaming
+          // keeps the original one-second idle timeout rather than encoding a
+          // duplicate for each such notification (real frames and IDR bypass).
+          if (deskport::pipewireControlTicks && !ctx->config.deskport_smart && deskport::liveSaver.load() != 1 &&
+              !frame_captured && !deskport_recovery && pos->deskport_manual_encoded != std::chrono::steady_clock::time_point {}) {
+            const auto deadline = pos->deskport_manual_encoded + 1s;
+            if (std::chrono::steady_clock::now() < deadline) {
+              deskport::captureDeadline = std::min(deskport::captureDeadline, deadline);
+              ++pos;
+              continue;
+            }
+          }
 ''')
+patch('''    auto ec = platf::capture_e::ok;
+''', '''    encode_session_ctx_queue.deskport_watch(deskport::captureWake);
+    switch_display_event->deskport_watch(deskport::captureWake);
+    auto deskport_schedule_guard = util::fail_guard([] {
+      deskport::captureDeadline = std::chrono::steady_clock::time_point::max();
+    });
+    auto ec = platf::capture_e::ok;
+''')
+patch('''      auto push_captured_image_callback = [&](std::shared_ptr<platf::img_t> &&img, bool frame_captured) -> bool {
+        while (encode_session_ctx_queue.peek()) {''', '''      auto push_captured_image_callback = [&](std::shared_ptr<platf::img_t> &&img, bool frame_captured) -> bool {
+        deskport::captureDeadline = std::chrono::steady_clock::time_point::max();
+        while (encode_session_ctx_queue.peek()) {''')
+patch('''          pos->session->request_normal_frame();''', '''          if (pos->deskport_cadence) {
+            const auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+            pos->deskport_manual_encoded = std::chrono::steady_clock::now();
+            // Manual streams retain the upstream one-second idle refresh.
+            const auto ready_us = ctx->config.deskport_smart || deskport::liveSaver.load() == 1
+                ? pos->deskport_cadence->readyUs(now_us) : now_us + 1000000;
+            deskport::captureDeadline = std::min(deskport::captureDeadline,
+                std::chrono::steady_clock::time_point(std::chrono::microseconds(ready_us)));
+          }
+          pos->session->request_normal_frame();''')
 p.write_text(s)

@@ -3,20 +3,28 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QQueue>
+#include <QCoreApplication>
+#include <QEventLoop>
+#include <QTimer>
 #include <cmath>
 
 namespace {
-std::atomic<bool> configured{false}, wanted{false}, acceptsInput{false};
+std::atomic<bool> configured{false}, wanted{false};
 std::atomic<Uint32> wakeEventType{0};
 std::atomic<bool> wakePending{false};
 QMutex stateMutex;
-std::function<bool(int)> ipcWaiter;
+QObject* descriptionContext = nullptr;
+std::function<void()> descriptionCallback;
+quint64 descriptionSubscription = 0;
+bool descriptionPending = false;
 QPair<QString, QString> videoConnection;
 QJsonObject viewport, details;
 QQueue<QJsonObject> pendingInput;
 constexpr int MaxWidth = 16384, MaxHeight = 16384;
 bool previousFocus = false, previousHover = false;
 bool releasePending = false;
+bool acceptsInput = false; // Protected with the queue and release fence by stateMutex.
+std::atomic<quint64> inputGeneration{0};
 bool overflowPaused = false;
 quint64 questionId = 0;
 int questionAnswer = -1;
@@ -32,6 +40,98 @@ int bounded(const QJsonObject& object, const char* key, int maximum) {
     const auto value = object.value(key).toDouble(-1);
     return std::isfinite(value) && value >= 0 && value <= maximum ? int(value) : -1;
 }
+// Called with stateMutex held. Only changed control state queues Qt work;
+// encoded frames, HDR metadata and frame timing keep their existing transport.
+void descriptionChanged() {
+    if (!descriptionContext || descriptionPending) return;
+    descriptionPending = true;
+    const auto subscription = descriptionSubscription;
+    QMetaObject::invokeMethod(descriptionContext, [subscription] {
+        std::function<void()> callback;
+        {
+            QMutexLocker lock(&stateMutex);
+            if (subscription != descriptionSubscription) return;
+            descriptionPending = false;
+            callback = descriptionCallback;
+        }
+        if (callback) callback();
+    }, Qt::QueuedConnection);
+}
+void updateDescription(const QJsonObject& patch) {
+    QMutexLocker lock(&stateMutex);
+    bool changed = false;
+    for (auto it = patch.begin(); it != patch.end(); ++it) {
+        if (details.value(it.key()) == it.value()) continue;
+        details[it.key()] = it.value(); changed = true;
+    }
+    if (changed) descriptionChanged();
+}
+
+// Called with stateMutex held. Invalidate a batch already taken by the SDL
+// thread without holding the state lock across SDL filters or event watches.
+void releaseInput() {
+    if (releasePending) return;
+    releasePending = true;
+    inputGeneration.fetch_add(1, std::memory_order_release);
+}
+
+// Called with stateMutex held. Repeated disabled loop iterations must not
+// manufacture another release event and wake their own SDL wait forever.
+bool disableInput() {
+    const bool release = acceptsInput || !pendingInput.isEmpty();
+    acceptsInput = false;
+    pendingInput.clear(); overflowPaused = false;
+    if (release) releaseInput();
+    if (details.value("grab") != QJsonValue(false)) {
+        details["grab"] = false; descriptionChanged();
+    }
+    return release;
+}
+
+// SDL watches run before insertion into the SDL queue. A notification may
+// therefore reach Qt before PollEvent can see the event. Keep probing after
+// that notification until insertion (or the original deadline), rather than
+// starting another long wait and losing the wakeup.
+class QtSdlWait final : public QObject {
+public:
+    QtSdlWait() { SDL_AddEventWatch(watch, this); }
+    ~QtSdlWait() override { SDL_DelEventWatch(watch, this); }
+    bool wait(SDL_Event* event, int timeoutMs) {
+        QTimer deadline;
+        deadline.setSingleShot(true);
+        QObject::connect(&deadline, &QTimer::timeout, &loop, &QEventLoop::quit);
+        deadline.start(qMax(0, timeoutMs));
+        QTimer insertionRetry;
+        insertionRetry.setInterval(1);
+        QObject::connect(&insertionRetry, &QTimer::timeout, &loop, &QEventLoop::quit);
+        for (;;) {
+            if (SDL_PollEvent(event)) return true;
+            if (!deadline.isActive() || timeoutMs <= 0) return false;
+            if (notified.load(std::memory_order_acquire)) insertionRetry.start();
+            loop.exec(QEventLoop::AllEvents);
+        }
+    }
+protected:
+    bool event(QEvent* event) override {
+        if (event->type() != QEvent::User) return QObject::event(event);
+        loop.quit();
+        return true;
+    }
+private:
+    static int SDLCALL watch(void* opaque, SDL_Event* event) {
+#if SDL_VERSION_ATLEAST(2, 0, 22)
+        if (event->type == SDL_POLLSENTINEL) return 1;
+#else
+        Q_UNUSED(event);
+#endif
+        auto self = static_cast<QtSdlWait*>(opaque);
+        if (!self->notified.exchange(true, std::memory_order_acq_rel))
+            QCoreApplication::postEvent(self, new QEvent(QEvent::User));
+        return 1;
+    }
+    QEventLoop loop;
+    std::atomic<bool> notified{false};
+};
 void wakeSdl() {
     const Uint32 type = wakeEventType.load(std::memory_order_acquire);
     if (!type || wakePending.exchange(true, std::memory_order_acq_rel)) return;
@@ -53,7 +153,11 @@ QPair<QString, QString> CanvasBridge::videoTransport() {
     QMutexLocker lock(&stateMutex);
     return videoConnection;
 }
-void CanvasBridge::configure(const QJsonObject& value) { state(value); configured = true; }
+void CanvasBridge::configure(const QJsonObject& value) {
+    state(value); configured = true;
+    QMutexLocker lock(&stateMutex);
+    descriptionChanged();
+}
 bool CanvasBridge::enabled() { return configured.load(); }
 void CanvasBridge::state(const QJsonObject& value) {
     const int width = bounded(value, "width", MaxWidth), height = bounded(value, "height", MaxHeight);
@@ -62,7 +166,9 @@ void CanvasBridge::state(const QJsonObject& value) {
     {
         QMutexLocker lock(&stateMutex);
         if (!value["visible"].toBool() || !value["focused"].toBool()) {
-            releasePending = true;
+            // Latch even a focus loss followed by gain before synchronize().
+            if ((viewport["visible"].toBool() && viewport["focused"].toBool()) || !pendingInput.isEmpty())
+                releaseInput();
             pendingInput.clear();
         }
         viewport = value;
@@ -70,8 +176,16 @@ void CanvasBridge::state(const QJsonObject& value) {
     wakeSdl();
 }
 void CanvasBridge::requested(bool visible) {
-    wanted = visible;
-    if (!visible) inputEnabled(false);
+    bool notify;
+    {
+        QMutexLocker lock(&stateMutex);
+        notify = wanted.exchange(visible) != visible;
+        if (!visible) {
+            if (notify) releaseInput();
+            notify = disableInput() || notify;
+        }
+    }
+    if (notify) wakeSdl();
 }
 bool CanvasBridge::requested() { return wanted.load(); }
 void CanvasBridge::registerWindow(SDL_Window* window) {
@@ -121,15 +235,22 @@ Uint32 CanvasBridge::mouseState(int* x, int* y) {
     return quint32(viewport["buttons"].toInt());
 }
 void CanvasBridge::inputEnabled(bool enabled) {
-    acceptsInput = enabled;
-    if (!enabled) { QMutexLocker lock(&stateMutex); pendingInput.clear(); overflowPaused = false; releasePending = true; details["grab"] = false; }
-}
-void CanvasBridge::input(const QJsonObject& event) {
-    if (!enabled() || !wanted || !acceptsInput) return;
     bool notify = false;
     {
         QMutexLocker lock(&stateMutex);
-        if (overflowPaused || !viewport["visible"].toBool() || !viewport["focused"].toBool()) return;
+        if (enabled && wanted) acceptsInput = true;
+        else notify = disableInput();
+    }
+    if (notify) wakeSdl();
+}
+void CanvasBridge::input(const QJsonObject& event) {
+    if (!enabled()) return;
+    bool notify = false;
+    {
+        QMutexLocker lock(&stateMutex);
+        // Check admission under the same lock as disable/clear. An input
+        // producer that raced a disable must not refill the cleared queue.
+        if (!wanted || !acceptsInput || overflowPaused || !viewport["visible"].toBool() || !viewport["focused"].toBool()) return;
         const auto eventType = event.value("type").toString();
         if (eventType == "motion") {
             const int x = bounded(event, "x", MaxWidth), y = bounded(event, "y", MaxHeight);
@@ -159,8 +280,8 @@ void CanvasBridge::input(const QJsonObject& event) {
             if (pendingInput.size() >= 256) {
                 // Never replay a backlog after the user has released control.
                 pendingInput.clear(); overflowPaused = true;
-                releasePending = true;
-                details["grab"] = false;
+                releaseInput();
+                if (details.value("grab") != QJsonValue(false)) { details["grab"] = false; descriptionChanged(); }
                 notify = true;
             } else {
                 pendingInput.enqueue(event);
@@ -204,28 +325,45 @@ bool CanvasBridge::isWakeEvent(const SDL_Event& event) {
     const Uint32 type = wakeEventType.load(std::memory_order_acquire);
     return type != 0 && event.type == type && event.user.code == CanvasWakeCode;
 }
-void CanvasBridge::setIpcWaiter(std::function<bool(int)> waiter) {
-    QMutexLocker lock(&stateMutex);
-    ipcWaiter = std::move(waiter);
+bool CanvasBridge::waitForEvent(SDL_Event* event, int timeoutMs) {
+    // The hot path neither registers a watch nor queues additional Qt work.
+    if (SDL_PollEvent(event)) return true;
+    return QtSdlWait().wait(event, timeoutMs);
 }
-bool CanvasBridge::waitForIpc(int timeoutMs) {
-    std::function<bool(int)> waiter;
-    { QMutexLocker lock(&stateMutex); waiter = ipcWaiter; }
-    return waiter ? waiter(timeoutMs) : false;
+int CanvasBridge::idleWaitTimeout(bool gamepadAttached, bool viewerAvailable, bool canvasViewer) {
+    if (gamepadAttached) return canvasViewer ? 2 : 20;
+    if (!viewerAvailable) return 200;
+    // Native visible windows retain their OS SDL dispatch and Qt service cadence.
+    return canvasViewer ? 33 : 20;
+}
+void CanvasBridge::setDescriptionCallback(QObject* context, std::function<void()> callback) {
+    QMutexLocker lock(&stateMutex);
+    ++descriptionSubscription; descriptionPending = false;
+    descriptionContext = context; descriptionCallback = std::move(callback);
+    if (configured) descriptionChanged();
 }
 void CanvasBridge::synchronize(SDL_Window* window) {
     if (!owns(window)) return;
-    wakePending.store(false, std::memory_order_release);
     if (const Uint32 type = wakeEventType.load(std::memory_order_acquire)) {
         SDL_Event discard;
         while (SDL_PeepEvents(&discard, 1, SDL_GETEVENT, type, type) > 0) {}
     }
-    QJsonObject state; QQueue<QJsonObject> input; bool release;
-    { QMutexLocker lock(&stateMutex); state = viewport; input.swap(pendingInput); release = releasePending; releasePending = false; overflowPaused = false; }
+    // Drain before rearming. Draining after rearming could remove a new wake
+    // while leaving wakePending set, suppressing every subsequent notification.
+    wakePending.store(false, std::memory_order_release);
+    QJsonObject state; QQueue<QJsonObject> input; bool release, requested, inputAllowed;
+    quint64 generation;
+    {
+        QMutexLocker lock(&stateMutex);
+        state = viewport; input.swap(pendingInput);
+        release = releasePending; releasePending = false; overflowPaused = false;
+        requested = wanted; inputAllowed = acceptsInput;
+        generation = inputGeneration.load(std::memory_order_acquire);
+    }
     const int width = state["width"].toInt(1120), height = state["height"].toInt(704);
     int currentWidth, currentHeight; SDL_GetWindowSize(window, &currentWidth, &currentHeight);
     if (width != currentWidth || height != currentHeight) SDL_SetWindowSize(window, width, height);
-    const bool focus = wanted && state["visible"].toBool() && state["focused"].toBool();
+    const bool focus = requested && state["visible"].toBool() && state["focused"].toBool();
     const bool hover = focus && state["hovered"].toBool();
     if (release) {
         // A rapid focus return must not erase the release boundary. Deliver
@@ -236,8 +374,11 @@ void CanvasBridge::synchronize(SDL_Window* window) {
     if (previousFocus != focus) windowEvent(window, focus ? SDL_WINDOWEVENT_FOCUS_GAINED : SDL_WINDOWEVENT_FOCUS_LOST);
     if (previousHover != hover) windowEvent(window, hover ? SDL_WINDOWEVENT_ENTER : SDL_WINDOWEVENT_LEAVE);
     previousFocus = focus; previousHover = hover;
-    if (!focus || !acceptsInput) return;
+    if (!focus || !inputAllowed) return;
     for (const auto& value : input) {
+        // A disable/focus loss after the snapshot must also invalidate this
+        // batch, even if input has already been enabled again on another thread.
+        if (generation != inputGeneration.load(std::memory_order_acquire)) return;
         SDL_Event event{};
         const auto type = value["type"].toString();
         if (type == "key") {
@@ -291,6 +432,7 @@ void CanvasBridge::synchronize(SDL_Window* window) {
             QByteArray chunk;
             const auto flush = [&] {
                 if (chunk.isEmpty()) return;
+                if (generation != inputGeneration.load(std::memory_order_acquire)) { chunk.clear(); return; }
                 // sdl2-compat 2.32.68 rejects pushed SDL_TEXTINPUT events and
                 // forwards a null event to SDL3. Carry owned inline bytes in a
                 // user event instead; no allocation can leak on queue flushes.
@@ -324,22 +466,23 @@ void CanvasBridge::synchronize(SDL_Window* window) {
     }
 }
 void CanvasBridge::capture(bool grab, bool hidden, bool relative) {
-    QMutexLocker lock(&stateMutex); details["grab"] = grab; details["cursorHidden"] = hidden;
-    details["relative"] = relative;
+    updateDescription({{"grab",grab}, {"cursorHidden",hidden}, {"relative",relative}});
 }
 void CanvasBridge::pointerRegion(bool enabled, int x, int y, int width, int height) {
-    QMutexLocker lock(&stateMutex);
-    details["pointerRegion"] = enabled ? QJsonObject{{"x", x}, {"y", y}, {"width", width}, {"height", height}} : QJsonObject{};
+    updateDescription({{"pointerRegion", enabled ? QJsonObject{{"x", x}, {"y", y}, {"width", width}, {"height", height}} : QJsonObject{}}});
 }
 void CanvasBridge::overlay(int type, bool enabled, const QString& text) {
     QMutexLocker lock(&stateMutex);
     auto overlays = details["overlays"].toObject();
-    overlays[QString::number(type)] = QJsonObject{{"enabled",enabled},{"text",text.left(512)}};
+    const QJsonObject value{{"enabled",enabled},{"text",text.left(512)}};
+    if (overlays.value(QString::number(type)) == value) return;
+    overlays[QString::number(type)] = value;
     details["overlays"] = overlays;
+    descriptionChanged();
 }
-void CanvasBridge::textInput(bool enabled) { QMutexLocker lock(&stateMutex); details["textInput"] = enabled; }
-void CanvasBridge::label(const QString& text) { QMutexLocker lock(&stateMutex); details["label"] = text; }
-void CanvasBridge::waiting(bool value) { QMutexLocker lock(&stateMutex); details["waiting"] = value; }
+void CanvasBridge::textInput(bool enabled) { updateDescription({{"textInput",enabled}}); }
+void CanvasBridge::label(const QString& text) { updateDescription({{"label",text}}); }
+void CanvasBridge::waiting(bool value) { updateDescription({{"waiting",value}}); }
 QJsonObject CanvasBridge::description() {
     QJsonObject result;
     { QMutexLocker lock(&stateMutex); result = details; }
@@ -349,10 +492,21 @@ void CanvasBridge::question(const QString& title, const QString& text, const QSt
     QMutexLocker lock(&stateMutex);
     questionAnswer = -1;
     details["question"] = QJsonObject{{"id",double(++questionId)}, {"title",title}, {"text",text}, {"cancel",cancel}, {"accept",accept}};
+    descriptionChanged();
 }
 void CanvasBridge::answer(quint64 id, int choice) {
-    QMutexLocker lock(&stateMutex);
-    if (wanted && id == questionId && details.value("question").isObject() && (choice == 0 || choice == 1)) questionAnswer = choice;
+    bool accepted = false;
+    {
+        QMutexLocker lock(&stateMutex);
+        if (wanted && id == questionId && details.value("question").isObject() && (choice == 0 || choice == 1)) {
+            questionAnswer = choice; accepted = true;
+        }
+    }
+    if (accepted) wakeSdl();
 }
 int CanvasBridge::takeAnswer() { QMutexLocker lock(&stateMutex); return questionAnswer; }
-void CanvasBridge::dismissQuestion() { QMutexLocker lock(&stateMutex); details.remove("question"); questionAnswer = -1; }
+void CanvasBridge::dismissQuestion() {
+    QMutexLocker lock(&stateMutex);
+    if (details.contains("question")) { details.remove("question"); descriptionChanged(); }
+    questionAnswer = -1;
+}

@@ -13,6 +13,7 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QTimer>
+#include <QFileSystemWatcher>
 
 class HostCaretMonitor;
 
@@ -152,13 +153,18 @@ signals:
     // explicitly. Notify controllers before Sunshine sends a graceful EOF.
     void sessionHostStopping(bool recoverable);
 private:
+    friend class BackendTimerTests;
     void sendTrustUpdate(const QJsonObject& body, qint64 deadline = 0);
     void managementRequest(const QString& path, const QJsonObject& body, QObject* context,
                            std::function<void(QJsonObject)> completion);
     QString unattendedDirectory() const;
+    void updateUnattendedMonitor();
     bool unattendedMarker(const QString& name, bool present);
     QString m_UnattendedError;
     int m_UnattendedServiceStatus = 0;
+    bool m_UnattendedMonitoring = false;
+    QTimer m_UnattendedMonitor;
+    QFileSystemWatcher m_UnattendedWatcher;
     void updateTrayIcon();
 #ifdef Q_OS_MACOS
     void showTrayMenu();

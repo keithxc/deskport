@@ -13,6 +13,12 @@
 #include "admitted-display.h"
 #import "color-conversion.h"
 
+static NSString *const DPCaptureLifecycleNotification = @"DeskPortCaptureLifecycle";
+
+void DPNudgeCaptureLifecycle(void) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:DPCaptureLifecycleNotification object:nil];
+}
+
 // HDR is an active source property, independent of a 10-bit encoder profile.
 // Managed virtual outputs currently publish SDR modes; never infer HDR from P010.
 static BOOL dp_source_hdr(CGDirectDisplayID display) {
@@ -67,124 +73,21 @@ static void dp_set_output_color(CVPixelBufferRef pixels, BOOL hdr) {
     CVBufferSetAttachment(pixels, kCVImageBufferYCbCrMatrixKey, hdr ? kCVImageBufferYCbCrMatrix_ITU_R_2020 : kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate);
 }
 
-@interface DPCapture : NSObject <SCStreamOutput, SCStreamDelegate>
-@property(nonatomic, strong) dispatch_queue_t queue;
-@property(nonatomic, strong) dispatch_semaphore_t signal;
-@property(nonatomic, strong) dispatch_source_t timer;
-@property(nonatomic, strong) SCStream *stream;
-@property(nonatomic, copy) FrameCallbackBlock callback;
-@property(nonatomic, assign) CMSampleBufferRef latest;
-@property(nonatomic) double started;
-@property(nonatomic) BOOL finished;
-@property(nonatomic) BOOL failed;
-@property(nonatomic) double statsAt;
-@property(nonatomic) NSUInteger completeFrames;
-@property(nonatomic) NSUInteger idleFrames;
-@property(nonatomic) NSUInteger emptyDamageFrames;
+// Conversion resources have no capture, queue or callback reference. Buffered
+// frames can therefore survive capture cancellation/reconfiguration safely.
+@interface DPFrameConverter : NSObject
 @property(nonatomic) OSType targetFormat;
 @property(nonatomic) BOOL hdr;
 @property(nonatomic) VTPixelTransferSessionRef transfer;
 @property(nonatomic) CVPixelBufferPoolRef pool;
 @property(nonatomic, strong) DPColorConverter *rgbConverter;
 - (CMSampleBufferRef)convertSample:(CMSampleBufferRef)sample CF_RETURNS_RETAINED;
-- (void)finish;
-- (void)startDisplay:(CGDirectDisplayID)display configuration:(SCStreamConfiguration *)config;
 @end
 
-@implementation DPCapture
+@implementation DPFrameConverter
 - (void)dealloc {
-    if (_latest) CFRelease(_latest);
     if (_transfer) { VTPixelTransferSessionInvalidate(_transfer); CFRelease(_transfer); }
     if (_pool) CFRelease(_pool);
-}
-- (void)finish {
-    if (self.finished) return;
-    self.finished = YES;
-    self.callback = nil; // Release C++ captures before waking their owning thread.
-    if (self.timer) dispatch_source_cancel(self.timer);
-    self.timer = nil;
-    SCStream *stream = self.stream;
-    self.stream = nil;
-    [stream stopCaptureWithCompletionHandler:^(NSError *error) {
-        // Keep the stream alive until asynchronous shutdown completes.
-        (void)stream;
-        (void)error;
-    }];
-    if (self.latest) CFRelease(self.latest);
-    self.latest = NULL;
-    dispatch_semaphore_signal(self.signal);
-}
-- (void)deliver:(CMSampleBufferRef)sample {
-    if (self.finished) return;
-    if (!self.callback(sample)) [self finish];
-}
-- (void)startHeartbeat {
-    self.started = CACurrentMediaTime();
-    // Idle capture must still observe shutdown/reconfiguration. These are lifecycle
-    // ticks, never new pictures: the capture loop seeds a new encoder separately
-    // from its retained last real image, without rearming existing encoders.
-    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.queue);
-    dispatch_source_set_timer(self.timer, dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                              100 * NSEC_PER_MSEC, 10 * NSEC_PER_MSEC);
-    __weak DPCapture *weakSelf = self;
-    dispatch_source_set_event_handler(self.timer, ^{
-        DPCapture *s = weakSelf;
-        if (!s || s.finished) return;
-        double now = CACurrentMediaTime();
-        if (!s.latest && now - s.started >= 5.0) {
-            DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: first-frame timeout");
-            s.failed = YES;
-            [s finish];
-            return;
-        }
-        [s deliver:NULL];
-    });
-    dispatch_resume(self.timer);
-}
-- (void)startDisplay:(CGDirectDisplayID)display configuration:(SCStreamConfiguration *)config {
-    [self startHeartbeat];
-    [SCShareableContent getShareableContentExcludingDesktopWindows:NO onScreenWindowsOnly:NO
-        completionHandler:^(SCShareableContent *content, NSError *error) {
-        dispatch_async(self.queue, ^{
-            if (self.finished) return;
-            SCDisplay *selected = nil;
-            for (SCDisplay *candidate in content.displays) {
-                if (candidate.displayID == display) { selected = candidate; break; }
-            }
-            if (error || !selected) {
-                DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: display unavailable (%@)", error);
-                self.failed = YES;
-                [self finish];
-                return;
-            }
-            SCContentFilter *filter = [[SCContentFilter alloc] initWithDisplay:selected excludingWindows:@[]];
-            self.stream = [[SCStream alloc] initWithFilter:filter configuration:config delegate:self];
-            NSError *outputError = nil;
-            if (![self.stream addStreamOutput:self type:SCStreamOutputTypeScreen
-                          sampleHandlerQueue:self.queue error:&outputError]) {
-                DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: output failed (%@)", outputError);
-                self.failed = YES;
-                [self finish];
-                return;
-            }
-            [self.stream startCaptureWithCompletionHandler:^(NSError *startError) {
-                if (startError) dispatch_async(self.queue, ^{
-                    if (self.finished) return;
-                    DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: start failed (%@)", startError);
-                    self.failed = YES;
-                    [self finish];
-                });
-            }];
-        });
-    }];
-}
-- (void)stream:(SCStream *)stream didStopWithError:(NSError *)error {
-    dispatch_async(self.queue, ^{
-        if (self.finished) return;
-        DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: capture stopped (%@)", error);
-        self.failed = YES;
-        [self finish];
-    });
 }
 // Keep precision and transfer function through the format/range conversion.
 // Reject missing/wrong HDR attachments rather than relabelling SDR pixels.
@@ -306,32 +209,248 @@ static void dp_set_output_color(CVPixelBufferRef pixels, BOOL hdr) {
     CFRelease(destination);
     return result;
 }
+@end
+
+static const CFStringRef DPDeferredConversionKey = CFSTR("DeskPortDeferredP010");
+@interface DPDeferredConversion : NSObject
+@property(nonatomic, strong) DPFrameConverter *converter;
+@property(nonatomic) CMSampleBufferRef result;
+@property(nonatomic) BOOL attempted;
+@end
+@implementation DPDeferredConversion
+- (void)dealloc {
+    if (_result) CFRelease(_result);
+}
+@end
+
+CMSampleBufferRef DPCopyCaptureSampleForEncoder(CMSampleBufferRef sample) {
+    if (!sample) return NULL;
+    DPDeferredConversion *pending = (__bridge DPDeferredConversion *)CMGetAttachment(sample, DPDeferredConversionKey, NULL);
+    if (!pending) return (CMSampleBufferRef)CFRetain(sample);
+    // One result per raw sample, shared by all viewers. Different raw frames
+    // serialize on the same warmed converter as eager capture. Neither
+    // lock ever dispatches to the capture queue or waits for an encoder callback.
+    @synchronized (pending) {
+        if (!pending.attempted) {
+            pending.attempted = YES;
+            @synchronized (pending.converter) {
+                pending.result = [pending.converter convertSample:sample];
+            }
+        }
+        return pending.result ? (CMSampleBufferRef)CFRetain(pending.result) : NULL;
+    }
+}
+
+@interface DPCapture : NSObject <SCStreamOutput, SCStreamDelegate>
+@property(nonatomic, strong) dispatch_queue_t queue;
+@property(nonatomic, strong) dispatch_semaphore_t signal;
+@property(nonatomic, strong) dispatch_source_t timer;
+@property(nonatomic, strong) id lifecycleObserver;
+@property(nonatomic, strong) SCStream *stream;
+@property(nonatomic, copy) FrameCallbackBlock callback;
+@property(nonatomic, assign) CMSampleBufferRef latest;
+@property(nonatomic) double started;
+@property(nonatomic) BOOL finished;
+@property(nonatomic) BOOL failed;
+@property(nonatomic) BOOL diagnostics;
+@property(nonatomic) double statsAt;
+@property(nonatomic) NSUInteger completeFrames;
+@property(nonatomic) NSUInteger idleFrames;
+@property(nonatomic) NSUInteger emptyDamageFrames;
+@property(nonatomic) OSType targetFormat;
+@property(nonatomic) BOOL hdr;
+@property(nonatomic, copy) BOOL (^conversionPaused)(void);
+@property(nonatomic, strong) DPFrameConverter *frameConverter;
+- (DPFrameConverter *)conversionContext;
+- (CMSampleBufferRef)convertSample:(CMSampleBufferRef)sample CF_RETURNS_RETAINED;
+- (CMSampleBufferRef)bufferSample:(CMSampleBufferRef)sample CF_RETURNS_RETAINED;
+- (void)finish;
+- (void)startDisplay:(CGDirectDisplayID)display configuration:(SCStreamConfiguration *)config;
+@end
+
+@implementation DPCapture
+- (instancetype)init {
+    if ((self = [super init])) {
+        const char *diagnostics = getenv("DESKPORT_CAPTURE_DIAGNOSTICS");
+        self.diagnostics = diagnostics && strcmp(diagnostics, "1") == 0;
+    }
+    return self;
+}
+- (void)dealloc {
+    if (_lifecycleObserver) [[NSNotificationCenter defaultCenter] removeObserver:_lifecycleObserver];
+    if (_latest) CFRelease(_latest);
+}
+- (void)finish {
+    if (self.finished) return;
+    self.finished = YES;
+    self.callback = nil; // Release C++ captures before waking their owning thread.
+    self.conversionPaused = nil;
+    self.frameConverter = nil;
+    if (self.lifecycleObserver) [[NSNotificationCenter defaultCenter] removeObserver:self.lifecycleObserver];
+    self.lifecycleObserver = nil;
+    if (self.timer) dispatch_source_cancel(self.timer);
+    self.timer = nil;
+    SCStream *stream = self.stream;
+    self.stream = nil;
+    [stream stopCaptureWithCompletionHandler:^(NSError *error) {
+        // Keep the stream alive until asynchronous shutdown completes.
+        (void)stream;
+        (void)error;
+    }];
+    if (self.latest) CFRelease(self.latest);
+    self.latest = NULL;
+    dispatch_semaphore_signal(self.signal);
+}
+- (void)deliver:(CMSampleBufferRef)sample {
+    if (self.finished) return;
+    if (!self.callback(sample)) [self finish];
+}
+- (void)startHeartbeat {
+    self.started = CACurrentMediaTime();
+    __weak DPCapture *weakSelf = self;
+    dispatch_queue_t queue = self.queue;
+    void (^enqueueLifecycle)(void) = ^{
+        // Notification delivery never joins an SCK queue or retains the capture.
+        dispatch_async(queue, ^{
+            DPCapture *s = weakSelf;
+            if (s && !s.finished) [s deliver:NULL];
+        });
+    };
+    self.lifecycleObserver = [[NSNotificationCenter defaultCenter]
+        addObserverForName:DPCaptureLifecycleNotification object:nil queue:nil
+        usingBlock:^(NSNotification *notification) { (void)notification; enqueueLifecycle(); }];
+    // A context may have arrived before observer registration. Service the
+    // already-enqueued contexts immediately instead of losing that first nudge.
+    enqueueLifecycle();
+    // Idle capture must still observe shutdown/reconfiguration. These are lifecycle
+    // ticks, never new pictures: the capture loop seeds a new encoder separately
+    // from its retained last real image, without rearming existing encoders.
+    self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, self.queue);
+    const uint64_t interval = (self.latest ? 500 : 100) * NSEC_PER_MSEC;
+    dispatch_source_set_timer(self.timer, dispatch_time(DISPATCH_TIME_NOW, interval),
+                              interval, 10 * NSEC_PER_MSEC);
+    dispatch_source_set_event_handler(self.timer, ^{
+        DPCapture *s = weakSelf;
+        if (!s || s.finished) return;
+        double now = CACurrentMediaTime();
+        if (!s.latest && now - s.started >= 5.0) {
+            DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: first-frame timeout");
+            s.failed = YES;
+            [s finish];
+            return;
+        }
+        [s deliver:NULL];
+    });
+    dispatch_resume(self.timer);
+}
+- (void)startDisplay:(CGDirectDisplayID)display configuration:(SCStreamConfiguration *)config {
+    [self startHeartbeat];
+    [SCShareableContent getShareableContentExcludingDesktopWindows:NO onScreenWindowsOnly:NO
+        completionHandler:^(SCShareableContent *content, NSError *error) {
+        dispatch_async(self.queue, ^{
+            if (self.finished) return;
+            SCDisplay *selected = nil;
+            for (SCDisplay *candidate in content.displays) {
+                if (candidate.displayID == display) { selected = candidate; break; }
+            }
+            if (error || !selected) {
+                DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: display unavailable (%@)", error);
+                self.failed = YES;
+                [self finish];
+                return;
+            }
+            SCContentFilter *filter = [[SCContentFilter alloc] initWithDisplay:selected excludingWindows:@[]];
+            self.stream = [[SCStream alloc] initWithFilter:filter configuration:config delegate:self];
+            NSError *outputError = nil;
+            if (![self.stream addStreamOutput:self type:SCStreamOutputTypeScreen
+                          sampleHandlerQueue:self.queue error:&outputError]) {
+                DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: output failed (%@)", outputError);
+                self.failed = YES;
+                [self finish];
+                return;
+            }
+            [self.stream startCaptureWithCompletionHandler:^(NSError *startError) {
+                if (startError) dispatch_async(self.queue, ^{
+                    if (self.finished) return;
+                    DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: start failed (%@)", startError);
+                    self.failed = YES;
+                    [self finish];
+                });
+            }];
+        });
+    }];
+}
+- (void)stream:(SCStream *)stream didStopWithError:(NSError *)error {
+    dispatch_async(self.queue, ^{
+        if (self.finished) return;
+        DP_CAPTURE_LOG(@"DeskPort ScreenCaptureKit: capture stopped (%@)", error);
+        self.failed = YES;
+        [self finish];
+    });
+}
+- (DPFrameConverter *)conversionContext {
+    if (!self.frameConverter) {
+        self.frameConverter = [DPFrameConverter new];
+        self.frameConverter.targetFormat = self.targetFormat;
+        self.frameConverter.hdr = self.hdr;
+    }
+    return self.frameConverter;
+}
+- (CMSampleBufferRef)convertSample:(CMSampleBufferRef)sample {
+    if (self.targetFormat != kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange)
+        return (CMSampleBufferRef)CFRetain(sample);
+    DPFrameConverter *converter = [self conversionContext];
+    // Reuse warmed native resources after a pause; never compile a second
+    // Metal pipeline merely because the consuming encoder resumes first.
+    @synchronized (converter) {
+        return [converter convertSample:sample];
+    }
+}
+- (CMSampleBufferRef)bufferSample:(CMSampleBufferRef)sample {
+    // A shallow sample copy keeps the same IOSurface/timestamps/attachments,
+    // without modifying SCK's sample or retaining the capture from its metadata.
+    CMSampleBufferRef buffered = NULL;
+    if (CMSampleBufferCreateCopy(NULL, sample, &buffered) != noErr) return NULL;
+    DPDeferredConversion *pending = [DPDeferredConversion new];
+    pending.converter = [self conversionContext];
+    CMSetAttachment(buffered, DPDeferredConversionKey, (__bridge CFTypeRef)pending, kCMAttachmentMode_ShouldNotPropagate);
+    return buffered;
+}
 - (void)stream:(SCStream *)stream didOutputSampleBuffer:(CMSampleBufferRef)sample ofType:(SCStreamOutputType)type {
     if (self.finished || type != SCStreamOutputTypeScreen || !CMSampleBufferIsValid(sample)) return;
     NSArray *attachments = (__bridge NSArray *)CMSampleBufferGetSampleAttachmentsArray(sample, false);
     NSNumber *status = attachments.firstObject[SCStreamFrameInfoStatus];
-    double now = CACurrentMediaTime();
-    if (!self.statsAt) self.statsAt = now;
-    if (status && status.integerValue == SCFrameStatusComplete) ++self.completeFrames;
-    if (status && status.integerValue == SCFrameStatusIdle) ++self.idleFrames;
-    NSArray *dirty = attachments.firstObject[SCStreamFrameInfoDirtyRects];
-    if ([dirty isKindOfClass:[NSArray class]] && dirty.count == 0) ++self.emptyDamageFrames;
-    if (now - self.statsAt >= 5.0) {
-        DP_CAPTURE_LOG(@"DeskPort capture updates: complete=%lu idle=%lu empty_damage=%lu", (unsigned long)self.completeFrames,
-              (unsigned long)self.idleFrames, (unsigned long)self.emptyDamageFrames);
-        self.completeFrames = self.idleFrames = self.emptyDamageFrames = 0;
-        self.statsAt = now;
+    if (self.diagnostics) {
+        double now = CACurrentMediaTime();
+        if (!self.statsAt) self.statsAt = now;
+        if (status && status.integerValue == SCFrameStatusComplete) ++self.completeFrames;
+        if (status && status.integerValue == SCFrameStatusIdle) ++self.idleFrames;
+        NSArray *dirty = attachments.firstObject[SCStreamFrameInfoDirtyRects];
+        if ([dirty isKindOfClass:[NSArray class]] && dirty.count == 0) ++self.emptyDamageFrames;
+        if (now - self.statsAt >= 5.0) {
+            DP_CAPTURE_LOG(@"DeskPort capture updates: complete=%lu idle=%lu empty_damage=%lu", (unsigned long)self.completeFrames,
+                  (unsigned long)self.idleFrames, (unsigned long)self.emptyDamageFrames);
+            self.completeFrames = self.idleFrames = self.emptyDamageFrames = 0;
+            self.statsAt = now;
+        }
     }
     // Idle samples have no new surface. Never map or compare their pixels.
     if (!status || (status.integerValue != SCFrameStatusComplete && status.integerValue != SCFrameStatusStarted) ||
         !CMSampleBufferGetImageBuffer(sample)) return;
-    CMSampleBufferRef converted = [self convertSample:sample];
+    const BOOL deferred = self.targetFormat == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange &&
+        self.conversionPaused && self.conversionPaused();
+    CMSampleBufferRef converted = deferred ? [self bufferSample:sample] : [self convertSample:sample];
     if (!converted) {
         DP_CAPTURE_LOG(@"DeskPort capture: pixel format/color contract failed (HDR=%d)", self.hdr);
         self.failed = YES;
         [self finish];
         return;
     }
+    // Once a real surface exists, lifecycle polling needs only 2 Hz. Real frames
+    // still reach the callback immediately; ticks never replay the retained image.
+    if (!self.latest && self.timer)
+        dispatch_source_set_timer(self.timer, dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC),
+                                  500 * NSEC_PER_MSEC, 10 * NSEC_PER_MSEC);
     if (self.latest) CFRelease(self.latest);
     self.latest = converted;
     [self deliver:converted];
@@ -380,6 +499,9 @@ static void dp_set_output_color(CVPixelBufferRef pixels, BOOL hdr) {
     });
 }
 - (dispatch_semaphore_t)capture:(FrameCallbackBlock)callback {
+    return [self capture:callback conversionPaused:nil];
+}
+- (dispatch_semaphore_t)capture:(FrameCallbackBlock)callback conversionPaused:(BOOL (^)(void))paused {
     SCStreamConfiguration *config = dp_capture_configuration(self.pixelFormat, self.hdrAvailable && self.hdrCaptureAllowed);
     if (!config) {
         DP_CAPTURE_LOG(@"DeskPort capture: unsupported pixel format/OS %u", self.pixelFormat);
@@ -388,7 +510,7 @@ static void dp_set_output_color(CVPixelBufferRef pixels, BOOL hdr) {
     config.width = self.frameWidth;
     config.height = self.frameHeight;
     config.minimumFrameInterval = self.minFrameDuration;
-    config.queueDepth = 8;
+    config.queueDepth = 3;
     config.showsCursor = YES;
     config.capturesAudio = NO;
     config.preservesAspectRatio = YES;
@@ -398,6 +520,7 @@ static void dp_set_output_color(CVPixelBufferRef pixels, BOOL hdr) {
     capture.queue = self.captureQueue;
     capture.signal = dispatch_semaphore_create(0);
     capture.callback = callback;
+    capture.conversionPaused = paused;
     dispatch_sync(self.captureQueue, ^{
         self.captures[[NSValue valueWithPointer:(__bridge const void *)capture.signal]] = capture;
         [capture startDisplay:self.displayID configuration:config];

@@ -135,6 +135,10 @@ HostManager::HostManager(QObject *parent, const QString &directory, bool interac
         start(m_RequestedWidth, m_RequestedHeight);
         if (!running()) scheduleRecovery();
     });
+    m_UnattendedMonitor.setInterval(10000);
+    connect(&m_UnattendedMonitor, &QTimer::timeout, this, &HostManager::refreshUnattended);
+    connect(&m_UnattendedWatcher, &QFileSystemWatcher::directoryChanged, this, &HostManager::refreshUnattended);
+    connect(&m_UnattendedWatcher, &QFileSystemWatcher::fileChanged, this, &HostManager::refreshUnattended);
     if (!m_Isolated) {
         const int savedPort = QSettings().value("host/port", DeskPortNetwork::DefaultBasePort).toInt();
         if (DeskPortNetwork::isPrivateBase(savedPort)) m_BasePort = savedPort;
@@ -447,19 +451,15 @@ HostManager::HostManager(QObject *parent, const QString &directory, bool interac
     qApp->installEventFilter(this);
     m_Tray.setToolTip("DeskPort");
     if (!m_Isolated && interactive) m_Tray.show();
-    connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { m_ShuttingDown = true; m_RecoveryTimer.stop(); beginStop(tr("Sharing is off")); });
+    connect(qApp, &QCoreApplication::aboutToQuit, this, [this] { m_ShuttingDown = true; m_RecoveryTimer.stop(); updateUnattendedMonitor(); beginStop(tr("Sharing is off")); });
 #ifdef Q_OS_MACOS
     if (!m_Isolated && interactive) {
         // A manual launch resumes a prior "Pause and quit"; the paused helper
         // never launches us itself. A normal login still follows the login item.
         if (unattendedEnabled()) unattendedMarker("paused", false);
-        refreshUnattended();
-        auto monitor = new QTimer(this);
-        connect(monitor, &QTimer::timeout, this, [this] {
-            if (unattendedEnabled()) refreshUnattended();
-        });
-        monitor->start(10000);
+        m_UnattendedMonitoring = true;
         connect(qApp, &QGuiApplication::applicationStateChanged, this, [this] { refreshUnattended(); });
+        refreshUnattended();
     }
 #endif
     if (interactive && directory.isEmpty() && !loginStartManaged()) {
@@ -628,7 +628,7 @@ bool HostManager::eventFilter(QObject* watched, QEvent* event) {
     return QObject::eventFilter(watched, event);
 }
 HostManager::~HostManager() {
-    m_ShuttingDown = true; m_RecoveryTimer.stop();
+    m_ShuttingDown = true; m_RecoveryTimer.stop(); updateUnattendedMonitor();
     // The event loop may already be gone during application shutdown. Normal UI
     // stops are asynchronous; only destruction waits for our own child processes.
     beginStop(tr("Sharing is off"));

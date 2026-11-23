@@ -208,6 +208,9 @@ private:
 
     bool initializeAudioRenderer();
 
+    void updateAudioPlayback(bool muted);
+    void releaseAudioRenderer();
+
     bool testAudio(int audioConfiguration);
 
     int getAudioRendererCapabilities(int audioConfiguration);
@@ -336,6 +339,8 @@ private:
     OPUS_MULTISTREAM_CONFIGURATION m_OriginalAudioConfig;
     int m_AudioSampleCount;
     Uint32 m_DropAudioEndTime;
+    QMutex m_AudioControlLock;
+    unsigned int m_AudioMuteGeneration = 0; // Protected by m_AudioControlLock.
 
     Overlay::OverlayManager m_OverlayManager;
 

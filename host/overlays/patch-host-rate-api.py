@@ -34,6 +34,7 @@ patch('src/confighttp.cpp', '''        if (action == "video") {''', '''        i
               output["saver"] = input["saver"].get<bool>();
             }
             deskport::liveCeilingPermille = permille;
+            deskport::cadenceControls.notify();
             const int saver = deskport::liveSaver.load();
             output["status"] = true;
             output["ceilingKbps"] = ceiling;

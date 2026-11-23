@@ -10,6 +10,13 @@ public:
 
     virtual bool prepareForPlayback(const OPUS_MULTISTREAM_CONFIGURATION* opusConfig) = 0;
 
+    // Called only for the live renderer after device and decoder setup.
+    virtual void startPlaybackControl() {}
+
+    // Nonblocking control publication; low bit is mute, upper bits track edges.
+    // Only SDL suspends its device. Other backends retain their original behavior.
+    virtual void updatePlaybackState(unsigned int) {}
+
     virtual void* getAudioBuffer(int* size) = 0;
 
     // Return false if an unrecoverable error has occurred and the renderer must be reinitialized

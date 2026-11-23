@@ -5,20 +5,21 @@
 
 SdlAudioRenderer::SdlAudioRenderer()
     : m_AudioDevice(0),
-      m_AudioBuffer(nullptr)
+      m_AudioBuffer(nullptr),
+      m_FrameSize(0),
+      m_AudioInitialized(false)
 {
-    SDL_assert(!SDL_WasInit(SDL_INIT_AUDIO));
-
-    if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "SDL_InitSubSystem(SDL_INIT_AUDIO) failed: %s",
-                     SDL_GetError());
-        SDL_assert(SDL_WasInit(SDL_INIT_AUDIO));
-    }
 }
 
 bool SdlAudioRenderer::prepareForPlayback(const OPUS_MULTISTREAM_CONFIGURATION* opusConfig)
 {
+    if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "SDL_InitSubSystem(SDL_INIT_AUDIO) failed: %s",
+                     SDL_GetError());
+        return false;
+    }
+    m_AudioInitialized = true;
     SDL_AudioSpec want, have;
 
     SDL_zero(want);
@@ -79,8 +80,30 @@ bool SdlAudioRenderer::prepareForPlayback(const OPUS_MULTISTREAM_CONFIGURATION* 
     return true;
 }
 
+void SdlAudioRenderer::startPlaybackControl()
+{
+    // Device pause/resume can wait for the audio callback. Keep these operations
+    // off the viewer's activity/input thread, including during packet silence.
+    m_PlaybackWake = SDL_CreateSemaphore(0);
+    if (m_PlaybackWake != nullptr) {
+        m_PlaybackThread = SDL_CreateThread(playbackThread, "AudioIdle", this);
+    }
+    if (!m_PlaybackThread) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unable to start audio idle control: %s", SDL_GetError());
+    }
+}
+
 SdlAudioRenderer::~SdlAudioRenderer()
 {
+    if (m_PlaybackThread != nullptr) {
+        m_StopPlaybackThread = true;
+        SDL_SemPost(m_PlaybackWake);
+        SDL_WaitThread(m_PlaybackThread, nullptr);
+    }
+    if (m_PlaybackWake != nullptr) {
+        SDL_DestroySemaphore(m_PlaybackWake);
+    }
+
     if (m_AudioDevice != 0) {
         // Stop playback
         SDL_PauseAudioDevice(m_AudioDevice, 1);
@@ -91,18 +114,61 @@ SdlAudioRenderer::~SdlAudioRenderer()
         SDL_free(m_AudioBuffer);
     }
 
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
-    SDL_assert(!SDL_WasInit(SDL_INIT_AUDIO));
+    if (m_AudioInitialized) {
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    }
+}
+
+void SdlAudioRenderer::updatePlaybackState(unsigned int request)
+{
+    if (m_PlaybackRequest.exchange(request) != request && m_PlaybackThread) {
+        SDL_SemPost(m_PlaybackWake);
+    }
+}
+
+int SdlAudioRenderer::playbackThread(void* context)
+{
+    auto renderer = static_cast<SdlAudioRenderer*>(context);
+    while (!renderer->m_StopPlaybackThread.load()) {
+        Uint32 delay;
+        {
+            std::lock_guard<std::mutex> lock(renderer->m_PlaybackLock);
+            renderer->syncPlaybackState();
+            delay = renderer->m_IdleState.timeUntilPause(SDL_GetTicks());
+        }
+        SDL_SemWaitTimeout(renderer->m_PlaybackWake, delay);
+    }
+    return 0;
+}
+
+void SdlAudioRenderer::syncPlaybackState()
+{
+    // Serialized with the final queue submission, never with UI publication.
+    const unsigned int request = m_PlaybackRequest.load();
+    if (request == m_PlaybackGeneration && !m_IdleState.muted()) return;
+    const auto action = m_IdleState.update((request & 1) != 0, SDL_GetTicks());
+    if (request != m_PlaybackGeneration || action == AudioIdleState::Action::Pause) {
+        // Also flush across a quick mute/unmute that the worker sees as one edge.
+        SDL_ClearQueuedAudio(m_AudioDevice);
+        m_PlaybackGeneration = request;
+    }
+    if (action == AudioIdleState::Action::Pause) {
+        SDL_PauseAudioDevice(m_AudioDevice, 1);
+    }
+    else if (action == AudioIdleState::Action::Resume) {
+        SDL_PauseAudioDevice(m_AudioDevice, 0);
+    }
 }
 
 void* SdlAudioRenderer::getAudioBuffer(int*)
 {
+    m_BufferGeneration = m_PlaybackRequest.load();
     return m_AudioBuffer;
 }
 
 bool SdlAudioRenderer::submitAudio(int bytesWritten)
 {
-    if (bytesWritten == 0) {
+    if (bytesWritten == 0 || (m_PlaybackRequest.load() & 1)) {
         // Nothing to do
         return true;
     }
@@ -117,6 +183,9 @@ bool SdlAudioRenderer::submitAudio(int bytesWritten)
     // in SDL's audio queue, but don't wait forever to avoid a deadlock if the
     // audio device fails.
     for (int i = 0; i < 100; i++) {
+        if (m_PlaybackRequest.load() & 1) {
+            return true;
+        }
         // Our device may enter a permanent error status upon removal, so we need
         // to recreate the audio device to pick up the new default audio device.
         if (SDL_GetAudioDeviceStatus(m_AudioDevice) == SDL_AUDIO_STOPPED) {
@@ -131,6 +200,13 @@ bool SdlAudioRenderer::submitAudio(int bytesWritten)
         SDL_Delay(1);
     }
 
+    std::lock_guard<std::mutex> lock(m_PlaybackLock);
+    // Resume before queuing the first fresh frame, even if the worker has not
+    // been scheduled yet. No extra PCM buffer or copy is needed.
+    syncPlaybackState();
+    if (m_IdleState.muted() || m_BufferGeneration != m_PlaybackGeneration) {
+        return true;
+    }
     if (SDL_QueueAudio(m_AudioDevice, m_AudioBuffer, bytesWritten) < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "Failed to queue audio sample: %s",

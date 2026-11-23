@@ -137,7 +137,44 @@ void HostManager::refreshUnattended() {
 #ifdef Q_OS_MACOS
     if (!m_Isolated) m_UnattendedServiceStatus = unattendedEnabled() ? deskPortUnattendedServiceStatus() : 0;
 #endif
+    updateUnattendedMonitor();
     emit changed();
+}
+
+void HostManager::updateUnattendedMonitor() {
+#ifdef Q_OS_MACOS
+    QStringList directories, files;
+    const bool monitor = m_UnattendedMonitoring && !m_ShuttingDown &&
+        (m_Isolated || QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../..") == "/Applications/DeskPort.app");
+    if (monitor) {
+        // Watch the nearest existing ancestor until the recovery directory is
+        // created. Re-arm after atomic marker replacement or directory removal.
+        auto directory = unattendedDirectory();
+        while (!QFileInfo(directory).isDir()) {
+            const auto parent = QFileInfo(directory).absolutePath();
+            if (parent == directory) break;
+            directory = parent;
+        }
+        if (QFileInfo(directory).isDir()) directories.append(directory);
+        for (const auto& name : {QStringLiteral("enabled"), QStringLiteral("heartbeat")}) {
+            const auto path = unattendedDirectory() + "/" + name;
+            if (QFileInfo(path).isFile()) files.append(path);
+        }
+    }
+    const auto reconcile = [this](const QStringList& current, const QStringList& wanted) {
+        for (const auto& path : current) if (!wanted.contains(path)) m_UnattendedWatcher.removePath(path);
+        for (const auto& path : wanted) if (!current.contains(path)) m_UnattendedWatcher.addPath(path);
+    };
+    reconcile(m_UnattendedWatcher.directories(), directories);
+    reconcile(m_UnattendedWatcher.files(), files);
+    // Service approval and heartbeat ageing can change without a file event.
+    // Keep their existing ten-second detection bound while recovery is enabled.
+    // A failed watch also needs polling to discover a later external opt-in.
+    const bool watching = !m_UnattendedWatcher.directories().isEmpty();
+    if (monitor && (unattendedEnabled() || !watching)) {
+        if (!m_UnattendedMonitor.isActive()) m_UnattendedMonitor.start();
+    } else m_UnattendedMonitor.stop();
+#endif
 }
 
 void HostManager::openUnattendedSettings() {

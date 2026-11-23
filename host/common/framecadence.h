@@ -64,13 +64,23 @@ inline int encodedBytes(std::int64_t frame) { return lastEncodedFrame.frame == f
 class SaverGate {
 public:
     bool admit(std::int64_t nowUs, bool recovery, bool interactive = false) {
-        if (!recovery && nowUs < next) return false;
-        const int fps = interactive ? kSaverInteractiveFps : kSaverContentFps;
-        next = nowUs + 1000000 / fps;
+        if (!recovery && nowUs < readyUs(nowUs, interactive)) return false;
+        last = nowUs;
+        promised = nowUs + 1000000 / (interactive ? kSaverInteractiveFps : kSaverContentFps);
         return true;
     }
+    std::int64_t readyUs(std::int64_t nowUs, bool interactive = false) {
+        const int fps = interactive ? kSaverInteractiveFps : kSaverContentFps;
+        if (last < 0) return nowUs;
+        const auto slot = last + 1000000 / fps;
+        // Once offered, a pending slot cannot move later when input expires.
+        // New input may still bring an existing content-rate slot forward.
+        promised = promised < 0 ? slot : std::min(promised, slot);
+        return std::max(nowUs, promised);
+    }
 private:
-    std::int64_t next = 0;
+    std::int64_t last = -1;
+    std::int64_t promised = -1;
 };
 
 // Capture adapters report changed content; lack of input never suppresses video.
@@ -98,6 +108,8 @@ public:
         const int fps = floor(nowUs);
         if (recovery || pending) {
             const bool interactive = nowUs / 1000 < boost.untilMs;
+            if (!recovery && (nowUs < policy.readyUs(nowUs) ||
+                (saver && nowUs < gate.readyUs(nowUs, interactive)))) return false;
             if (saver && !gate.admit(nowUs, recovery, interactive)) return false;
             if (!policy.admit(nowUs, recovery)) return false;
         } else if (sent && nowUs - lastEncoded < (saver && fps <= 1 ? kSaverIdleMs * 1000 : 1000000 / fps)) {
@@ -116,6 +128,13 @@ public:
         }
         refinement.changed(candidate / 1000, bytes);
         candidate = -1;
+    }
+    std::int64_t readyUs(std::int64_t nowUs) {
+        if (pending) return std::max(policy.readyUs(nowUs),
+            saver ? gate.readyUs(nowUs, nowUs / 1000 < boost.untilMs) : nowUs);
+        const int fps = floor(nowUs);
+        return sent ? std::max(nowUs, lastEncoded +
+            (saver && fps <= 1 ? kSaverIdleMs * 1000 : 1000000 / fps)) : nowUs;
     }
 private:
     SaverGate gate;

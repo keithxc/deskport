@@ -54,6 +54,7 @@ public:
 signals:
     void changed();
 private:
+    friend class BackendTimerTests;
     friend class BrowserHostTests;
     QJsonObject state() const;
     static QString qrSvg(const QString& value);
@@ -67,6 +68,7 @@ private:
         if (pending) pending(QJsonObject{{"version", 1}, {"status", false}, {"code", "cancelled"}});
     }
     void poll();
+    void updatePollTimer();
     HostManager* m_Host;
     BrowserGateway m_Gateway;
     QString m_Id;

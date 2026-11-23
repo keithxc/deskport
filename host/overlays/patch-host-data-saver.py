@@ -153,3 +153,17 @@ patch('src/stream.cpp', '''        session->mail->event<int>("deskport_congestio
 patch('src/stream.cpp', '''session->config.minRequiredFecPackets''', '''deskport::saverMinParity(deskport::liveSaver.load() == 1, session->config.minRequiredFecPackets,
               std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(),
               session->deskport_unrecoverable_ms.load())''')
+
+# Only saver knows about the pending converted picture. The common smart
+# overlay already owns the event-driven wait and its stable pause anchors.
+patch('src/video.cpp', '''        auto deadline = last_encoded + std::chrono::duration_cast<std::chrono::steady_clock::duration>(max_frametime);
+''', '''        auto deadline = last_encoded + std::chrono::duration_cast<std::chrono::steady_clock::duration>(max_frametime);
+        if (deskport_saving && deskport_saver_pending) {
+          const auto pending_us = std::chrono::duration_cast<std::chrono::microseconds>(
+              std::chrono::steady_clock::now() - smart_start).count();
+          const auto pending_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now().time_since_epoch()).count();
+          deadline = std::min(deadline, smart_start + std::chrono::microseconds(
+              deskport_saver_gate.readyUs(pending_us, pending_ms < boost.untilMs)));
+        }
+''')

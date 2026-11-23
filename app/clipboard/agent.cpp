@@ -62,7 +62,16 @@ ClipboardAgent::ClipboardAgent(std::unique_ptr<ClipboardNative> native, Sender s
     : m_Native(std::move(native)), m_Send(std::move(sender)), m_Authoritative(authoritative) {
     m_Seen = m_Native->revision(); // Never publish the pre-connection clipboard.
     connect(&m_Timer, &QTimer::timeout, this, &ClipboardAgent::observe);
+    // ClipboardNative exposes no reliable background-change callback. Cocoa
+    // needs changeCount polling, and Wayland/portal notifications only update
+    // the backend's revision/state. Focus-based backoff would lose timely copies
+    // in the windowless helper, which may never become active.
     m_Timer.start(250);
+    if (auto app = qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+        connect(app, &QGuiApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
+            if (state == Qt::ApplicationActive) observe();
+        }, Qt::QueuedConnection);
+    }
 }
 ClipboardAgent::~ClipboardAgent() { stop(); }
 void ClipboardAgent::stop() {

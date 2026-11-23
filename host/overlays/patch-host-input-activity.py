@@ -30,6 +30,8 @@ patch('src/video.cpp', '    int last_target = config.framerate;', '''    int las
     auto activity = mail->event<deskport::ActivityBoost>("deskport_activity");
     deskport::ActivityBoost boost;
     int last_activity_fps = 1;''')
+patch('src/video.cpp', '    congestion->deskport_watch(deskport_wake);', '''    congestion->deskport_watch(deskport_wake);
+    activity->deskport_watch(deskport_wake);''')
 patch('src/video.cpp', '      if (smart && congestion->pop(0ms)) policy.loss(now_us / 1000);', '''      if (smart && congestion->pop(0ms)) policy.loss(now_us / 1000);
       if (smart) {
         if (auto event = activity->pop(0ms)) boost = *event;
@@ -43,5 +45,3 @@ patch('src/video.cpp', '      if (smart && congestion->pop(0ms)) policy.loss(now
           last_activity_fps = fps;
         }
       }''')
-
-patch('src/video.cpp', 'std::chrono::duration<double, std::milli>(10ms) : max_frametime', 'std::chrono::duration<double, std::milli>(last_activity_fps > 1 ? 2ms : 10ms) : max_frametime')

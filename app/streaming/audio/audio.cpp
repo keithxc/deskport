@@ -12,6 +12,34 @@
 #include "renderers/sdl.h"
 
 #include <Limelight.h>
+#include <QMutexLocker>
+
+void Session::updateAudioPlayback(bool muted)
+{
+    // The activity loop is the only writer. The fast path does no locking.
+    if (m_AudioMuted == muted) return;
+    QMutexLocker lock(&m_AudioControlLock);
+    m_AudioMuted = muted;
+    ++m_AudioMuteGeneration;
+    if (m_AudioRenderer) m_AudioRenderer->updatePlaybackState(m_AudioMuteGeneration);
+}
+
+void Session::releaseAudioRenderer()
+{
+    // The transport stops audio delivery before cleanup. Only the activity
+    // thread shares the renderer, and only to publish nonblocking mute edges.
+    IAudioRenderer* renderer;
+    {
+        QMutexLocker lock(&m_AudioControlLock);
+        renderer = m_AudioRenderer;
+        m_AudioRenderer = nullptr;
+    }
+    delete renderer;
+    if (m_OpusDecoder) {
+        opus_multistream_decoder_destroy(m_OpusDecoder);
+        m_OpusDecoder = nullptr;
+    }
+}
 
 #define TRY_INIT_RENDERER(renderer, opusConfig)        \
 {                                                      \
@@ -23,6 +51,10 @@
 
 IAudioRenderer* Session::createAudioRenderer(const POPUS_MULTISTREAM_CONFIGURATION opusConfig)
 {
+    if (!m_Preferences->remoteAudio) {
+        return nullptr;
+    }
+
     // Handle explicit ML_AUDIO setting and fail if the requested backend fails
     QString mlAudio = qgetenv("ML_AUDIO").toLower();
     if (mlAudio == "sdl") {
@@ -72,16 +104,16 @@ bool Session::initializeAudioRenderer()
     SDL_assert(m_AudioRenderer == nullptr);
     SDL_assert(m_OpusDecoder == nullptr);
 
-    m_AudioRenderer = createAudioRenderer(&m_OriginalAudioConfig);
+    auto renderer = createAudioRenderer(&m_OriginalAudioConfig);
 
     // We may be unable to create an audio renderer right now
-    if (m_AudioRenderer == nullptr) {
+    if (renderer == nullptr) {
         return false;
     }
 
     // Allow the chosen renderer to remap Opus channels as needed to ensure proper output
     m_ActiveAudioConfig = m_OriginalAudioConfig;
-    m_AudioRenderer->remapChannels(&m_ActiveAudioConfig);
+    renderer->remapChannels(&m_ActiveAudioConfig);
 
     // Create the Opus decoder with the renderer's preferred channel mapping
     m_OpusDecoder =
@@ -92,8 +124,7 @@ bool Session::initializeAudioRenderer()
                                         m_ActiveAudioConfig.mapping,
                                         &error);
     if (m_OpusDecoder == nullptr) {
-        delete m_AudioRenderer;
-        m_AudioRenderer = nullptr;
+        delete renderer;
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "Failed to create decoder: %d",
                      error);
@@ -103,11 +134,19 @@ bool Session::initializeAudioRenderer()
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                 "Audio stream has %d channels",
                 m_ActiveAudioConfig.channelCount);
+    renderer->startPlaybackControl();
+    QMutexLocker lock(&m_AudioControlLock);
+    m_AudioRenderer = renderer;
+    renderer->updatePlaybackState(m_AudioMuteGeneration);
     return true;
 }
 
 int Session::getAudioRendererCapabilities(int audioConfiguration)
 {
+    if (!m_Preferences->remoteAudio) {
+        return 0;
+    }
+
     // Build a fake OPUS_MULTISTREAM_CONFIGURATION to give
     // the renderer the channel count and sample rate.
     OPUS_MULTISTREAM_CONFIGURATION opusConfig = {};
@@ -129,6 +168,10 @@ int Session::getAudioRendererCapabilities(int audioConfiguration)
 
 bool Session::testAudio(int audioConfiguration)
 {
+    if (!m_Preferences->remoteAudio) {
+        return true;
+    }
+
     // Build a fake OPUS_MULTISTREAM_CONFIGURATION to give
     // the renderer the channel count and sample rate.
     OPUS_MULTISTREAM_CONFIGURATION opusConfig = {};
@@ -157,11 +200,7 @@ int Session::arInit(int /* audioConfiguration */,
 
 void Session::arCleanup()
 {
-    delete s_ActiveSession->m_AudioRenderer;
-    s_ActiveSession->m_AudioRenderer = nullptr;
-
-    opus_multistream_decoder_destroy(s_ActiveSession->m_OpusDecoder);
-    s_ActiveSession->m_OpusDecoder = nullptr;
+    s_ActiveSession->releaseAudioRenderer();
 }
 
 void Session::arDecodeAndPlaySample(char* sampleData, int sampleLength)
@@ -244,11 +283,7 @@ void Session::arDecodeAndPlaySample(char* sampleData, int sampleLength)
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                         "Reinitializing audio renderer after failure");
 
-            opus_multistream_decoder_destroy(s_ActiveSession->m_OpusDecoder);
-            s_ActiveSession->m_OpusDecoder = nullptr;
-
-            delete s_ActiveSession->m_AudioRenderer;
-            s_ActiveSession->m_AudioRenderer = nullptr;
+            s_ActiveSession->releaseAudioRenderer();
         }
     }
 

@@ -42,13 +42,15 @@ class MdnsPendingComputer : public QObject
     Q_OBJECT
 
 public:
-    explicit MdnsPendingComputer(const QSharedPointer<QMdnsEngine::Server> server,
+    explicit MdnsPendingComputer(const QSharedPointer<QMdnsEngine::AbstractServer> server,
                                  const QMdnsEngine::Service& service)
         : m_Hostname(service.hostname()),
           m_Port(service.port()),
           m_ServerWeak(server),
           m_Resolver(nullptr)
     {
+        m_Timeout.setSingleShot(true);
+        connect(&m_Timeout, &QTimer::timeout, this, &MdnsPendingComputer::handleResolvedTimeout);
         // Start resolving
         resolve();
     }
@@ -71,25 +73,31 @@ public:
 private slots:
     void handleResolvedTimeout()
     {
+        if (m_Completed) {
+            return;
+        }
+
         if (m_Addresses.isEmpty()) {
-            if (m_Retries-- > 0) {
+            if (m_Server && m_Retries-- > 0) {
                 // Try again
                 qInfo() << "Resolving" << hostname() << "timed out. Retrying...";
                 resolve();
             }
             else {
                 qWarning() << "Giving up on resolving" << hostname() << "after repeated failures";
-                cleanup();
+                complete();
             }
         }
         else {
-            Q_ASSERT(!m_Addresses.isEmpty());
-            emit resolvedHost(this, m_Addresses);
+            complete();
         }
     }
 
     void handleResolvedAddress(const QHostAddress& address)
     {
+        if (m_Completed) {
+            return;
+        }
         qInfo() << "Resolved" << hostname() << "to" << address;
         m_Addresses.push_back(address);
     }
@@ -98,8 +106,19 @@ signals:
     void resolvedHost(MdnsPendingComputer*,QVector<QHostAddress>&);
 
 private:
+    void complete()
+    {
+        // Completion is synchronous. The receiver removes us from its pending
+        // list and uses deleteLater(), keeping the signal's address reference valid.
+        m_Completed = true;
+        cleanup();
+        emit resolvedHost(this, m_Addresses);
+    }
+
     void cleanup()
     {
+        m_Timeout.stop();
+        ++m_ResolutionGeneration;
         // Delete our resolver, so we're guaranteed that nothing is referencing m_Server.
         delete m_Resolver;
         m_Resolver = nullptr;
@@ -116,23 +135,63 @@ private:
 
         // Re-acquire a strong reference if the server still exists.
         m_Server = m_ServerWeak.toStrongRef();
+        // Even a vanished server must complete after the caller has connected
+        // the signal and registered this object in its pending list.
+        m_Timeout.start(m_Server ? 2000 : 0);
         if (!m_Server) {
             return;
         }
 
         m_Resolver = new QMdnsEngine::Resolver(m_Server.data(), m_Hostname);
+        const auto generation = m_ResolutionGeneration;
         connect(m_Resolver, &QMdnsEngine::Resolver::resolved,
-                this, &MdnsPendingComputer::handleResolvedAddress);
-        QTimer::singleShot(2000, this, &MdnsPendingComputer::handleResolvedTimeout);
+                this, [this, generation](const QHostAddress& address) {
+            // Disconnecting a resolver does not cancel already queued signals.
+            if (generation == m_ResolutionGeneration) {
+                handleResolvedAddress(address);
+            }
+        });
     }
 
     QByteArray m_Hostname;
     uint16_t m_Port;
-    QWeakPointer<QMdnsEngine::Server> m_ServerWeak;
-    QSharedPointer<QMdnsEngine::Server> m_Server;
+    QWeakPointer<QMdnsEngine::AbstractServer> m_ServerWeak;
+    QSharedPointer<QMdnsEngine::AbstractServer> m_Server;
     QMdnsEngine::Resolver* m_Resolver;
     QVector<QHostAddress> m_Addresses;
     int m_Retries = 10;
+    QTimer m_Timeout;
+    quint64 m_ResolutionGeneration = 0;
+    bool m_Completed = false;
+};
+
+class PcMonitorThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    explicit PcMonitorThread(NvComputer* computer);
+    ~PcMonitorThread() override;
+
+    // QThread's method is not virtual. Polling entries must retain this type
+    // so every interruption also wakes the polling delay.
+    void requestInterruption();
+
+signals:
+    void computerStateChanged(NvComputer* computer);
+
+private:
+    QSharedPointer<NvComputer> probeComputer(NvAddress address);
+    bool pollAddresses(const QVector<NvAddress>& addresses, bool& changed);
+    bool updateAppList(bool& changed);
+    bool stopRequested();
+    bool waitForNextPoll();
+    void run() override;
+
+    NvComputer* m_Computer;
+    QMutex m_WaitMutex;
+    QWaitCondition m_WaitCondition;
+    bool m_StopRequested = false; // Protected by m_WaitMutex, including before start().
 };
 
 class ComputerPollingEntry
@@ -164,7 +223,7 @@ public:
         return m_ActiveThread != nullptr;
     }
 
-    void setActiveThread(QThread* thread)
+    void setActiveThread(PcMonitorThread* thread)
     {
         cleanInactiveList();
 
@@ -204,7 +263,7 @@ private:
         }
     }
 
-    QThread* m_ActiveThread;
+    PcMonitorThread* m_ActiveThread;
     QList<QThread*> m_InactiveList;
 };
 

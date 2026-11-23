@@ -35,7 +35,7 @@ PKGCONFIG += openssl
 TARGET = browser-host-tests
 SOURCES += "{root}/tests/browser-host.cpp" "{root}/app/backend/browserhost.cpp" "{root}/app/backend/browsergateway.cpp" "{root}/app/backend/hostmanager.cpp" "{root}/app/backend/hostmanager-startup.cpp" "{root}/app/backend/hostmanager-trust.cpp" "{root}/app/backend/hostmanager-display.cpp" "{root}/app/backend/diagnostics.cpp" "{root}/app/backend/nvaddress.cpp" "{root}/third_party/qrcodegen/qrcodegen.cpp"
 HEADERS += "{root}/app/backend/browserhost.h" "{root}/app/backend/browsergateway.h" "{root}/app/backend/hostmanager.h" "{root}/app/backend/diagnostics.h"
-INCLUDEPATH += "{root}/app/backend" "{root}/app"
+INCLUDEPATH += "{root}/app/backend" "{root}/app" "{root}/moonlight-common-c/moonlight-common-c/src"
 RESOURCES += "{resources}"
 macx {{
     OBJECTIVE_SOURCES += "{root}/app/backend/macpermissions.mm" "{root}/app/backend/macdock.mm" "{root}/app/backend/macclipboard.mm" "{root}/app/backend/macunattended.mm"

@@ -115,11 +115,14 @@ def main():
         subprocess.run([sys.executable, str(ROOT / "scripts/apply-host-patches.py"), "--platform", "macos", str(source)], check=True)
     video = (source / "src/video.cpp").read_text()
     conversion = (source / "src/platform/macos/nv12_zero_device.cpp").read_text()
+    # NVENC now implements the same virtual method. Select the FFmpeg/VT
+    # session by its actual class boundary, never by first/last occurrence.
+    avcodec_session = definition(video, "  class avcodec_encode_session_t: public encode_session_t")
     blocks = {
         "ASYNC_ENCODER": definition(video, "  void encode_run("),
         "AVCODEC_ENCODER": definition(video, "  int encode_avcodec("),
         "NATIVE_CONVERSION": definition(conversion, "  int nv12_zero_device::convert("),
-        "RATE_SETTER": definition(video, "    bool deskport_set_bitrate(int kbps, bool constrained, bool saver) override"),
+        "RATE_SETTER": definition(avcodec_session, "    bool deskport_set_bitrate(int kbps, bool constrained, bool saver) override"),
     }
     template = ROOT / "tests/host-encoder-replay.cpp.in"
     generated = template.read_text()
@@ -128,6 +131,12 @@ def main():
         if generated.count(marker) != 1:
             raise ValueError(f"Expected one template marker: {marker}")
         generated = generated.replace(marker, content)
+    # Historical fully overlaid trees predate notification-based mailboxes.
+    # Compile their existing adapters without referring to unavailable headers.
+    if "images->deskport_watch(" in blocks["ASYNC_ENCODER"]:
+        generated = "#define DESKPORT_REPLAY_HAS_CADENCE_WAKE 1\n" + generated
+    if "DPCopyCaptureSampleForEncoder(" in blocks["NATIVE_CONVERSION"]:
+        generated = "#define DESKPORT_REPLAY_HAS_CAPTURE_BRIDGE 1\n" + generated
     cpp = work / "host-encoder-replay.cpp"
     cpp.write_text(generated)
     headers = {}
@@ -148,12 +157,14 @@ def main():
         "source_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "video_cpp_sha256": sha(video),
         "native_conversion_cpp_sha256": sha(conversion),
+        "rate_setter_scope": "video::avcodec_encode_session_t",
         "template_sha256": sha(template.read_text()),
         "generated_sha256": sha(generated),
         "blocks_sha256": {name: sha(content) for name, content in blocks.items()},
         "headers_sha256": headers,
         "coverage": ["production encode_run", "production encode_avcodec", "production nv12_zero_device::convert", "production deskport_set_bitrate", "real steady_clock", "real pinned FFmpeg and VideoToolbox"],
-        "adapters": ["session factory", "input images", "mailboxes", "packet sink", "disabled SPS rewriting"],
+        "adapters": ["session factory", "input images", "retained NV12 capture bridge (no deferred P010 conversion)",
+                     "mailboxes and cadence notifications", "pause/resume controls", "packet sink", "disabled SPS rewriting"],
     }
     (work / "replay-source.json").write_text(json.dumps(provenance, indent=2) + "\n")
     if args.emit_only:

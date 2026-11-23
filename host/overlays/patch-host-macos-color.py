@@ -54,3 +54,45 @@ patch('src/platform/macos/display.mm',
       '    display->width = display->av_capture.frameWidth;',
       '''    display->av_capture.hdrCaptureAllowed = hwdevice_type == mem_type_e::videotoolbox;
     display->width = display->av_capture.frameWidth;''')
+
+# Only live capture defers paid P010 conversion. Keep dummy_img's capture call
+# eager even if a previous viewer left the process-wide pause gate set.
+patch('src/platform/macos/display.mm',
+      '#include "src/deskport/macos/screen-video.h"',
+      '#include "src/deskport/macos/screen-video.h"\n#include "src/rtsp.h"')
+patch('src/platform/macos/display.mm',
+      '''        return true;
+      }];
+
+      if (!signal) return capture_e::error;''',
+      '''        return true;
+      } conversionPaused:^BOOL {
+        return deskport_admission::video_encode_paused.load(std::memory_order_relaxed);
+      }];
+
+      if (!signal) return capture_e::error;''')
+
+# This file is C++, not Objective-C++. The bridge's C entry point resolves a
+# buffered raw sample without mutating the shared av_img_t or visiting its queue.
+patch('src/platform/macos/nv12_zero_device.cpp',
+      '#include "src/platform/macos/av_img_t.h"',
+      '''#include "src/platform/macos/av_img_t.h"
+extern "C" CMSampleBufferRef DPCopyCaptureSampleForEncoder(CMSampleBufferRef sample);''')
+patch('src/platform/macos/nv12_zero_device.cpp',
+      '    auto *av_img = (av_img_t *) &img;',
+      '''    auto *av_img = (av_img_t *) &img;
+    const auto sample = DPCopyCaptureSampleForEncoder(av_img->sample_buffer->buf);
+    if (!sample) return -1;
+    const auto pixels = CMSampleBufferGetImageBuffer(sample);''')
+patch('src/platform/macos/nv12_zero_device.cpp',
+      'av_buffer_create((uint8_t *) CFRetain(av_img->pixel_buffer->buf), 0, free_buffer, nullptr, 0);',
+      '''av_buffer_create((uint8_t *) CFRetain(pixels), 0, free_buffer, nullptr, 0);
+    CFRelease(sample);
+    if (!av_frame->buf[0]) {
+      // FFmpeg takes ownership only when av_buffer_create succeeds.
+      CFRelease(pixels);
+      return -1;
+    }''')
+patch('src/platform/macos/nv12_zero_device.cpp',
+      '    av_frame->data[3] = (uint8_t *) av_img->pixel_buffer->buf;',
+      '    av_frame->data[3] = (uint8_t *) pixels;')

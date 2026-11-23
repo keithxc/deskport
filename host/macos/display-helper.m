@@ -7,6 +7,7 @@
 #import "session-topology.h"
 #import <ApplicationServices/ApplicationServices.h>
 #import <signal.h>
+#import <time.h>
 #import "text-caret.h"
 
 @interface CGVirtualDisplayMode : NSObject
@@ -41,12 +42,53 @@ static NSInteger requestedScale = 1;
 static NSInteger lastWidth, lastHeight, lastScale = 1;
 static BOOL rollingBack;
 static BOOL sessionActive;
+static dispatch_source_t caretTimer;
+static unsigned caretGeneration;
+static NSDictionary *lastCaret;
+static uint64_t caretRefreshDue;
 static NSString *sessionLayoutWarning;
 static unsigned restoreAttempt;
-static BOOL idleRecoveryExhausted;
 static CFAbsoluteTime requestStarted;
 static unsigned readyGeneration;
 static BOOL displayRebuilt;
+static void resetCaret(void) {
+    lastCaret = nil;
+    caretRefreshDue = 0;
+}
+static BOOL sendCaret(NSDictionary *value, uint64_t now) {
+    // Invalid geometry needs only one notification. Refresh unchanged valid
+    // geometry after 400 ms, safely before the client's one-second expiry.
+    if (lastCaret && [value isEqualToDictionary:lastCaret] &&
+        (![value[@"valid"] boolValue] || now < caretRefreshDue)) return NO;
+    lastCaret = [value copy];
+    caretRefreshDue = now + 400 * NSEC_PER_MSEC;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@{@"caret":value} options:0 error:nil];
+    fwrite(data.bytes, 1, data.length, stdout); fputc('\n', stdout); fflush(stdout);
+    return YES;
+}
+static void setSessionActive(BOOL active) {
+    sessionActive = active;
+    if (!active) {
+        ++caretGeneration;
+        if (caretTimer) dispatch_source_cancel(caretTimer);
+        caretTimer = nil;
+        resetCaret();
+        return;
+    }
+    if (caretTimer) return;
+    resetCaret();
+    const unsigned token = ++caretGeneration;
+    caretTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    // Sample immediately for each lease and retain 200 ms change detection.
+    dispatch_source_set_timer(caretTimer, dispatch_time(DISPATCH_TIME_NOW, 0),
+                              200 * NSEC_PER_MSEC, 40 * NSEC_PER_MSEC);
+    dispatch_source_set_event_handler(caretTimer, ^{
+        if (!sessionActive || token != caretGeneration) return;
+        NSDictionary *value = textCaret(display.displayID);
+        sendCaret(value, clock_gettime_nsec_np(CLOCK_MONOTONIC));
+    });
+    dispatch_resume(caretTimer);
+}
 static void configure(NSInteger width, NSInteger height, NSInteger scale, int sequence, BOOL session);
 // WindowServer needs a few run-loop turns to register a freshly created virtual
 // display. Until it does, CGDisplayMirrorsDisplay answers the 0xFFFFFFFF
@@ -63,6 +105,7 @@ static CGDirectDisplayID mirrorSource(CGDirectDisplayID ident) {
     return source == (CGDirectDisplayID)-1 ? kCGNullDirectDisplay : source;
 }
 static void discardDisplay(void) {
+    resetCaret();
     display = nil;
     displayPhysicalSize = CGSizeZero;
     displayCreatedScale = 0;
@@ -137,6 +180,7 @@ static NSArray *displayModes(NSInteger width, NSInteger height, NSInteger scale)
 }
 static BOOL applyMode(NSInteger width, NSInteger height, NSInteger scale) {
     if (!display) return NO;
+    resetCaret();
     CGVirtualDisplaySettings *settings = [CGVirtualDisplaySettings new];
     settings.hiDPI = scale == 2;
     settings.modes = displayModes(width, height, scale);
@@ -289,7 +333,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
         respond(@{@"error": @"Disabling other screens is unavailable on this macOS version"}); return;
     }
     if (!session) {
-        sessionActive=NO;
+        setSessionActive(NO);
         const unsigned token=++generation;
         // Preserve the journal through removal: removing a mirror source can
         // change the fallback physical display's mode after the first restore.
@@ -301,17 +345,16 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
             preserveTopologyJournal=NO;
             if (!restoreTopology(0)) {
                 if (++restoreAttempt < 30) { configure(width,height,scale,sequence,NO); return; }
-                idleRecoveryExhausted=YES;
                 respond(@{@"active":@NO,@"error":@"Physical layout recovery is retained for repair"});
                 return;
             }
-            restoreAttempt=0; idleRecoveryExhausted=NO;
+            restoreAttempt=0;
             respond(@{@"active":@NO,@"width":@0,@"height":@0,@"scale":@1});
         });
         return;
     }
     preserveTopologyJournal=NO;
-    restoreAttempt=0; idleRecoveryExhausted=NO;
+    restoreAttempt=0;
     if (session && savedTopology && !sessionActive) {
         // The authenticated new lease owns the workspace now. Cancel idle retry
         // callbacks, retain the original journal and verify this client's mode.
@@ -321,7 +364,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
     if (session && !snapshotTopology(display.displayID)) {
         respond(@{@"error": @"Could not save the original display layout"}); return;
     }
-    sessionActive=session;
+    setSessionActive(session);
     // Repeated requests still verify the actual OS mode; cached dimensions alone
     // are not proof that a display remains active, independent, and correctly scaled.
     if (display && displayRegistered(display.displayID) && CGDisplayIsActive(display.displayID) &&
@@ -376,7 +419,7 @@ static void configure(NSInteger width, NSInteger height, NSInteger scale, int se
 static void finishHelper(void) {
     static BOOL stopping;
     if (stopping) return;
-    stopping=YES; sessionActive=NO; ++generation;
+    stopping=YES; setSessionActive(NO); ++generation;
     if (display) snapshotTopology(display.displayID);
     preserveTopologyJournal=YES;
     restoreTopology(display.displayID);
@@ -421,7 +464,7 @@ int main(int argc, const char *argv[]) {
                 restored=restoreTopology(0);
                 if (!restored) CFRunLoopRunInMode(kCFRunLoopDefaultMode,0.1,false);
             }
-            if (!restored) { idleRecoveryExhausted=YES; recordLayoutEvent(@"Startup local layout recovery is pending; keeping the host available for new clients"); }
+            if (!restored) recordLayoutEvent(@"Startup local layout recovery is pending; keeping the host available for new clients");
         }
         // A running helper is ready to accept leases, not an active display.
         // Startup recovery above may restore an old journal but creates nothing.
@@ -452,17 +495,8 @@ int main(int argc, const char *argv[]) {
             }
             free(line); dispatch_async(dispatch_get_main_queue(), ^{ finishHelper(); });
         });
-        dispatch_source_t caretTimer=dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER,0,0,dispatch_get_main_queue());
-        dispatch_source_set_timer(caretTimer,dispatch_time(DISPATCH_TIME_NOW,0),200*NSEC_PER_MSEC,40*NSEC_PER_MSEC);
-        dispatch_source_set_event_handler(caretTimer, ^{
-            if (!sessionActive) {
-                if (savedTopology && !preserveTopologyJournal && !idleRecoveryExhausted) restoreTopology(display.displayID);
-                return;
-            }
-            // Send periodic geometry so clients can expire stale focus information.
-            NSData *data=[NSJSONSerialization dataWithJSONObject:@{@"caret":textCaret(display.displayID)} options:0 error:nil];
-            fwrite(data.bytes,1,data.length,stdout); fputc('\n',stdout); fflush(stdout);
-        }); dispatch_resume(caretTimer);
+        // Idle topology recovery uses configure's bounded retries and the startup
+        // recovery loop above; it does not require a permanent caret polling timer.
         signal(SIGTERM,SIG_IGN); signal(SIGINT,SIG_IGN);
         dispatch_source_t terminate=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGTERM,0,dispatch_get_main_queue());
         dispatch_source_set_event_handler(terminate, ^{ finishHelper(); }); dispatch_resume(terminate);

@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QSize>
 #include <functional>
+class QObject;
 
 // Authenticated shell/worker IPC supplies presentation state. SDL's real
 // window remains hidden and provides only the decoder's platform context.
@@ -25,9 +26,9 @@ bool decodeTextEvent(SDL_Event& event);
 bool decodeWheelEvent(SDL_Event& event);
 bool isTouchCancel(const SDL_Event& event);
 bool isWakeEvent(const SDL_Event& event);
-// Optional main-thread IPC wait hook for platforms where SDL shares the Qt thread.
-void setIpcWaiter(std::function<bool(int)> waiter);
-bool waitForIpc(int timeoutMs);
+// Pump Qt IPC and SDL through one wait on the SDL/Qt owner thread.
+bool waitForEvent(SDL_Event* event, int timeoutMs);
+int idleWaitTimeout(bool gamepadAttached, bool viewerAvailable, bool canvasViewer);
 constexpr SDL_TouchID SyntheticTouchId = -0x445054;
 Uint32 flags(SDL_Window* window);
 Uint32 mouseState(int* x, int* y);
@@ -35,6 +36,8 @@ QSize pixels();
 qreal scale();
 bool fullscreen();
 void input(const QJsonObject& event);
+// Admission and queued input share a lock. Disabling latches one release fence;
+// re-enabling never erases it, and repeated disables do not wake the idle loop.
 void inputEnabled(bool enabled);
 void capture(bool grab, bool cursorHidden, bool relative = false);
 void pointerRegion(bool enabled, int x = 0, int y = 0, int width = 0, int height = 0);
@@ -43,6 +46,8 @@ void textInput(bool enabled);
 void label(const QString& text);
 void waiting(bool value);
 QJsonObject description();
+// Delivery is coalesced on context's thread. Clear before destroying context.
+void setDescriptionCallback(QObject* context, std::function<void()> callback);
 void question(const QString& title, const QString& text, const QString& cancel, const QString& accept);
 void answer(quint64 id, int choice);
 int takeAnswer();
