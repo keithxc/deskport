@@ -4947,6 +4947,13 @@ Branch-specific validation records linked above are historical. Native macOS and
 NixOS application builds, current physical acceptance and review of the combined
 candidate are separate integration gates. The coordinated core pin includes the
 22-language browser recovery messages; see the current
-[integration ledger](PC_TASK_INTEGRATION.md) for the reviewed scope. Historical
-"retain branch" decisions describe older checkpoints and do not prevent source
+[integration ledger](PC_TASK_INTEGRATION.md) for the reviewed scope. Historical "retain branch" decisions describe older checkpoints and do not prevent source
 consolidation; their outstanding hardware acceptance gates remain in force.
+
+## Next-release TODO (post-2.9.1)
+
+- [ ] **Reuse a single persistent snapshot worker thread per `Pacer`** (`app/streaming/video/ffmpeg-renderers/pacer/pacer.cpp`):
+  replace per-3-second `std::thread` creation in `Pacer::captureSnapshot()` with an on-demand reusable worker thread (at most one frame in flight, skip when busy, wake and `join` on teardown). On Linux (Mesa VAAPI + glibc), repeated short-lived threads transferring full hardware frames via `av_hwframe_transfer_data()` leave hundreds of MiB to >1 GiB of freed pages retained across ~30 glibc malloc arenas after streaming stops. Validate teardown/reconnect/display-switch stability and post-stream anonymous RSS on Linux, macOS and Windows before shipping in `2.9.2`.
+- [ ] **Clean up exhausted `MdnsPendingComputer` timeout entries** (`app/backend/computermanager.h`):
+  route the terminal retry branch in `MdnsPendingComputer::handleResolvedTimeout()` through the existing completion callback so failed mDNS services are removed from `m_PendingResolution` instead of remaining allocated for the process lifetime.
+
