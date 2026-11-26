@@ -1,4 +1,5 @@
 #include "plvk.h"
+#include "plvk_color.h"
 
 #include "streaming/session.h"
 #include "streaming/streamutils.h"
@@ -382,6 +383,7 @@ bool PlVkRenderer::isExtensionSupportedByPhysicalDevice(VkPhysicalDevice device,
 bool PlVkRenderer::initialize(PDECODER_PARAMETERS params)
 {
     m_Window = params->window;
+    m_VideoFormat = params->videoFormat;
 
     // The capability probe falls back to a plain window when Vulkan window
     // creation fails. SDL2-compat may not initialize its Vulkan entry points in
@@ -700,11 +702,8 @@ bool PlVkRenderer::mapAvFrameToPlacebo(const AVFrame *frame, pl_frame* mappedFra
         mappedFrame->color.hdr.min_luma = PL_COLOR_HDR_BLACK;
     }
 
-    // HACK: AMF AV1 encoding on the host PC does not set full color range properly in the
-    // bitstream data, so libplacebo incorrectly renders the content as limited range.
-    //
-    // As a workaround, set full range manually in the mapped frame ourselves.
-    mappedFrame->repr.levels = PL_COLOR_LEVELS_FULL;
+    mappedFrame->repr.levels = resolvePlVkColorLevels(
+        m_VideoFormat, frame->color_range, mappedFrame->repr.levels);
 
     return true;
 }

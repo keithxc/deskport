@@ -73,6 +73,7 @@ private:
     // The backend renderer if we're frontend-only
     IFFmpegRenderer* m_Backend;
     bool m_HwAccelBackend;
+    int m_VideoFormat = 0;
 
     // SDL state
     SDL_Window* m_Window = nullptr;
