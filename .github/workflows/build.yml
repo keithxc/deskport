@@ -41,6 +41,7 @@ jobs:
           mkdir -p "$TMPDIR"
           nix develop -c python3 tests/test-global-shortcut.py
           nix develop -c python3 tests/test-canvas-focus.py --output "$TMPDIR/canvas-focus"
+          nix develop -c python3 tests/test-plvk-color.py --output "$TMPDIR/plvk-color"
           nix develop -c python3 tests/test-transition-window.py
           if ! command -v Xvfb >/dev/null; then
             sudo apt-get update
