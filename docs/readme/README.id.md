@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.1 stabil](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
+> **[2.9.3 stabil](https://github.com/keithxc/deskport/releases/tag/v2.9.3)** · [2.9.3](../releases/RELEASE_2.9.3.md)
 >
 > Pasangkan klien DeskPort dengan host DeskPort. Pengikatan perangkat DeskPort tidak kompatibel dengan Sunshine asli di sisi host maupun Moonlight asli di sisi klien. Paket host lengkap menyertakan host Sunshine yang telah disesuaikan untuk DeskPort.
 
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -90,12 +90,12 @@ Paket macOS 2.9.0 yang tepat telah lulus pemeriksaan Developer ID, notarisasi Ap
 
 | Platform | Peran | Status rilis | Unduh |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Penampil + host + layar virtual native | **2.9.1 stabil**; memerlukan tanda tangan Developer ID dan notarisasi Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
-| Linux x86_64 | Penampil + host; ruang kerja adaptif pada host KWin, Mutter, dan Hyprland yang mendukung | **2.9.1 stabil**: DEB, RPM, Arch, AppImage, arsip portabel, dan Nix | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [panduan instalasi](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Hanya penampil | **2.9.1 stabil**, Freedesktop Platform 25.08 | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
+| macOS Apple Silicon, macOS 26+ | Penampil + host + layar virtual native | **2.9.3 stabil**; memerlukan tanda tangan Developer ID dan notarisasi Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg) |
+| Linux x86_64 | Penampil + host; ruang kerja adaptif pada host KWin, Mutter, dan Hyprland yang mendukung | **2.9.3 stabil**: DEB, RPM, Arch, AppImage, arsip portabel, dan Nix | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.3) · [panduan instalasi](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Hanya penampil | **2.9.3 stabil**, Freedesktop Platform 25.08 | [Rilis](https://github.com/keithxc/deskport/releases/tag/v2.9.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Hanya klien | App Store; build lebih baru diuji terpisah di TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Hanya klien | **2.9.1 (71)** · Pengujian tertutup Google Play masih berlangsung | [Unduh APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
-| Windows x64 | Penampil + host + layar virtual | **2.9.1 stabil**; Setup menyertakan host, ZIP portabel hanya untuk penampil; aplikasi dan pemasang tidak ditandatangani | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
+| Windows x64 | Penampil + host + layar virtual | **2.9.3 stabil**; Setup menyertakan host, ZIP portabel hanya untuk penampil; aplikasi dan pemasang tidak ditandatangani | [Installer](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Belum memenuhi syarat | Tidak ada paket rilis terverifikasi | — |
 
 > **Pemberitahuan antivirus Windows:** perangkat lunak antivirus mungkin keliru menandai komponen pembantu Windows DeskPort.
@@ -112,15 +112,15 @@ Definisi kode sumber atau kompilasi yang berhasil saja tidak menjadikan sebuah p
 
 ## Instalasi
 
-**macOS:** buka [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg),
+**macOS:** buka [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg),
 seret DeskPort ke Applications lalu buka. Berikan izin Perekaman Layar dan Aksesibilitas untuk fitur host.
 Nix dan Homebrew tidak diperlukan.
 
-**Linux:** pilih [paket 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
+**Linux:** pilih [paket 2.9.3](https://github.com/keithxc/deskport/releases/tag/v2.9.3)
 untuk sistem Anda dan ikuti [langkah per distribusi di bawah](#instalasi-linux-per-distribusi),
 termasuk [persyaratan input host](../LINUX_PACKAGES.md#first-connection-and-hosting).
-Dengan Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
-Flatpak hanya untuk melihat. Rilis menyertakan [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) dan [laporan verifikasi](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
+Dengan Nix: `nix run --refresh github:keithxc/deskport/v2.9.3`.
+Flatpak hanya untuk melihat. Rilis menyertakan [checksum SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt) dan [laporan verifikasi](https://github.com/keithxc/deskport/releases/download/v2.9.3/VERIFICATION.txt).
 
 **Android 2.9.1 (71)** · ~~$4.99~~ · Selama pengujian tertutup Google Play berlangsung, [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) tersedia sementara di GitHub. Kode sumber klien seluler bersifat tertutup. Di sini hanya tersedia berkas instalasi.
 
@@ -132,7 +132,7 @@ tetap gratis dan sumber terbuka. Pembelian mendukung penandatanganan, perangkat 
 
 Mulai Berbagi di host DeskPort, pilih di klien DeskPort, lalu setujui perangkat di host. Gunakan LAN atau VPN sendiri seperti Tailscale; DeskPort tidak menyediakan layanan akun, desktop yang dihosting, relai, atau terowongan jaringan. Alamat manual baru memakai port `48989`; jika berbeda, masukkan port pada halaman Berbagi host.
 
-Riwayat: perubahan dan batas verifikasi [0.7.3](../releases/RELEASE_0.7.3.md) serta penggantian paket [0.7.4](../releases/RELEASE_0.7.4.md) tetap tercatat dalam catatan aslinya; bukan hasil validasi 2.9.1.
+Riwayat: perubahan dan batas verifikasi [0.7.3](../releases/RELEASE_0.7.3.md) serta penggantian paket [0.7.4](../releases/RELEASE_0.7.4.md) tetap tercatat dalam catatan aslinya; bukan hasil validasi 2.9.3.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -176,7 +176,7 @@ memerlukan glibc 2.39.
 
 ### Instalasi Linux per distribusi
 
-Petunjuk ini ditujukan untuk sistem desktop **x86_64** dan unduhan rilis **2.9.1**. Paket native memerlukan
+Petunjuk ini ditujukan untuk sistem desktop **x86_64** dan unduhan rilis **2.9.3**. Paket native memerlukan
 glibc 2.39 atau lebih baru. Ini adalah unduhan upstream, bukan paket dari repositori distribusi DeskPort;
 pasang rilis berikutnya dengan mengunduh dan memverifikasi paket baru lagi.
 
@@ -202,11 +202,11 @@ penerimaan terpisah. KWin 6.3 di Debian 13 juga masih di bawah minimum 6.6 untuk
 
 | Distribusi / desktop | Jalur unduhan |
 | --- | --- |
-| Ubuntu 26.04 GNOME | DEB atau AppImage 2.9.1 |
+| Ubuntu 26.04 GNOME | DEB atau AppImage 2.9.3 |
 | Debian 13 KDE | DEB, dipasang dengan APT |
 | Fedora 44 KDE | RPM, dipasang dengan DNF |
 | Arch Linux KDE | Paket Arch lokal, dipasang dengan `pacman -U` |
-| Bazzite KDE | AppImage 2.9.1 |
+| Bazzite KDE | AppImage 2.9.3 |
 | Omarchy / Hyprland | Paket Arch lokal, dipasang dengan `pacman -U` |
 
 Buka terminal di sesi desktop biasa Anda. Setiap rangkaian perintah memeriksa nama file unduhan yang tepat
@@ -220,14 +220,14 @@ dipasang agar biner baru yang berjalan.
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — unduh, pasang, perbarui, dan hapus</summary>
 
-Unduh [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
+Unduh [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb),
 lalu buka terminal di direktori yang berisi file itu:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -245,14 +245,14 @@ Mutter/tangkapan yang terpasang; lihat [persyaratan layar adaptif](../LINUX_ADAP
 <details>
 <summary><strong>Debian 13 KDE</strong> — unduh, pasang, perbarui, dan hapus</summary>
 
-Unduh [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
+Unduh [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb),
 lalu buka terminal di direktori unduhan:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -269,16 +269,16 @@ sebelum mulai berbagi.
 <details>
 <summary><strong>Fedora 44 KDE</strong> — unduh, pasang, perbarui, dan hapus</summary>
 
-Unduh [deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm),
+Unduh [deskport-2.9.3.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3.x86_64.rpm),
 lalu buka terminal di direktori unduhan:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
-  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.3 ]; then
+  sudo dnf reinstall ./deskport-2.9.3.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.1.x86_64.rpm
+  sudo dnf install ./deskport-2.9.3.x86_64.rpm
 fi &&
 deskport
 ```
@@ -295,13 +295,13 @@ Untuk hosting di KDE, periksa juga [persyaratan compositor dan input](../LINUX_P
 <summary><strong>Arch Linux KDE</strong> — unduh, pasang, perbarui, dan hapus</summary>
 
 Lakukan pembaruan penuh sistem Arch seperti biasa, lalu unduh
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 Buka terminal di direktori unduhan:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -317,7 +317,7 @@ Untuk hosting di KDE, periksa juga [persyaratan compositor dan input](../LINUX_P
 <summary><strong>Bazzite KDE</strong> — AppImage, startup, dan penghapusan</summary>
 
 Unduh
-[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage).
+[DeskPort-2.9.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage).
 Hentikan berbagi dan gunakan **Keluar** untuk menutup sepenuhnya instance DeskPort yang lebih lama; menutup
 jendela mungkin membuatnya tetap berjalan. Simpan AppImage baru di lokasi permanen sebelum mengaktifkan mulai
 saat login:
@@ -325,11 +325,11 @@ saat login:
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.1-x86_64.AppImage &&
-./DeskPort-2.9.1-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.3-x86_64.AppImage &&
+./DeskPort-2.9.3-x86_64.AppImage
 ```
 
 Jalankan seperti biasa; pustaka bawaan tidak perlu dihapus atau dipindahkan. Jika mulai saat login merujuk ke
@@ -349,13 +349,13 @@ membentuk integrasi dengan desktop host. Flatpak di bawah hanya untuk melihat.
 <summary><strong>Omarchy / Hyprland</strong> — paket Arch lokal dan persyaratan hosting</summary>
 
 Lakukan pembaruan sistem Omarchy seperti biasa, lalu unduh
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 Buka terminal di direktori unduhan:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -375,13 +375,13 @@ memverifikasi stream yang berfungsi.
 <details>
 <summary><strong>Alternatif Flatpak</strong> — hanya melihat, pada sistem dengan Flatpak terkonfigurasi</summary>
 
-Unduh [DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak),
+Unduh [DeskPort-2.9.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-client-x86_64.flatpak),
 lalu buka terminal di direktori unduhan:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.3-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -404,8 +404,8 @@ di direktori home Anda.
 
 | Kanal | Status | Instalasi |
 | --- | --- | --- |
-| Paket rilis GitHub | 2.9.1 stabil | Unduh paket untuk distribusi Anda di atas |
-| Nix flake upstream | 2.9.1 stabil | `nix run --refresh github:keithxc/deskport/v2.9.1` |
+| Paket rilis GitHub | 2.9.3 stabil | Unduh paket untuk distribusi Anda di atas |
+| Nix flake upstream | 2.9.3 stabil | `nix run --refresh github:keithxc/deskport/v2.9.3` |
 | AUR `deskport-bin` | Resep diuji; penerbitan terhambat jeda pendaftaran akun baru | [Bangun resep secara lokal](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) diajukan untuk ditinjau; belum digabung | Gunakan flake upstream hingga disertakan |
 | Repositori resmi Arch / Flathub | Tidak tercantum | Gunakan unduhan rilis; Flatpak hanya penampil |
@@ -438,7 +438,7 @@ Sumber: [Moonlight](https://moonlight-stream.org/),
 Batasan platform DeskPort saat ini tercantum di atas; tabel ini tidak menyiratkan kesetaraan fitur di setiap OS
 atau keunggulan kinerja yang terukur.
 
-Lihat [catatan rilis 2.9.1](../releases/RELEASE_2.9.1.md), [arsitektur](../ARCHITECTURE.md), dan [peta jalan](../ROADMAP.md).
+Lihat [catatan rilis 2.9.3](../releases/RELEASE_2.9.3.md), [arsitektur](../ARCHITECTURE.md), dan [peta jalan](../ROADMAP.md).
 
 ## Membangun dan menjalankan di Linux
 

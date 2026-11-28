@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.1 стабільна](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
+> **[2.9.3 стабільна](https://github.com/keithxc/deskport/releases/tag/v2.9.3)** · [2.9.3](../releases/RELEASE_2.9.3.md)
 >
 > Сполучайте клієнт DeskPort із хостом DeskPort. Прив’язування пристроїв DeskPort несумісне з оригінальним Sunshine на боці хоста та з оригінальним Moonlight на боці клієнта. Повні пакети хоста містять версію Sunshine, адаптовану для DeskPort.
 
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -90,12 +90,12 @@
 
 | Платформа | Роль | Стан випуску | Завантаження |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | Переглядач + хост + нативний віртуальний дисплей | **2.9.1 стабільна**; потрібні підпис Developer ID і нотаризація Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
-| Linux x86_64 | Переглядач + хост; адаптивний простір на придатних хостах KWin, Mutter і Hyprland | **2.9.1 стабільна**: DEB, RPM, Arch, AppImage, портативний архів і Nix | [Випуск](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [посібник зі встановлення](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | Лише переглядач | **2.9.1 стабільна**, Freedesktop Platform 25.08 | [Випуск](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
+| macOS Apple Silicon, macOS 26+ | Переглядач + хост + нативний віртуальний дисплей | **2.9.3 стабільна**; потрібні підпис Developer ID і нотаризація Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg) |
+| Linux x86_64 | Переглядач + хост; адаптивний простір на придатних хостах KWin, Mutter і Hyprland | **2.9.3 стабільна**: DEB, RPM, Arch, AppImage, портативний архів і Nix | [Випуск](https://github.com/keithxc/deskport/releases/tag/v2.9.3) · [посібник зі встановлення](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | Лише переглядач | **2.9.3 стабільна**, Freedesktop Platform 25.08 | [Випуск](https://github.com/keithxc/deskport/releases/tag/v2.9.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | Лише клієнт | App Store; новіші збірки окремо тестуються в TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | Лише клієнт | **2.9.1 (71)** · Триває закрите тестування в Google Play | [Завантажити APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
-| Windows x64 | Переглядач + хост + віртуальний дисплей | **2.9.1 стабільна**; Setup містить хост, портативний ZIP лише для перегляду; застосунок та інсталятор не підписані | [Інсталятор](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
+| Windows x64 | Переглядач + хост + віртуальний дисплей | **2.9.3 стабільна**; Setup містить хост, портативний ZIP лише для перегляду; застосунок та інсталятор не підписані | [Інсталятор](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | Не кваліфіковано | Немає перевіреного пакета випуску | — |
 
 > **Попередження про антивіруси в Windows:** антивірусне ПЗ може помилково позначити допоміжні компоненти DeskPort для Windows.
@@ -113,15 +113,15 @@ AppImage і портативні збірки автоматично реєст�
 
 ## Встановлення
 
-**macOS:** відкрийте [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg),
+**macOS:** відкрийте [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg),
 перетягніть DeskPort у «Програми» й запустіть. Для функцій хоста надайте дозволи «Запис екрана» та
 «Універсальний доступ». Nix і Homebrew не потрібні.
 
-**Linux:** виберіть [пакет 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
+**Linux:** виберіть [пакет 2.9.3](https://github.com/keithxc/deskport/releases/tag/v2.9.3)
 для своєї системи та виконайте [кроки для дистрибутива нижче](#встановлення-в-linux-за-дистрибутивами),
 включно з [вимогами до введення на хості](../LINUX_PACKAGES.md#first-connection-and-hosting).
-Через Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
-Flatpak забезпечує лише перегляд. Випуск містить [контрольні суми SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) і [звіт про перевірку](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
+Через Nix: `nix run --refresh github:keithxc/deskport/v2.9.3`.
+Flatpak забезпечує лише перегляд. Випуск містить [контрольні суми SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt) і [звіт про перевірку](https://github.com/keithxc/deskport/releases/download/v2.9.3/VERIFICATION.txt).
 
 **Android 2.9.1 (71)** · ~~$4.99~~ · До завершення закритого тестування в Google Play файл [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) тимчасово доступний на GitHub. Вихідний код мобільних клієнтів закритий. Тут розповсюджується лише інсталяційний пакет.
 
@@ -134,7 +134,7 @@ Flatpak забезпечує лише перегляд. Випуск місти�
 
 Увімкніть спільний доступ на хості DeskPort, виберіть його в клієнті DeskPort і схваліть пристрій на хості. Використовуйте LAN або власний VPN, наприклад Tailscale; DeskPort не надає облікових записів, розміщених робочих столів, ретранслятора чи мережевого тунелю. Нові ручні адреси використовують порт `48989`; якщо він інший, вкажіть порт зі сторінки спільного доступу хоста.
 
-Історія: зміни та межі перевірок [0.7.3](../releases/RELEASE_0.7.3.md) і заміна пакетів [0.7.4](../releases/RELEASE_0.7.4.md) збережені в початкових примітках; це не результати перевірки 2.9.1.
+Історія: зміни та межі перевірок [0.7.3](../releases/RELEASE_0.7.3.md) і заміна пакетів [0.7.4](../releases/RELEASE_0.7.4.md) збережені в початкових примітках; це не результати перевірки 2.9.3.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -180,7 +180,7 @@ AppImage містить приватне середовище glibc; натив�
 
 ### Встановлення в Linux за дистрибутивами
 
-Ці інструкції призначені для настільних систем **x86_64** і файлів випуску **2.9.1**. Нативні пакети
+Ці інструкції призначені для настільних систем **x86_64** і файлів випуску **2.9.3**. Нативні пакети
 потребують glibc 2.39 або новішої. Це завантаження з основного проєкту, а не пакети з репозиторію
 дистрибутива DeskPort; майбутні випуски встановлюйте, знову завантаживши й перевіривши новий пакет.
 
@@ -209,11 +209,11 @@ GPU чи справжню трансляцію; див. [обсяг переві
 
 | Дистрибутив / робочий стіл | Спосіб завантаження |
 | --- | --- |
-| Ubuntu 26.04 GNOME | DEB або AppImage 2.9.1 |
+| Ubuntu 26.04 GNOME | DEB або AppImage 2.9.3 |
 | Debian 13 KDE | DEB, встановлюється через APT |
 | Fedora 44 KDE | RPM, встановлюється через DNF |
 | Arch Linux KDE | Локальний пакет Arch, встановлюється через `pacman -U` |
-| Bazzite KDE | AppImage 2.9.1 |
+| Bazzite KDE | AppImage 2.9.3 |
 | Omarchy / Hyprland | Локальний пакет Arch, встановлюється через `pacman -U` |
 
 Відкрийте термінал у звичайному сеансі робочого столу. Кожна послідовність команд перед встановленням
@@ -227,14 +227,14 @@ GPU чи справжню трансляцію; див. [обсяг переві
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — завантаження, встановлення, оновлення та видалення</summary>
 
-Завантажте [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
+Завантажте [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb),
 потім відкрийте термінал у каталозі з цим файлом:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -253,14 +253,14 @@ Flatpak лише для перегляду або окремо підтриму�
 <details>
 <summary><strong>Debian 13 KDE</strong> — завантаження, встановлення, оновлення та видалення</summary>
 
-Завантажте [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb),
+Завантажте [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb),
 потім відкрийте термінал у каталозі завантаження:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -276,16 +276,16 @@ APT розв’язує залежності пакета. Надалі запу
 <details>
 <summary><strong>Fedora 44 KDE</strong> — завантаження, встановлення, оновлення та видалення</summary>
 
-Завантажте [deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm),
+Завантажте [deskport-2.9.3.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3.x86_64.rpm),
 потім відкрийте термінал у каталозі завантаження:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
-  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.3 ]; then
+  sudo dnf reinstall ./deskport-2.9.3.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.1.x86_64.rpm
+  sudo dnf install ./deskport-2.9.3.x86_64.rpm
 fi &&
 deskport
 ```
@@ -302,13 +302,13 @@ DNF розв’язує залежності з увімкнених репоз�
 <summary><strong>Arch Linux KDE</strong> — завантаження, встановлення, оновлення та видалення</summary>
 
 Виконайте звичне повне оновлення системи Arch, потім завантажте
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 Відкрийте термінал у каталозі завантаження:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -324,7 +324,7 @@ DeskPort із меню застосунків. Майбутні завантаж
 <summary><strong>Bazzite KDE</strong> — AppImage, запуск і видалення</summary>
 
 Завантажте
-[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage).
+[DeskPort-2.9.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage).
 Зупиніть спільний доступ і скористайтеся **Вихід**, щоб повністю закрити старішу копію DeskPort; закриття
 вікна може залишити її запущеною. Перед увімкненням запуску під час входу збережіть новий AppImage у
 постійному місці:
@@ -332,11 +332,11 @@ DeskPort із меню застосунків. Майбутні завантаж
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.1-x86_64.AppImage &&
-./DeskPort-2.9.1-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.3-x86_64.AppImage &&
+./DeskPort-2.9.3-x86_64.AppImage
 ```
 
 Запускайте як зазвичай; вбудовані бібліотеки не треба видаляти чи переміщувати. Якщо запуск під час входу
@@ -358,13 +358,13 @@ AppImage. Щоб видалити, вимкніть запуск DeskPort під
 <summary><strong>Omarchy / Hyprland</strong> — локальний пакет Arch і вимоги до хоста</summary>
 
 Виконайте звичайне оновлення системи Omarchy, потім завантажте
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 Відкрийте термінал у каталозі завантаження:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -386,13 +386,13 @@ deskport
 <details>
 <summary><strong>Альтернатива Flatpak</strong> — лише перегляд, у системах із налаштованим Flatpak</summary>
 
-Завантажте [DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak),
+Завантажте [DeskPort-2.9.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-client-x86_64.flatpak),
 потім відкрийте термінал у каталозі завантаження:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.3-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -415,8 +415,8 @@ LAN або VPN. Встановлення пакета не налаштовує 
 
 | Канал | Стан | Встановлення |
 | --- | --- | --- |
-| Пакети випусків GitHub | 2.9.1 стабільна | Завантажте пакет для свого дистрибутива вище |
-| Nix flake проєкту | 2.9.1 стабільна | `nix run --refresh github:keithxc/deskport/v2.9.1` |
+| Пакети випусків GitHub | 2.9.3 стабільна | Завантажте пакет для свого дистрибутива вище |
+| Nix flake проєкту | 2.9.3 стабільна | `nix run --refresh github:keithxc/deskport/v2.9.3` |
 | AUR `deskport-bin` | Рецепт перевірено; публікацію заблоковано паузою реєстрації нових облікових записів | [Зберіть рецепт локально](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) подано на розгляд; не злито | До включення використовуйте flake проєкту |
 | Офіційні репозиторії Arch / Flathub | Немає | Використовуйте файли випусків; Flatpak лише для перегляду |
@@ -451,7 +451,7 @@ LAN або VPN. Встановлення пакета не налаштовує 
 Поточні обмеження платформ DeskPort наведено вище; ця таблиця не означає однакових можливостей на кожній ОС
 чи виміряної переваги у продуктивності.
 
-Див. [примітки до випуску 2.9.1](../releases/RELEASE_2.9.1.md),
+Див. [примітки до випуску 2.9.3](../releases/RELEASE_2.9.3.md),
 [архітектуру](../ARCHITECTURE.md) і [дорожню карту](../ROADMAP.md).
 
 ## Збирання та запуск у Linux

@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.1 مستقر](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
+> **[2.9.3 مستقر](https://github.com/keithxc/deskport/releases/tag/v2.9.3)** · [2.9.3](../releases/RELEASE_2.9.3.md)
 >
 > أقرن عميل DeskPort بمضيف DeskPort. لا يتوافق ربط الأجهزة في DeskPort مع إصدار Sunshine الأصلي على جهة المضيف أو مع إصدار Moonlight الأصلي على جهة العميل. تتضمن حزم المضيف الكاملة نسخة من مضيف Sunshine معدّلة خصيصًا لـ DeskPort.
 
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -89,12 +89,12 @@
 
 | المنصة | الدور | حالة الإصدار | التنزيل |
 | --- | --- | --- | --- |
-| macOS Apple Silicon، macOS 26+ | عارض + مضيف + شاشة افتراضية أصلية | **2.9.1 مستقر**; يلزم توقيع Developer ID وتوثيق Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
-| Linux x86_64 | عارض + مضيف؛ مساحة عمل تكيّفية على مضيفات KWin وMutter وHyprland المؤهلة | **2.9.1 مستقر**: DEB وRPM وArch وAppImage وأرشيف محمول وNix | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [دليل التثبيت](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | عارض فقط | **2.9.1 مستقر**، Freedesktop Platform 25.08 | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
+| macOS Apple Silicon، macOS 26+ | عارض + مضيف + شاشة افتراضية أصلية | **2.9.3 مستقر**; يلزم توقيع Developer ID وتوثيق Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg) |
+| Linux x86_64 | عارض + مضيف؛ مساحة عمل تكيّفية على مضيفات KWin وMutter وHyprland المؤهلة | **2.9.3 مستقر**: DEB وRPM وArch وAppImage وأرشيف محمول وNix | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.3) · [دليل التثبيت](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | عارض فقط | **2.9.3 مستقر**، Freedesktop Platform 25.08 | [الإصدار](https://github.com/keithxc/deskport/releases/tag/v2.9.3) |
 | iPhone / iPad، iOS/iPadOS 15+ | عميل فقط | App Store؛ تُختبر الإصدارات الأحدث بشكل منفصل في TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | عميل فقط | **2.9.1 (71)** · لم يكتمل الاختبار المغلق في Google Play | [تنزيل APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
-| Windows x64 | عارض + مضيف + شاشة افتراضية | **2.9.1 مستقر**؛ Setup يتضمن المضيف، وZIP المحمول للعرض فقط؛ التطبيق والمثبّت غير موقّعين | [المثبّت](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
+| Windows x64 | عارض + مضيف + شاشة افتراضية | **2.9.3 مستقر**؛ Setup يتضمن المضيف، وZIP المحمول للعرض فقط؛ التطبيق والمثبّت غير موقّعين | [المثبّت](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | غير مؤهل | لا توجد حزمة إصدار متحقق منها | — |
 
 > **تنبيه مكافحة الفيروسات على Windows:** قد تصنّف برامج مكافحة الفيروسات المكونات المساعدة لـ DeskPort على Windows خطأً كتهديد.
@@ -110,15 +110,15 @@
 
 ## التثبيت
 
-**macOS:** افتح [ملف DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg)،
+**macOS:** افتح [ملف DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg)،
 واسحب DeskPort إلى مجلد التطبيقات ثم افتحه. امنح أذونات تسجيل الشاشة وإمكانية الوصول لاستخدام ميزات
 المضيف. لا حاجة إلى Nix أو Homebrew.
 
-**Linux:** اختر [حزمة 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
+**Linux:** اختر [حزمة 2.9.3](https://github.com/keithxc/deskport/releases/tag/v2.9.3)
 المناسبة لنظامك واتبع [الخطوات الخاصة بكل توزيعة أدناه](#تثبيت-linux-حسب-التوزيعة)،
 بما في ذلك [متطلبات إدخال المضيف](../LINUX_PACKAGES.md#first-connection-and-hosting).
-باستخدام Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`.
-يوفر Flatpak العرض فقط. يتضمن الإصدار [مجاميع SHA-256 الاختبارية](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) و[تقرير تحقق](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt).
+باستخدام Nix: `nix run --refresh github:keithxc/deskport/v2.9.3`.
+يوفر Flatpak العرض فقط. يتضمن الإصدار [مجاميع SHA-256 الاختبارية](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt) و[تقرير تحقق](https://github.com/keithxc/deskport/releases/download/v2.9.3/VERIFICATION.txt).
 
 **Android 2.9.1 (71)** · ~~$4.99~~ · إلى حين اكتمال الاختبار المغلق في Google Play، يتوفر [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) مؤقتًا على GitHub. تطبيقات الهاتف مغلقة المصدر، والمتاح هنا هو ملف التثبيت فقط.
 
@@ -130,7 +130,7 @@
 
 ابدأ المشاركة على مضيف DeskPort واختره في عميل DeskPort ثم وافق على الجهاز على المضيف. استخدم LAN أو VPN خاصًا بك مثل Tailscale؛ لا يوفر DeskPort خدمة حسابات أو أسطح مكتب مستضافة أو مرحّلًا أو نفقًا شبكيًا. تستخدم العناوين اليدوية الجديدة المنفذ `48989`؛ إن اختلف، أدخل المنفذ الظاهر في صفحة مشاركة المضيف.
 
-السجل التاريخي: تبقى تغييرات [0.7.3](../releases/RELEASE_0.7.3.md) وحدود التحقق منه واستبدال حزم [0.7.4](../releases/RELEASE_0.7.4.md) في ملاحظاتها الأصلية؛ وليست نتائج تحقق للإصدار 2.9.1.
+السجل التاريخي: تبقى تغييرات [0.7.3](../releases/RELEASE_0.7.3.md) وحدود التحقق منه واستبدال حزم [0.7.4](../releases/RELEASE_0.7.4.md) في ملاحظاتها الأصلية؛ وليست نتائج تحقق للإصدار 2.9.3.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -172,7 +172,7 @@
 
 ### تثبيت Linux حسب التوزيعة
 
-تستهدف هذه التعليمات أنظمة سطح المكتب **x86_64** وتنزيلات إصدار **2.9.1**. تتطلب الحزم الأصلية glibc 2.39
+تستهدف هذه التعليمات أنظمة سطح المكتب **x86_64** وتنزيلات إصدار **2.9.3**. تتطلب الحزم الأصلية glibc 2.39
 أو أحدث. هذه تنزيلات من المشروع الأصلي وليست حزمًا من مستودع توزيعة خاص بـ DeskPort؛ ثبّت الإصدارات
 المستقبلية بتنزيل الحزمة الجديدة والتحقق منها مجددًا.
 
@@ -198,11 +198,11 @@
 
 | التوزيعة / سطح المكتب | طريقة التنزيل |
 | --- | --- |
-| Ubuntu 26.04 GNOME | DEB أو AppImage 2.9.1 |
+| Ubuntu 26.04 GNOME | DEB أو AppImage 2.9.3 |
 | Debian 13 KDE | DEB، يُثبَّت عبر APT |
 | Fedora 44 KDE | RPM، يُثبَّت عبر DNF |
 | Arch Linux KDE | حزمة Arch محلية، تُثبَّت عبر `pacman -U` |
-| Bazzite KDE | AppImage 2.9.1 |
+| Bazzite KDE | AppImage 2.9.3 |
 | Omarchy / Hyprland | حزمة Arch محلية، تُثبَّت عبر `pacman -U` |
 
 افتح طرفية في جلسة سطح المكتب المعتادة. يتحقق كل تسلسل أوامر من اسم الملف المُنزَّل بدقة مقابل
@@ -215,14 +215,14 @@
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — التنزيل والتثبيت والتحديث والإزالة</summary>
 
-نزّل [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb)،
+نزّل [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb)،
 ثم افتح طرفية في المجلد الذي يحتوي الملف:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -239,14 +239,14 @@ DeskPort من قائمة التطبيقات. للترقية، نزّل حزمة 
 <details>
 <summary><strong>Debian 13 KDE</strong> — التنزيل والتثبيت والتحديث والإزالة</summary>
 
-نزّل [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb)،
+نزّل [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb)،
 ثم افتح طرفية في مجلد التنزيل:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -263,16 +263,16 @@ Flatpak للعرض فقط أو بناء Nix/من المصدر مدعومًا.
 <details>
 <summary><strong>Fedora 44 KDE</strong> — التنزيل والتثبيت والتحديث والإزالة</summary>
 
-نزّل [deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm)،
+نزّل [deskport-2.9.3.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3.x86_64.rpm)،
 ثم افتح طرفية في مجلد التنزيل:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
-  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.3 ]; then
+  sudo dnf reinstall ./deskport-2.9.3.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.1.x86_64.rpm
+  sudo dnf install ./deskport-2.9.3.x86_64.rpm
 fi &&
 deskport
 ```
@@ -288,13 +288,13 @@ deskport
 <summary><strong>Arch Linux KDE</strong> — التنزيل والتثبيت والتحديث والإزالة</summary>
 
 أكمل تحديث نظام Arch الكامل المعتاد، ثم نزّل
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 افتح طرفية في مجلد التنزيل:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -310,18 +310,18 @@ deskport
 <summary><strong>Bazzite KDE</strong> — AppImage والتشغيل والإزالة</summary>
 
 نزّل
-[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage).
+[DeskPort-2.9.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage).
 أوقف المشاركة واستخدم **خروج** لإغلاق أي نسخة أقدم من DeskPort تمامًا؛ فقد يتركها إغلاق النافذة قيد
 التشغيل. احفظ AppImage الجديد في موقع دائم قبل تفعيل التشغيل عند تسجيل الدخول:
 
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.1-x86_64.AppImage &&
-./DeskPort-2.9.1-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.3-x86_64.AppImage &&
+./DeskPort-2.9.3-x86_64.AppImage
 ```
 
 شغّله كالمعتاد؛ لا حاجة إلى إزالة المكتبات المضمّنة أو نقلها. إذا كان التشغيل عند تسجيل الدخول يشير إلى
@@ -341,13 +341,13 @@ Flatpak أدناه العرض فقط.
 <summary><strong>Omarchy / Hyprland</strong> — حزمة Arch محلية ومتطلبات المضيف</summary>
 
 أكمل تحديث نظام Omarchy المعتاد، ثم نزّل
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst).
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst).
 افتح طرفية في مجلد التنزيل:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -366,13 +366,13 @@ deskport
 <details>
 <summary><strong>بديل Flatpak</strong> — للعرض فقط، على الأنظمة المهيأة لـ Flatpak</summary>
 
-نزّل [DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak)،
+نزّل [DeskPort-2.9.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-client-x86_64.flatpak)،
 ثم افتح طرفية في مجلد التنزيل:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.3-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -395,8 +395,8 @@ DeskPort في مجلدك الرئيسي.
 
 | القناة | الحالة | التثبيت |
 | --- | --- | --- |
-| حزم إصدارات GitHub | 2.9.1 مستقر | نزّل الحزمة المناسبة لتوزيعتك أعلاه |
-| Nix flake من المشروع | 2.9.1 مستقر | `nix run --refresh github:keithxc/deskport/v2.9.1` |
+| حزم إصدارات GitHub | 2.9.3 مستقر | نزّل الحزمة المناسبة لتوزيعتك أعلاه |
+| Nix flake من المشروع | 2.9.3 مستقر | `nix run --refresh github:keithxc/deskport/v2.9.3` |
 | AUR `deskport-bin` | الوصفة مختبرة؛ النشر متوقف بسبب إيقاف تسجيل الحسابات الجديدة | [ابنِ الوصفة محليًا](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) مُقدَّم للمراجعة؛ لم يُدمج | استخدم flake المشروع حتى يُضمَّن |
 | مستودعات Arch الرسمية / Flathub | غير مدرج | استخدم تنزيلات الإصدارات؛ Flatpak للعرض فقط |
@@ -429,7 +429,7 @@ flake المشروع `pkgs.deskport` متاحًا في Nixpkgs. إدخال ال�
 حدود منصات DeskPort الحالية مذكورة أعلاه؛ ولا يعني هذا الجدول تكافؤ الميزات على كل نظام تشغيل أو أفضلية
 أداء مقيسة.
 
-راجع [ملاحظات إصدار 2.9.1](../releases/RELEASE_2.9.1.md) و[البنية](../ARCHITECTURE.md) و[خارطة الطريق](../ROADMAP.md).
+راجع [ملاحظات إصدار 2.9.3](../releases/RELEASE_2.9.3.md) و[البنية](../ARCHITECTURE.md) و[خارطة الطريق](../ROADMAP.md).
 
 ## البناء والتشغيل على Linux
 

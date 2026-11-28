@@ -1,7 +1,7 @@
 # Distribution repository submissions
 
 These recipes support distribution submissions for DeskPort. For the current
-desktop packages, use the [DeskPort 2.9.1 release](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
+desktop packages, use the [DeskPort 2.9.3 release](https://github.com/keithxc/deskport/releases/tag/v2.9.3)
 and [the Linux installation guide](../docs/LINUX_PACKAGES.md).
 
 ## AUR
@@ -39,7 +39,7 @@ checks before pushing. Increment `pkgrel` for packaging-only changes.
 The [0.7.8 submission](https://github.com/NixOS/nixpkgs/pull/572043) is open for
 upstream review. The local example below retains the 0.6.3 pin used for the
 [earlier submission](https://github.com/NixOS/nixpkgs/pull/567358).
-To run DeskPort 2.9.1 with Nix, use the
+To run DeskPort 2.9.3 with Nix, use the
 [versioned upstream flake](../docs/LINUX_PACKAGES.md#nixos-and-nix).
 
 `nixpkgs/deskport/package.nix` is a standalone `callPackage` expression. It builds

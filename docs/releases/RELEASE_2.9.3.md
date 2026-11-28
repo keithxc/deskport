@@ -81,3 +81,31 @@ The [PC support matrix](../PC_SUPPORT_MATRIX.md) records platform evidence by
 source and package. End-to-end color rendering, input latency, scrolling
 quality, virtual-display parking and restoration require live tests on the
 specific client and host hardware.
+
+### Follow-up native Windows verification (2026-11-28)
+
+On a dedicated Windows 11 x64 test machine (AMD Radeon 780M), the published
+`DeskPort-2.9.3-windows-x64-setup-full.exe` and
+`DeskPort-2.9.3-windows-x64-portable-full.zip` matched `SHA256SUMS.txt` before
+and after scanning. Portable ZIP checks passed PE version (`2.9.3.0`), CLI
+`--version`/`-v`/`--help`/`-h`, valid Authenticode signature on
+`driver\mttvdd.cat`, and a Microsoft Defender custom scan with real-time
+protection enabled and zero exclusions (677 extracted files, 0 detections).
+An in-place Setup upgrade from `2.9.1.0` to `2.9.3.0` exited 0 and started the
+resident host and display service.
+
+Bidirectional live sessions between the installed Windows `2.9.3` package and an
+Apple Silicon macOS `2.9.3` host/client verified:
+
+- **Windows client -> macOS host:** dynamic `2224x1264` virtual display,
+  VideoToolbox HEVC encode, D3D11VA (`hevc_d3d11va2`) hardware decode, first
+  video packet in 300 ms, 46-58 fps steady rendering with 0% network drops,
+  live desktop display verification, and clean physical display restoration on
+  disconnect.
+- **macOS client -> Windows host:** negotiated `1848x1012` virtual display,
+  `amdvce` HEVC encode, Apple Silicon Metal (`vt_renderer.metal`) +
+  VideoToolbox hardware decode, first video packet in 500 ms, 0% transport
+  drops, and clean display-lease release on disconnect.
+
+The Windows application and installer remain unsigned, and broader GPU, audio,
+clipboard, HDR, IME and long-session combinations remain hardware-specific.

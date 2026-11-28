@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.1 เสถียร](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
+> **[2.9.3 เสถียร](https://github.com/keithxc/deskport/releases/tag/v2.9.3)** · [2.9.3](../releases/RELEASE_2.9.3.md)
 >
 > จับคู่ไคลเอนต์ DeskPort กับโฮสต์ DeskPort การผูกอุปกรณ์ของ DeskPort ไม่รองรับ Sunshine ต้นฉบับทางฝั่งโฮสต์หรือ Moonlight ต้นฉบับทางฝั่งไคลเอนต์ แพ็กเกจโฮสต์แบบเต็มมีโฮสต์ Sunshine ที่ปรับแต่งสำหรับ DeskPort
 
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -87,12 +87,12 @@
 
 | แพลตฟอร์ม | บทบาท | สถานะรุ่นเผยแพร่ | ดาวน์โหลด |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | ตัวแสดงผล + โฮสต์ + จอเสมือนแบบเนทีฟ | **2.9.1 เสถียร**; ต้องมีลายเซ็น Developer ID และการรับรองจาก Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
-| Linux x86_64 | ตัวแสดงผล + โฮสต์; พื้นที่ทำงานปรับขนาดได้บนโฮสต์ KWin, Mutter และ Hyprland ที่รองรับ | **2.9.1 เสถียร**: DEB, RPM, Arch, AppImage, ไฟล์พกพา และ Nix | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [คู่มือการติดตั้ง](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | ตัวแสดงผลเท่านั้น | **2.9.1 เสถียร**, Freedesktop Platform 25.08 | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
+| macOS Apple Silicon, macOS 26+ | ตัวแสดงผล + โฮสต์ + จอเสมือนแบบเนทีฟ | **2.9.3 เสถียร**; ต้องมีลายเซ็น Developer ID และการรับรองจาก Apple | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg) |
+| Linux x86_64 | ตัวแสดงผล + โฮสต์; พื้นที่ทำงานปรับขนาดได้บนโฮสต์ KWin, Mutter และ Hyprland ที่รองรับ | **2.9.3 เสถียร**: DEB, RPM, Arch, AppImage, ไฟล์พกพา และ Nix | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.3) · [คู่มือการติดตั้ง](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | ตัวแสดงผลเท่านั้น | **2.9.3 เสถียร**, Freedesktop Platform 25.08 | [รุ่นเผยแพร่](https://github.com/keithxc/deskport/releases/tag/v2.9.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | ไคลเอนต์เท่านั้น | App Store; รุ่นใหม่กว่าทดสอบแยกใน TestFlight | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | ไคลเอนต์เท่านั้น | **2.9.1 (71)** · อยู่ระหว่างการทดสอบแบบปิดบน Google Play | [ดาวน์โหลด APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
-| Windows x64 | ตัวแสดงผล + โฮสต์ + จอเสมือน | **2.9.1 เสถียร**; Setup มีโฮสต์ ZIP แบบพกพาใช้ดูเท่านั้น แอปและตัวติดตั้งไม่ได้ลงนาม | [ตัวติดตั้ง](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
+| Windows x64 | ตัวแสดงผล + โฮสต์ + จอเสมือน | **2.9.3 เสถียร**; Setup มีโฮสต์ ZIP แบบพกพาใช้ดูเท่านั้น แอปและตัวติดตั้งไม่ได้ลงนาม | [ตัวติดตั้ง](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | ยังไม่ผ่านเกณฑ์ | ไม่มีแพ็กเกจรุ่นเผยแพร่ที่ผ่านการตรวจสอบ | — |
 
 > **ประกาศเรื่องแอนตี้ไวรัสบน Windows:** ซอฟต์แวร์แอนตี้ไวรัสอาจตรวจพบส่วนประกอบช่วยเหลือของ DeskPort บน Windows ผิดพลาดว่าเป็นภัยคุกคาม
@@ -107,15 +107,15 @@ AppImage มีรันไทม์ส่วนตัวสำหรับเ�
 
 ## การติดตั้ง
 
-**macOS:** เปิด [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg)
+**macOS:** เปิด [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg)
 ลาก DeskPort ไปที่ Applications แล้วเปิด ให้สิทธิ์ Screen Recording และ Accessibility เพื่อใช้ฟีเจอร์โฮสต์
 ไม่ต้องใช้ Nix หรือ Homebrew
 
-**Linux:** เลือก[แพ็กเกจ 2.9.1](https://github.com/keithxc/deskport/releases/tag/v2.9.1)
+**Linux:** เลือก[แพ็กเกจ 2.9.3](https://github.com/keithxc/deskport/releases/tag/v2.9.3)
 สำหรับระบบของคุณ แล้วทำตาม[ขั้นตอนตามดิสทริบิวชันด้านล่าง](#การติดตั้งบน-linux-ตามดิสทริบิวชัน)
 รวมถึง[ข้อกำหนดอินพุตของโฮสต์](../LINUX_PACKAGES.md#first-connection-and-hosting)
-ใช้ Nix: `nix run --refresh github:keithxc/deskport/v2.9.1`
-Flatpak ใช้ดูได้อย่างเดียว รุ่นเผยแพร่มี[เช็กซัม SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt) และ[รายงานการตรวจสอบ](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt)
+ใช้ Nix: `nix run --refresh github:keithxc/deskport/v2.9.3`
+Flatpak ใช้ดูได้อย่างเดียว รุ่นเผยแพร่มี[เช็กซัม SHA-256](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt) และ[รายงานการตรวจสอบ](https://github.com/keithxc/deskport/releases/download/v2.9.3/VERIFICATION.txt)
 
 **Android 2.9.1 (71)** · ~~$4.99~~ · ระหว่างรอให้การทดสอบแบบปิดบน Google Play เสร็จสิ้น สามารถดาวน์โหลด [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) จาก GitHub ได้ชั่วคราว แอปมือถือไม่เปิดเผยซอร์สโค้ด ที่นี่แจกเฉพาะไฟล์ติดตั้ง
 
@@ -127,7 +127,7 @@ Flatpak ใช้ดูได้อย่างเดียว รุ่นเ�
 
 เริ่มแชร์บนโฮสต์ DeskPort เลือกโฮสต์ในไคลเอนต์ DeskPort แล้วอนุมัติอุปกรณ์บนโฮสต์ ใช้ LAN หรือ VPN ของคุณเอง เช่น Tailscale โดย DeskPort ไม่มีบริการบัญชี เดสก์ท็อปที่โฮสต์ไว้ รีเลย์ หรืออุโมงค์เครือข่าย ที่อยู่ใหม่ที่ป้อนเองใช้พอร์ต `48989` หากต่างออกไปให้ระบุพอร์ตที่แสดงในหน้าการแชร์ของโฮสต์
 
-ประวัติ: การเปลี่ยนแปลงและขอบเขตการตรวจของ [0.7.3](../releases/RELEASE_0.7.3.md) รวมถึงการเปลี่ยนแพ็กเกจของ [0.7.4](../releases/RELEASE_0.7.4.md) ยังคงอยู่ในบันทึกต้นฉบับ ไม่ใช่ผลการตรวจรับรอง 2.9.1
+ประวัติ: การเปลี่ยนแปลงและขอบเขตการตรวจของ [0.7.3](../releases/RELEASE_0.7.3.md) รวมถึงการเปลี่ยนแพ็กเกจของ [0.7.4](../releases/RELEASE_0.7.4.md) ยังคงอยู่ในบันทึกต้นฉบับ ไม่ใช่ผลการตรวจรับรอง 2.9.3
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -165,7 +165,7 @@ Windows Setup ผ่านการอัปเกรดจาก 0.7.1 พร�
 
 ### การติดตั้งบน Linux ตามดิสทริบิวชัน
 
-คำแนะนำเหล่านี้สำหรับระบบเดสก์ท็อป **x86_64** และไฟล์ดาวน์โหลดรุ่น **2.9.1** แพ็กเกจเนทีฟต้องใช้ glibc 2.39 ขึ้นไป
+คำแนะนำเหล่านี้สำหรับระบบเดสก์ท็อป **x86_64** และไฟล์ดาวน์โหลดรุ่น **2.9.3** แพ็กเกจเนทีฟต้องใช้ glibc 2.39 ขึ้นไป
 ไฟล์เหล่านี้ดาวน์โหลดจากโปรเจกต์ต้นทาง ไม่ใช่แพ็กเกจจากคลังของดิสทริบิวชันสำหรับ DeskPort สำหรับรุ่นต่อไปให้ดาวน์โหลดและตรวจสอบแพ็กเกจใหม่อีกครั้ง
 
 AppImage 0.7.3 ยังคงการแก้ไขรันไทม์พกพา การคืนค่าจอ การปิดโปรเซส สิทธิ์ และการเริ่มเมื่อเข้าสู่ระบบสำหรับ Bazzite/KDE Wayland
@@ -186,11 +186,11 @@ DEB 0.7.3 สุดท้ายใช้ libva 2.23.0 ที่ตรึงร�
 
 | ดิสทริบิวชัน / เดสก์ท็อป | วิธีดาวน์โหลด |
 | --- | --- |
-| Ubuntu 26.04 GNOME | DEB หรือ AppImage 2.9.1 |
+| Ubuntu 26.04 GNOME | DEB หรือ AppImage 2.9.3 |
 | Debian 13 KDE | DEB ติดตั้งด้วย APT |
 | Fedora 44 KDE | RPM ติดตั้งด้วย DNF |
 | Arch Linux KDE | แพ็กเกจ Arch ภายในเครื่อง ติดตั้งด้วย `pacman -U` |
-| Bazzite KDE | AppImage 2.9.1 |
+| Bazzite KDE | AppImage 2.9.3 |
 | Omarchy / Hyprland | แพ็กเกจ Arch ภายในเครื่อง ติดตั้งด้วย `pacman -U` |
 
 เปิดเทอร์มินัลในเซสชันเดสก์ท็อปปกติ ชุดคำสั่งแต่ละชุดจะตรวจชื่อไฟล์ที่ดาวน์โหลดตรงกับ `SHA256SUMS.txt` ของรุ่นนั้นก่อนติดตั้ง
@@ -202,14 +202,14 @@ DEB 0.7.3 สุดท้ายใช้ libva 2.23.0 ที่ตรึงร�
 <details>
 <summary><strong>Ubuntu 26.04 GNOME</strong> — ดาวน์โหลด ติดตั้ง อัปเดต และถอดออก</summary>
 
-ดาวน์โหลด [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb)
+ดาวน์โหลด [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb)
 แล้วเปิดเทอร์มินัลในไดเรกทอรีที่มีไฟล์นั้น:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -226,14 +226,14 @@ Ubuntu 24.04 ก็ผ่านข้อกำหนด glibc ขั้นต่
 <details>
 <summary><strong>Debian 13 KDE</strong> — ดาวน์โหลด ติดตั้ง อัปเดต และถอดออก</summary>
 
-ดาวน์โหลด [deskport_2.9.1_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport_2.9.1_amd64.deb)
+ดาวน์โหลด [deskport_2.9.3_amd64.deb](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport_2.9.3_amd64.deb)
 แล้วเปิดเทอร์มินัลในไดเรกทอรีดาวน์โหลด:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport_2.9.1_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport_2.9.3_amd64.deb" { print }' SHA256SUMS.txt | sha256sum --check - &&
 sudo apt update &&
-sudo apt install --reinstall ./deskport_2.9.1_amd64.deb &&
+sudo apt install --reinstall ./deskport_2.9.3_amd64.deb &&
 deskport
 ```
 
@@ -248,16 +248,16 @@ glibc ขั้นต่ำของแพ็กเกจเนทีฟ ให�
 <details>
 <summary><strong>Fedora 44 KDE</strong> — ดาวน์โหลด ติดตั้ง อัปเดต และถอดออก</summary>
 
-ดาวน์โหลด [deskport-2.9.1.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1.x86_64.rpm)
+ดาวน์โหลด [deskport-2.9.3.x86_64.rpm](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3.x86_64.rpm)
 แล้วเปิดเทอร์มินัลในไดเรกทอรีดาวน์โหลด:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
-if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.1 ]; then
-  sudo dnf reinstall ./deskport-2.9.1.x86_64.rpm
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3.x86_64.rpm" { print }' SHA256SUMS.txt | sha256sum --check - &&
+if [ "$(rpm -q --queryformat '%{VERSION}' deskport 2>/dev/null)" = 2.9.3 ]; then
+  sudo dnf reinstall ./deskport-2.9.3.x86_64.rpm
 else
-  sudo dnf install ./deskport-2.9.1.x86_64.rpm
+  sudo dnf install ./deskport-2.9.3.x86_64.rpm
 fi &&
 deskport
 ```
@@ -273,13 +273,13 @@ DNF จัดการดีเพนเดนซีจากคลัง Fedora
 <summary><strong>Arch Linux KDE</strong> — ดาวน์โหลด ติดตั้ง อัปเดต และถอดออก</summary>
 
 อัปเดตระบบ Arch แบบเต็มตามปกติ แล้วดาวน์โหลด
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst)
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst)
 เปิดเทอร์มินัลในไดเรกทอรีดาวน์โหลด:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -294,18 +294,18 @@ deskport
 <summary><strong>Bazzite KDE</strong> — AppImage การเริ่มทำงาน และการถอดออก</summary>
 
 ดาวน์โหลด
-[DeskPort-2.9.1-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage)
+[DeskPort-2.9.3-x86_64.AppImage](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage)
 หยุดการแชร์และใช้ **Quit** เพื่อปิด DeskPort ตัวเก่าให้สนิท การปิดหน้าต่างอาจทำให้ยังทำงานอยู่
 บันทึก AppImage ใหม่ไว้ในตำแหน่งถาวรก่อนเปิดการเริ่มเมื่อเข้าสู่ระบบ:
 
 ```sh
 mkdir -p "$HOME/Applications/DeskPort" &&
 cd "$HOME/Applications/DeskPort" &&
-curl --fail --location --output DeskPort-2.9.1-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-x86_64.AppImage &&
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
-chmod +x DeskPort-2.9.1-x86_64.AppImage &&
-./DeskPort-2.9.1-x86_64.AppImage
+curl --fail --location --output DeskPort-2.9.3-x86_64.AppImage https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-x86_64.AppImage &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-x86_64.AppImage" { print }' SHA256SUMS.txt | sha256sum --check - &&
+chmod +x DeskPort-2.9.3-x86_64.AppImage &&
+./DeskPort-2.9.3-x86_64.AppImage
 ```
 
 เปิดตามปกติ ไม่ต้องลบหรือย้ายไลบรารีที่มากับแพ็กเกจ หากการเริ่มเมื่อเข้าสู่ระบบชี้ไปยัง AppImage ตัวเก่า
@@ -324,13 +324,13 @@ chmod +x DeskPort-2.9.1-x86_64.AppImage &&
 <summary><strong>Omarchy / Hyprland</strong> — แพ็กเกจ Arch ภายในเครื่องและข้อกำหนดการเป็นโฮสต์</summary>
 
 อัปเดตระบบ Omarchy ตามปกติ แล้วดาวน์โหลด
-[deskport-2.9.1-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.1/deskport-2.9.1-x86_64.pkg.tar.zst)
+[deskport-2.9.3-x86_64.pkg.tar.zst](https://github.com/keithxc/deskport/releases/download/v2.9.3/deskport-2.9.3-x86_64.pkg.tar.zst)
 เปิดเทอร์มินัลในไดเรกทอรีดาวน์โหลด:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "deskport-2.9.1-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
-sudo pacman -U ./deskport-2.9.1-x86_64.pkg.tar.zst &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "deskport-2.9.3-x86_64.pkg.tar.zst" { print }' SHA256SUMS.txt | sha256sum --check - &&
+sudo pacman -U ./deskport-2.9.3-x86_64.pkg.tar.zst &&
 deskport
 ```
 
@@ -349,13 +349,13 @@ deskport
 <details>
 <summary><strong>ทางเลือก Flatpak</strong> — ดูอย่างเดียว บนระบบที่ตั้งค่า Flatpak ไว้</summary>
 
-ดาวน์โหลด [DeskPort-2.9.1-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-client-x86_64.flatpak)
+ดาวน์โหลด [DeskPort-2.9.3-client-x86_64.flatpak](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-client-x86_64.flatpak)
 แล้วเปิดเทอร์มินัลในไดเรกทอรีดาวน์โหลด:
 
 ```sh
-curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt &&
-awk '$2 == "DeskPort-2.9.1-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
-flatpak install --user --reinstall ./DeskPort-2.9.1-client-x86_64.flatpak &&
+curl --fail --location --output SHA256SUMS.txt https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt &&
+awk '$2 == "DeskPort-2.9.3-client-x86_64.flatpak" { print }' SHA256SUMS.txt | sha256sum --check - &&
+flatpak install --user --reinstall ./DeskPort-2.9.3-client-x86_64.flatpak &&
 flatpak run io.github.keithxc.DeskPort
 ```
 
@@ -375,8 +375,8 @@ flatpak run io.github.keithxc.DeskPort
 
 | ช่องทาง | สถานะ | การติดตั้ง |
 | --- | --- | --- |
-| แพ็กเกจรุ่นเผยแพร่บน GitHub | 2.9.1 เสถียร | ดาวน์โหลดแพ็กเกจสำหรับดิสทริบิวชันของคุณจากด้านบน |
-| Nix flake ของโปรเจกต์ | 2.9.1 เสถียร | `nix run --refresh github:keithxc/deskport/v2.9.1` |
+| แพ็กเกจรุ่นเผยแพร่บน GitHub | 2.9.3 เสถียร | ดาวน์โหลดแพ็กเกจสำหรับดิสทริบิวชันของคุณจากด้านบน |
+| Nix flake ของโปรเจกต์ | 2.9.3 เสถียร | `nix run --refresh github:keithxc/deskport/v2.9.3` |
 | AUR `deskport-bin` | ทดสอบสูตรแล้ว; การเผยแพร่ติดขัดเพราะหยุดรับลงทะเบียนบัญชีใหม่ | [บิลด์สูตรภายในเครื่อง](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | ส่ง [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) เพื่อรีวิวแล้ว; ยังไม่ผสาน | ใช้ flake ของโปรเจกต์จนกว่าจะได้รับการรวม |
 | คลังทางการของ Arch / Flathub | ไม่มี | ใช้ไฟล์จากรุ่นเผยแพร่; Flatpak ดูได้อย่างเดียว |
@@ -408,7 +408,7 @@ flatpak run io.github.keithxc.DeskPort
 [การตั้งค่า Parsec บน Linux](https://support.parsec.app/hc/en-us/articles/32381552552340-Install-Parsec-App-on-Linux)
 ข้อจำกัดแพลตฟอร์มปัจจุบันของ DeskPort ระบุไว้ด้านบน ตารางนี้ไม่ได้หมายความว่ามีฟีเจอร์เท่ากันทุกระบบปฏิบัติการหรือมีประสิทธิภาพเหนือกว่าตามการวัด
 
-ดู[บันทึกประจำรุ่น 2.9.1](../releases/RELEASE_2.9.1.md) [สถาปัตยกรรม](../ARCHITECTURE.md) และ[แผนงาน](../ROADMAP.md)
+ดู[บันทึกประจำรุ่น 2.9.3](../releases/RELEASE_2.9.3.md) [สถาปัตยกรรม](../ARCHITECTURE.md) และ[แผนงาน](../ROADMAP.md)
 
 ## บิลด์และรันบน Linux
 

@@ -29,7 +29,7 @@
   <a href="README.bo.md">བོད་ཡིག</a>
 </p>
 
-> **[2.9.1 정식 버전](https://github.com/keithxc/deskport/releases/tag/v2.9.1)** · [2.9.1](../releases/RELEASE_2.9.1.md)
+> **[2.9.3 정식 버전](https://github.com/keithxc/deskport/releases/tag/v2.9.3)** · [2.9.3](../releases/RELEASE_2.9.3.md)
 >
 > DeskPort 클라이언트를 DeskPort 호스트와 페어링하세요. DeskPort 기기 연결은 호스트 측의 원본 Sunshine 및 클라이언트 측의 원본 Moonlight와 호환되지 않습니다. 전체 호스트 패키지에는 DeskPort용으로 수정된 Sunshine 호스트가 들어 있습니다.
 
@@ -40,7 +40,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.1"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.1-71e0c3"></a>
+  <a href="https://github.com/keithxc/deskport/releases/tag/v2.9.3"><img alt="Desktop release" src="https://img.shields.io/badge/desktop-2.9.3-71e0c3"></a>
   <a href="https://apps.apple.com/us/app/deskport/id6812389978"><img alt="App Store" src="https://img.shields.io/badge/App%20Store-iPhone%20%26%20iPad%20%C2%B7%20%244.99-0a84ff?logo=apple&logoColor=white"></a>
   <a href="https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk"><img alt="Android 2.9.1 APK" src="https://img.shields.io/badge/Android-2.9.1%20APK-206d3a?logo=android&amp;logoColor=white"></a> <del>$4.99</del>
   <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
@@ -90,12 +90,12 @@
 
 | 플랫폼 | 역할 | 릴리스 상태 | 다운로드 |
 | --- | --- | --- | --- |
-| macOS Apple Silicon, macOS 26+ | 뷰어 + 호스트 + 네이티브 가상 디스플레이 | **2.9.1 정식 버전**; Developer ID 서명 및 Apple 공증 필요 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg) |
-| Linux x86_64 | 뷰어 + 호스트, 지원 KWin·Mutter·Hyprland 호스트에서 적응형 가상 작업 공간 | **2.9.1 정식 버전**: DEB, RPM, Arch, AppImage, 포터블 아카이브, Nix | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.1) · [설치 가이드](../LINUX_PACKAGES.md) |
-| Linux x86_64 Flatpak | 뷰어 전용 | **2.9.1 정식 버전**, Freedesktop Platform 25.08 | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.1) |
+| macOS Apple Silicon, macOS 26+ | 뷰어 + 호스트 + 네이티브 가상 디스플레이 | **2.9.3 정식 버전**; Developer ID 서명 및 Apple 공증 필요 | [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg) |
+| Linux x86_64 | 뷰어 + 호스트, 지원 KWin·Mutter·Hyprland 호스트에서 적응형 가상 작업 공간 | **2.9.3 정식 버전**: DEB, RPM, Arch, AppImage, 포터블 아카이브, Nix | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.3) · [설치 가이드](../LINUX_PACKAGES.md) |
+| Linux x86_64 Flatpak | 뷰어 전용 | **2.9.3 정식 버전**, Freedesktop Platform 25.08 | [릴리스](https://github.com/keithxc/deskport/releases/tag/v2.9.3) |
 | iPhone / iPad, iOS/iPadOS 15+ | 클라이언트 전용 | App Store, 최신 빌드는 TestFlight에서 별도 테스트 | [App Store](https://apps.apple.com/us/app/deskport/id6812389978) |
 | Android 8.0+ | 클라이언트 전용 | **2.9.1 (71)** · Google Play 비공개 테스트 진행 중 | [APK 다운로드](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk) |
-| Windows x64 | 뷰어 + 호스트 + 가상 디스플레이 | **2.9.1 안정판**; Setup은 호스트 포함, 휴대용 ZIP은 뷰어 전용; 앱과 설치 프로그램은 서명되지 않음 | [설치 프로그램](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-windows-x64-portable-full.zip) |
+| Windows x64 | 뷰어 + 호스트 + 가상 디스플레이 | **2.9.3 안정판**; Setup은 호스트 포함, 휴대용 ZIP은 뷰어 전용; 앱과 설치 프로그램은 서명되지 않음 | [설치 프로그램](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-setup-full.exe) · [ZIP](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-windows-x64-portable-full.zip) |
 | Linux ARM64 / Intel Mac | 검증되지 않음 | 검증된 릴리스 패키지 없음 | — |
 
 > **Windows 백신 안내:** 백신 프로그램이 DeskPort의 Windows 헬퍼 구성 요소를 오탐지할 수 있습니다.
@@ -112,14 +112,14 @@ AppImage와 포터블 빌드는 공유를 시작할 때 현재 디스플레이 �
 
 ## 설치
 
-**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-macos-arm64.dmg)를 열고,
+**macOS:** [DMG](https://github.com/keithxc/deskport/releases/download/v2.9.3/DeskPort-2.9.3-macos-arm64.dmg)를 열고,
 DeskPort를 응용 프로그램 폴더로 끌어다 놓은 뒤 실행합니다. 호스트 기능을 사용하려면 화면 기록과
 손쉬운 사용 권한을 허용하세요. Nix와 Homebrew는 필요하지 않습니다.
 
-**Linux:** 시스템에 맞는 [2.9.1 패키지](https://github.com/keithxc/deskport/releases/tag/v2.9.1)를
+**Linux:** 시스템에 맞는 [2.9.3 패키지](https://github.com/keithxc/deskport/releases/tag/v2.9.3)를
 선택하고 호스트 입력 권한을 포함해 [설치 가이드](../LINUX_PACKAGES.md)를 따르세요.
-Nix 사용 시: `nix run --refresh github:keithxc/deskport/v2.9.1`.
-Flatpak은 보기 기능만 제공합니다. 릴리스 자산에는 [SHA-256 체크섬](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt)과 [검증 보고서](https://github.com/keithxc/deskport/releases/download/v2.9.1/VERIFICATION.txt)가 포함됩니다.
+Nix 사용 시: `nix run --refresh github:keithxc/deskport/v2.9.3`.
+Flatpak은 보기 기능만 제공합니다. 릴리스 자산에는 [SHA-256 체크섬](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt)과 [검증 보고서](https://github.com/keithxc/deskport/releases/download/v2.9.3/VERIFICATION.txt)가 포함됩니다.
 
 **Android 2.9.1 (71)** · ~~$4.99~~ · Google Play 비공개 테스트가 끝날 때까지 GitHub에서 [APK](https://github.com/keithxc/deskport/releases/download/v2.9.1/DeskPort-2.9.1-71.apk)를 임시로 제공합니다. 모바일 클라이언트의 소스 코드는 비공개이며 여기서는 설치 파일만 배포합니다.
 
@@ -132,7 +132,7 @@ Flatpak은 보기 기능만 제공합니다. 릴리스 자산에는 [SHA-256 체
 
 DeskPort 호스트에서 공유를 시작하고 DeskPort 클라이언트에서 선택한 뒤 호스트에서 기기를 승인하세요. LAN이나 Tailscale 같은 자체 VPN을 사용하세요. DeskPort는 계정 서비스, 호스팅 데스크톱, 릴레이 또는 네트워크 터널을 제공하지 않습니다. 새 수동 주소의 기본 포트는 `48989`입니다. 다르면 호스트 공유 페이지에 표시된 포트를 지정하세요.
 
-이력: [0.7.3](../releases/RELEASE_0.7.3.md)의 변경 사항과 검증 범위, [0.7.4](../releases/RELEASE_0.7.4.md)의 교체 기록은 원래 릴리스 노트에 보존되어 있습니다. 2.9.1의 검증 결과가 아닙니다.
+이력: [0.7.3](../releases/RELEASE_0.7.3.md)의 변경 사항과 검증 범위, [0.7.4](../releases/RELEASE_0.7.4.md)의 교체 기록은 원래 릴리스 노트에 보존되어 있습니다. 2.9.3의 검증 결과가 아닙니다.
 
 <details>
 <summary>0.7.3 / 0.7.2</summary>
@@ -152,12 +152,12 @@ AppImage에는 전용 glibc 런타임이 포함되어 있으며, 네이티브 �
 
 ### Linux 저장소 제공 현황
 
-2.9.1 설치 및 업그레이드는 [Linux 가이드](../LINUX_PACKAGES.md)와 [영문 README의 배포판별 절차](../../README.md#linux-installation-by-distribution)를 따르세요. 업그레이드 전에 기존 앱을 완전히 종료하고 [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.1/SHA256SUMS.txt)로 패키지를 확인하세요. Flatpak은 뷰어 전용입니다.
+2.9.3 설치 및 업그레이드는 [Linux 가이드](../LINUX_PACKAGES.md)와 [영문 README의 배포판별 절차](../../README.md#linux-installation-by-distribution)를 따르세요. 업그레이드 전에 기존 앱을 완전히 종료하고 [SHA256SUMS.txt](https://github.com/keithxc/deskport/releases/download/v2.9.3/SHA256SUMS.txt)로 패키지를 확인하세요. Flatpak은 뷰어 전용입니다.
 
 | 채널 | 상태 | 설치 |
 | --- | --- | --- |
-| GitHub 릴리스 패키지 | 2.9.1 정식 버전 | 위에서 배포판에 맞는 패키지를 다운로드 |
-| 업스트림 Nix flake | 2.9.1 정식 버전 | `nix run --refresh github:keithxc/deskport/v2.9.1` |
+| GitHub 릴리스 패키지 | 2.9.3 정식 버전 | 위에서 배포판에 맞는 패키지를 다운로드 |
+| 업스트림 Nix flake | 2.9.3 정식 버전 | `nix run --refresh github:keithxc/deskport/v2.9.3` |
 | AUR `deskport-bin` | 레시피 테스트 완료, 신규 계정 등록 중단으로 게시 보류 | [로컬에서 레시피 빌드](../LINUX_PACKAGES.md#arch-linux-and-aur) |
 | Nixpkgs `deskport` | [PR #572043](https://github.com/NixOS/nixpkgs/pull/572043) 리뷰 요청됨, 아직 병합되지 않음 | 포함될 때까지 업스트림 flake 사용 |
 | Arch 공식 저장소 / Flathub | 등재되지 않음 | 릴리스 다운로드 사용, Flatpak은 뷰어 전용 |
@@ -192,7 +192,7 @@ AppImage에는 전용 glibc 런타임이 포함되어 있으며, 네이티브 �
 DeskPort의 현재 플랫폼 제한은 위에 나와 있으며, 이 표가 모든 OS에서의 기능 동등성이나
 측정된 성능 우위를 의미하지는 않습니다.
 
-[2.9.1 릴리스 노트](../releases/RELEASE_2.9.1.md),
+[2.9.3 릴리스 노트](../releases/RELEASE_2.9.3.md),
 [아키텍처](../ARCHITECTURE.md), [로드맵](../ROADMAP.md)을 참고하세요.
 
 ## Linux에서 빌드 및 실행
